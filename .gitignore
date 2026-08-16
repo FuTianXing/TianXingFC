@@ -1,0 +1,16 @@
+# Reasonix 工作区状态
+.reasonix/
+
+# 编辑器/工具本地配置
+.obsidian/
+.trae/
+.workbuddy/
+.kun-canvas/
+.kun-design/
+.kunsdd/
+
+# 依赖与临时文件
+node_modules/
+temp/
+tmp/
+*.log

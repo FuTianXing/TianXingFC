@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>复平面单位圆动态旋转</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+    color: #e6edf3;
+    user-select: none;
+  }
+  .container {
+    background: #161b22;
+    border-radius: 18px;
+    padding: 28px 32px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    border: 1px solid #30363d;
+  }
+  canvas {
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+    background: #0d1117;
+    cursor: grab;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .info-panel {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .info-panel .label {
+    color: #8b949e;
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  .info-panel .value {
+    font-weight: 600;
+    color: #f0f6fc;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 15px;
+  }
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  button {
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #e6edf3;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  button:hover {
+    background: #30363d;
+    border-color: #484f58;
+  }
+  button.active {
+    background: #1f6feb;
+    border-color: #388bfd;
+    color: #fff;
+  }
+  input[type="range"] {
+    width: 140px;
+    accent-color: #58a6ff;
+    background: #21262d;
+    height: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .speed-label {
+    font-size: 13px;
+    color: #8b949e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .complex-formula {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-top: 14px;
+    text-align: center;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 18px;
+    color: #58a6ff;
+    letter-spacing: 0.5px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <canvas id="canvas" width="600" height="600"></canvas>
+
+  <div class="complex-formula" id="formula">e^(i·0°) = 1 + 0i</div>
+
+  <div class="controls">
+    <div class="info-panel">
+      <div>
+        <div class="label">角度 θ</div>
+        <div class="value" id="angleDisplay">0°</div>
+      </div>
+      <div>
+        <div class="label">实部 Re</div>
+        <div class="value" id="reDisplay">1.000</div>
+      </div>
+      <div>
+        <div class="label">虚部 Im</div>
+        <div class="value" id="imDisplay">0.000</div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <div class="speed-label">
+        <span>速度</span>
+        <input type="range" id="speedSlider" min="0" max="200" value="60" />
+      </div>
+      <button id="playBtn" class="active">▶ 旋转</button>
+      <button id="resetBtn">⟲ 重置</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:#f0883e"></span> e^(iθ) 动点</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#58a6ff"></span> 半径向量</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#da3633"></span> 实部投影</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#3fb950"></span> 虚部投影</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#7c879b"></span> 单位圆</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const W = 600, H = 600;
+  const cx = W / 2, cy = H / 2;
+  const R = 230;              // 单位圆半径（像素）
+  const gr = R * 0.97;        // 网格边界
+
+  let angle = 0;              // 当前角度（弧度）
+  let playing = true;
+  let speed = 60;             // 每帧角度增量 × 1000
+  let animId = null;
+
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const speedSlider = document.getElementById('speedSlider');
+  const angleDisplay = document.getElementById('angleDisplay');
+  const reDisplay = document.getElementById('reDisplay');
+  const imDisplay = document.getElementById('imDisplay');
+  const formulaEl = document.getElementById('formula');
+
+  // ---------- 绘图 ----------
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // ---- 网格 ----
+    ctx.strokeStyle = '#1c2333';
+    ctx.lineWidth = 1;
+    const step = R / 5;
+    for (let i = -5; i <= 5; i++) {
+      const x = cx + i * step;
+      const y = cy + i * step;
+      // 竖线
+      ctx.beginPath();
+      ctx.moveTo(x, cy - gr);
+      ctx.lineTo(x, cy + gr);
+      ctx.stroke();
+      // 横线
+      ctx.beginPath();
+      ctx.moveTo(cx - gr, y);
+      ctx.lineTo(cx + gr, y);
+      ctx.stroke();
+    }
+
+    // ---- 坐标轴 ----
+    ctx.strokeStyle = '#8b949e';
+    ctx.lineWidth = 1.8;
+    // 实轴 (x)
+    ctx.beginPath();
+    ctx.moveTo(cx - R - 20, cy);
+    ctx.lineTo(cx + R + 20, cy);
+    ctx.stroke();
+    // 虚轴 (y)
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - R - 20);
+    ctx.lineTo(cx, cy + R + 20);
+    ctx.stroke();
+
+    // 轴标签
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '14px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('Re', cx + R + 28, cy - 10);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Im', cx - 10, cy - R - 24);
+
+    // 刻度标记
+    ctx.font = '11px "Segoe UI", sans-serif';
+    ctx.fillStyle = '#6e7681';
+    for (let i = -5; i <= 5; i++) {
+      if (i === 0) continue;
+      const px = cx + i * step;
+      const py = cy + i * step;
+      // 实轴刻度
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(i, px, cy + 6);
+      // 虚轴刻度
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(i === 1 ? 'i' : i === -1 ? '-i' : `${i}i`, cx + 6, py);
+    }
+    // 原点
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.fillText('O', cx - 8, cy + 6);
+
+    // ---- 单位圆 ----
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.strokeStyle = '#7c879b';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ---- 角度弧 ----
+    const arcRadius = 36;
+    ctx.beginPath();
+    ctx.arc(cx, cy, arcRadius, 0, -angle, true);
+    ctx.strokeStyle = '#d29922';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 角度标签
+    const deg = ((angle * 180 / Math.PI) % 360 + 360) % 360;
+    const labelAngle = angle / 2;
+    const labelR = 52;
+    ctx.fillStyle = '#d29922';
+    ctx.font = '13px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`θ=${deg.toFixed(0)}°`, cx + labelR * Math.cos(-labelAngle), cy - labelR * Math.sin(-labelAngle));
+
+    // ---- 动点坐标 ----
+    const re = Math.cos(angle);
+    const im = Math.sin(angle);
+    const px = cx + re * R;
+    const py = cy - im * R;   // canvas y 向下为正
+
+    // ---- 实部投影线 (红色虚线) ----
+    ctx.beginPath();
+    ctx.moveTo(px, cy);
+    ctx.lineTo(px, py);
+    ctx.strokeStyle = '#da3633';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ---- 虚部投影线 (绿色虚线) ----
+    ctx.beginPath();
+    ctx.moveTo(cx, py);
+    ctx.lineTo(px, py);
+    ctx.strokeStyle = '#3fb950';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ---- 实部投影点 ----
+    ctx.beginPath();
+    ctx.arc(px, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#da3633';
+    ctx.fill();
+
+    // ---- 虚部投影点 ----
+    ctx.beginPath();
+    ctx.arc(cx, py, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#3fb950';
+    ctx.fill();
+
+    // ---- 半径向量 (蓝色) ----
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(px, py);
+    ctx.strokeStyle = '#58a6ff';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // ---- 箭头 ----
+    const arrowLen = 12;
+    const arrowAngle = 0.45;
+    const tipAngle = -angle;
+    const ax = cx + (re * R - arrowLen * Math.cos(Math.PI - arrowAngle + tipAngle));
+    const ay = cy - (im * R - arrowLen * Math.sin(Math.PI - arrowAngle + tipAngle));
+    const bx = cx + (re * R - arrowLen * Math.cos(Math.PI + arrowAngle + tipAngle));
+    const by = cy - (im * R - arrowLen * Math.sin(Math.PI + arrowAngle + tipAngle));
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.lineTo(ax, ay);
+    ctx.moveTo(px, py);
+    ctx.lineTo(bx, by);
+    ctx.strokeStyle = '#58a6ff';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // ---- 动点 (大圆) ----
+    ctx.beginPath();
+    ctx.arc(px, py, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#f0883e';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // ---- 动点坐标标注 ----
+    ctx.fillStyle = '#f0883e';
+    ctx.font = '13px "JetBrains Mono", "Consolas", monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    const labelOffX = re >= 0 ? 14 : -14;
+    const labelOffY = im >= 0 ? -14 : 14;
+    ctx.fillText(`(${re.toFixed(3)}, ${im.toFixed(3)}i)`, px + labelOffX, py + labelOffY);
+
+    // ---- 更新信息面板 ----
+    const degDisplay = ((angle * 180 / Math.PI) % 360 + 360) % 360;
+    angleDisplay.textContent = `${degDisplay.toFixed(1)}°`;
+    reDisplay.textContent = re.toFixed(4);
+    imDisplay.textContent = im.toFixed(4);
+
+    // ---- 公式显示 ----
+    const degInt = Math.round(degDisplay);
+    const reStr = re.toFixed(3);
+    const imStr = Math.abs(im).toFixed(3);
+    const imSign = im >= 0 ? '+' : '-';
+    formulaEl.innerHTML = `e<sup>i·${degInt}°</sup> = cos(${degInt}°) + i·sin(${degInt}°) = ${reStr} ${imSign} ${imStr}i`;
+
+    // ---- 更新 UI 状态 ----
+    playBtn.textContent = playing ? '⏸ 暂停' : '▶ 旋转';
+    playBtn.classList.toggle('active', playing);
+  }
+
+  // ---------- 动画循环 ----------
+  function tick() {
+    if (playing) {
+      angle += speed / 1000;
+      if (angle > Math.PI * 2) angle -= Math.PI * 2;
+    }
+    draw();
+    animId = requestAnimationFrame(tick);
+  }
+
+  // ---------- 事件绑定 ----------
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+  });
+
+  resetBtn.addEventListener('click', () => {
+    angle = 0;
+    draw();
+  });
+
+  speedSlider.addEventListener('input', () => {
+    speed = parseFloat(speedSlider.value);
+  });
+
+  // 拖拽改变角度
+  let dragging = false;
+  canvas.addEventListener('mousedown', (e) => {
+    dragging = true;
+    canvas.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left - cx;
+    const my = e.clientY - rect.top - cy;
+    angle = Math.atan2(-my, mx);
+    if (angle < 0) angle += Math.PI * 2;
+    draw();
+  });
+  window.addEventListener('mouseup', () => {
+    if (dragging) {
+      dragging = false;
+      canvas.style.cursor = 'grab';
+    }
+  });
+
+  // 启动
+  canvas.style.cursor = 'grab';
+  draw();
+  animId = requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

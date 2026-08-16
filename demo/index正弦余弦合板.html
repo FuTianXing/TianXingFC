@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>元相子螺旋阶梯几何 · 状态空间 𝒮 = S¹ × ℝ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --bg-rgb: 10, 15, 26;
+      --panel: rgba(14, 20, 34, 0.78);
+      --text: #f0f2f5;
+      --text-dim: rgba(240, 242, 245, 0.65);
+      --text-muted: rgba(240, 242, 245, 0.45);
+      --accent-wave: #00d4ff;
+      --accent-wave-rgb: 0, 212, 255;
+      --accent-part: #ff6b35;
+      --accent-part-rgb: 255, 107, 53;
+      --border: rgba(255, 255, 255, 0.12);
+      --sans: "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
+      --serif: "Noto Serif SC", "Songti SC", serif;
+      --mono: "JetBrains Mono", "IBM Plex Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* 左侧控制面板 */
+    #panel {
+      width: 360px;
+      min-width: 320px;
+      height: 100%;
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 28px 24px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    #panel::-webkit-scrollbar { width: 6px; }
+    #panel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 3px;
+    }
+
+    .brand {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .formula-card {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 26px;
+    }
+
+    .formula {
+      font-family: var(--mono);
+      font-size: 15px;
+      color: var(--accent-wave);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .formula:last-child { margin-bottom: 0; }
+
+    .formula-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 24px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .control {
+      margin-bottom: 18px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .control-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent-wave);
+      background: rgba(var(--accent-wave-rgb), 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent-wave);
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(var(--accent-wave-rgb), 0.45);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 8px;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-dim);
+      user-select: none;
+    }
+
+    .checkbox input {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .checkbox input:checked {
+      background: var(--accent-wave);
+      border-color: var(--accent-wave);
+    }
+
+    .checkbox input:checked::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: solid #000;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .btn-reset {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 12px;
+      background: rgba(var(--accent-wave-rgb), 0.12);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--accent-wave);
+      font-family: var(--sans);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-reset:hover { background: rgba(var(--accent-wave-rgb), 0.22); }
+
+    .legend {
+      margin-top: auto;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot.wave { background: var(--accent-wave); box-shadow: 0 0 8px rgba(var(--accent-wave-rgb), 0.5); }
+    .dot.part { background: var(--accent-part); box-shadow: 0 0 8px rgba(var(--accent-part-rgb), 0.5); }
+    .dot.norm { background: #fff; }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    /* 右侧 3D 画布 */
+    #canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #overlay {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      text-align: right;
+      pointer-events: none;
+    }
+
+    #overlay .kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    #overlay .title {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    #phase-readout {
+      position: absolute;
+      right: 28px;
+      bottom: 28px;
+      min-width: 240px;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      pointer-events: none;
+      text-align: right;
+    }
+
+    #phase-readout .readout-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+    }
+
+    #phase-readout .readout-value {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--accent-wave);
+      margin-bottom: 8px;
+      white-space: nowrap;
+    }
+
+    #phase-readout .readout-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #phase-readout .readout-bar span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent-wave);
+      box-shadow: 0 0 8px rgba(var(--accent-wave-rgb), 0.5);
+      transition: width 0.05s linear;
+    }
+
+    #phase-readout .readout-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 0 10px;
+    }
+
+    #phase-readout .readout-c {
+      color: var(--accent-part);
+    }
+
+    #phase-readout .readout-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    #phase-readout .readout-row > div {
+      text-align: center;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    #phase-readout .readout-eq {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text-dim);
+      padding-bottom: 6px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      #app { flex-direction: column; }
+      #panel {
+        width: 100%;
+        height: auto;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px 22px;
+      }
+      #canvas-wrap { height: 55vh; }
+      .checkbox-group { grid-template-columns: 1fr 1fr; }
+      #phase-readout {
+        right: 16px;
+        bottom: 16px;
+        padding: 10px 14px;
+        min-width: 200px;
+      }
+      #phase-readout .readout-value { font-size: 18px; }
+      #phase-readout .readout-row { gap: 4px; }
+      #phase-readout .readout-label { font-size: 9px; letter-spacing: 0.08em; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <div class="brand">Tianxing · 天行新学</div>
+      <h1>元相子螺旋阶梯几何</h1>
+      <p class="subtitle">状态空间 𝒮 = S¹ × ℝ 的可视化：波性连续螺旋与粒性离散跃迁的精确对偶。</p>
+
+      <div class="formula-card">
+        <div class="formula">Ψ(t) = e^{iθ(t)}</div>
+        <div class="formula">Γ(τ) = (ωτ, cτ)</div>
+        <div class="formula-desc">
+          复平面单位圆承载连续相位旋转；每当相位完成 2π 满周闭合，圆心沿法线方向离散跃迁一个普朗克像素。
+        </div>
+      </div>
+
+      <div class="section-title">Parameters · 参数调节</div>
+
+      <div class="control">
+        <div class="control-header">
+          <span class="control-label">角频率 ω</span>
+          <span class="control-value" id="val-omega">1.00</span>
+        </div>
+        <input type="range" id="omega" min="0.2" max="3.0" step="0.05" value="1.0">
+      </div>
+
+      <div class="control">
+        <div class="control-header">
+          <span class="control-label">螺距（ΔZ / 2π）</span>
+          <span class="control-value" id="val-pitch">1.00</span>
+        </div>
+        <input type="range" id="pitch" min="0.3" max="2.5" step="0.05" value="1.0">
+      </div>
+
+      <div class="control">
+        <div class="control-header">
+          <span class="control-label">阶梯数量 N</span>
+          <span class="control-value" id="val-steps">9</span>
+        </div>
+        <input type="range" id="steps" min="1" max="20" step="1" value="9">
+      </div>
+
+      <div class="section-title">Display · 显示选项</div>
+      <div class="checkbox-group">
+        <label class="checkbox"><input type="checkbox" id="show-trails" checked><span>实时轨迹</span></label>
+        <label class="checkbox"><input type="checkbox" id="lay-flat" checked><span>横向躺平</span></label>
+        <label class="checkbox"><input type="checkbox" id="show-helix" checked><span>螺旋曲线</span></label>
+        <label class="checkbox"><input type="checkbox" id="show-steps" checked><span>离散阶梯</span></label>
+        <label class="checkbox"><input type="checkbox" id="show-sine" checked><span>正弦波动</span></label>
+        <label class="checkbox"><input type="checkbox" id="show-cosine" checked><span>余弦波动</span></label>
+        <label class="checkbox"><input type="checkbox" id="show-particle" checked><span>粒性跃迁</span></label>
+        <label class="checkbox"><input type="checkbox" id="phase-rotate" checked><span>相位旋转</span></label>
+        <label class="checkbox"><input type="checkbox" id="auto-rotate" checked><span>整体旋转</span></label>
+
+      </div>
+      <button class="btn-reset" id="reset-view">全部复位</button>
+
+      <div class="legend">
+        <div class="legend-item"><span class="dot wave"></span> 波性侧：连续圆柱螺旋线</div>
+        <div class="legend-item"><span class="dot part"></span> 粒性侧：法线离散跃迁像素</div>
+        <div class="legend-item"><span class="dot norm"></span> 法线：复平面圆心处的垂直轴</div>
+        <p class="hint">提示：左键拖拽平移几何体（左右 / 上下），右键拖拽旋转几何体，滚轮缩放（以几何体中心为锚点）。调节参数可实时观察几何变化。</p>
+      </div>
+    </aside>
+
+    <main id="canvas-wrap">
+      <canvas id="canvas"></canvas>
+      <div id="overlay">
+        <div class="kicker">Geometric Ontology</div>
+        <div class="title">法线的离散跃迁</div>
+      </div>
+      <div id="phase-readout">
+        <div class="readout-label">相位角 θ</div>
+        <div class="readout-value" id="phase-deg">0°</div>
+        <div class="readout-bar"><span id="phase-bar-fill"></span></div>
+        <div class="readout-divider"></div>
+        <div class="readout-row">
+          <div>
+            <div class="readout-label">跃迁距离</div>
+            <div class="readout-value readout-c">ℓ_P</div>
+          </div>
+          <div class="readout-eq">=</div>
+          <div>
+            <div class="readout-label">时间</div>
+            <div class="readout-value readout-c">t_P</div>
+          </div>
+          <div class="readout-eq">×</div>
+          <div>
+            <div class="readout-label">跃迁速度</div>
+            <div class="readout-value readout-c">c</div>
+          </div>
+        </div>
+        <div class="readout-divider"></div>
+        <div class="readout-row">
+          <div>
+            <div class="readout-label">当前阶数</div>
+            <div class="readout-value readout-c" id="readout-cycle">n=0</div>
+          </div>
+          <div>
+            <div class="readout-label">累计距离</div>
+            <div class="readout-value readout-c" id="readout-height">0 ℓ_P</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { Line2 } from 'three/addons/lines/Line2.js';
+    import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+    import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
+
+    // ---------- 配置 ----------
+    const config = {
+      omega: 1.0,
+      pitch: 1.0,
+      steps: 9,
+      showHelix: true,
+      showSteps: true,
+      showNormal: true,
+      showParticle: true,
+      showTrails: true,
+      layFlat: true,
+      autoRotate: true,
+      phaseRotate: true,
+      colorWave: 0x00d4ff,
+      colorPart: 0xff6b35,
+      colorNormal: 0xffffff,
+      colorAxisX: 0x3b82f6,
+      colorAxisY: 0xec4899,
+      colorCircle: 0x8899aa,
+      colorOrb: 0x9d4edd,
+      sineAmplitude: 0.7,
+      sineOffset: -2.2,
+      particleOffset: 2.2,
+      showSine: true,
+      showCosine: true
+    };
+
+    // ---------- 共享几何体与材质 ----------
+    const sharedGeometries = new Set();
+    function registerSharedGeo(geo) {
+      sharedGeometries.add(geo);
+      return geo;
+    }
+
+    const sharedMaterials = new Set();
+    function registerSharedMat(mat) {
+      sharedMaterials.add(mat);
+      return mat;
+    }
+
+    const sharedGeo = {
+      sphere: registerSharedGeo(new THREE.SphereGeometry(1, 32, 32)),
+      ring: registerSharedGeo(new THREE.RingGeometry(0.97, 1.03, 128)),
+      unitRing: registerSharedGeo(new THREE.RingGeometry(0.98, 1.02, 128)),
+      ripple: registerSharedGeo(new THREE.RingGeometry(0.12, 0.15, 48))
+    };
+
+    const sharedMat = {
+      grid: registerSharedMat(new THREE.LineBasicMaterial({ color: config.colorCircle, transparent: true, opacity: 0.18 })),
+      unitRing: registerSharedMat(new THREE.MeshBasicMaterial({ color: config.colorCircle, side: THREE.DoubleSide, transparent: true, opacity: 0.7 })),
+      stepRing: registerSharedMat(new THREE.MeshBasicMaterial({ color: config.colorCircle, side: THREE.DoubleSide, transparent: true, opacity: 0.32 })),
+      stepCenter: registerSharedMat(new THREE.MeshStandardMaterial({ color: config.colorCircle, emissive: 0x222222, emissiveIntensity: 0.15, roughness: 0.6, metalness: 0.2, transparent: true, opacity: 0.9 })),
+      plTick: registerSharedMat(new THREE.LineBasicMaterial({ color: config.colorPart, transparent: true, opacity: 0.45 })),
+      plActive: registerSharedMat(new THREE.LineBasicMaterial({ color: 0xff3333, transparent: true, opacity: 1.0 })),
+      plSegment: registerSharedMat(new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.9 })),
+      orb: registerSharedMat(new THREE.MeshStandardMaterial({ color: config.colorOrb, emissive: config.colorOrb, emissiveIntensity: 0.55, roughness: 0.2, metalness: 0.1 })),
+      orbGlow: new THREE.MeshBasicMaterial({ color: config.colorOrb, transparent: true, opacity: 0, depthWrite: false }),
+      tip: registerSharedMat(new THREE.MeshStandardMaterial({ color: config.colorOrb, emissive: config.colorOrb, emissiveIntensity: 0.35, roughness: 0.2, metalness: 0.1 })),
+      tipGlow: new THREE.MeshBasicMaterial({ color: config.colorOrb, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }),
+      part: registerSharedMat(new THREE.MeshBasicMaterial({ color: config.colorPart })),
+      partGlow: new THREE.MeshStandardMaterial({ color: config.colorPart, emissive: config.colorPart, emissiveIntensity: 0, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0 }),
+      waveTube: registerSharedMat(new THREE.MeshPhysicalMaterial({ color: config.colorWave, emissive: config.colorWave, emissiveIntensity: 0.35, metalness: 0.1, roughness: 0.25, transparent: true, opacity: 0.92, transmission: 0.1 })),
+      waveLine: registerSharedMat(new THREE.LineBasicMaterial({ color: config.colorWave, transparent: true, opacity: 0.25 })),
+      proj: registerSharedMat(new THREE.LineBasicMaterial({ color: config.colorOrb, transparent: true, opacity: 0.55, depthTest: false })),
+      planeProj: new LineMaterial({ color: new THREE.Color(config.colorWave), transparent: true, opacity: 0.4, linewidth: 1.3, worldUnits: false }),
+      normalProj: new LineMaterial({ color: new THREE.Color(config.colorNormal), transparent: true, opacity: 0.4, linewidth: 1.3, worldUnits: false }),
+      normal: registerSharedMat(new THREE.LineBasicMaterial({ color: config.colorNormal, transparent: true, opacity: 0.85 })),
+      normalArrow: registerSharedMat(new THREE.MeshBasicMaterial({ color: config.colorNormal, transparent: true, opacity: 0.9 })),
+      topRing: registerSharedMat(new THREE.MeshBasicMaterial({ color: config.colorPart, side: THREE.DoubleSide, transparent: true, opacity: 0.9 })),
+      sineLine: new LineMaterial({ color: new THREE.Color(config.colorWave), transparent: true, opacity: 0.9, linewidth: 3, worldUnits: false }),
+      cosineLine: new LineMaterial({ color: new THREE.Color(config.colorPart), transparent: true, opacity: 0.9, linewidth: 3, worldUnits: false }),
+      sineAxis: registerSharedMat(new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 })),
+      sineTick: registerSharedMat(new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 }))
+    };
+
+    // ---------- 资源清理辅助函数 ----------
+    function clearGroup(group) {
+      group.traverse(obj => {
+        if (obj.geometry && !sharedGeometries.has(obj.geometry)) {
+          obj.geometry.dispose();
+        }
+        if (obj.material) {
+          const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+          materials.forEach(mat => {
+            if (sharedMaterials.has(mat)) return;
+            if (mat.map) mat.map.dispose();
+            mat.dispose();
+          });
+        }
+      });
+      while (group.children.length) group.remove(group.children[0]);
+    }
+
+    // ---------- 场景初始化 ----------
+    const canvas = document.getElementById('canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    sharedMat.planeProj.resolution.set(canvas.clientWidth, canvas.clientHeight);
+    sharedMat.normalProj.resolution.set(canvas.clientWidth, canvas.clientHeight);
+    sharedMat.sineLine.resolution.set(canvas.clientWidth, canvas.clientHeight);
+    sharedMat.cosineLine.resolution.set(canvas.clientWidth, canvas.clientHeight);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0f1a);
+    scene.fog = new THREE.FogExp2(0x0a0f1a, 0.035);
+
+    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(0.5, 4.5, 9);
+    camera.lookAt(0, 0, 0);
+
+    // ---------- 光照 ----------
+    const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+    scene.add(ambient);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(5, 8, 6);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(1024, 1024);
+    scene.add(dirLight);
+
+    const pointLight = new THREE.PointLight(config.colorWave, 1.5, 20);
+    pointLight.position.set(-3, 4, 4);
+    scene.add(pointLight);
+
+    const pointLight2 = new THREE.PointLight(config.colorPart, 1.2, 20);
+    pointLight2.position.set(3, -2, 8);
+    scene.add(pointLight2);
+
+    // ---------- 容器 ----------
+    const world = new THREE.Group();
+    scene.add(world);
+
+    // viewGroup 用于实现横向躺平等整体姿态变换，不影响鼠标对世界组的旋转/平移
+    const viewGroup = new THREE.Group();
+    world.add(viewGroup);
+
+    const helixGroup = new THREE.Group();
+    const stepGroup = new THREE.Group();
+    const baseGroup = new THREE.Group();
+    const normalGroup = new THREE.Group();
+    const bottomRingGroup = new THREE.Group();
+    const sineGroup = new THREE.Group();
+    const particleGroup = new THREE.Group();
+    viewGroup.add(helixGroup);
+    viewGroup.add(stepGroup);
+    viewGroup.add(baseGroup);
+    viewGroup.add(normalGroup);
+    viewGroup.add(bottomRingGroup);
+    viewGroup.add(sineGroup);
+    viewGroup.add(particleGroup);
+
+    // ---------- 文字标签辅助函数 ----------
+    const spriteCache = new Map();
+    function createTextSprite(text, color, size = 0.35) {
+      const key = `${text}|${color}|${size}`;
+      if (spriteCache.has(key)) {
+        const cached = spriteCache.get(key);
+        const sprite = cached.clone();
+        const newMat = cached.material.clone();
+        newMat.map = cached.material.map.clone();
+        sprite.material = newMat;
+        return sprite;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const fontSize = 64;
+      ctx.font = `500 ${fontSize}px "Noto Sans SC", sans-serif`;
+      const metrics = ctx.measureText(text);
+      canvas.width = Math.ceil(metrics.width) + 20;
+      canvas.height = fontSize + 24;
+      ctx.font = `500 ${fontSize}px "Noto Sans SC", sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.85 });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(size * (canvas.width / canvas.height), size, 1);
+      spriteCache.set(key, sprite);
+      return sprite;
+    }
+
+    // 圆形网格辅助线（完全位于单位圆内部）
+    function createCircularGrid(radius = 0.98, rings = 5, sectors = 12, color = config.colorCircle, opacity = 0.18) {
+      const positions = [];
+      const segments = 64;
+
+      // 同心圆
+      for (let i = 1; i <= rings; i++) {
+        const r = (radius * i) / rings;
+        for (let j = 0; j < segments; j++) {
+          const theta1 = (j / segments) * Math.PI * 2;
+          const theta2 = ((j + 1) / segments) * Math.PI * 2;
+          positions.push(
+            r * Math.cos(theta1), 0, r * Math.sin(theta1),
+            r * Math.cos(theta2), 0, r * Math.sin(theta2)
+          );
+        }
+      }
+
+      // 径向线
+      for (let i = 0; i < sectors; i++) {
+        const theta = (i / sectors) * Math.PI * 2;
+        positions.push(
+          0, 0, 0,
+          radius * Math.cos(theta), 0, radius * Math.sin(theta)
+        );
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+      return new THREE.LineSegments(geometry, material);
+    }
+
+    // ---------- 底部复平面单位圆 ----------
+    function buildBase() {
+      clearGroup(baseGroup);
+
+      // 单位圆环
+      const ring = new THREE.Mesh(sharedGeo.unitRing, sharedMat.unitRing);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = 0.005;
+      baseGroup.add(ring);
+
+      // 坐标轴：复平面置于 xz 平面，-x 为虚轴正方向，z 为实轴，y 为法线方向
+      function makeAxis(color, from, to) {
+        const dir = new THREE.Vector3().subVectors(to, from).normalize();
+        const len = from.distanceTo(to);
+        return new THREE.ArrowHelper(dir, from, len, color, 0.18, 0.12);
+      }
+      // 虚轴箭头指向 -x，使得躺平后箭头朝上
+      baseGroup.add(makeAxis(config.colorAxisX, new THREE.Vector3(1.5, 0, 0), new THREE.Vector3(-1.5, 0, 0)));
+      baseGroup.add(makeAxis(config.colorAxisY, new THREE.Vector3(0, 0, -1.5), new THREE.Vector3(0, 0, 1.5)));
+
+      // 轴标注：-x 方向为虚轴（Im），z 方向为实轴
+      const imLabel = createTextSprite('Im', '#3b82f6', 0.32);
+      imLabel.position.set(-1.35, 0.15, 0);
+      baseGroup.add(imLabel);
+
+      const reLabel = createTextSprite('Re', '#ec4899', 0.32);
+      reLabel.position.set(0, 0.15, 1.7);
+      baseGroup.add(reLabel);
+
+      // 普朗克时间标记 t_P：单位圆上一整圈相位旋转对应一个普朗克时间
+      const ptRadius = 1.0;
+      const ptPoints = [];
+      const ptSegments = 56;
+      const ptStart = Math.PI * 0.12;
+      const ptAngle = Math.PI * 1.42;
+      for (let i = 0; i <= ptSegments; i++) {
+        const t = i / ptSegments;
+        const theta = ptStart + t * ptAngle;
+        ptPoints.push(new THREE.Vector3(ptRadius * Math.cos(theta), 0, ptRadius * Math.sin(theta)));
+      }
+      const ptArcGeo = new THREE.BufferGeometry().setFromPoints(ptPoints);
+      const ptMat = new THREE.LineBasicMaterial({ color: config.colorWave, transparent: true, opacity: 0.78 });
+      baseGroup.add(new THREE.Line(ptArcGeo, ptMat));
+
+      const ptLabel = createTextSprite('t_P', '#00d4ff', 0.3);
+      const ptLabelAngle = ptStart + ptAngle / 2;
+      ptLabel.position.set(ptRadius * Math.cos(ptLabelAngle), 0.18, ptRadius * Math.sin(ptLabelAngle));
+      baseGroup.add(ptLabel);
+
+      // 满周闭合标记：位于实轴 (0,0,1)，用发光的橙色小菱形强调这是关键闭合点
+      const markerGroup = new THREE.Group();
+      markerGroup.name = 'closure-marker';
+      markerGroup.position.set(0, 0.02, 1);
+
+      const markerGeo = new THREE.OctahedronGeometry(0.07, 0);
+      const markerMat = sharedMat.partGlow.clone();
+      markerMat.opacity = 1.0;
+      markerMat.emissiveIntensity = 2.0;
+      const marker = new THREE.Mesh(markerGeo, markerMat);
+      marker.rotation.z = Math.PI / 4;
+      markerGroup.add(marker);
+      baseGroup.add(markerGroup);
+
+      // 相位指针（动态）：圆柱 shaft + 圆锥 head 组成箭头
+      const pointerGroup = new THREE.Group();
+      pointerGroup.name = 'phase-pointer';
+
+      const shaftGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.8, 12);
+      shaftGeo.translate(0, 0.4, 0); // 底部置于原点
+      const pointerMat = new THREE.MeshBasicMaterial({ color: config.colorWave });
+      const shaft = new THREE.Mesh(shaftGeo, pointerMat);
+      pointerGroup.add(shaft);
+
+      const headGeo = new THREE.ConeGeometry(0.06, 0.2, 12);
+      headGeo.translate(0, 0.9, 0); // 锥底与 shaft 顶部对齐
+      const head = new THREE.Mesh(headGeo, pointerMat);
+      pointerGroup.add(head);
+      pointerGroup.position.y = 0.006; // 略高于复平面避免与网格 z-fight
+
+      baseGroup.add(pointerGroup);
+    }
+
+    // ---------- 法线 ----------
+    function buildNormal() {
+      clearGroup(normalGroup);
+
+      const topY = config.steps * config.pitch;
+
+      // 法线（从圆心向上，止于最上层复平面，无箭头以避免穿出平面）
+      const normalLineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, topY, 0)
+      ]);
+      normalGroup.add(new THREE.Line(normalLineGeo, sharedMat.normal));
+
+      // 法线标签
+      const normalLabel = createTextSprite('z', '#ffffff', 0.3);
+      normalLabel.position.set(0.18, topY - 0.2, 0.18);
+      normalGroup.add(normalLabel);
+
+      // 法线顶端箭头：指示法线向上指向，尺寸与实轴/虚轴箭头一致
+      const arrowGeo = registerSharedGeo(new THREE.ConeGeometry(0.06, 0.18, 16));
+      const arrow = new THREE.Mesh(arrowGeo, sharedMat.normalArrow);
+      arrow.position.set(0, topY + 0.09, 0);
+      normalGroup.add(arrow);
+
+      // 普朗克长度刻度：每层一个 ℓ_P 单位，短线横跨法线
+      const tickPositions = [];
+      for (let n = 0; n <= config.steps; n++) {
+        const y = n * config.pitch;
+        tickPositions.push(-0.12, y, 0, 0.12, y, 0);
+      }
+      const ticksGeo = new THREE.BufferGeometry();
+      ticksGeo.setAttribute('position', new THREE.Float32BufferAttribute(tickPositions, 3));
+      const ticksLine = new THREE.LineSegments(ticksGeo, sharedMat.plTick);
+      ticksLine.name = 'pl-ticks';
+      normalGroup.add(ticksLine);
+    }
+
+    // ---------- 连续螺旋线（动态生成：只渲染到当前相位） ----------
+    let helixTube = null;
+    let helixInnerLine = null;
+    function buildHelix() {
+      clearGroup(helixGroup);
+
+      const turns = config.steps;
+      const segments = Math.max(200, Math.floor(turns * 80));
+      const points = [];
+      const pitch = config.pitch;
+
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const theta = t * turns * Math.PI * 2;
+        const y = (theta / (2 * Math.PI)) * pitch;
+        points.push(new THREE.Vector3(-Math.sin(theta), y, Math.cos(theta)));
+      }
+
+      const curve = new THREE.CatmullRomCurve3(points);
+      const tubeGeo = new THREE.TubeGeometry(curve, segments, 0.035, 12, false);
+      helixTube = new THREE.Mesh(tubeGeo, sharedMat.waveTube);
+      helixTube.castShadow = true;
+      helixTube.name = 'helix-tube';
+      helixGroup.add(helixTube);
+
+      // 螺旋线内部细线（同步动态）
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+      helixInnerLine = new THREE.Line(lineGeo, sharedMat.waveLine);
+      helixInnerLine.name = 'helix-inner-line';
+      helixGroup.add(helixInnerLine);
+
+      // 沿螺旋线运动的紫色小球
+      const orb = new THREE.Mesh(sharedGeo.sphere, sharedMat.orb);
+      orb.scale.setScalar(0.09);
+      orb.name = 'helix-orb';
+      orb.castShadow = true;
+      helixGroup.add(orb);
+
+      // 自耦合闪光光晕（常态透明，闪光时显形）
+      const orbGlowGeo = new THREE.SphereGeometry(0.18, 32, 32);
+      const orbGlow = new THREE.Mesh(orbGlowGeo, sharedMat.orbGlow.clone());
+      orbGlow.name = 'orb-glow';
+      orb.add(orbGlow);
+
+    }
+
+    // ---------- 离散阶梯（动态生成：仅显示已到达的层） ----------
+    function buildSteps() {
+      clearGroup(stepGroup);
+
+      const pitch = config.pitch;
+      const count = config.steps;
+
+      for (let n = 1; n <= count; n++) {
+        const y = n * pitch;
+
+        // 每层阶梯上的单位圆环（表示该阶梯对应一次完整的相位闭合）
+        const unitRing = new THREE.Mesh(sharedGeo.ring, sharedMat.stepRing);
+        unitRing.rotation.x = -Math.PI / 2;
+        unitRing.position.set(0, y + 0.005, 0);
+        unitRing.userData.layer = n;
+        unitRing.name = `step-ring-${n}`;
+        stepGroup.add(unitRing);
+
+        // 圆心处的微小灰色标记球
+        const centerDot = new THREE.Mesh(sharedGeo.sphere, sharedMat.stepCenter);
+        centerDot.scale.setScalar(0.02);
+        centerDot.position.set(0, y + 0.005, 0);
+        centerDot.userData.layer = n;
+        centerDot.name = `step-dot-${n}`;
+        stepGroup.add(centerDot);
+      }
+
+      // 最顶层单位圆环（与每层阶梯圆环大小一致，表示最高处的相位闭合面）
+      const topY = count * pitch;
+      const topUnitRing = new THREE.Mesh(sharedGeo.ring, sharedMat.stepRing);
+      topUnitRing.rotation.x = -Math.PI / 2;
+      topUnitRing.position.set(0, topY + 0.005, 0);
+      topUnitRing.userData.layer = count;
+      topUnitRing.name = `step-ring-top`;
+      stepGroup.add(topUnitRing);
+    }
+
+    // ---------- 重建全部几何 ----------
+    function rebuild() {
+      buildBase();
+      buildNormal();
+      buildHelix();
+      buildSteps();
+      buildBottomGridRing();
+      buildSineCurve();
+      buildParticleAxis();
+      buildProjectionLines();
+
+      updateVisibility();
+      updateAnimRefs();
+
+      // viewGroup 在动画循环中会根据躺平状态自动偏移，使几何中心始终对齐世界原点
+      camera.lookAt(0, 0, 0);
+    }
+
+    // ---------- 投影线 ----------
+    function buildProjectionLines() {
+      // 复平面投影线：螺旋小球 → 当前复平面同相位点
+      const planeProjGeo = new LineSegmentsGeometry();
+      planeProjGeo.setPositions([0, 0, 0, 0, 0, 0]);
+      const planeProjLine = new Line2(planeProjGeo, sharedMat.planeProj);
+      planeProjLine.name = 'plane-projection-line';
+      planeProjLine.computeLineDistances();
+      viewGroup.add(planeProjLine);
+
+      // 法线投影线：螺旋小球 → 法线上同高度点
+      const normalProjGeo = new LineSegmentsGeometry();
+      normalProjGeo.setPositions([0, 0, 0, 0, 0, 0]);
+      const normalProjLine = new Line2(normalProjGeo, sharedMat.normalProj);
+      normalProjLine.name = 'normal-projection-line';
+      normalProjLine.computeLineDistances();
+      viewGroup.add(normalProjLine);
+    }
+
+    function buildBottomGridRing() {
+      clearGroup(bottomRingGroup);
+
+      // 灰色圆环边，与上层阶梯圆环样式一致
+      const edge = new THREE.Mesh(sharedGeo.ring, sharedMat.stepRing);
+      edge.rotation.x = -Math.PI / 2;
+      edge.position.y = 0.005;
+      bottomRingGroup.add(edge);
+    }
+
+    // ---------- 展开正弦/余弦曲线（动态生成：只渲染到当前相位） ----------
+    let sineLineRef = null;
+    let cosineLineRef = null;
+    function buildSineCurve() {
+      clearGroup(sineGroup);
+
+      const turns = config.steps;
+      const maxTheta = turns * Math.PI * 2;
+      const segments = Math.max(200, Math.floor(turns * 80));
+      const amp = config.sineAmplitude;
+      const off = config.sineOffset;
+      const totalY = turns * config.pitch;
+
+      // 正弦曲线
+      if (config.showSine) {
+        const sinePositions = [];
+        for (let i = 0; i < segments; i++) {
+          const t1 = i / segments;
+          const t2 = (i + 1) / segments;
+          const theta1 = t1 * maxTheta;
+          const theta2 = t2 * maxTheta;
+          const x1 = off + Math.sin(theta1) * amp;
+          const y1 = (theta1 / (2 * Math.PI)) * config.pitch;
+          const x2 = off + Math.sin(theta2) * amp;
+          const y2 = (theta2 / (2 * Math.PI)) * config.pitch;
+          sinePositions.push(x1, y1, 0, x2, y2, 0);
+        }
+        const sineGeo = new LineSegmentsGeometry();
+        sineGeo.setPositions(sinePositions);
+        sineLineRef = new Line2(sineGeo, sharedMat.sineLine);
+        sineLineRef.computeLineDistances();
+        sineLineRef.name = 'sine-line';
+        sineGroup.add(sineLineRef);
+      } else {
+        sineLineRef = null;
+      }
+
+      // 余弦曲线
+      if (config.showCosine) {
+        const cosinePositions = [];
+        for (let i = 0; i < segments; i++) {
+          const t1 = i / segments;
+          const t2 = (i + 1) / segments;
+          const theta1 = t1 * maxTheta;
+          const theta2 = t2 * maxTheta;
+          const x1 = off + Math.cos(theta1) * amp;
+          const y1 = (theta1 / (2 * Math.PI)) * config.pitch;
+          const x2 = off + Math.cos(theta2) * amp;
+          const y2 = (theta2 / (2 * Math.PI)) * config.pitch;
+          cosinePositions.push(x1, y1, 0, x2, y2, 0);
+        }
+        const cosineGeo = new LineSegmentsGeometry();
+        cosineGeo.setPositions(cosinePositions);
+        cosineLineRef = new Line2(cosineGeo, sharedMat.cosineLine);
+        cosineLineRef.computeLineDistances();
+        cosineLineRef.name = 'cosine-line';
+        sineGroup.add(cosineLineRef);
+      } else {
+        cosineLineRef = null;
+      }
+
+      // 共享坐标轴与刻度（至少显示一条曲线时才需要）
+      if (config.showSine || config.showCosine) {
+        // 零轴基线
+        const axisGeo = new THREE.BufferGeometry();
+        axisGeo.setAttribute('position', new THREE.Float32BufferAttribute([
+          off, 0, 0,
+          off, totalY, 0
+        ], 3));
+        const axisLine = new THREE.Line(axisGeo, sharedMat.sineAxis);
+        axisLine.name = 'sine-axis';
+        sineGroup.add(axisLine);
+
+        // 横轴顶端箭头（与法线/粒子轴一致：白色 ConeGeometry 0.06×0.18）
+        const axisArrowGeo = registerSharedGeo(new THREE.ConeGeometry(0.06, 0.18, 16));
+        const axisArrow = new THREE.Mesh(axisArrowGeo, sharedMat.normalArrow);
+        axisArrow.position.set(off, totalY + 0.09, 0);
+        axisArrow.name = 'sine-axis-arrow';
+        sineGroup.add(axisArrow);
+
+        // 横轴末端 x 标签（与下方两个轴标签对称）
+        const axisNLabel = createTextSprite('x', '#ffffff', 0.3);
+        axisNLabel.position.set(off + 0.18, totalY - 0.2, 0.18);
+        axisNLabel.name = 'sin-axis-n-label';
+        sineGroup.add(axisNLabel);
+
+        // 振幅边界辅助线（±1）
+        const boundGeo = new THREE.BufferGeometry();
+        boundGeo.setAttribute('position', new THREE.Float32BufferAttribute([
+          off + amp, 0, 0, off + amp, totalY, 0,
+          off - amp, 0, 0, off - amp, totalY, 0
+        ], 3));
+        const boundMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
+        const boundLine = new THREE.LineSegments(boundGeo, boundMat);
+        boundLine.name = 'sine-bound';
+        sineGroup.add(boundLine);
+
+        // 周期刻度：每个 2π 标记一次，对应螺旋每层
+        const tickLen = 0.12;
+        const tickPositions = [];
+        for (let n = 0; n <= turns; n++) {
+          const y = n * config.pitch;
+          tickPositions.push(
+            off - tickLen, y, 0,
+            off + tickLen, y, 0
+          );
+        }
+        const ticksGeo = new THREE.BufferGeometry();
+        ticksGeo.setAttribute('position', new THREE.Float32BufferAttribute(tickPositions, 3));
+        const ticksLineSeg = new THREE.LineSegments(ticksGeo, sharedMat.sineTick);
+        ticksLineSeg.name = 'sine-ticks';
+        sineGroup.add(ticksLineSeg);
+
+        // 层数标签：每个标签归入对应 layer 的子 Group，便于按 progress 截断
+        for (let n = 0; n <= turns; n++) {
+          const y = n * config.pitch;
+          const label = createTextSprite(`n=${n}`, '#8899aa', 0.22);
+          label.position.set(off + 0.4, y, 0);
+          label.userData.layer = n;
+          sineGroup.add(label);
+        }
+
+        // θ 标签（顶部，仅在 progress >= 0.95 显示）
+        const thetaLabel = createTextSprite('θ', '#00d4ff', 0.32);
+        thetaLabel.position.set(off, totalY + 0.3, 0);
+        thetaLabel.name = 'sine-theta-label';
+        sineGroup.add(thetaLabel);
+      }
+
+      // sin θ 标签
+      if (config.showSine) {
+        const sinLabel = createTextSprite('sin θ', '#00d4ff', 0.26);
+        sinLabel.position.set(off - amp - 0.3, totalY, 0);
+        sinLabel.name = 'sine-sin-label';
+        sineGroup.add(sinLabel);
+      }
+
+      // cos θ 标签
+      if (config.showCosine) {
+        const cosLabel = createTextSprite('cos θ', '#ff6b35', 0.26);
+        cosLabel.position.set(off + amp + 0.3, totalY, 0);
+        cosLabel.name = 'sine-cos-label';
+        sineGroup.add(cosLabel);
+      }
+
+      // 正弦同步发光点：随 phaseTheta 移动，sin 值对应其 x 分量
+      if (config.showSine) {
+        const sineDot = new THREE.Mesh(sharedGeo.sphere, sharedMat.orb.clone());
+        sineDot.material.color.setHex(config.colorWave);
+        sineDot.material.emissive.setHex(config.colorWave);
+        sineDot.scale.setScalar(0.09);
+        sineDot.name = 'sine-dot';
+        sineDot.position.set(off, 0, 0);
+        sineDot.castShadow = true;
+        sineGroup.add(sineDot);
+
+        const sineGlowGeo = new THREE.SphereGeometry(0.18, 32, 32);
+        const sineGlow = new THREE.Mesh(sineGlowGeo, sharedMat.orbGlow.clone());
+        sineGlow.material.color.setHex(config.colorWave);
+        sineGlow.name = 'sine-glow';
+        sineDot.add(sineGlow);
+      }
+
+      // 余弦同步发光点：随 phaseTheta 移动，cos 值对应其 x 分量
+      if (config.showCosine) {
+        const cosineDot = new THREE.Mesh(sharedGeo.sphere, sharedMat.orb.clone());
+        cosineDot.material.color.setHex(config.colorPart);
+        cosineDot.material.emissive.setHex(config.colorPart);
+        cosineDot.scale.setScalar(0.09);
+        cosineDot.name = 'cosine-dot';
+        cosineDot.position.set(off, 0, 0);
+        cosineDot.castShadow = true;
+        sineGroup.add(cosineDot);
+
+        const cosineGlowGeo = new THREE.SphereGeometry(0.18, 32, 32);
+        const cosineGlow = new THREE.Mesh(cosineGlowGeo, sharedMat.orbGlow.clone());
+        cosineGlow.material.color.setHex(config.colorPart);
+        cosineGlow.name = 'cosine-glow';
+        cosineDot.add(cosineGlow);
+      }
+    }
+
+    // ---------- 下方粒性跃迁轴（法线平移版，突出离散跃迁） ----------
+    function buildParticleAxis() {
+      clearGroup(particleGroup);
+
+      const topY = config.steps * config.pitch;
+      const off = config.particleOffset;
+
+      // 带箭头直线：沿 y 方向，平移到 +x 偏移
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(off, 0, 0),
+        new THREE.Vector3(off, topY, 0)
+      ]);
+      particleGroup.add(new THREE.Line(lineGeo, sharedMat.normal));
+
+      // 顶端箭头
+      const arrowGeo = registerSharedGeo(new THREE.ConeGeometry(0.06, 0.18, 16));
+      const arrow = new THREE.Mesh(arrowGeo, sharedMat.normalArrow);
+      arrow.position.set(off, topY + 0.09, 0);
+      particleGroup.add(arrow);
+
+      // N 标签：标识为法线平移版
+      const nLabel = createTextSprite('x', '#ffffff', 0.3);
+      nLabel.position.set(off + 0.18, topY - 0.2, 0.18);
+      particleGroup.add(nLabel);
+
+      // 刻度：横跨直线
+      const tickPositions = [];
+      for (let n = 0; n <= config.steps; n++) {
+        const y = n * config.pitch;
+        tickPositions.push(off - 0.12, y, 0, off + 0.12, y, 0);
+      }
+      const ticksGeo = new THREE.BufferGeometry();
+      ticksGeo.setAttribute('position', new THREE.Float32BufferAttribute(tickPositions, 3));
+      particleGroup.add(new THREE.LineSegments(ticksGeo, sharedMat.plTick));
+
+      // 红色跃迁段：逐段点亮，表达不可分割的离散跃迁
+      for (let i = 0; i < config.steps; i++) {
+        const y0 = i * config.pitch;
+        const y1 = (i + 1) * config.pitch;
+        const segmentGeo = registerSharedGeo(new THREE.CylinderGeometry(0.012, 0.012, config.pitch, 16));
+        const segment = new THREE.Mesh(segmentGeo, sharedMat.plSegment);
+        segment.name = `pl-segment-${i}`;
+        segment.position.set(off, (y0 + y1) / 2, 0);
+        segment.visible = false;
+        particleGroup.add(segment);
+
+        // 序列编号标签：从 1 开始递增，与跃迁段同步显隐
+        const numLabel = createTextSprite(`${i + 1}`, '#ff6b35', 0.22);
+        numLabel.name = `pl-num-${i}`;
+        numLabel.position.set(off - 0.22, (y0 + y1) / 2, 0);
+        numLabel.visible = false;
+        particleGroup.add(numLabel);
+      }
+
+      // 跃迁小球：位于当前 cycle 层
+      const jumpOrbGeo = new THREE.SphereGeometry(0.08, 24, 24);
+      const jumpOrb = new THREE.Mesh(jumpOrbGeo, sharedMat.partGlow.clone());
+      jumpOrb.name = 'jump-orb';
+      jumpOrb.position.set(off, 0.02, 0);
+      jumpOrb.visible = true;
+      jumpOrb.material.opacity = 1.0;
+      jumpOrb.material.emissiveIntensity = 2.5;
+      particleGroup.add(jumpOrb);
+
+      // ℓ_P 标签：跟随跃迁球同步上下移动
+      const plLabel = createTextSprite('ℓ_P', '#ff6b35', 0.34);
+      plLabel.name = 'pl-label';
+      plLabel.position.set(off + 0.14, config.pitch / 2, 0.14);
+      particleGroup.add(plLabel);
+    }
+
+    function updateVisibility() {
+      helixGroup.visible = config.showHelix;
+      stepGroup.visible = config.showSteps;
+      normalGroup.visible = config.showNormal;
+      bottomRingGroup.visible = config.showSteps;
+      sineGroup.visible = config.showSine || config.showCosine;
+      particleGroup.visible = config.showParticle;
+    }
+
+    // ---------- UI 绑定 ----------
+    const omegaInput = document.getElementById('omega');
+    const pitchInput = document.getElementById('pitch');
+    const stepsInput = document.getElementById('steps');
+    const showHelixInput = document.getElementById('show-helix');
+    const showStepsInput = document.getElementById('show-steps');
+    const showSineInput = document.getElementById('show-sine');
+    const showCosineInput = document.getElementById('show-cosine');
+    const showParticleInput = document.getElementById('show-particle');
+    const showTrailsInput = document.getElementById('show-trails');
+    const layFlatInput = document.getElementById('lay-flat');
+    const autoRotateInput = document.getElementById('auto-rotate');
+    const phaseRotateInput = document.getElementById('phase-rotate');
+
+    const valOmega = document.getElementById('val-omega');
+    const valPitch = document.getElementById('val-pitch');
+    const valSteps = document.getElementById('val-steps');
+
+    function updateConfig() {
+      const oldPitch = config.pitch;
+      const oldSteps = config.steps;
+      const oldShowSine = config.showSine;
+      const oldShowCosine = config.showCosine;
+
+      config.omega = parseFloat(omegaInput.value);
+      config.pitch = parseFloat(pitchInput.value);
+      config.steps = parseInt(stepsInput.value, 10);
+      config.showHelix = showHelixInput.checked;
+      config.showSteps = showStepsInput.checked;
+      config.showSine = showSineInput.checked;
+      config.showCosine = showCosineInput.checked;
+      config.showParticle = showParticleInput.checked;
+      config.showTrails = showTrailsInput.checked;
+      config.layFlat = layFlatInput.checked;
+      config.autoRotate = autoRotateInput.checked;
+      config.phaseRotate = phaseRotateInput.checked;
+
+      valOmega.textContent = config.omega.toFixed(2);
+      valPitch.textContent = config.pitch.toFixed(2);
+      valSteps.textContent = config.steps;
+
+      if (config.pitch !== oldPitch || config.steps !== oldSteps || config.showSine !== oldShowSine || config.showCosine !== oldShowCosine) {
+        rebuild();
+      } else {
+        updateVisibility();
+      }
+    }
+
+    [omegaInput, pitchInput, stepsInput, showHelixInput, showStepsInput, showSineInput, showCosineInput, showParticleInput, showTrailsInput, layFlatInput, autoRotateInput, phaseRotateInput]
+      .forEach(el => el.addEventListener('input', updateConfig));
+
+    const resetViewBtn = document.getElementById('reset-view');
+    resetViewBtn.addEventListener('click', () => {
+      layFlatInput.checked = true;
+      config.layFlat = true;
+      targetRotation.set(0, 0, 0, 1);
+      currentRotation.set(0, 0, 0, 1);
+      targetPan.set(0, 0, 0);
+      currentPan.set(0, 0, 0);
+      const targetY = (config.steps * config.pitch) / 2;
+      viewGroup.rotation.z = -Math.PI / 2;
+      viewGroup.position.set(-targetY, 0, 0);
+      camera.position.set(0, targetY * 0.3, targetY * 2.5);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(0, 0, 0);
+      phaseTheta = 0;
+      prevOrbTheta = 0;
+      currentBaseY = 0;
+      baseGroup.position.y = 0;
+      wasLayFlat = true;
+    });
+
+    // ---------- 自定义鼠标交互：拖拽旋转 / 平移世界 ----------
+    let isDragging = false;
+    let dragButton = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    const targetRotation = new THREE.Quaternion();
+    const currentRotation = new THREE.Quaternion();
+    const targetPan = new THREE.Vector3();
+    const currentPan = new THREE.Vector3();
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      dragButton = e.button;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    canvas.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (dragButton === 0) {
+        // 左键拖拽：整体平移几何体（左右 / 上下），无固定旋转中心
+        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+        targetPan.add(right.multiplyScalar(dx * 0.01));
+        targetPan.add(up.multiplyScalar(-dy * 0.01));
+      } else if (dragButton === 2) {
+        // 右键拖拽：自由旋转几何体
+        const qx = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * 0.01);
+        const qy = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * 0.01);
+        targetRotation.premultiply(qx).premultiply(qy);
+      }
+    });
+
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 滚轮缩放：沿相机视线方向平移，保证视野中心稳定；几何中心经 viewGroup 偏移后位于世界原点
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const target = new THREE.Vector3(0, 0, 0);
+      const minDist = 2;
+      const maxDist = 30;
+      // deltaMode=1（行模式，部分鼠标/触控板）放大为像素量级，保证不同设备手感一致
+      const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      const step = delta * 0.025;
+      camera.translateZ(step);
+      const dist = camera.position.distanceTo(target);
+      if (dist < minDist || dist > maxDist) {
+        camera.translateZ(-step);
+      }
+    }, { passive: false });
+
+    // ---------- 动画循环 ----------
+    const clock = new THREE.Clock();
+    let flash = 0;
+    let prevOrbTheta = 0;
+    let phaseTheta = 0;
+    let lastT = 0;
+    let currentBaseY = 0;
+
+    let wasLayFlat = config.layFlat;
+    let layFlatTransitionStart = -100;
+    const layFlatSourcePos = new THREE.Vector3();
+    const layFlatSourceUp = new THREE.Vector3();
+
+    const animRefs = {
+      orb: null,
+      pointer: null,
+      closureMarker: null,
+      jumpOrb: null,
+      plLabel: null,
+      sineDot: null,
+      sineGlow: null,
+      cosineDot: null,
+      cosineGlow: null
+    };
+
+    function updateAnimRefs() {
+      animRefs.orb = helixGroup.getObjectByName('helix-orb');
+      animRefs.pointer = baseGroup.getObjectByName('phase-pointer');
+      animRefs.closureMarker = baseGroup.getObjectByName('closure-marker');
+      animRefs.jumpOrb = particleGroup.getObjectByName('jump-orb');
+      animRefs.plLabel = particleGroup.getObjectByName('pl-label');
+      animRefs.sineDot = sineGroup.getObjectByName('sine-dot');
+      animRefs.sineGlow = sineGroup.getObjectByName('sine-glow');
+      animRefs.cosineDot = sineGroup.getObjectByName('cosine-dot');
+      animRefs.cosineGlow = sineGroup.getObjectByName('cosine-glow');
+      animRefs.sineLabels = [];
+      sineGroup.children.forEach(c => {
+        if (c.userData && c.userData.layer !== undefined) animRefs.sineLabels.push(c);
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const t = clock.getElapsedTime();
+      const dt = Math.min(t - lastT, 0.1);
+      lastT = t;
+
+      // 自动旋转：未拖拽时整个世界缓慢自转
+      if (config.autoRotate && !isDragging) {
+        const autoQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dt * 0.3);
+        targetRotation.premultiply(autoQ);
+      }
+
+      // 平滑应用鼠标旋转与平移到世界组
+      currentRotation.slerp(targetRotation, 1 - Math.exp(-dt * 12));
+      currentPan.lerp(targetPan, 1 - Math.exp(-dt * 12));
+      world.quaternion.copy(currentRotation);
+      world.position.copy(currentPan);
+
+      // 横向躺平：viewGroup 绕 Z 轴旋转 90°，并平移使几何中心对齐世界原点；相机同步过渡
+      if (config.layFlat !== wasLayFlat) {
+        wasLayFlat = config.layFlat;
+        layFlatTransitionStart = t;
+        layFlatSourcePos.copy(camera.position);
+        layFlatSourceUp.copy(camera.up);
+      }
+      const targetY = (config.steps * config.pitch) / 2;
+      const targetLayFlatRot = config.layFlat ? -Math.PI / 2 : 0;
+      const targetLayFlatPos = config.layFlat
+        ? new THREE.Vector3(-targetY, 0, 0)
+        : new THREE.Vector3(0, -targetY, 0);
+      viewGroup.rotation.z += (targetLayFlatRot - viewGroup.rotation.z) * (1 - Math.exp(-dt * 10));
+      viewGroup.position.lerp(targetLayFlatPos, 1 - Math.exp(-dt * 10));
+
+      const layFlatProgress = Math.min(1, (t - layFlatTransitionStart) / 0.8);
+      // 仅在 layFlat 切换过渡期间干预相机，过渡完成后交还给滚轮/拖拽控制
+      if (layFlatProgress < 1) {
+        const targetCamPos = config.layFlat
+          ? new THREE.Vector3(0, targetY * 0.3, targetY * 2.5)
+          : new THREE.Vector3(0.5, 4.5, 9);
+        const targetCamUp = config.layFlat
+          ? new THREE.Vector3(0, 1, 0)
+          : new THREE.Vector3(0, 1, 0);
+        camera.position.lerpVectors(layFlatSourcePos, targetCamPos, layFlatProgress);
+        camera.up.lerpVectors(layFlatSourceUp, targetCamUp, layFlatProgress).normalize();
+        camera.lookAt(0, 0, 0);
+      }
+
+      // 紫色小球沿螺旋线循环上升
+      const { orb, pointer, closureMarker, jumpOrb, plLabel, sineDot, sineGlow, cosineDot, cosineGlow } = animRefs;
+      let orbTheta = 0;
+      let orbPos = new THREE.Vector3(1, 0, 0);
+      let cycle = 0;
+      let jumped = false;
+      let wrapped = false;
+      if (orb) {
+        const turns = config.steps;
+        const maxTheta = turns * Math.PI * 2;
+        if (config.phaseRotate) {
+          phaseTheta += dt * config.omega;
+        }
+        orbTheta = phaseTheta % maxTheta;
+        if (orbTheta < 0) orbTheta += maxTheta;
+        const orbY = (orbTheta / (2 * Math.PI)) * config.pitch;
+        // θ=0 对应实轴 (z=1)，θ=π/2 对应虚轴 (-x=1)
+        orbPos.set(-Math.sin(orbTheta), orbY, Math.cos(orbTheta));
+        orb.position.copy(orbPos);
+
+        // 更新右下角相位角读数：0 ~ 360°
+        const phaseDeg = Math.round((orbTheta % (2 * Math.PI)) * (180 / Math.PI));
+        const phaseDegEl = document.getElementById('phase-deg');
+        const phaseBarEl = document.getElementById('phase-bar-fill');
+        if (phaseDegEl) phaseDegEl.textContent = phaseDeg + '°';
+        if (phaseBarEl) phaseBarEl.style.width = (phaseDeg / 3.6) + '%';
+
+        // 满周闭合检测：每完成 2π 回到实轴 (0,0,1) 时触发一次自耦合闪光与法线跃迁
+        const twoPi = 2 * Math.PI;
+        const prevCycle = Math.floor(prevOrbTheta / twoPi);
+        cycle = Math.floor(orbTheta / twoPi);
+        // orbTheta 取模回绕（大循环结束 → 新一轮从底层开始）：触发闭合闪光，复平面回到第 0 层
+        if (orbTheta < prevOrbTheta) {
+          flash = 1.0;
+          jumped = true;
+          wrapped = true;
+        } else if (cycle > prevCycle) {
+          // 正常的圈间跃迁
+          flash = 1.0;
+          jumped = true;
+        }
+        prevOrbTheta = orbTheta;
+      }
+
+      // 更新相位指针：与螺旋小球保持同相位
+      if (pointer) {
+        const targetDir = new THREE.Vector3(-Math.sin(orbTheta), 0, Math.cos(orbTheta)).normalize();
+        pointer.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), targetDir);
+      }
+
+      // 更新正弦曲线同步点：与螺旋小球同相位、同高度，sin 值对应其 x 分量
+      if (sineDot) {
+        const sx = config.sineOffset + Math.sin(orbTheta) * config.sineAmplitude;
+        const sy = (orbTheta / (2 * Math.PI)) * config.pitch;
+        sineDot.position.set(sx, sy, 0);
+        if (sineGlow) {
+          sineGlow.material.opacity = 0.55 * flash;
+          const gs = 1 + flash * 2.0;
+          sineGlow.scale.set(gs, gs, gs);
+        }
+        sineDot.material.emissiveIntensity = 0.55 * (1 + flash * 5);
+      }
+
+      // 更新余弦曲线同步点：与螺旋小球同相位、同高度，cos 值对应其 x 分量
+      if (cosineDot) {
+        const cx = config.sineOffset + Math.cos(orbTheta) * config.sineAmplitude;
+        const cy = (orbTheta / (2 * Math.PI)) * config.pitch;
+        cosineDot.position.set(cx, cy, 0);
+        if (cosineGlow) {
+          cosineGlow.material.opacity = 0.55 * flash;
+          const gs = 1 + flash * 2.0;
+          cosineGlow.scale.set(gs, gs, gs);
+        }
+        cosineDot.material.emissiveIntensity = 0.55 * (1 + flash * 5);
+      }
+
+      // 更新投影线
+      const planeProjLine = viewGroup.getObjectByName('plane-projection-line');
+      const normalProjLine = viewGroup.getObjectByName('normal-projection-line');
+      if (planeProjLine) {
+        planeProjLine.geometry.setPositions([
+          orbPos.x, orbPos.y, orbPos.z,
+          orbPos.x, baseGroup.position.y, orbPos.z
+        ]);
+      }
+      if (normalProjLine) {
+        normalProjLine.geometry.setPositions([
+          orbPos.x, orbPos.y, orbPos.z,
+          0, orbPos.y, 0
+        ]);
+      }
+
+      // 复平面（baseGroup）整体沿法线跃迁到当前 cycle 高度：满周闭合瞬间跳到新层，而非平滑滑动
+      const baseTargetY = cycle * config.pitch;
+      if (jumped) {
+        currentBaseY = baseTargetY;
+      }
+      baseGroup.position.y = currentBaseY;
+
+      // 更新右下角读数：当前层数 n 与累计高度 n·ℓ_P
+      const readoutCycle = document.getElementById('readout-cycle');
+      const readoutHeight = document.getElementById('readout-height');
+      if (readoutCycle) readoutCycle.textContent = `n = ${cycle}`;
+      if (readoutHeight) readoutHeight.textContent = `${cycle} ℓ_P`;
+
+      // 法线跃迁区间高亮：累计显示已完成的 ℓ_P 跃迁段，数量严格等于当前累计普朗克距离数
+      // 序列编号与跃迁段实时同步，保持连续性
+      for (let i = 0; i < config.steps; i++) {
+        const visible = i < cycle;
+        const segment = particleGroup.getObjectByName(`pl-segment-${i}`);
+        if (segment) segment.visible = visible;
+        const numLabel = particleGroup.getObjectByName(`pl-num-${i}`);
+        if (numLabel) numLabel.visible = visible;
+      }
+
+      // 满周闭合标记闪光：当紫色小球到达实轴 (1,0,0) 时，实轴上的菱形标记高亮
+      if (closureMarker) {
+        const markerMesh = closureMarker.children[0];
+        if (markerMesh) {
+          markerMesh.material.emissiveIntensity = 2.0 + flash * 6.0;
+          markerMesh.scale.setScalar(1 + flash * 0.6);
+        }
+      }
+
+      // 自耦合闪光：瞬间提升发光强度并展开光晕，然后快速衰减
+      if (orb) {
+        orb.material.emissiveIntensity = 0.55 * (1 + flash * 5);
+        const orbGlow = orb.getObjectByName('orb-glow');
+        if (orbGlow) {
+          orbGlow.material.opacity = 0.55 * flash;
+          const gs = 1 + flash * 2.0;
+          orbGlow.scale.set(gs, gs, gs);
+        }
+      }
+      flash *= Math.exp(-dt * 6);
+
+      // 法线离散跃迁：单个橙色小球前后更替到新的离散层，旧位置不留痕迹
+      if (jumpOrb) {
+        jumpOrb.visible = true;
+        jumpOrb.position.y = cycle * config.pitch + 0.02;
+        if (jumped) {
+          jumpOrb.material.emissiveIntensity = 8.0;
+        }
+        jumpOrb.material.emissiveIntensity = THREE.MathUtils.lerp(jumpOrb.material.emissiveIntensity, 1.2, dt * 2);
+      }
+
+      // ℓ_P 标签跟随跃迁球同步移动
+      if (plLabel && jumpOrb) {
+        plLabel.position.y = jumpOrb.position.y + 0.12;
+      }
+
+      // 实时进度：总是按当前相位计算 progress（用于阶梯、标签等按层分布的元素）
+      const progress = Math.min(1, orbTheta / (config.steps * Math.PI * 2));
+      // 螺旋管、正弦曲线仅在实时轨迹模式时按 progress 截断
+      if (config.showTrails) {
+        if (helixTube) {
+          const totalIdx = helixTube.geometry.index ? helixTube.geometry.index.count : helixTube.geometry.attributes.position.count;
+          helixTube.geometry.setDrawRange(0, Math.floor(totalIdx * progress));
+        }
+        if (helixInnerLine) {
+          const totalPos = helixInnerLine.geometry.attributes.position.count;
+          helixInnerLine.geometry.setDrawRange(0, Math.floor(totalPos * progress));
+        }
+        if (sineLineRef) {
+          const totalSegs = sineLineRef.geometry.attributes.instanceStart.count;
+          sineLineRef.geometry.instanceCount = Math.max(1, Math.floor(totalSegs * progress));
+        }
+        if (cosineLineRef) {
+          const totalSegs = cosineLineRef.geometry.attributes.instanceStart.count;
+          cosineLineRef.geometry.instanceCount = Math.max(1, Math.floor(totalSegs * progress));
+        }
+      } else {
+        // 完整模式：确保 drawRange 是全集
+        if (helixTube) {
+          const totalIdx = helixTube.geometry.index ? helixTube.geometry.index.count : helixTube.geometry.attributes.position.count;
+          helixTube.geometry.setDrawRange(0, totalIdx);
+        }
+        if (helixInnerLine) {
+          const totalPos = helixInnerLine.geometry.attributes.position.count;
+          helixInnerLine.geometry.setDrawRange(0, totalPos);
+        }
+        if (sineLineRef) {
+          sineLineRef.geometry.instanceCount = sineLineRef.geometry.attributes.instanceStart.count;
+        }
+        if (cosineLineRef) {
+          cosineLineRef.geometry.instanceCount = cosineLineRef.geometry.attributes.instanceStart.count;
+        }
+      }
+      // 正弦层数标签：n <= 当前层数（progress * steps）时显示
+      const currentLayer = Math.floor(progress * config.steps);
+      if (animRefs.sineLabels) {
+        for (let i = 0; i < animRefs.sineLabels.length; i++) {
+          animRefs.sineLabels[i].visible = animRefs.sineLabels[i].userData.layer <= currentLayer;
+        }
+      }
+      // 离散阶梯：每层阶梯环和标记球按 layer 实时截断（总是按 progress）
+      stepGroup.children.forEach(c => {
+        if (c.userData && c.userData.layer !== undefined) {
+          c.visible = c.userData.layer <= currentLayer;
+        }
+      });
+      // 顶部 θ / sin θ / cos θ 标签：仅在最后一层（progress >= 1）显示
+      const sineThetaLabel = sineGroup.getObjectByName('sine-theta-label');
+      const sineSinLabel = sineGroup.getObjectByName('sine-sin-label');
+      const sineCosLabel = sineGroup.getObjectByName('sine-cos-label');
+      if (sineThetaLabel) sineThetaLabel.visible = progress >= 0.95;
+      if (sineSinLabel) sineSinLabel.visible = progress >= 0.95;
+      if (sineCosLabel) sineCosLabel.visible = progress >= 0.95;
+   
+
+      renderer.render(scene, camera);
+    }
+
+    // ---------- 响应式 ----------
+    function onResize() {
+      const wrap = document.getElementById('canvas-wrap');
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      sharedMat.planeProj.resolution.set(w, h);
+      sharedMat.normalProj.resolution.set(w, h);
+      sharedMat.sineLine.resolution.set(w, h);
+      sharedMat.cosineLine.resolution.set(w, h);
+    }
+    window.addEventListener('resize', onResize);
+
+    // ---------- 初始化 ----------
+    rebuild();
+    onResize();
+
+    // 默认横向躺平：绕 Z 轴 -π/2 旋转，使法线（y）向右、虚轴（-x）向上
+    const initialTargetY = (config.steps * config.pitch) / 2;
+    viewGroup.rotation.z = -Math.PI / 2;
+    viewGroup.position.set(-initialTargetY, 0, 0);
+    camera.position.set(0, initialTargetY * 0.3, initialTargetY * 2.5);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(0, 0, 0);
+    wasLayFlat = true;
+
+    animate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2560" height="1440" viewBox="0 0 2560 1440">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fbf8f0"/><stop offset="1" stop-color="#eef5f3"/></linearGradient>
+ <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8f2ef"/><stop offset="1" stop-color="#f8efe2"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#183f4a" flood-opacity=".12"/></filter>
+ <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" stroke="#2f6970" stroke-opacity=".06" stroke-width="2"/></pattern>
+</defs>
+<rect width="2560" height="1440" fill="url(#bg)"/>
+<rect width="2560" height="1440" fill="url(#grid)"/>
+<circle cx="2250" cy="170" r="230" fill="none" stroke="#c9964a" stroke-opacity=".22" stroke-width="3"/>
+<circle cx="2250" cy="170" r="170" fill="none" stroke="#2f6970" stroke-opacity=".16" stroke-width="2"/>
+<path d="M2050 170c100-150 300-150 400 0s-100 300-200 150-300-150-200 0" fill="none" stroke="#b45b4e" stroke-opacity=".22" stroke-width="5"/>
+<text x="150" y="155" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="82" font-weight="700" fill="#173f4a">天行方程</text>
+<text x="155" y="220" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" letter-spacing="8" fill="#b45b4e">统摄万物兴衰演化的动力学框架</text>
+<line x1="155" y1="268" x2="2405" y2="268" stroke="#c9964a" stroke-width="4"/>
+<text x="155" y="325" font-family="Microsoft YaHei, sans-serif" font-size="26" fill="#527178">相位 · 振幅 · 历史积分 · 兴衰结算</text>
+<rect x="150" y="370" width="2260" height="430" rx="24" fill="url(#hero)" stroke="#75a8a2" stroke-width="3" filter="url(#shadow)"/>
+<text x="205" y="440" font-family="Microsoft YaHei, sans-serif" font-size="27" font-weight="700" fill="#b45b4e">主方程 · 历史状态的终局结算</text>
+<text x="1280" y="590" text-anchor="middle" font-family="Cambria Math, STIX Two Math, serif" font-size="72" font-weight="600" fill="#173f4a">Ξ(T) = tanh { Re [ ( ∫₀ᵀ 𝓦(t) ⊗ 𝓟(t) dt )² ] }</text>
+<line x1="570" y1="660" x2="1990" y2="660" stroke="#c9964a" stroke-width="3"/>
+<text x="1280" y="720" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="31" fill="#37626a">历史耦合积分，经虚实清算后映射为有界的兴衰指数</text>
+<text x="1280" y="765" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="24" fill="#759096">−1 退相干　　0 中性过渡　　+1 强相干</text>
+<rect x="150" y="870" width="1080" height="360" rx="20" fill="#f7fbf8" stroke="#6d9f99" stroke-width="3"/>
+<rect x="1330" y="870" width="1080" height="360" rx="20" fill="#fff9f0" stroke="#c99b58" stroke-width="3"/>
+<circle cx="220" cy="940" r="18" fill="#2f6970"/><text x="260" y="952" font-family="Microsoft YaHei, sans-serif" font-size="34" font-weight="700" fill="#173f4a">波性相干核：方向与相位</text>
+<text x="690" y="1050" text-anchor="middle" font-family="Cambria Math, STIX Two Math, serif" font-size="56" fill="#173f4a">𝓦(t) = eⁱΦ(t)</text>
+<text x="690" y="1130" text-anchor="middle" font-family="Cambria Math, STIX Two Math, serif" font-size="42" fill="#b45b4e">Φ(t) = −ηπ ∫₀ᵗ ln D̃(τ) dτ</text>
+<text x="690" y="1190" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="25" fill="#527178">D 对齐指数决定偏航频率与相位累积</text>
+<circle cx="1400" cy="940" r="18" fill="#b45b4e"/><text x="1440" y="952" font-family="Microsoft YaHei, sans-serif" font-size="34" font-weight="700" fill="#173f4a">粒性实存核：秩序与做功</text>
+<text x="1870" y="1070" text-anchor="middle" font-family="Cambria Math, STIX Two Math, serif" font-size="58" fill="#173f4a">𝓟(t) = √( Õ(t) G̃(t) / Ã(t) )</text>
+<text x="1870" y="1160" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="25" fill="#7c6250">O 秩序、G 增长、A 异化共同决定现实承载强度</text>
+<line x1="220" y1="1320" x2="2340" y2="1320" stroke="#739397" stroke-width="4"/>
+<text x="155" y="1380" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#173f4a">DOGA 四参数状态集</text>
+<g font-family="Microsoft YaHei, sans-serif" font-size="25" text-anchor="middle"><circle cx="780" cy="1320" r="25" fill="#2f6970"/><text x="780" y="1380" fill="#37626a">D 对齐</text><circle cx="1190" cy="1320" r="25" fill="#4d8580"/><text x="1190" y="1380" fill="#37626a">O 秩序</text><circle cx="1600" cy="1320" r="25" fill="#c9964a"/><text x="1600" y="1380" fill="#7c6250">G 增长</text><circle cx="2010" cy="1320" r="25" fill="#b45b4e"/><text x="2010" y="1380" fill="#8b4c43">A 异化</text></g>
+</svg>

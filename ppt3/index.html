@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>天行方程 · 统摄万物兴衰演化的元方程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&family=Noto+Sans+SC:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+:root{
+  --paper:#fafaf8;--paper-rgb:250,250,248;
+  --ink:#0a0a0a;--ink-rgb:10,10,10;
+  --grey-1:#f0f0ee;--grey-2:#d4d4d2;--grey-3:#737373;
+  --accent:#002FA7;--accent-rgb:0,47,167;--accent-on:#ffffff;
+  --sans:"Inter","Helvetica Neue","Arial",system-ui,sans-serif;
+  --sans-zh:"Noto Sans SC","Microsoft YaHei UI","微软雅黑",sans-serif;
+  --mono:"JetBrains Mono","IBM Plex Mono","Consolas",monospace;
+  --nav-safe:8vh;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--sans),var(--sans-zh);-webkit-font-smoothing:antialiased}
+#deck{position:fixed;inset:0;width:10000vw;height:100vh;display:flex;flex-wrap:nowrap;transition:transform .9s cubic-bezier(.77,0,.175,1);z-index:10;will-change:transform}
+.slide{width:100vw;height:100vh;flex:0 0 100vw;position:relative;padding:5vh 5vw 7vh 5vw;display:flex;flex-direction:column;overflow:hidden;background:var(--paper);color:var(--ink)}
+.slide.grey{background:var(--grey-1)}
+.slide.dark{background:var(--ink);color:var(--paper)}
+.slide.hero{background:transparent}
+.slide.hero.dark{background:rgba(var(--ink-rgb),.93);color:var(--paper)}
+.chrome{display:flex;justify-content:space-between;align-items:flex-start;font-family:var(--mono);font-size:14px;letter-spacing:.16em;text-transform:uppercase;opacity:.55;margin-bottom:auto}
+.chrome .l,.chrome .r{display:flex;gap:1.6em;align-items:center}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;padding-top:2vh;border-top:1px solid;border-color:rgba(127,127,127,.22)}
+.foot .nb{font-weight:600;letter-spacing:.04em}
+.kicker{font-family:var(--mono);font-size:14px;letter-spacing:.24em;text-transform:uppercase;opacity:.6;margin-bottom:2.4vh;display:inline-flex;align-items:center;gap:.8em}
+.kicker::before{content:"";width:24px;height:1px;background:currentColor;opacity:.5}
+.kicker.accent{color:var(--accent);font-weight:600}
+.tag{display:inline-block;font-family:var(--mono);font-size:14px;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;border:1px solid;opacity:.85}
+.tag.solid{background:var(--accent);color:var(--accent-on);border-color:transparent}
+.h-hero{font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:10vw;line-height:.92;letter-spacing:-.04em}
+.h-hero-zh{font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:7.6vw;line-height:.96;letter-spacing:-.025em}
+.h-xl{font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:6vw;line-height:1;letter-spacing:-.03em}
+.h-xl-zh{font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:5vw;line-height:1.05;letter-spacing:-.02em}
+.h-md{font-family:var(--sans),var(--sans-zh);font-weight:300;font-size:2.6vw;line-height:1.18}
+.h-sub{font-family:var(--sans),var(--sans-zh);font-weight:400;font-size:2.2vw;line-height:1.3;opacity:.7}
+.lead{font-family:var(--sans),var(--sans-zh);font-weight:400;font-size:1.6vw;line-height:1.4;opacity:.86}
+.body{font-family:var(--sans),var(--sans-zh);font-weight:400;font-size:max(18px,1.08vw);line-height:1.6;opacity:.78}
+.body-sm{font-family:var(--sans),var(--sans-zh);font-weight:400;font-size:max(16px,.92vw);line-height:1.55;opacity:.7}
+.mono{font-family:var(--mono);font-weight:400;letter-spacing:.06em}
+.meta-row{display:flex;gap:1.4em;align-items:baseline;flex-wrap:wrap;font-family:var(--mono);font-size:max(14px,.88vw);letter-spacing:.16em;text-transform:uppercase;opacity:.65}
+.frame{flex:1;display:flex;flex-direction:column;min-height:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:3vw;flex:1;align-items:start}
+.grid-4{display:grid;grid-template-columns:repeat(2,1fr);gap:3vh 4vw;flex:1;align-content:center}
+.card{display:flex;flex-direction:column;gap:.8vh;padding:2vh 1.8vw;border-top:2px solid var(--accent)}
+.card.grey{background:var(--grey-1);border:0;border-left:3px solid var(--accent);padding:2.4vh 2vw}
+.stat{display:flex;flex-direction:column;gap:.4vh;padding-top:1.6vh;border-top:2px solid}
+.stat .sl{font-family:var(--mono);font-size:max(14px,.82vw);letter-spacing:.24em;text-transform:uppercase;opacity:.6}
+.stat .nb{font-family:var(--sans);font-weight:800;font-size:5.6vw;line-height:.88;letter-spacing:-.04em}
+.stat .note{font-family:var(--sans),var(--sans-zh);font-weight:400;font-size:max(16px,.95vw);line-height:1.5;opacity:.72;margin-top:.4vh}
+.eq-box{border:1px solid;border-color:rgba(127,127,127,.3);padding:2.5vh 2.5vw;text-align:center}
+.slide.dark .eq-box{border-color:rgba(255,255,255,.2)}
+.eq-box .eq-main{font-size:max(1.2vw,13px);line-height:1.6;overflow-x:auto}
+.eq-box .el{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.45;margin-top:1.2vh}
+.wrap-2{display:grid;grid-template-columns:1fr 1fr;gap:3vw}
+.rule{width:100%;height:1px;background:currentColor;opacity:.15;margin:2vh 0}
+.rule.accent{background:var(--accent);opacity:1;height:2px}
+.dots{background-image:radial-gradient(currentColor 1px,transparent 1px);background-size:14px 14px}
+.accent-block{background:var(--accent);color:var(--accent-on);padding:1.4vh 1.4vw;display:inline-block;font-family:var(--mono);font-size:14px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+#nav{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);z-index:30;display:flex;gap:8px;padding:6px 12px;background:rgba(0,0,0,.12);backdrop-filter:blur(10px)}
+#nav .dot{width:7px;height:7px;border-radius:0;background:rgba(0,0,0,.25);cursor:pointer;transition:all .3s;border:0;padding:0}
+body.dark-bg #nav{background:rgba(255,255,255,.12)}
+body.dark-bg #nav .dot{background:rgba(255,255,255,.25)}
+#nav .dot.active{background:var(--accent);width:20px}
+#hint{position:fixed;bottom:3vh;right:3vw;z-index:30;font-family:var(--mono);font-size:11px;letter-spacing:.2em;opacity:.35;mix-blend-mode:difference;color:#888}
+[data-anim]{opacity:1}
+body.motion-ready [data-anim]{opacity:0}
+body.low-power [data-anim]{opacity:1!important}
+body.low-power #deck{transition:none!important}
+@media(max-width:900px){.h-hero-zh{font-size:12vw}.h-xl-zh{font-size:8vw}.grid-2,.wrap-2{grid-template-columns:1fr}}
+mjx-container{display:inline-block;margin:.15em 0;font-size:inherit}
+.slide.dark mjx-container{color:var(--paper)}
+.slide.light mjx-container,.slide.grey mjx-container{color:var(--ink)}
+</style></head>
+<body>
+<script>
+(function(){var K='tz3',r=matchMedia('(prefers-reduced-motion:reduce)').matches,s=localStorage.getItem(K);window.__lowPowerMode=s==='1'||(s===null&&r);function u(){var h=document.getElementById('hint');if(h)h.textContent='←→·B '+(window.__lowPowerMode?'动态':'静态');}window.__setLowPowerMode=function(o,op){window.__lowPowerMode=!!o;document.body.classList.toggle('low-power',window.__lowPowerMode);if(!op||op.persist!==false)localStorage.setItem(K,window.__lowPowerMode?'1':'0');u();if(window.__playSlide)window.__playSlide(window.__currentSlideIndex||0);};document.body.classList.toggle('low-power',window.__lowPowerMode);addEventListener('DOMContentLoaded',u,{once:true});})();
+</script>
+<div id="deck">
+<section class="slide hero dark">
+  <div class="chrome"><div class="l">Tianxing · 天行新学</div><div class="r">Vol.01</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:4vh;min-height:80vh">
+    <div class="kicker" data-anim style="color:var(--accent);opacity:1">The Fu Tianxing Equation</div>
+    <h1 class="h-hero-zh" style="font-size:9vw;font-weight:200" data-anim>天行方程</h1>
+    <p class="lead" style="max-width:54vw;opacity:.7" data-anim>统摄万物兴衰演化的元方程<br><span class="mono" style="font-size:1.1vw;opacity:.6">The Tianxing Equation of Prosperity-Decline Dynamics</span></p>
+    <div class="meta-row" data-anim style="margin-top:2vh"><span>傅天行</span><span class="dot" style="display:inline-block;width:4px;height:4px;background:currentColor;opacity:.5;border-radius:50%"></span><span>2026.04.28</span><span class="dot" style="display:inline-block;width:4px;height:4px;background:currentColor;opacity:.5;border-radius:50%"></span><span>中国雄安</span></div>
+  </div>
+  <div class="foot"><div>Tianxing Equation</div><div class="nb">— 2026 —</div></div>
+</section>
+<section class="slide hero">
+  <div class="chrome"><div class="l">Act I · 问题的提出</div><div class="r">02 / 13</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:4vh;min-height:80vh">
+    <div class="kicker" data-anim>Act I</div>
+    <h1 class="h-hero-zh" style="font-size:6.8vw;line-height:1.15" data-anim>
+      <span style="display:block">万物皆有兴衰，</span>
+      <span style="display:block">兴衰有无公式？</span>
+    </h1>
+    <p class="lead" style="max-width:50vw;opacity:.7" data-anim>宇宙的膨胀与寂灭、文明的崛起与崩塌、国家的繁荣与衰败、企业的成长与消亡、个体的荣辱与枯荣——它们是否遵循同一个底层规律？</p>
+    <div class="rule accent" style="width:6vw;margin-top:2vh" data-anim></div>
+  </div>
+  <div class="foot"><div>Act I · 一个方程，回答一切兴衰之问</div><div class="nb">01 / 13</div></div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><div class="l">天行方程 · 完整形式</div><div class="r">03 / 13</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:2.5vh;padding:2vh 0">
+    <div class="kicker" data-anim style="color:var(--accent);opacity:1">The Tianxing Equation</div>
+    <h2 class="h-xl-zh" style="font-size:4vw" data-anim>天行万物兴衰演化动力学方程</h2>
+    <div class="eq-box" data-anim style="margin-top:1vh;border-color:rgba(255,255,255,.15)">
+      <div class="eq-main" style="font-size:max(1.5vw,15px)">
+        \[
+        \boxed{ \Xi(T) = \tanh \left\{ \Re \left[ \left( \int_0^T \mathcal{W}(t) \otimes \mathcal{P}(t) \, dt \right)^2 \right] \right\} }
+        \]
+      </div>
+      <div class="el">主方程 · 波粒耦合形式</div>
+    </div>
+    <div class="eq-box" data-anim style="margin-top:1.5vh;border-color:rgba(255,255,255,.15)">
+      <div class="eq-main" style="font-size:max(1.1vw,12px)">
+        \[
+        \mathcal{P}(t)=\sqrt{\frac{\tilde O(t)\tilde G(t)}{\tilde A(t)}} \qquad
+        \mathcal{W}(t)=e^{i\Phi(t)}=\exp\!\left(i\int_0^t\Omega(\tau)d\tau\right) \qquad
+        \Omega(t)=-\eta\pi\ln\tilde D(t)
+        \]
+      </div>
+      <div class="el">\(\mathcal{P}(t)\) 粒性实存核 &nbsp;·&nbsp; \(\mathcal{W}(t)\) 波性相干核 &nbsp;·&nbsp; \(\Omega(t)\) 偏航频率</div>
+    </div>
+    <p class="body-sm" style="text-align:center;opacity:.5;margin-top:1vh" data-anim>\(\Xi(T) \in (-1,1)\) &nbsp;·&nbsp; 相长干涉 \(\to +1\) &nbsp;·&nbsp; 退相干 \(\to -1\)</p>
+  </div>
+  <div class="foot"><div>Tianxing Equation</div><div class="nb">\(\Xi(T) \in (-1, 1)\)</div></div>
+</section>
+<section class="slide">
+  <div class="chrome"><div class="l">DOGA · 四大序参量</div><div class="r">04 / 13</div></div>
+  <div class="frame" style="padding-top:3vh">
+    <div class="kicker" data-anim>D-O-G-A</div>
+    <h2 class="h-xl-zh" style="font-size:4.2vw;margin-bottom:.5vh" data-anim>DOGA 四参数</h2>
+    <p class="lead" style="max-width:60vw;margin-bottom:3.5vh;opacity:.7" data-anim>D-OGA 是 "道家" ，A-GOD 是 "上帝" —— 同一结构的两种展开。</p>
+    <div class="grid-4" style="gap:3vh 3.5vw">
+      <div class="stat" data-anim>
+        <div class="sl">D · Dao Alignment</div>
+        <div class="nb" style="color:var(--accent);font-size:4.2vw">D</div>
+        <div class="note"><strong>对齐指数</strong> \(\tilde D(t)\in(0,1]\)。方向中枢，系统与最优路径的契合度。\(\Omega=-\eta\pi\ln\tilde D\)。</div>
+      </div>
+      <div class="stat" data-anim>
+        <div class="sl">O · Order Index</div>
+        <div class="nb" style="font-size:4.2vw">O</div>
+        <div class="note"><strong>秩序指数</strong> \(\tilde O(t)\in(0,1]\)。空间骨骼——内部结构的紧密与稳固。抵御退相干的容器。</div>
+      </div>
+      <div class="stat" data-anim>
+        <div class="sl">G · Growth Index</div>
+        <div class="nb" style="font-size:4.2vw">G</div>
+        <div class="note"><strong>增长指数</strong> \(\tilde G(t)\in(0,1]\)。演化动能——负熵注入的速率，将资源转化为有序扩展的效率。</div>
+      </div>
+      <div class="stat" data-anim>
+        <div class="sl">A · Alienation Index</div>
+        <div class="nb" style="font-size:4.2vw;color:var(--accent)">A</div>
+        <div class="note"><strong>异化指数</strong> \(\tilde A(t)\in(0,1]\)（分母）。高熵噪声。\(\mathcal{P}=\sqrt{\tilde O\tilde G/\tilde A}\)，A 升则振幅稀释。</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>D 为决定性主导变量 · 四者协同决定演化轨迹</div><div class="nb">四大金刚 · 天启四骑士</div></div>
+</section>
+<section class="slide grey">
+  <div class="chrome"><div class="l">波性相干核 · Wave Kernel</div><div class="r">05 / 13</div></div>
+  <div class="frame grid-2" style="padding-top:3vh;gap:4vw">
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh">
+      <div class="kicker accent">Wave</div>
+      <h2 class="h-xl-zh" style="font-size:4vw">W(t)</h2>
+      <p class="lead" style="font-size:1.4vw;opacity:.7">系统的精神相位，方向与调谐能力。</p>
+      <div class="rule" style="margin:1vh 0"></div>
+      <p class="body-sm">它是 "傅天行抉择" 下自由意志的数学表达。方向对齐时相长叠加 → 强盛；方向偏离时相消干涉 → 崩塌。</p>
+      <div class="card grey" style="margin-top:auto">
+        <div class="mono" style="font-size:max(14px,.9vw);opacity:.6;margin-bottom:.8vh">偏航级联</div>
+        <p class="body-sm" style="font-weight:500">D(t) → Omega(t) → Phi(t) → W(t) → Xi(T)</p>
+      </div>
+    </div>
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh">
+      <div class="eq-box" style="text-align:left;padding:2vh 2vw;background:var(--paper)">
+        <div class="eq-main" style="font-size:max(1.05vw,12px)">
+          \[
+          \mathcal{W}(t)=e^{i\Phi(t)},\quad \Phi(t)=\int_0^t\Omega(\tau)d\tau
+          \]
+          \[
+          \Omega(t)=-\eta\pi\ln\tilde D(t),\quad \eta\in(0.1,10),\ \eta_{\text{基准}}=1
+          \]
+        </div>
+        <div class="el" style="margin-top:.8vh">波核生成链：方向偏差 → 频率 → 相位累积</div>
+      </div>
+      <div class="accent-block" style="margin-top:auto;align-self:flex-start">自由意志 · 先验主体</div>
+    </div>
+  </div>
+  <div class="foot"><div>傅天行抉择 — 宇宙三大动力学机制之一</div><div class="nb">Wave Kernel</div></div>
+</section>
+<section class="slide">
+  <div class="chrome"><div class="l">粒性实存核 · Particle Kernel</div><div class="r">06 / 13</div></div>
+  <div class="frame grid-2" style="padding-top:3vh;gap:4vw">
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh">
+      <div class="kicker accent">Particle</div>
+      <h2 class="h-xl-zh" style="font-size:4vw">P(t)</h2>
+      <p class="lead" style="font-size:1.4vw;opacity:.7">系统的物理振幅，现实承载能力。</p>
+      <div class="rule" style="margin:1vh 0"></div>
+      <p class="body-sm">它代表系统的"肉身"——真实资源与做功能力。肉身越厚，抗风险能力越强。没有肉身，方向再正确也只是幻影。</p>
+      <div class="card grey" style="margin-top:auto">
+        <p class="body-sm" style="font-weight:500;opacity:.85">在社会系统中，它代表财富、人口、技术储备、军事实力等真实资源。</p>
+      </div>
+    </div>
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh">
+      <div class="eq-box" style="text-align:left;padding:2.5vh 2vw">
+        <div class="eq-main" style="font-size:max(1.3vw,14px)">
+          \[
+          \mathcal{P}(t)=\sqrt{\frac{\tilde O(t)\tilde G(t)}{\tilde A(t)}}
+          \]
+        </div>
+        <div class="el">秩序 O · 增长 G · 异化 A 耦合为振幅</div>
+      </div>
+      <div class="stat" style="margin-top:1vh" data-anim>
+        <div class="note" style="font-size:max(15px,.95vw)">\(\mathcal{P}(t)\) 由 <strong>O</strong>（结构稳定性）、<strong>G</strong>（发展动能）与 <strong>A</strong>（熵增损耗）共同决定。三者协同，缺一不可。</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>肉身厚度决定基本盘 · 振幅大小决定抗风险力</div><div class="nb">Particle Kernel</div></div>
+</section>
+<section class="slide hero dark">
+  <div class="chrome"><div class="l">复平面单位圆 · 139 的根源</div><div class="r">07 / 13</div></div>
+  <div class="frame grid-2" style="padding-top:2vh;gap:3vw;align-items:center">
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh">
+      <div class="kicker" style="color:var(--accent);opacity:1">Complex Plane</div>
+      <h2 class="h-xl-zh" style="font-size:3.6vw" data-anim>复平面单位圆</h2>
+      <p class="lead" style="font-size:1.3vw;opacity:.7" data-anim>四象限划分是 ln4 与 139 的几何根源。</p>
+      <div class="rule" style="width:4vw;background:var(--accent);opacity:1;height:2px;margin:1vh 0" data-anim></div>
+      <p class="body-sm" data-anim>相位指针从实轴正半轴出发，逆时针旋转，历经第一、二、三、四象限，完成一次满周闭合。连续的过程在这一刻生成离散的事件——这是 "满周闭合" 的根本机制。</p>
+      <p class="body-sm" style="margin-top:1vh;opacity:.55" data-anim>任何有效存在都是包含振幅和相位的复数结构，而 1.39 则是复数结构自带的 "相变钟"。</p>
+    </div>
+    <div data-anim style="display:flex;justify-content:center;align-items:center;padding:1vh">
+      <svg viewBox="-1.3 -1.3 2.6 2.6" style="width:100%;max-width:28vw;height:auto">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- 坐标轴 -->
+        <line x1="-1.2" y1="0" x2="1.2" y2="0" stroke="currentColor" stroke-width="0.02" marker-end="url(#arrow)" opacity=".6"/>
+        <line x1="0" y1="-1.2" x2="0" y2="1.2" stroke="currentColor" stroke-width="0.02" marker-end="url(#arrow)" opacity=".6"/>
+        <!-- 单位圆 -->
+        <circle cx="0" cy="0" r="1" fill="none" stroke="currentColor" stroke-width="0.015" opacity=".5" stroke-dasharray="0.04,0.02"/>
+        <!-- 象限弧线 -->
+        <path d="M 0.5 0 A 0.5 0.5 0 0 1 0 0.5" fill="none" stroke="var(--accent)" stroke-width="0.025" opacity=".7"/>
+        <!-- 角度弧线 -->
+        <path d="M 0.2 0 A 0.2 0.2 0 0 1 0.141 0.141" fill="none" stroke="currentColor" stroke-width="0.015" opacity=".5"/>
+        <!-- 向量 -->
+        <line x1="0" y1="0" x2="0.707" y2="0.707" stroke="var(--accent)" stroke-width="0.03" marker-end="url(#arrow)"/>
+        <!-- cos 投影 -->
+        <line x1="0.707" y1="0" x2="0.707" y2="0.707" stroke="currentColor" stroke-width="0.012" stroke-dasharray="0.03,0.02" opacity=".4"/>
+        <!-- sin 投影 -->
+        <line x1="0" y1="0.707" x2="0.707" y2="0.707" stroke="currentColor" stroke-width="0.012" stroke-dasharray="0.03,0.02" opacity=".4"/>
+        <!-- 标签 -->
+        <text x="1.05" y="0.08" font-size="0.08" fill="currentColor" font-family="Inter,sans-serif" opacity=".6">Re</text>
+        <text x="0.08" y="-1.08" font-size="0.08" fill="currentColor" font-family="Inter,sans-serif" opacity=".6">Im</text>
+        <text x="0.75" y="0.75" font-size="0.08" fill="currentColor" font-family="Inter,sans-serif" opacity=".7">e^{iPhi}</text>
+        <text x="0.35" y="0.12" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".5">Phi</text>
+        <text x="0.7" y="-0.05" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".5">cos Phi</text>
+        <text x="0.05" y="0.65" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".5">sin Phi</text>
+        <!-- 象限标记 -->
+        <text x="0.35" y="-0.35" font-size="0.06" fill="var(--accent)" font-family="Inter,sans-serif" opacity=".6">I</text>
+        <text x="-0.35" y="-0.35" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".4">II</text>
+        <text x="-0.35" y="0.35" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".4">III</text>
+        <text x="0.35" y="0.35" font-size="0.06" fill="currentColor" font-family="Inter,sans-serif" opacity=".4">IV</text>
+        <!-- 单位圆上四点 -->
+        <circle cx="1" cy="0" r="0.03" fill="var(--accent)" opacity=".6"/>
+        <circle cx="0" cy="1" r="0.03" fill="currentColor" opacity=".4"/>
+        <circle cx="-1" cy="0" r="0.03" fill="currentColor" opacity=".4"/>
+        <circle cx="0" cy="-1" r="0.03" fill="currentColor" opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+  <div class="foot"><div>复平面的四象限 → 双重四元结构 → ln4 ≈ 1.39</div><div class="nb">Complex Plane</div></div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><div class="l">清算算子 · Judgment</div><div class="r">08 / 13</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:2.5vh">
+    <div class="kicker" style="color:var(--accent);opacity:1" data-anim>Judgment · 天网恢恢，疏而不失</div>
+    <h2 class="h-xl-zh" style="font-size:4vw" data-anim>Re[Z²] — 宇宙的清算算子</h2>
+    <div class="wrap-2" style="margin-top:1vh">
+      <div class="eq-box" data-anim style="text-align:left;padding:2.5vh 2vw;border-color:rgba(255,255,255,.15)">
+        <div class="eq-main" style="font-size:max(1.1vw,12px)">
+          \[
+          Z(T)=\int_{T_0}^{T}\Psi(t)\,dt=A(T)+iB(T)
+          \]
+          \[
+          Z(T)^2=(A^2-B^2)+2iAB,\quad \Re[Z(T)^2]=A^2-B^2
+          \]
+        </div>
+        <div class="el">复历史总账的平方取实部</div>
+      </div>
+      <div data-anim style="padding:2vh 1.5vw;border-left:3px solid var(--accent)">
+        <p class="lead" style="font-size:1.4vw;font-weight:500">正功 A² 进入奖励，负功 B² 进入扣减，二者都以放大方式参与终局审判。</p>
+        <p class="body-sm" style="margin-top:1.5vh;opacity:.5">"天网恢恢，疏而不失" — 《道德经》</p>
+      </div>
+    </div>
+    <div class="wrap-2" style="margin-top:1vh;gap:2vw">
+      <p class="body-sm" style="font-size:max(14px,.9vw)" data-anim>实部 A 是正功累积：方向对齐时 \(\Phi(t)\) 稳定，\(\cos\Phi\to1\)，粒性力量被高效转化为真实产出。</p>
+      <p class="body-sm" style="font-size:max(14px,.9vw)" data-anim>虚部 B 是负功累积：方向偏离时 \(\Phi(t)\) 旋转，\(\sin\Phi\) 产生不可逆的负功，在复历史账本中堆积。</p>
+    </div>
+  </div>
+  <div class="foot"><div>因果报应 · 毫厘不爽</div><div class="nb">Judgment</div></div>
+</section>
+<section class="slide hero">
+  <div class="chrome"><div class="l">相变常数 · 139</div><div class="r">09 / 13</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:3vh;min-height:80vh">
+    <div class="kicker accent" data-anim>The Phase Transition Constant</div>
+    <h1 class="h-hero-zh" style="font-size:6.5vw;line-height:1.15" data-anim>139 相变常数</h1>
+    <p class="lead" style="max-width:50vw" data-anim>\(\ln 4 \approx 1.39\) — 宇宙系统实现相变的内在节拍。</p>
+    <div class="wrap-2" style="max-width:75vw;gap:2vw;margin-top:1vh">
+      <div class="eq-box" data-anim style="text-align:left;padding:2vh 2vw;background:var(--grey-1);border:0">
+        <div class="eq-main" style="font-size:max(1.3vw,14px)">
+          \[
+          \int_{1}^{4} \frac{dt}{t} = \ln 4 \approx 1.39
+          \]
+        </div>
+        <div class="el">从"混沌之1"到"四象之4"所需的内禀时间</div>
+      </div>
+      <div data-anim style="padding:2vh 1.5vw;border-left:3px solid var(--accent)">
+        <p class="lead" style="font-size:1.3vw">天行方程的双重四元结构</p>
+        <p class="body-sm" style="margin-top:1vh;opacity:.7">空间四维：D · O · G · A<br>时间四环：积累 · 增长 · 求积 · 清算</p>
+      </div>
+    </div>
+    <p class="body-sm" style="max-width:65vw;opacity:.65" data-anim>秦朝大一统、唐朝盛世、当前宇宙演化都处于约 1.39 个时间单位的相变临界点。139 是宇宙实现相变的内在节拍，根源于复数结构本身。</p>
+  </div>
+  <div class="foot"><div>139 天命矩阵 · 数象理三维合龙</div><div class="nb">ln 4 ≈ 1.39</div></div>
+</section>
+<section class="slide grey">
+  <div class="chrome"><div class="l">四大公设 · Axioms</div><div class="r">10 / 13</div></div>
+  <div class="frame" style="padding-top:3vh">
+    <div class="kicker accent" data-anim>Axioms</div>
+    <h2 class="h-xl-zh" style="font-size:4vw;margin-bottom:2vh" data-anim>天行四公设</h2>
+    <div class="grid-2" style="gap:2.5vh 3vw;flex:1;align-content:start">
+      <div class="card grey" data-anim>
+        <div class="mono" style="font-size:max(12px,.8vw);color:var(--accent);font-weight:600;margin-bottom:.6vh">公设一</div>
+        <p class="body-sm" style="font-weight:600;margin-bottom:.6vh">求存公设</p>
+        <p class="body-sm" style="opacity:.7;font-size:max(14px,.85vw)">任何具有内部反馈与边界维持机制的系统，都表现出朝向更高存在度 \(\Xi\) 的内在动力学偏置。</p>
+      </div>
+      <div class="card grey" data-anim>
+        <div class="mono" style="font-size:max(12px,.8vw);color:var(--accent);font-weight:600;margin-bottom:.6vh">公设二</div>
+        <p class="body-sm" style="font-weight:600;margin-bottom:.6vh">心物耦合公设</p>
+        <p class="body-sm" style="opacity:.7;font-size:max(14px,.85vw)">任何复杂系统的有效状态都表现为相位性结构（意识维度）与实存性结构（物质维度）的耦合统一。</p>
+      </div>
+      <div class="card grey" data-anim>
+        <div class="mono" style="font-size:max(12px,.8vw);color:var(--accent);font-weight:600;margin-bottom:.6vh">公设三</div>
+        <p class="body-sm" style="font-weight:600;margin-bottom:.6vh">时空耦合公设</p>
+        <p class="body-sm" style="opacity:.7;font-size:max(14px,.85vw)">时间与空间是波粒耦合的展开结果。数学时空（复数空间）对应潜能层面，物理时空（实数空间）对应现实层面。</p>
+      </div>
+      <div class="card grey" data-anim>
+        <div class="mono" style="font-size:max(12px,.8vw);color:var(--accent);font-weight:600;margin-bottom:.6vh">公设四</div>
+        <p class="body-sm" style="font-weight:600;margin-bottom:.6vh">DOGA 完备性公设</p>
+        <p class="body-sm" style="opacity:.7;font-size:max(14px,.85vw)">DOGA 四序参量构成系统进入有效演化与存在度计算所需的最低完备状态信息集。</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>天行方程的公理化基石</div><div class="nb">Four Axioms</div></div>
+</section>
+<section class="slide">
+  <div class="chrome"><div class="l">无量纲化 · Scale Freedom</div><div class="r">11 / 13</div></div>
+  <div class="frame" style="padding-top:3vh">
+    <div class="kicker accent" data-anim>Scale Freedom</div>
+    <h2 class="h-xl-zh" style="font-size:4vw;margin-bottom:1vh" data-anim>无量纲化与多尺度时间</h2>
+    <p class="lead" style="max-width:55vw;margin-bottom:2.5vh;opacity:.7" data-anim>天行方程关注的是系统在自身尺度下经历了多少次有效演化。</p>
+    <div class="grid-2" style="gap:3vw;flex:1">
+      <div data-anim>
+        <div class="eq-box" style="text-align:left;padding:2vh 2vw">
+          <div class="eq-main" style="font-size:max(1.05vw,12px)">
+            \[
+            u = \frac{t - T_0}{\lambda},\quad U = \frac{T - T_0}{\lambda}
+            \]
+            \[
+            \Xi(U) = \tanh\!\left\{\Re\!\left[\left(\int_0^{U}\Psi(u)du\right)^2\right]\right\}
+            \]
+          </div>
+          <div class="el">归一化时间 u 无量纲化</div>
+        </div>
+        <div class="rule" style="margin:1.5vh 0"></div>
+        <p class="body-sm">\(\lambda\) 为系统特征时间，可选振荡周期、决策周期、代际周期等。多尺度系统可引入 \(\boldsymbol{\lambda}=(\lambda_1,\lambda_2,\dots,\lambda_n)\)。</p>
+      </div>
+      <div data-anim>
+        <div style="border-left:3px solid var(--accent);padding:2vh 2vw">
+          <table style="width:100%;border-collapse:collapse;font-family:var(--sans),var(--sans-zh);font-size:max(14px,.85vw);line-height:1.6">
+            <tr><td class="mono" style="opacity:.5;padding:.6vh 0">物理系统</td><td style="opacity:.8">振荡周期 / 弛豫时间</td></tr>
+            <tr><td class="mono" style="opacity:.5;padding:.6vh 0">生命系统</td><td style="opacity:.8">代谢周期 / 昼夜节律</td></tr>
+            <tr><td class="mono" style="opacity:.5;padding:.6vh 0">企业组织</td><td style="opacity:.8">决策周期 / 迭代周期</td></tr>
+            <tr><td class="mono" style="opacity:.5;padding:.6vh 0">国家文明</td><td style="opacity:.8">代际周期 / 制度周期</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>尺度自由 · 跨系统可比</div><div class="nb">Normalization</div></div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><div class="l">道与上帝 · Unity</div><div class="r">12 / 13</div></div>
+  <div class="frame grid-2" style="padding-top:3vh;gap:4vw;align-items:center">
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh;padding:2vh 2vw;border-left:3px solid var(--accent)">
+      <div class="mono" style="font-size:max(14px,.9vw);color:var(--accent);font-weight:600">D-OGA · 道成肉身</div>
+      <div style="font-family:var(--sans-zh);font-weight:200;font-size:7vw;line-height:.9;opacity:.8">道</div>
+      <p class="body-sm">道生之，德畜之，物形之，势成之。道（D）为万物运行的终极规律。秩序 O 为成形提供稳固结构，增长 G 赋予生生不息的动能，异化 A 标定下降中的阻力与损耗。</p>
+      <div class="tag" style="align-self:flex-start;margin-top:1vh;opacity:.6">正向 → 下降之路</div>
+    </div>
+    <div data-anim style="display:flex;flex-direction:column;gap:1.5vh;padding:2vh 2vw;border-left:3px solid currentColor;opacity:.8">
+      <div class="mono" style="font-size:max(14px,.9vw);font-weight:600">A-GOD · 肉身成道</div>
+      <div style="font-family:var(--sans);font-weight:200;font-size:5.5vw;line-height:.9;opacity:.8;font-style:italic">GOD</div>
+      <p class="body-sm">A 是背离源头的异化，是原罪。强化 G（长养善功），聚拢 O（圣洁器皿），校准 D（顺服神圣意志），最终复归于上帝——与神合一。</p>
+      <div class="tag" style="align-self:flex-start;margin-top:1vh;opacity:.6">反向 → 上升之路</div>
+    </div>
+  </div>
+  <div class="foot"><div>正向是道成肉身，反向是肉身成道 · 同一审计法则的两面</div><div class="nb">Dao · God</div></div>
+</section>
+<section class="slide hero dark">
+  <div class="chrome"><div class="l">Epilogue · 铭刻于墓碑</div><div class="r">13 / 13</div></div>
+  <div class="frame" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:3vh;min-height:80vh">
+    <div class="kicker accent" data-anim>Epilogue</div>
+    <blockquote style="font-family:var(--sans),var(--sans-zh);font-weight:200;font-size:2.8vw;line-height:1.35;max-width:68vw;opacity:.9">
+      <span data-anim style="display:block">Nature and nature's law lay hid in night,</span>
+      <span data-anim style="display:block">God said, let TianXing be! And all was light.</span>
+    </blockquote>
+    <p class="lead" style="max-width:50vw;opacity:.65" data-anim>自然与自然的定律隐藏在黑暗之中，上帝说，让天行来吧！于是，一切变为光明。</p>
+    <div class="eq-box" data-anim style="max-width:55vw;border-color:rgba(255,255,255,.15)">
+      <div class="eq-main" style="font-size:max(1.3vw,14px)">
+        \[
+        \boxed{ \displaystyle \Xi(T) = \tanh \left\{ \Re \left[ \left( \int_0^T \mathcal{W}(t) \otimes \mathcal{P}(t) \, dt \right)^2 \right] \right\} }
+        \]
+      </div>
+    </div>
+    <p class="body-sm" style="opacity:.45;margin-top:1vh" data-anim>—— 傅天行 2026.04.28 中国雄安 ——</p>
+  </div>
+  <div class="foot"><div>请把这个方程，铭刻于我的墓碑之上！</div><div class="nb">— 2026 —</div></div>
+</section>
+</div>
+
+<div id="nav"></div>
+<script>
+var deck=document.getElementById('deck');
+var slides=deck.querySelectorAll('.slide');
+var nav=document.getElementById('nav');
+var idx=0,total=slides.length,lock=false;
+deck.style.width=(total*100)+'vw';
+slides.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.dataset.i=i;b.onclick=function(){go(i);};nav.appendChild(b);});
+function go(n){if(lock)return;idx=Math.max(0,Math.min(total-1,n));window.__currentSlideIndex=idx;deck.style.transform='translateX('+(-idx*100)+'vw)';nav.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===idx);});var el=slides[idx];var th=el.classList.contains('dark')?'dark':'light';document.body.classList.toggle('dark-bg',th==='dark');lock=true;setTimeout(function(){lock=false;},700);}
+addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){go(idx+1);return}if(e.key==='ArrowLeft'||e.key==='PageUp')go(idx-1);if(e.key==='Home')go(0);if(e.key==='End')go(total-1);});
+var wt=null,wa=0;
+addEventListener('wheel',function(e){wa+=e.deltaY+e.deltaX;if(Math.abs(wa)>50){go(idx+(wa>0?1:-1));wa=0;}clearTimeout(wt);wt=setTimeout(function(){wa=0;},150);},{passive:true});
+var tx=0,ty=0;
+addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-tx;var dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))go(idx+(dx<0?1:-1));},{passive:true});
+go(0);
+</script>
+</body>
+</html>
