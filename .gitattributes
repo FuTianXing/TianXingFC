@@ -1,0 +1,17 @@
+# 固定行尾符策略，消除 Windows 下 LF/CRLF 的虚假差异
+# 元相子理论相关文档统一使用 LF（跨平台标准，与写入工具一致）
+# 说明：此前仓库无 .gitattributes 且 core.autocrlf=true，
+# 导致部分 .md 文件在工作区呈 LF 时被 git 误判为修改（纯行尾符差异）。
+# 本文件固定 .md/.gitattributes 等文本文件为 eol=lf，根治该问题。
+
+*.md       text eol=lf
+*.txt      text eol=lf
+*.gitattributes text eol=lf
+*.gitignore    text eol=lf
+
+# 二进制/图片等不视为文本
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.zip binary
