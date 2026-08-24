@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙的最小心跳 · 元相子螺旋阶梯几何 ELI5</title>
+<style>
+  :root{
+    --bg:#0a0e1a;
+    --bg2:#101627;
+    --card:#141c30;
+    --ink:#e8edf7;
+    --dim:#93a1bd;
+    --wave:#4dc3ff;
+    --particle:#ffb347;
+    --mind:#c792ff;
+    --ok:#39d98a;
+    --bad:#ff6b6b;
+    --line:#26314d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{
+    background-color:#0a0e1a;
+    background-image:radial-gradient(ellipse 900px 500px at 10% 30%, #131b33 0%, transparent 55%);
+    background-repeat:no-repeat;
+  }
+  body{
+    background-color:transparent;
+    background-image:radial-gradient(ellipse 1200px 600px at 70% -10%, #16223f 0%, transparent 60%);
+    background-repeat:no-repeat;
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif;
+    line-height:1.75;
+  }
+  .wrap{max-width:1020px;margin:0 auto;padding:48px 20px 80px}
+
+  /* ===== 头部 ===== */
+  header{text-align:center;padding:24px 0 8px}
+  .tag{
+    display:inline-block;font-size:13px;letter-spacing:.35em;color:var(--wave);
+    border:1px solid rgba(77,195,255,.35);border-radius:999px;padding:6px 18px 6px 22px;
+    background:rgba(77,195,255,.06)
+  }
+  h1{font-size:clamp(34px,6vw,58px);font-weight:800;margin:22px 0 10px;letter-spacing:.02em}
+  .sub{color:var(--dim);font-size:17px}
+  .oneliner{
+    margin:34px auto 8px;max-width:760px;
+    background-color:#121a2e;
+    background-image:linear-gradient(135deg,#152036,#121a2e);
+    border:1px solid var(--line);border-radius:18px;padding:22px 28px;font-size:19px;
+  }
+  .oneliner b{color:var(--particle)}
+  .oneliner .q{color:var(--wave)}
+
+  /* ===== 幕 ===== */
+  section{margin-top:84px}
+  .kicker{
+    font-size:13px;letter-spacing:.3em;color:var(--dim);
+    display:flex;align-items:center;gap:14px;margin-bottom:14px
+  }
+  .kicker::after{content:"";flex:1;height:1px;background:var(--line)}
+  .num{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(77,195,255,.1);color:var(--wave);font-weight:700;font-size:15px;
+    border:1px solid rgba(77,195,255,.3)
+  }
+  h2{font-size:clamp(24px,3.6vw,32px);font-weight:800;margin-bottom:10px}
+  p.lead{color:var(--dim);font-size:16.5px;max-width:720px}
+  p.lead b{color:var(--ink)}
+  .hl-w{color:var(--wave);font-weight:700}
+  .hl-p{color:var(--particle);font-weight:700}
+  figure{
+    margin-top:22px;background:var(--card);border:1px solid var(--line);
+    border-radius:20px;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.35)
+  }
+  svg{display:block;width:100%;height:auto}
+  figcaption{
+    padding:12px 20px 14px;font-size:13px;color:var(--dim);
+    border-top:1px dashed var(--line);text-align:center
+  }
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+  @media(max-width:760px){.duo{grid-template-columns:1fr}}
+
+  /* ===== 图1 指针 ===== */
+  .spin-slow{transform-origin:center;animation:spin 8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .trail{animation:fadepulse 8s ease-in-out infinite}
+  @keyframes fadepulse{0%,100%{opacity:.25}50%{opacity:.7}}
+
+  /* ===== 图2 联动 ===== */
+  .hand{transform-origin:220px 230px;animation:spin 8s linear infinite}
+  /* 方块沿台阶滑行，到级瞬间上跳；32s = 4 级 × 8s，与左侧指针同步 */
+  .jumper{animation:jumps 32s linear infinite}
+  @keyframes jumps{
+    0%    {transform:translate(0,0)}
+    21.25%{transform:translate(96px,0)}
+    21.26%{transform:translate(96px,-52px)}
+    46.25%{transform:translate(192px,-52px)}
+    46.26%{transform:translate(192px,-104px)}
+    71.25%{transform:translate(288px,-104px)}
+    71.26%{transform:translate(288px,-156px)}
+    96.25%{transform:translate(384px,-156px)}
+    96.26%{transform:translate(384px,-208px)}
+    100%  {transform:translate(384px,-208px)}
+  }
+  .stepglow{animation:glowstep 32s infinite}
+  .sg1{animation-delay:6.8s}.sg2{animation-delay:14.8s}.sg3{animation-delay:22.8s}.sg4{animation-delay:30.8s}
+  @keyframes glowstep{0%{opacity:.22}2%{opacity:1}12%{opacity:.9}100%{opacity:.85}}
+
+  /* ===== 图3 法线 ===== */
+  /* 双层嵌套合成椭圆轨道：外层左右摆（正弦感），内层上下摆（三角波+90°相位差） */
+  .orb-x{animation:oscx 6s cubic-bezier(.45,0,.55,1) infinite}
+  @keyframes oscx{0%,100%{transform:translateX(-190px)}50%{transform:translateX(190px)}}
+  .orb-y{animation:oscy 6s linear infinite;animation-delay:-1.5s}
+  @keyframes oscy{0%,100%{transform:translateY(0)}25%{transform:translateY(-62px)}75%{transform:translateY(62px)}}
+  .axispulse{animation:axisglow 2.4s ease-in-out infinite}
+  @keyframes axisglow{0%,100%{opacity:.55}50%{opacity:1}}
+  .crossshake{animation:nudge 3s ease-in-out infinite}
+  @keyframes nudge{0%,88%,100%{opacity:.55}92%{opacity:1}}
+
+  /* ===== 图4 闹钟脉冲 ===== */
+  .bell{transform-origin:646px 250px;animation:ring 2.2s ease-in-out infinite}
+  @keyframes ring{0%,100%{opacity:.5}8%{opacity:1}16%{opacity:.5}24%{opacity:1}32%,100%{opacity:.5}}
+
+  /* ===== 图6 近远 ===== */
+  .zoomer{animation:breathe 7s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(.94)}}
+
+  /* ===== 图7 归谬卡 ===== */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+  @media(max-width:820px){.cards{grid-template-columns:1fr}}
+  .rcard{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px 22px;transition:transform .25s,border-color .25s
+  }
+  .rcard:hover{transform:translateY(-6px);border-color:rgba(255,107,107,.45)}
+  .rcard .if{font-size:13px;letter-spacing:.2em;color:var(--bad);margin-bottom:8px}
+  .rcard h3{font-size:19px;margin-bottom:8px}
+  .rcard p{font-size:14.5px;color:var(--dim)}
+  .verdict{
+    margin-top:22px;text-align:center;font-size:17px;
+    background-color:#12251e;
+    background-image:linear-gradient(135deg,rgba(57,217,138,.08),rgba(77,195,255,.07));
+    border:1px solid rgba(57,217,138,.3);border-radius:14px;padding:16px 20px
+  }
+  .verdict b{color:var(--ok)}
+
+  /* ===== 尾声双螺旋 ===== */
+  .flow1{stroke-dasharray:10 14;animation:dashmove 3s linear infinite}
+  .flow2{stroke-dasharray:10 14;animation:dashmove 3s linear infinite reverse}
+  @keyframes dashmove{to{stroke-dashoffset:-48}}
+
+  footer{
+    margin-top:90px;padding-top:26px;border-top:1px solid var(--line);
+    text-align:center;color:var(--dim);font-size:13px;line-height:2
+  }
+  footer .src{color:#6f7d9c}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+    .stepglow{opacity:.85!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="tag">ELI5 · 讲给完全零基础的你</span>
+  <h1>宇宙的最小心跳</h1>
+  <div class="sub">一篇论文的大白话版：《论元相子的螺旋阶梯几何》</div>
+  <div class="oneliner">
+    世界在最深的底层像一个<b>螺丝钉</b>：不停地转圈，每转满一圈，
+    就<span class="q">"咔哒"</span>向前跳一步。<br>
+    时间和空间，就是这样<b>一步一步跳出来的</b>。
+  </div>
+</header>
+
+<!-- ===================== 第 1 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">1</span>先认识主角</div>
+  <h2>一根永远转圈的"针"</h2>
+  <p class="lead">
+    论文的主角叫<b>元相子</b>。把它放大万亿亿倍，你看到的就是这个：
+    复平面上一根<b>相位指针</b>，沿一个圆匀速转圈，永不停歇。
+    这个圆的半径是最小的作用量标度 <b>ħ</b>，小到无法再分割。
+  </p>
+  <figure>
+    <svg viewBox="0 0 900 400" role="img" aria-label="旋转的相位指针">
+      <defs>
+        <radialGradient id="discGrad" cx="50%" cy="45%">
+          <stop offset="0%" stop-color="#1b2946"/>
+          <stop offset="100%" stop-color="#111a30"/>
+        </radialGradient>
+        <linearGradient id="handGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4dc3ff" stop-opacity=".15"/>
+          <stop offset="100%" stop-color="#4dc3ff"/>
+        </linearGradient>
+      </defs>
+      <!-- 刻度环 -->
+      <g stroke="#26314d" stroke-width="1.5">
+        <circle cx="450" cy="200" r="150" fill="url(#discGrad)" stroke="#33436b"/>
+      </g>
+      <g stroke="#33436b" stroke-width="2">
+        <line x1="450" y1="54" x2="450" y2="72"/>
+        <line x1="450" y1="328" x2="450" y2="346"/>
+        <line x1="304" y1="200" x2="322" y2="200"/>
+        <line x1="578" y1="200" x2="596" y2="200"/>
+        <line x1="343.6" y1="93.6" x2="356.5" y2="106.5"/>
+        <line x1="543.5" y1="293.5" x2="556.4" y2="306.4"/>
+        <line x1="343.6" y1="306.4" x2="356.5" y2="293.5"/>
+        <line x1="543.5" y1="106.5" x2="556.4" y2="93.6"/>
+      </g>
+      <!-- 拖尾轨迹 -->
+      <circle class="trail" cx="450" cy="200" r="150" fill="none" stroke="#4dc3ff" stroke-width="3" stroke-dasharray="4 18" stroke-linecap="round" opacity=".4"/>
+      <!-- 旋转指针 -->
+      <g class="spin-slow" style="transform-origin:450px 200px">
+        <line x1="450" y1="200" x2="592" y2="200" stroke="url(#handGrad)" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="592" cy="200" r="9" fill="#4dc3ff">
+          <animate attributeName="r" values="8;11;8" dur="1.6s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      <!-- 圆心 -->
+      <circle cx="450" cy="200" r="7" fill="#ffb347"/>
+      <text x="450" y="384" text-anchor="middle" fill="#93a1bd" font-size="15">相位指针 · 匀速转圈 · 永不停止</text>
+      <text x="778" y="204" text-anchor="middle" fill="#6f7d9c" font-size="14">半径 = ħ</text>
+      <text x="122" y="204" text-anchor="middle" fill="#6f7d9c" font-size="14">复平面</text>
+    </svg>
+    <figcaption>真实尺度下，这个圆小得连一粒尘埃都装不下。这里只是示意图。</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 第 2 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">2</span>核心事件</div>
+  <h2>转满一圈，<span style="color:var(--particle)">咔哒</span>，跳一步</h2>
+  <p class="lead">
+    指针每转完整 <b>360°</b>（论文称<b>满周闭合</b>），就触发一件大事：
+    向前<b>瞬间跳一步</b>。步长固定为普朗克长度 <b>l<sub>P</sub></b>，节拍固定为普朗克时间 <b>t<sub>P</sub></b>。
+    这一步不可再分：世界上不存在"半个普朗克长度"的位置。
+  </p>
+  <figure>
+    <svg viewBox="0 0 900 430" role="img" aria-label="左：俯视转圈；右：侧视阶梯跳步">
+      <!-- 左：俯视 -->
+      <text x="220" y="42" text-anchor="middle" fill="#93a1bd" font-size="15">俯视 · 转圈</text>
+      <circle cx="220" cy="230" r="128" fill="none" stroke="#33436b" stroke-width="2"/>
+      <circle cx="220" cy="230" r="128" fill="none" stroke="#4dc3ff" stroke-width="3" stroke-dasharray="3 16" stroke-linecap="round" opacity=".45"/>
+      <!-- 相位标记点 -->
+      <circle cx="348" cy="230" r="6" fill="#ff6b6b"/>
+      <g class="hand">
+        <line x1="220" y1="230" x2="340" y2="230" stroke="#4dc3ff" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="340" cy="230" r="8" fill="#4dc3ff"/>
+      </g>
+      <circle cx="220" cy="230" r="6" fill="#ffb347"/>
+      <circle cx="348" cy="230" r="12" fill="none" stroke="#ff6b6b" stroke-width="1.5" opacity=".6">
+        <animate attributeName="r" values="10;18" dur="1.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".7;0" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <text x="220" y="398" text-anchor="middle" fill="#6f7d9c" font-size="14">红点 = 相位标记点（计圈用）</text>
+
+      <!-- 右：阶梯 -->
+      <text x="640" y="42" text-anchor="middle" fill="#93a1bd" font-size="15">侧视 · 每满一圈跳一级</text>
+      <g stroke="#26314d" stroke-width="1">
+        <line x1="420" y1="350" x2="880" y2="350"/>
+        <line x1="420" y1="350" x2="420" y2="90"/>
+      </g>
+      <text x="868" y="374" text-anchor="end" fill="#6f7d9c" font-size="13">物理时间 T →</text>
+      <text x="434" y="102" fill="#6f7d9c" font-size="13">空间位置 Z ↑</text>
+      <!-- 阶梯路径（4级） -->
+      <path d="M 430 350 H 526 V 298 H 622 V 246 H 718 V 194 H 814 V 142 H 866"
+            fill="none" stroke="#ffb347" stroke-width="4" stroke-linejoin="round" opacity=".9"/>
+      <!-- 各级发光块 -->
+      <rect class="stepglow sg1" x="498" y="336" width="28" height="14" rx="3" fill="#ffb347"/>
+      <rect class="stepglow sg2" x="594" y="284" width="28" height="14" rx="3" fill="#ffb347"/>
+      <rect class="stepglow sg3" x="690" y="232" width="28" height="14" rx="3" fill="#ffb347"/>
+      <rect class="stepglow sg4" x="786" y="180" width="28" height="14" rx="3" fill="#ffb347"/>
+      <!-- 跳动的方块：与左侧指针同步，指针每扫过红点一次就跳一级 -->
+      <g class="jumper">
+        <rect x="426" y="118" width="26" height="26" rx="6" fill="#ffb347"/>
+      </g>
+      <text x="640" y="418" text-anchor="middle" fill="#6f7d9c" font-size="14">步长 l_P 不可再分 · 节拍 t_P 不可加速</text>
+    </svg>
+    <figcaption>左右两幅严格同步：指针每转过红点一次，右边的方块就跳上下一级。</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 第 3 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">3</span>论文第一问</div>
+  <h2>往哪儿跳？只能<span style="color:var(--wave)">笔直地跳</span></h2>
+  <p class="lead">
+    跳跃的方向不能随手一指。整个系统在旋转，而旋转中<b>纹丝不动的只有一个地方：圆心</b>。
+    所以跳跃的轴必须穿过圆心。这条垂直于圆面的线，就叫<b>法线</b>。
+    这是论文用旋转对称性严格证明的结论，称为<b>法线锚定</b>。
+  </p>
+  <figure>
+    <svg viewBox="0 0 900 470" role="img" aria-label="法线锚定：过圆心的轴是唯一不动的线">
+      <!-- 圆盘（透视椭圆） -->
+      <ellipse cx="430" cy="290" rx="190" ry="62" fill="#16203a" stroke="#33436b" stroke-width="2"/>
+      <ellipse cx="430" cy="290" rx="120" ry="39" fill="none" stroke="#26314d" stroke-width="1.2" stroke-dasharray="5 7"/>
+      <ellipse cx="430" cy="290" rx="60" ry="19.5" fill="none" stroke="#26314d" stroke-width="1.2" stroke-dasharray="5 7"/>
+      <!-- 旋转中的圆周点（自己会动，没资格当轴） -->
+      <g class="orb-x"><g class="orb-y">
+        <circle cx="430" cy="228" r="8" fill="#8fa2c7"/>
+        <line x1="430" y1="228" x2="430" y2="80" stroke="#8fa2c7" stroke-width="2" stroke-dasharray="6 7" opacity=".55"/>
+      </g></g>
+      <!-- 错误叉 -->
+      <g class="crossshake" font-weight="bold">
+        <line x1="424" y1="66" x2="436" y2="78" stroke="#ff6b6b" stroke-width="4" stroke-linecap="round"/>
+        <line x1="436" y1="66" x2="424" y2="78" stroke="#ff6b6b" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <text x="452" y="76" fill="#ff9d9d" font-size="15">✗ 圆周上的点自己在转，当不了轴</text>
+      <text x="700" y="300" fill="#8fa2c7" font-size="14">灰点沿圆周转，位置时刻在变</text>
+      <!-- 正确法线 -->
+      <line class="axispulse" x1="430" y1="300" x2="430" y2="70" stroke="#4dc3ff" stroke-width="5" stroke-linecap="round"/>
+      <polygon points="430,52 421,72 439,72" fill="#4dc3ff"/>
+      <text x="430" y="36" text-anchor="middle" fill="#7fd4ff" font-size="16" font-weight="bold">✓ 唯一不动的轴：过圆心的法线</text>
+      <!-- 圆心 -->
+      <circle cx="430" cy="290" r="8" fill="#ffb347"/>
+      <text x="430" y="330" text-anchor="middle" fill="#ffb347" font-size="14">圆心：旋转中唯一不动</text>
+      <!-- 旋转暗示箭头 -->
+      <path d="M 245 268 A 190 62 0 0 1 300 240" fill="none" stroke="#4dc3ff" stroke-width="2" marker-end="url(#arrw)" opacity=".7"/>
+      <defs>
+        <marker id="arrw" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="#4dc3ff"/>
+        </marker>
+      </defs>
+      <text x="450" y="446" text-anchor="middle" fill="#93a1bd" font-size="15">灰色的点被旋转带走，蓝色的轴留在原地。跳跃只认蓝色的轴。</text>
+    </svg>
+    <figcaption>论文依据：定理 3.1（旋转轴的唯一性）＋ 定理 3.2（平移与旋转轴重合）。</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 第 4 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">4</span>分工明确</div>
+  <h2>圆周管"何时跳"，法线管"往哪跳"</h2>
+  <p class="lead">
+    一次跳跃由两位"员工"协作完成，互不越界：
+  </p>
+  <figure>
+    <svg viewBox="0 0 900 380" role="img" aria-label="法线标记点分工">
+      <!-- 左：闹钟角色 -->
+      <g>
+        <circle cx="254" cy="205" r="112" fill="none" stroke="#33436b" stroke-width="2"/>
+        <g class="bell">
+          <circle cx="366" cy="205" r="13" fill="#ff6b6b"/>
+        </g>
+        <text x="254" y="64" text-anchor="middle" fill="#ff9d9d" font-size="17" font-weight="bold">⏰ 圆周 · 标记点</text>
+        <text x="254" y="352" text-anchor="middle" fill="#93a1bd" font-size="15.5">指针扫过我，就喊"跳！"　→　负责<tspan fill="#e8edf7" font-weight="bold">时机</tspan></text>
+      </g>
+      <!-- 中间分隔 -->
+      <line x1="450" y1="70" x2="450" y2="340" stroke="#26314d" stroke-width="1.5" stroke-dasharray="4 8"/>
+      <!-- 右：滑轨角色 -->
+      <g>
+        <line x1="646" y1="322" x2="646" y2="86" stroke="#39d98a" stroke-width="5" stroke-linecap="round"/>
+        <polygon points="646,68 636,90 656,90" fill="#39d98a"/>
+        <circle cx="646" cy="322" r="7" fill="#ffb347"/>
+        <ellipse cx="646" cy="322" rx="82" ry="26" fill="none" stroke="#33436b" stroke-width="1.6"/>
+        <text x="646" y="64" text-anchor="middle" fill="#8ef0bb" font-size="17" font-weight="bold">🛤 法线 · 滑轨</text>
+        <text x="646" y="352" text-anchor="middle" fill="#93a1bd" font-size="15.5">跳跃只能沿我直线进行　→　负责<tspan fill="#e8edf7" font-weight="bold">路径</tspan></text>
+      </g>
+    </svg>
+    <figcaption>论文依据：命题 3.1（法线标记点分工定理）。法线不可移到圆周，标记点不可移到圆心。</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 第 5 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">5</span>合在一起</div>
+  <h2>一座<span style="color:var(--wave)">螺旋</span><span style="color:var(--particle)">阶梯</span></h2>
+  <p class="lead">
+    <span class="hl-w">连续的转圈</span>（波性侧）与<span class="hl-p">离散的跳步</span>（粒性侧）叠在同一个三维状态空间里，
+    就是论文的核心几何：<b>实心螺旋体 D²×ℝ</b>。
+    蓝色螺旋每绕轴一圈，橙色像素就升高一级，严丝合缝。
+  </p>
+  <figure>
+    <svg id="mainScene" viewBox="0 0 900 700" role="img" aria-label="螺旋体与阶梯的对偶">
+      <defs>
+        <linearGradient id="helixGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#1d5f8f"/>
+          <stop offset="100%" stop-color="#4dc3ff"/>
+        </linearGradient>
+        <radialGradient id="topDisc" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#4dc3ff" stop-opacity=".10"/>
+          <stop offset="100%" stop-color="#4dc3ff" stop-opacity=".02"/>
+        </radialGradient>
+        <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="sceneRoot"></g>
+      <!-- 底部 Z-T 对偶小图由 JS 插入 -->
+    </svg>
+    <figcaption>
+      蓝虚线＝本体层的连续螺旋（数学时间）；橙阶梯＝现象层的离散跳步（物理时间）。橙阶梯是蓝螺旋在每一圈终点的"采样"。
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 第 6 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">6</span>换个距离看</div>
+  <h2>凑近是楼梯，退远是斜坡</h2>
+  <p class="lead">
+    我们从未感觉到时空一格一格地跳，因为每级台阶小到极致。
+    宏观的"平滑连续运动"，是无数级微小台阶在远处的统计平均。
+    斜坡的陡度 ＝ 步长 ÷ 节拍 ＝ <b>光速 c</b>。
+  </p>
+  <div class="duo">
+    <figure>
+      <svg viewBox="0 0 440 320" role="img" aria-label="近看：阶梯">
+        <g class="zoomer">
+          <path d="M 40 270 H 108 V 222 H 176 V 174 H 244 V 126 H 312 V 78 H 380"
+                fill="none" stroke="#ffb347" stroke-width="5" stroke-linejoin="round"/>
+          <circle cx="108" cy="222" r="6" fill="#ffb347"/>
+          <circle cx="176" cy="174" r="6" fill="#ffb347"/>
+          <circle cx="244" cy="126" r="6" fill="#ffb347"/>
+          <circle cx="312" cy="78" r="6" fill="#ffb347"/>
+        </g>
+        <text x="220" y="306" text-anchor="middle" fill="#93a1bd" font-size="15">🔍 凑很近：一格是一格</text>
+      </svg>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 440 320" role="img" aria-label="远看：直线斜坡">
+        <line x1="60" y1="264" x2="384" y2="84" stroke="#4dc3ff" stroke-width="5" stroke-linecap="round" filter="url(#softGlow)"/>
+        <path d="M 60 264 H 108 V 222 M 108 222 H 176 V 174 M 176 174 H 244 V 126 M 244 126 H 312 V 78"
+              fill="none" stroke="#ffb347" stroke-width="1.4" opacity=".35"/>
+        <text x="222" y="252" fill="#7fd4ff" font-size="15">斜率 = l_P / t_P = c</text>
+        <text x="220" y="306" text-anchor="middle" fill="#93a1bd" font-size="15">🔭 退远了：光滑斜坡（连续运动）</text>
+      </svg>
+    </figure>
+  </div>
+  <p class="lead" style="margin-top:18px;text-align:center">
+    连续是底片，离散是快门，平滑是放映。<br>
+    <span style="color:var(--dim);font-size:14.5px">论文依据：定理 5.1（采样定理）＋ 命题 5.1（宏观连续性的涌现）。</span>
+  </p>
+</section>
+
+<!-- ===================== 第 7 幕 ===================== -->
+<section>
+  <div class="kicker"><span class="num">7</span>论文最硬的一击</div>
+  <h2>能不能省掉"跳"，改成平滑滑动？</h2>
+  <p class="lead">论文用三条互相独立的归谬路，把这条路彻底堵死：</p>
+  <div class="cards">
+    <div class="rcard">
+      <div class="if">IF · 取消跳跃</div>
+      <h3>🗺 时空崩坏</h3>
+      <p>"半个普朗克长度"的位置变得有意义，最小像素从理论的必然结论退化成人为规定。</p>
+    </div>
+    <div class="rcard">
+      <div class="if">IF · 取消跳跃</div>
+      <h3>🌍 引力失效</h3>
+      <p>引力靠一步步偏转像素来积累。没有"一步步"，引力与量子的联系沦为无法解释的巧合。</p>
+    </div>
+    <div class="rcard">
+      <div class="if">IF · 取消跳跃</div>
+      <h3>⚛️ 量子断根</h3>
+      <p>光子、能级为何一份一份？答案就在"周期完成凝聚出离散"。抽掉它，量子性无处扎根。</p>
+    </div>
+  </div>
+  <div class="verdict">
+    三条路各自独立，却指向同一个答案：<b>离散跃迁不可取消。</b>
+  </div>
+</section>
+
+<!-- ===================== 尾声 ===================== -->
+<section>
+  <div class="kicker"><span class="num">8</span>论文最后的升级</div>
+  <h2>其实有两条链：<span style="color:var(--wave)">物</span> 与 <span style="color:var(--mind)">心</span></h2>
+  <p class="lead">
+    完整的元相子是一副<b>双螺旋</b>：一条链从实轴出发，记录结构与空间像素（物）；
+    一条链从虚轴出发，记录校准与方向（心）。两条链相位差恒定 90°，
+    同步旋转、同时跳跃，谁也离不开谁。
+  </p>
+  <figure>
+    <svg id="dnaScene" viewBox="0 0 900 380" role="img" aria-label="心物双螺旋"></svg>
+    <figcaption>
+      物链承载存在，心链驱动演化，每一次旋转与跳跃都由两者协同完成。DNA 的双螺旋，恰似这个底层图案的回声。
+    </figcaption>
+  </figure>
+  <p class="lead" style="text-align:center;margin-top:44px;font-size:19px;color:var(--ink)">
+    转圈，跳步，再转圈。<br>时空就这样一格格生长。
+  </p>
+</section>
+
+<footer>
+  <div>本页为通俗图解，全部内容忠于以下论文的推导与结论。</div>
+  <div class="src">《论元相子的螺旋阶梯几何：法线的离散跃迁与时空二象性的数学根基》 · 傅天行 · 天行新学研究院</div>
+</footer>
+
+</div>
+
+<script>
+/* ============ 工具：等距投影 ============ */
+const ISO_COS = Math.cos(Math.PI/6), ISO_SIN = Math.sin(Math.PI/6);
+function iso(x, y, z){
+  return [ (x - y) * ISO_COS, (x + y) * ISO_SIN - z ];
+}
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs, parent){
+  const e = document.createElementNS(NS, name);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+
+/* ============ 主场景：实心螺旋体 + 阶梯采样 ============ */
+(function(){
+  const svg = document.getElementById('mainScene');
+  const root = document.getElementById('sceneRoot');
+  const CX = 450, CY = 300;       // 圆柱底部中心（屏幕坐标基准）
+  const R  = 105;                 // 3D 半径
+  const STEP = 58;                // 每圈升高的屏幕像素
+  const TURNS = 4;                // 画 4 整圈
+
+  // 3D 螺旋点列（波性侧连续轨迹）
+  let pts = [];
+  const NPTS = 480;
+  for(let i=0;i<=NPTS;i++){
+    const th = i/NPTS * TURNS * 2*Math.PI;
+    const z = th/(2*Math.PI) * STEP;
+    pts.push(iso(R*Math.cos(th), R*Math.sin(th), z));
+  }
+  // 蓝色螺旋 path
+  const helixPath = el('path', {
+    d: 'M' + pts.map(p=>p[0].toFixed(1)+','+(CY+p[1]).toFixed(1)).join(' L'),
+    fill:'none', stroke:'url(#helixGrad)', 'stroke-width':'3.2',
+    'stroke-dasharray':'7 7', 'stroke-linecap':'round', opacity:.95
+  }, root);
+
+  // 圆柱轮廓（顶/底椭圆 + 侧线）——表现"实心圆柱体 D²×ℝ"
+  const topZ = TURNS*STEP;
+  // 底/顶面用等距椭圆近似
+  const RX = R*1.224, RY = R*0.5*1.224;
+  el('ellipse',{cx:CX,cy:CY,rx:RX,ry:RY,fill:'#131c33',stroke:'#2b3a5e','stroke-width':'1.6'},root);
+  el('ellipse',{cx:CX,cy:CY-topZ,rx:RX,ry:RY,fill:'url(#topDisc)',stroke:'#33507a','stroke-width':'1.4','stroke-dasharray':'5 6'},root);
+  el('line',{x1:CX-RX,y1:CY,x2:CX-RX,y2:CY-topZ,stroke:'#2b3a5e','stroke-width':'1.4'},root);
+  el('line',{x1:CX+RX,y1:CY,x2:CX+RX,y2:CY-topZ,stroke:'#2b3a5e','stroke-width':'1.4'},root);
+
+  // 中轴
+  el('line',{x1:CX,y1:CY,x2:CX,y2:CY-topZ-14,stroke:'#3a4a73','stroke-width':'1.6','stroke-dasharray':'2 6'},root);
+
+  // 橙色像素块（等距小菱形，位于每圈终点高度，n=1..TURNS）
+  const pixels = [];
+  for(let n=1;n<=TURNS;n++){
+    const z = n*STEP;
+    const g = el('g',{filter:'url(#softGlow)',opacity:'.25'},root);
+    // 等距立方体：顶面菱形 + 两侧面
+    const w=15,h=8, hh=13;
+    const top = el('path',{
+      d:`M${CX},${CY-z-h} L${CX+w},${CY-z-h+h*0.5} L${CX},${CY-z-h+h} L${CX-w},${CY-z-h+h*0.5} Z`,
+      fill:'#ffd9a0'},g);
+    const left = el('path',{
+      d:`M${CX-w},${CY-z-h+h*0.5} L${CX},${CY-z-h+h} L${CX},${CY-z+h} L${CX-w},${CY-z+h*0.5} Z`,
+      fill:'#e8933a'},g);
+    const right = el('path',{
+      d:`M${CX+w},${CY-z-h+h*0.5} L${CX},${CY-z-h+h} L${CX},${CY-z+h} L${CX+w},${CY-z+h*0.5} Z`,
+      fill:'#c97a26'},g);
+    pixels.push({n, g});
+  }
+
+  // 底部 Z-T 采样小图
+  const chartG = el('g',{},svg);
+  const chX0=70, chX1=850, chY0=660, chH=96;   // 小图基线 y=660，高度 96
+  el('line',{x1:chX0,y1:chY0,x2:chX1,y2:chY0,stroke:'#26314d','stroke-width':1},chartG);
+  el('line',{x1:chX0,y1:chY0,x2:chX0,y2:chY0-chH-16,stroke:'#26314d','stroke-width':1},chartG);
+  const chLbl = el('text',{x:chX1,y:chY0+24,'text-anchor':'end',fill:'#6f7d9c','font-size':'13'},chartG);
+  chLbl.textContent = '物理时间 T →';
+  const chLbl2 = el('text',{x:chX0-8,y:chY0-chH-4,'text-anchor':'start',fill:'#6f7d9c','font-size':'13'},chartG);
+  chLbl2.textContent = '↑ Z';
+
+  // 蓝直线（连续参考 Z=cτ）
+  el('line',{x1:chX0,y1:chY0,x2:chX1,y2:chY0-chH,stroke:'#2e7cb8','stroke-width':'2.4','stroke-dasharray':'6 6',opacity:.85},chartG);
+
+  // 橙阶梯（逐段显示）
+  const stepSegW = (chX1-chX0)/(TURNS+0.4);
+  const stepSegs = [];
+  for(let n=0;n<=TURNS;n++){
+    const x_a = chX0 + n*stepSegW;
+    const x_b = x_a + stepSegW;
+    const y_v = chY0 - n/TURNS*chH;
+    const y_t = chY0 - Math.min(n+1,TURNS)/TURNS*chH;
+    const seg = el('path',{
+      d:`M${x_a.toFixed(1)},${y_v.toFixed(1)} H${x_b.toFixed(1)} V${y_t.toFixed(1)}`,
+      fill:'none',stroke:'#ffb347','stroke-width':'3.4','stroke-linejoin':'round',opacity:'.22'},chartG);
+    stepSegs.push(seg);
+  }
+
+  /* ---------- 动画 ---------- */
+  const runner = el('circle',{r:'7',fill:'#bfe7ff',filter:'url(#softGlow)'},root);
+  const helixLen = helixPath.getTotalLength();
+  const CYCLE = 16000; // ms，跑完 4 圈
+  const t0 = performance.now();
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function frame(now){
+    let prog = ((now - t0) % CYCLE) / CYCLE;         // 0..1
+    const pt = helixPath.getPointAtLength(helixLen * prog);
+    runner.setAttribute('cx', pt.x);
+    runner.setAttribute('cy', pt.y);
+    // 像素块点亮
+    for(const p of pixels){
+      const trig = p.n / TURNS * 0.999;
+      const d = prog - trig;
+      let op;
+      if(reduced){ op = 1; }
+      else if(d >= 0){
+        op = d < 0.04 ? 1 : Math.max(0.55, 1 - (d-0.04)*3);
+      } else { op = 0.22; }
+      p.g.setAttribute('opacity', op.toFixed(3));
+    }
+    // 阶梯逐级显现
+    for(let n=0;n<=TURNS;n++){
+      const lit = prog >= n/TURNS || reduced;
+      stepSegs[n].setAttribute('opacity', lit ? '.95' : '.22');
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ============ 尾声：心物双螺旋 ============ */
+(function(){
+  const svg = document.getElementById('dnaScene');
+  const W=900, H=380, midY=H/2, A=95, k=Math.PI*2/260, x0=60, x1=840;
+  // 物链（实轴，青）
+  let d1='M', d2='M';
+  for(let x=x0;x<=x1;x+=4){
+    const y1=midY + A*Math.sin((x-x0)*k);
+    const y2=midY + A*Math.sin((x-x0)*k - Math.PI/2);
+    d1 += `${x},${y1.toFixed(1)} L`;
+    d2 += `${x},${y2.toFixed(1)} L`;
+  }
+  d1 = d1.slice(0,-2); d2 = d2.slice(0,-2);
+  // 横档
+  for(let x=x0;x<=x1;x+=26){
+    const y1=midY + A*Math.sin((x-x0)*k);
+    const y2=midY + A*Math.sin((x-x0)*k - Math.PI/2);
+    el('line',{x1:x,y1:y1,x2:x,y2:y2,stroke:'#3a4a73','stroke-width':'1.6',opacity:.6},svg);
+  }
+  el('path',{d:d2,fill:'none',stroke:'#c792ff','stroke-width':'4','stroke-linecap':'round',class:'flow2',filter:'url(#softGlow)'},svg);
+  el('path',{d:d1,fill:'none',stroke:'#4dc3ff','stroke-width':'4','stroke-linecap':'round',class:'flow1',filter:'url(#softGlow)'},svg);
+  const lb1 = el('text',{x:x0-14,y:midY+A+26,'text-anchor':'start',fill:'#4dc3ff','font-size':'15'},svg);
+  lb1.textContent = '物链 · 实轴螺旋（结构 / 空间像素）';
+  const lb2 = el('text',{x:x1+14,y:midY-A,'text-anchor':'end',fill:'#c792ff','font-size':'15'},svg);
+  lb2.textContent = '心链 · 虚轴螺旋（校准 / 方向）';
+  const lb3 = el('text',{x:(x0+x1)/2,y:H-16,'text-anchor':'middle',fill:'#6f7d9c','font-size':'13.5'},svg);
+  lb3.textContent = '两条链相位差恒为 90°，同步旋转、同时跳跃';
+})();
+</script>
+</body>
+</html>
