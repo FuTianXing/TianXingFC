@@ -533,7 +533,7 @@ function el(name, attrs, parent){
   }
   // 蓝色螺旋 path
   const helixPath = el('path', {
-    d: 'M' + pts.map(p=>p[0].toFixed(1)+','+(CY+p[1]).toFixed(1)).join(' L'),
+    d: 'M' + pts.map(p=>(CX+p[0]).toFixed(1)+','+(CY+p[1]).toFixed(1)).join(' L'),
     fill:'none', stroke:'url(#helixGrad)', 'stroke-width':'3.2',
     'stroke-dasharray':'7 7', 'stroke-linecap':'round', opacity:.95
   }, root);
