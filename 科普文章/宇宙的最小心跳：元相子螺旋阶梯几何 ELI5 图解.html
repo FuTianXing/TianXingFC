@@ -97,22 +97,21 @@
 
   /* ===== 图2 联动 ===== */
   .hand{transform-origin:220px 230px;animation:spin 8s linear infinite}
-  /* 方块沿台阶滑行，到级瞬间上跳；32s = 4 级 × 8s，与左侧指针同步 */
+  /* 方块站在台阶上静止等待，满周瞬间垂直上跳一级（跃迁间位置不变）；32s = 4 圈 × 8s 与左侧指针严格同步 */
   .jumper{animation:jumps 32s linear infinite}
   @keyframes jumps{
     0%    {transform:translate(0,0)}
-    21.25%{transform:translate(96px,0)}
-    21.26%{transform:translate(96px,-52px)}
-    46.25%{transform:translate(192px,-52px)}
-    46.26%{transform:translate(192px,-104px)}
-    71.25%{transform:translate(288px,-104px)}
-    71.26%{transform:translate(288px,-156px)}
-    96.25%{transform:translate(384px,-156px)}
-    96.26%{transform:translate(384px,-208px)}
+    24.9% {transform:translate(0,0)}
+    25%   {transform:translate(96px,-52px)}
+    49.9% {transform:translate(96px,-52px)}
+    50%   {transform:translate(192px,-104px)}
+    74.9% {transform:translate(192px,-104px)}
+    75%   {transform:translate(288px,-156px)}
+    99.9% {transform:translate(288px,-156px)}
     100%  {transform:translate(384px,-208px)}
   }
   .stepglow{animation:glowstep 32s infinite}
-  .sg1{animation-delay:6.8s}.sg2{animation-delay:14.8s}.sg3{animation-delay:22.8s}.sg4{animation-delay:30.8s}
+  .sg1{animation-delay:8s}.sg2{animation-delay:16s}.sg3{animation-delay:24s}.sg4{animation-delay:31.9s}
   @keyframes glowstep{0%{opacity:.22}2%{opacity:1}12%{opacity:.9}100%{opacity:.85}}
 
   /* ===== 图3 法线 ===== */
@@ -282,9 +281,9 @@
       <rect class="stepglow sg2" x="594" y="284" width="28" height="14" rx="3" fill="#ffb347"/>
       <rect class="stepglow sg3" x="690" y="232" width="28" height="14" rx="3" fill="#ffb347"/>
       <rect class="stepglow sg4" x="786" y="180" width="28" height="14" rx="3" fill="#ffb347"/>
-      <!-- 跳动的方块：与左侧指针同步，指针每扫过红点一次就跳一级 -->
+      <!-- 跳动的方块：静止在台阶上，指针每扫过红点一次瞬间上跳一级 -->
       <g class="jumper">
-        <rect x="426" y="118" width="26" height="26" rx="6" fill="#ffb347"/>
+        <rect x="487" y="324" width="26" height="26" rx="6" fill="#ffb347"/>
       </g>
       <text x="640" y="418" text-anchor="middle" fill="#6f7d9c" font-size="14">步长 l_P 不可再分 · 节拍 t_P 不可加速</text>
     </svg>
