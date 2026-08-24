@@ -1,0 +1,79 @@
+diff --git a/crates/obscura-render/src/inline.rs b/crates/obscura-render/src/inline.rs
+index 150b434..a8ffd14 100644
+--- a/crates/obscura-render/src/inline.rs
++++ b/crates/obscura-render/src/inline.rs
+@@ -990,8 +990,11 @@ impl TextEngine {
+ 
+     pub(crate) fn new_with_web_fonts_and_emoji(fonts: &[WebFont], load_emoji: bool) -> Self {
+         // Build a database from embedded and page-provided faces. Never call
+-        // load_system_fonts: a host's font set would make layout differ
++        // load_system_fonts by default: a host's font set would make layout differ
+         // machine to machine and add a multi-millisecond startup scan.
++        // Opt-in escape hatch for CJK/Indic/etc. text on hosts that only have
++        // system fonts: set OBSCURA_LOAD_SYSTEM_FONTS=1 (or true/on/yes) to scan
++        // the host font directories after the embedded faces.
+         let mut db = cosmic_text::fontdb::Database::new();
+         let mut declarations = Vec::new();
+         for bytes in [
+@@ -1002,6 +1005,61 @@ impl TextEngine {
+                 declarations.push((id, None, None, None));
+             }
+         }
++        if std::env::var("OBSCURA_LOAD_SYSTEM_FONTS")
++            .map(|v| {
++                let v = v.trim().to_ascii_lowercase();
++                v == "1" || v == "true" || v == "on" || v == "yes"
++            })
++            .unwrap_or(false)
++        {
++            // Load only common CJK-capable system fonts instead of the whole
++            // host set: some hosts ship faces that can abort the scan, and a
++            // full scan slows startup. Silently skip unreadable files.
++            eprintln!("obscura: OBSCURA_LOAD_SYSTEM_FONTS is set, loading CJK system fonts");
++            let candidates: [&str; 6] = [
++                "msyh.ttc",
++                "msyhbd.ttc",
++                "simsun.ttc",
++                "simhei.ttf",
++                "SourceHanSansSC-Regular.otf",
++                "SourceHanSansSC-Bold.otf",
++            ];
++            let dirs = [
++                std::path::PathBuf::from("C:\\Windows\\Fonts"),
++                std::env::var("LOCALAPPDATA")
++                    .map(|d| {
++                        std::path::PathBuf::from(d)
++                            .join("Microsoft")
++                            .join("Windows")
++                            .join("Fonts")
++                    })
++                    .unwrap_or_default(),
++            ];
++            for name in candidates {
++                for dir in &dirs {
++                    let path = dir.join(name);
++                    if path.is_file() {
++                        match std::fs::read(&path) {
++                            Ok(bytes) => {
++                                for id in db.load_font_source(
++                                    cosmic_text::fontdb::Source::Binary(std::sync::Arc::new(bytes)),
++                                ) {
++                                    if let Some(face) = db.face(id) {
++                                        let fam = face
++                                            .families
++                                            .first()
++                                            .map(|f| f.0.clone())
++                                            .unwrap_or_default();
++                                        eprintln!("obscura: loaded {} ({})", name, fam);
++                                    }
++                                }
++                            }
++                            Err(e) => eprintln!("obscura: skip {} ({})", name, e),
++                        }
++                    }
++                }
++            }
++        }
+         if load_emoji {
+             for id in db.load_font_source(cosmic_text::fontdb::Source::Binary(Arc::new(EMOJI_R))) {
+                 declarations.push((id, None, None, None));
