@@ -14,3 +14,11 @@ node_modules/
 temp/
 tmp/
 *.log
+
+# 浏览器缓存与临时截图
+images/_chrome_profile*/
+images/_cp*/
+images/_cp_*/
+images/_ed_*/
+images/_min_*/
+
