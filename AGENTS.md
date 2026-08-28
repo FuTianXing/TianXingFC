@@ -52,7 +52,7 @@
 ## git 规范
 
 - **每次改动文件后自动 `git commit` + `git push origin master`**。
-- **git add 只加目标文件，禁用 `git add -A`**（曾误纳 images/ 浏览器缓存 1500+ 文件，已清理并加 .gitignore）。
+- **git add 只加目标文件，禁用 `git add -A`**（曾误纳 images/ 浏览器缓存 1500+ 文件，已清理并加 .gitignore）
 - commit message 用单引号 here-string `@'...'@`。
 
 ## 修改纪律
