@@ -54,7 +54,7 @@ $$S_P = \sum_{n,\{\hat a\hat b\}} \beta\Big(1 - \mathrm{Re}\,\mathrm{Tr}\,U_{n,\
 
 $$U_P = 1 + ig l_P^2 F_{ab} + O(l_P^3), \qquad F_{ab} = \partial_a A_b - \partial_b A_a + ig[A_a, A_b]$$
 
-代回作用量，$1 - \mathrm{Re}\,\mathrm{Tr}\,U_P \to \tfrac12 l_P^4\,\mathrm{Tr}(F_{ab}^2)$，求和取连续极限（$\sum l_P^4 \to \int d^4x$）。
+代回作用量，$1 - \mathrm{Re}\,\mathrm{Tr}\,U_P \to \tfrac12 g^2 l_P^4\,\mathrm{Tr}(F_{ab}^2)$，求和取连续极限（$\sum l_P^4 \to \int d^4x$）。
 
 **定理 4.1（杨-米尔斯作用量的涌现）**：公理 4 相位差耦合的全环形式（§3 plaquette 作用量）在长波极限精确给出曲率平方作用量：
 
