@@ -299,6 +299,14 @@
 
   function render(now){
     var i, n;
+    // 撞击瞬间参与碰撞的那一对格点（边界 j 两侧的 n=j−1 与 n=j）短暂高亮
+    var hot = {};
+    for (i = 0; i < S.ripples.length; i++){
+      if ((now - S.ripples[i].t0) / 1000 < 0.22){
+        hot[S.ripples[i].j - 1] = 1;
+        hot[S.ripples[i].j] = 1;
+      }
+    }
     // 格点圆心
     for (n = 0; n < NC; n++){
       var o = orbs[n], frac, dirv, ph;
@@ -323,6 +331,14 @@
         o.dir.setAttribute("stroke", "#185fa5");
         o.dir.setAttribute("marker-end", "url(#arB)");
       }
+      // σ 锁定格点不折返，不参与碰撞，故排除在高亮之外
+      if (hot[n] && !(S.locked && n === LOCK_CELL)){
+        o.body.setAttribute("fill", "#fcebeb");
+        o.body.setAttribute("stroke", "#e24b4a");
+        o.body.setAttribute("stroke-width", 2);
+      } else {
+        o.body.setAttribute("stroke-width", 0.5);
+      }
       var cx = X0 + frac * CELL, cy = YC;
       var th = ph * 2 * Math.PI;
       o.g.setAttribute("transform", "translate(" + cx.toFixed(2) + "," + cy + ")");
@@ -343,25 +359,28 @@
     ptrTheta.setAttribute("y2", (470 - 85 * Math.sin(ang)).toFixed(2));
     arcTheta.setAttribute("d", arcPath(170, 470, 85, turn));
 
-    // 涟漪
+    // 碰撞闪光：闪在两圆心重合的那一点，也就是公共边界处，撞击瞬间最亮，随后扩散消散
     var gR = $("gRipples");
     while (gR.firstChild) gR.removeChild(gR.firstChild);
     for (i = S.ripples.length - 1; i >= 0; i--){
       var rp = S.ripples[i];
       var age = (now - rp.t0) / 1000;
-      if (age > 0.55){ S.ripples.splice(i, 1); continue; }
-      var k = age / 0.55;
-      var rr = 8 + 34 * k;
+      if (age > 0.42){ S.ripples.splice(i, 1); continue; }
+      var k = age / 0.42;
+      var px = X0 + rp.j * CELL;
       gR.appendChild(el("circle", {
-        cx: X0 + rp.j * CELL, cy: YC, r: rr.toFixed(2),
+        cx: px, cy: YC, r: (6 + 30 * k).toFixed(2),
         fill: "none", stroke: "#e24b4a",
-        "stroke-width": (2.5 * (1 - k)).toFixed(2),
+        "stroke-width": (3 * (1 - k)).toFixed(2),
         opacity: (1 - k).toFixed(2)
       }));
-      gR.appendChild(el("circle", {
-        cx: X0 + rp.j * CELL, cy: YC, r: 5,
-        fill: "#e24b4a", opacity: (0.9 * (1 - k)).toFixed(2)
-      }));
+      var core = 1 - k / 0.34;
+      if (core > 0){
+        gR.appendChild(el("circle", {
+          cx: px, cy: YC, r: (7 * core).toFixed(2),
+          fill: "#e24b4a", opacity: (0.95 * core).toFixed(2)
+        }));
+      }
     }
 
     // 接力信号
@@ -400,14 +419,22 @@
   }
 
   // ---------- 摆程推进 ----------
+  // 摆程 k 的末点：相向邻居同时抵达公共边界 j，碰撞折返就发生在这一刻、这一处。
+  // k 为偶数时碰撞于奇数号边界，k 为奇数时碰撞于偶数号边界；链两端 j=0 与 j=NC 无邻居。
+  function collisionEdges(k){
+    var js = [];
+    for (var j = 1; j <= NC - 1; j++){
+      if ((j % 2 === 1) === (k % 2 === 0)) js.push(j);
+    }
+    return js;
+  }
+
   function onSwingEnd(now){
+    var k = S.N;
+    var edges = collisionEdges(k);
+    for (var i = 0; i < edges.length; i++) S.ripples.push({j: edges[i], t0: now});
     S.N += 1;
     S.relayPos = (S.relayPos + 1) % NC;
-    if (S.N % 2 === 0){
-      for (var j = 1; j <= NC - 1; j += 2) S.ripples.push({j: j, t0: now});
-    } else {
-      for (var m = 2; m <= NC - 2; m += 2) S.ripples.push({j: m, t0: now});
-    }
     if (S.stepping){ S.playing = false; S.stepping = false; syncBtn(); }
   }
 
