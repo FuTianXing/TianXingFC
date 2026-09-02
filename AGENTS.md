@@ -6,7 +6,7 @@
 
 - 纯 Markdown 学术文档库，根目录散落论文正稿（约 100+ 篇），按子理论索引维护。
 - 体系知识库（基准）：`理论总纲/`。
-- 技能：`.reasonix/skills/tianxing-academia/`（SKILL.md 与 protocols 均指向 `理论总纲/`；自带 `knowledge/` 为空目录，勿用）。
+- 技能：`.agents/skills/tianxing-academia/`（公用学术技能，位于用户目录全局技能区；SKILL.md 与 protocols 已把知识库路径绝对化为 `D:/software/TianXingFC/理论总纲/` 等，跨项目仍可指向本工作区；自带 `knowledge/` 为空目录，勿用）。配套技能 `.agents/skills/paper-review/`、`.agents/skills/paper-revise/` 与 `.agents/skills/一致性检查清单.md` 同为公用。
 
 ## 目录规范
 
