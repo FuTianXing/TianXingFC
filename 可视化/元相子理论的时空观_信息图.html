@@ -195,84 +195,65 @@
 
     <rect x="150" y="1660" width="620" height="244" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.32)" stroke-width="1.5"/>
     <text x="180" y="1692" font-size="19" fill="#34d399" font-weight="700">格点三元组与立方晶格</text>
-    <!-- 立方晶格 3x3x3：斜二测投影，x 轴水平、z 轴竖直（屏面内 90 度正交），y 轴 45 度纵深 -->
-    <g stroke="rgba(148,163,184,0.35)" stroke-width="1.2">
-      <line x1="245" y1="1855" x2="325" y2="1855"/>
-      <line x1="245" y1="1815" x2="325" y2="1815"/>
-      <line x1="245" y1="1775" x2="325" y2="1775"/>
-      <line x1="225" y1="1835" x2="305" y2="1835"/>
-      <line x1="225" y1="1795" x2="305" y2="1795"/>
-      <line x1="225" y1="1755" x2="305" y2="1755"/>
-      <line x1="205" y1="1815" x2="285" y2="1815"/>
-      <line x1="205" y1="1775" x2="285" y2="1775"/>
-      <line x1="205" y1="1735" x2="285" y2="1735"/>
-      <line x1="245" y1="1855" x2="205" y2="1815"/>
-      <line x1="245" y1="1815" x2="205" y2="1775"/>
-      <line x1="245" y1="1775" x2="205" y2="1735"/>
-      <line x1="285" y1="1855" x2="245" y2="1815"/>
-      <line x1="285" y1="1815" x2="245" y2="1775"/>
-      <line x1="285" y1="1775" x2="245" y2="1735"/>
-      <line x1="325" y1="1855" x2="285" y2="1815"/>
-      <line x1="325" y1="1815" x2="285" y2="1775"/>
-      <line x1="325" y1="1775" x2="285" y2="1735"/>
-      <line x1="245" y1="1855" x2="245" y2="1775"/>
-      <line x1="225" y1="1835" x2="225" y2="1755"/>
-      <line x1="205" y1="1815" x2="205" y2="1735"/>
-      <line x1="285" y1="1855" x2="285" y2="1775"/>
-      <line x1="265" y1="1835" x2="265" y2="1755"/>
-      <line x1="245" y1="1815" x2="245" y2="1735"/>
-      <line x1="325" y1="1855" x2="325" y2="1775"/>
-      <line x1="305" y1="1835" x2="305" y2="1755"/>
-      <line x1="285" y1="1815" x2="285" y2="1735"/>
+    <!-- 格点立方胞（斜二测投影）：一个格点 = 一个格点区间立方胞，三轴线过胞心，面心 = 跃迁边界 -->
+    <g stroke="rgba(148,163,184,0.5)" stroke-width="1.4">
+      <line x1="258" y1="1869" x2="354" y2="1869"/>
+      <line x1="354" y1="1869" x2="354" y2="1773"/>
+      <line x1="354" y1="1773" x2="258" y2="1773"/>
+      <line x1="258" y1="1773" x2="258" y2="1869"/>
+      <line x1="210" y1="1821" x2="306" y2="1821"/>
+      <line x1="306" y1="1821" x2="306" y2="1725"/>
+      <line x1="306" y1="1725" x2="210" y2="1725"/>
+      <line x1="210" y1="1725" x2="210" y2="1821"/>
+      <line x1="258" y1="1869" x2="210" y2="1821"/>
+      <line x1="354" y1="1869" x2="306" y2="1821"/>
+      <line x1="354" y1="1773" x2="306" y2="1725"/>
+      <line x1="258" y1="1773" x2="210" y2="1725"/>
     </g>
-    <g fill="#34d399">
-      <circle cx="245" cy="1855" r="3.2"/>
-      <circle cx="245" cy="1815" r="3.2"/>
-      <circle cx="245" cy="1775" r="3.2"/>
-      <circle cx="225" cy="1835" r="3.2"/>
-      <circle cx="225" cy="1795" r="3.2"/>
-      <circle cx="225" cy="1755" r="3.2"/>
-      <circle cx="205" cy="1815" r="3.2"/>
-      <circle cx="205" cy="1775" r="3.2"/>
-      <circle cx="205" cy="1735" r="3.2"/>
-      <circle cx="285" cy="1855" r="3.2"/>
-      <circle cx="285" cy="1815" r="3.2"/>
-      <circle cx="285" cy="1775" r="3.2"/>
-      <circle cx="265" cy="1835" r="3.2"/>
-      <circle cx="265" cy="1795" r="3.2"/>
-      <circle cx="265" cy="1755" r="3.2"/>
-      <circle cx="245" cy="1815" r="3.2"/>
-      <circle cx="245" cy="1775" r="3.2"/>
-      <circle cx="245" cy="1735" r="3.2"/>
-      <circle cx="325" cy="1855" r="3.2"/>
-      <circle cx="325" cy="1815" r="3.2"/>
-      <circle cx="325" cy="1775" r="3.2"/>
-      <circle cx="305" cy="1835" r="3.2"/>
-      <circle cx="305" cy="1795" r="3.2"/>
-      <circle cx="305" cy="1755" r="3.2"/>
-      <circle cx="285" cy="1815" r="3.2"/>
-      <circle cx="285" cy="1775" r="3.2"/>
-      <circle cx="285" cy="1735" r="3.2"/>
-    </g>
-    <circle cx="265" cy="1795" r="10" fill="none" stroke="#f5c542" stroke-width="2.2"/>
-    <!-- 中心三法线：起点 = 晶格中心格点，两两正交 -->
+    <!-- 三轴线：沿三个晶轴穿过胞心并向两侧延伸（示意晶格三向延续），箭头 = 法线正向 -->
     <g stroke-linecap="round">
-      <line x1="265" y1="1795" x2="332" y2="1795" stroke="#060912" stroke-width="5.5"/>
-      <line x1="265" y1="1795" x2="213" y2="1743" stroke="#060912" stroke-width="5.5"/>
-      <line x1="265" y1="1795" x2="265" y2="1726" stroke="#060912" stroke-width="5.5"/>
-      <line x1="265" y1="1795" x2="332" y2="1795" stroke="#38bdf8" stroke-width="2.6" marker-end="url(#ar)"/>
-      <line x1="265" y1="1795" x2="213" y2="1743" stroke="#a78bfa" stroke-width="2.6" marker-end="url(#arv)"/>
-      <line x1="265" y1="1795" x2="265" y2="1726" stroke="#34d399" stroke-width="2.6" marker-end="url(#arg)"/>
+      <line x1="206.0" y1="1797.0" x2="358.0" y2="1797.0" stroke="#060912" stroke-width="5.5"/>
+      <line x1="326.0" y1="1841.0" x2="238.0" y2="1753.0" stroke="#060912" stroke-width="5.5"/>
+      <line x1="282.0" y1="1873.0" x2="282.0" y2="1721.0" stroke="#060912" stroke-width="5.5"/>
+      <line x1="206.0" y1="1797.0" x2="358.0" y2="1797.0" stroke="#38bdf8" stroke-width="2.4" marker-end="url(#ar)"/>
+      <line x1="326.0" y1="1841.0" x2="238.0" y2="1753.0" stroke="#a78bfa" stroke-width="2.4" marker-end="url(#arv)"/>
+      <line x1="282.0" y1="1873.0" x2="282.0" y2="1721.0" stroke="#34d399" stroke-width="2.4" marker-end="url(#arg)"/>
     </g>
-    <text x="338" y="1786" font-size="11.5" fill="#38bdf8">x 类</text>
-    <text x="207" y="1760" font-size="11.5" fill="#a78bfa" text-anchor="end">y 类</text>
-    <text x="272" y="1722" font-size="11.5" fill="#34d399">z 类</text>
+    <!-- 六个面心 = 圆心跃迁的起点与终点（与邻居共享的公共边界） -->
+    <g fill="#f5c542">
+      <circle cx="234.0" cy="1797.0" r="3"/>
+      <circle cx="330.0" cy="1797.0" r="3"/>
+      <circle cx="282.0" cy="1845.0" r="3"/>
+      <circle cx="282.0" cy="1749.0" r="3"/>
+      <circle cx="306.0" cy="1821.0" r="3"/>
+      <circle cx="258.0" cy="1773.0" r="3"/>
+    </g>
+    <circle cx="282.0" cy="1797.0" r="10" fill="none" stroke="#f5c542" stroke-width="2.2"/>
+    <!-- 三元组圆心同步跃迁：每摆程自一侧面心位移到另一侧，边界碰撞即折返 -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0; 96 0; 0 0" keyTimes="0;0.5;1" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+      <circle cx="234.0" cy="1797.0" r="5.5" fill="#060912"/>
+      <circle cx="234.0" cy="1797.0" r="3.4" fill="#38bdf8"/>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0; -48 -48; 0 0" keyTimes="0;0.5;1" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+      <circle cx="306.0" cy="1821.0" r="5.5" fill="#060912"/>
+      <circle cx="306.0" cy="1821.0" r="3.4" fill="#a78bfa"/>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0; 0 -96; 0 0" keyTimes="0;0.5;1" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+      <circle cx="282.0" cy="1845.0" r="5.5" fill="#060912"/>
+      <circle cx="282.0" cy="1845.0" r="3.4" fill="#34d399"/>
+    </g>
+    <text x="344" y="1790" font-size="11.5" fill="#38bdf8" paint-order="stroke" stroke="#060912" stroke-width="3">x 类</text>
+    <text x="232" y="1747" font-size="11.5" fill="#a78bfa" text-anchor="end" paint-order="stroke" stroke="#060912" stroke-width="3">y 类</text>
+    <text x="290" y="1713" font-size="11.5" fill="#34d399" paint-order="stroke" stroke="#060912" stroke-width="3">z 类</text>
     <text x="395" y="1745" font-size="13.5" fill="#cbd5e1">格点 = 三个正交元相子的不可分联合体</text>
     <text x="395" y="1770" font-size="13.5" fill="#cbd5e1">晶格 = 格点的周期阵列，三向展开成立方点阵</text>
     <text x="395" y="1795" font-size="13.5" fill="#cbd5e1">同类平行、异类耦合 &#954;&#966; 锁定（公理 2 / 4）</text>
     <text x="395" y="1820" font-size="13.5" fill="#cbd5e1">真空不空：整片阵列都在振荡</text>
-    <text x="395" y="1852" font-size="13" fill="#94a3b8">金圈 = 晶格中心；三色箭头 = 三只元相子的法线</text>
-    <text x="395" y="1876" font-size="13" fill="#94a3b8">三法线两两正交、各沿一个晶轴，复平面垂直于各自法线</text>
+    <text x="395" y="1852" font-size="13" fill="#94a3b8">金圈 = 格点胞中心；三色轴线 = 三法线，两两正交</text>
+    <text x="395" y="1876" font-size="13" fill="#94a3b8">金点 = 面心，圆心跃迁的起点与终点；动点 = 同步跃迁折返</text>
 
     <rect x="800" y="1660" width="730" height="244" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.32)" stroke-width="1.5"/>
     <text x="830" y="1692" font-size="19" fill="#38bdf8" font-weight="700">束缚振荡：跃迁、碰撞、折返（动画）</text>
