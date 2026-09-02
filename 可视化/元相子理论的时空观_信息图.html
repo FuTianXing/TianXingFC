@@ -195,13 +195,13 @@
 
     <rect x="150" y="1660" width="620" height="244" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.32)" stroke-width="1.5"/>
     <text x="180" y="1692" font-size="19" fill="#34d399" font-weight="700">格点三元组与立方晶格</text>
-    <!-- 格点立方胞（正等轴测，视线沿体对角线）：六边形轮廓，胞心 = 六边形正中心，三轴线空间两两正交 -->
+    <!-- 格点立方胞（正等轴测，视线沿体对角线）：胞心 = 六边形正中心；三个着色面 = 三元组各自的复平面，垂直于同色法线 -->
     <g stroke="none">
-      <polygon points="283,1804 331,1832 283,1860 235,1832" fill="rgba(148,163,184,0.09)"/>
-      <polygon points="283,1804 235,1832 235,1776 283,1748" fill="rgba(148,163,184,0.04)"/>
-      <polygon points="283,1804 283,1748 331,1776 331,1832" fill="rgba(148,163,184,0.13)"/>
+      <polygon points="283,1804 235,1832 235,1776 283,1748" fill="rgba(56,189,248,0.17)"/>
+      <polygon points="283,1804 283,1748 331,1776 331,1832" fill="rgba(167,139,250,0.13)"/>
+      <polygon points="283,1804 331,1832 283,1860 235,1832" fill="rgba(52,211,153,0.10)"/>
     </g>
-    <g stroke="rgba(148,163,184,0.5)" stroke-width="1.4" fill="none">
+    <g stroke="rgba(203,213,225,0.6)" stroke-width="1.6" fill="none">
       <line x1="283" y1="1748" x2="331" y2="1776"/>
       <line x1="331" y1="1776" x2="331" y2="1832"/>
       <line x1="331" y1="1832" x2="283" y2="1860"/>
@@ -209,25 +209,35 @@
       <line x1="235" y1="1832" x2="235" y2="1776"/>
       <line x1="235" y1="1776" x2="283" y2="1748"/>
     </g>
-    <!-- 三轴线：交点 = 胞心 = 构图中心，箭头 = 法线正向 -->
+    <!-- 三轴线：交点 = 胞心 = 构图中心，箭头 = 法线正向；光晕 + 辉光 + 主线三层 -->
     <g stroke-linecap="round">
-      <line x1="211" y1="1762" x2="355" y2="1846" stroke="#060912" stroke-width="5.5"/>
-      <line x1="355" y1="1762" x2="211" y2="1846" stroke="#060912" stroke-width="5.5"/>
-      <line x1="283" y1="1722" x2="283" y2="1886" stroke="#060912" stroke-width="5.5"/>
-      <line x1="211" y1="1762" x2="355" y2="1846" stroke="#38bdf8" stroke-width="2.4" marker-end="url(#ar)"/>
-      <line x1="355" y1="1762" x2="211" y2="1846" stroke="#a78bfa" stroke-width="2.4" marker-end="url(#arv)"/>
-      <line x1="283" y1="1886" x2="283" y2="1722" stroke="#34d399" stroke-width="2.4" marker-end="url(#arg)"/>
+      <line x1="211" y1="1762" x2="355" y2="1846" stroke="#060912" stroke-width="6"/>
+      <line x1="355" y1="1762" x2="211" y2="1846" stroke="#060912" stroke-width="6"/>
+      <line x1="283" y1="1886" x2="283" y2="1722" stroke="#060912" stroke-width="6"/>
+      <line x1="211" y1="1762" x2="355" y2="1846" stroke="#38bdf8" stroke-opacity="0.22" stroke-width="9"/>
+      <line x1="355" y1="1762" x2="211" y2="1846" stroke="#a78bfa" stroke-opacity="0.22" stroke-width="9"/>
+      <line x1="283" y1="1886" x2="283" y2="1722" stroke="#34d399" stroke-opacity="0.22" stroke-width="9"/>
+      <line x1="211" y1="1762" x2="355" y2="1846" stroke="#38bdf8" stroke-width="2.6" marker-end="url(#ar)"/>
+      <line x1="355" y1="1762" x2="211" y2="1846" stroke="#a78bfa" stroke-width="2.6" marker-end="url(#arv)"/>
+      <line x1="283" y1="1886" x2="283" y2="1722" stroke="#34d399" stroke-width="2.6" marker-end="url(#arg)"/>
     </g>
     <!-- 六个面心 = 圆心跃迁的起点与终点（与邻居共享的公共边界） -->
-    <g fill="#f5c542">
-      <circle cx="259" cy="1790" r="3"/>
-      <circle cx="307" cy="1818" r="3"/>
-      <circle cx="307" cy="1790" r="3"/>
-      <circle cx="259" cy="1818" r="3"/>
-      <circle cx="283" cy="1832" r="3"/>
-      <circle cx="283" cy="1776" r="3"/>
+    <g>
+      <circle cx="259" cy="1790" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="259" cy="1790" r="3" fill="#f5c542"/>
+      <circle cx="307" cy="1818" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="307" cy="1818" r="3" fill="#f5c542"/>
+      <circle cx="307" cy="1790" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="307" cy="1790" r="3" fill="#f5c542"/>
+      <circle cx="259" cy="1818" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="259" cy="1818" r="3" fill="#f5c542"/>
+      <circle cx="283" cy="1832" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="283" cy="1832" r="3" fill="#f5c542"/>
+      <circle cx="283" cy="1776" r="5" fill="#f5c542" fill-opacity="0.28"/>
+      <circle cx="283" cy="1776" r="3" fill="#f5c542"/>
     </g>
-    <circle cx="283" cy="1804" r="10" fill="none" stroke="#f5c542" stroke-width="2.2"/>
+    <circle cx="283" cy="1804" r="13" fill="none" stroke="#f5c542" stroke-opacity="0.3" stroke-width="5"/>
+    <circle cx="283" cy="1804" r="10" fill="none" stroke="#f5c542" stroke-width="2.4"/>
     <!-- 三元组圆心同步跃迁：每摆程自一侧面心位移到对面面心，边界碰撞即折返 -->
     <g>
       <animateTransform attributeName="transform" type="translate" values="0 0; 48 28; 0 0" keyTimes="0;0.5;1" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
@@ -248,8 +258,8 @@
     <text x="197" y="1868" font-size="11.5" fill="#a78bfa" text-anchor="end" paint-order="stroke" stroke="#060912" stroke-width="3">y 类</text>
     <text x="289" y="1714" font-size="11.5" fill="#34d399" paint-order="stroke" stroke="#060912" stroke-width="3">z 类</text>
     <text x="395" y="1745" font-size="13.5" fill="#cbd5e1">格点 = 三个正交元相子的不可分联合体</text>
-    <text x="395" y="1770" font-size="13.5" fill="#cbd5e1">晶格 = 格点的周期阵列，三向展开成立方点阵</text>
-    <text x="395" y="1795" font-size="13.5" fill="#cbd5e1">同类平行、异类耦合 &#954;&#966; 锁定（公理 2 / 4）</text>
+    <text x="395" y="1770" font-size="13.5" fill="#cbd5e1">彩色面 = 三个复平面，各自垂直于同色轴线</text>
+    <text x="395" y="1795" font-size="13.5" fill="#cbd5e1">晶格 = 格点周期阵列，同类平行、异类 &#954;&#966; 锁定</text>
     <text x="395" y="1820" font-size="13.5" fill="#cbd5e1">真空不空：整片阵列都在振荡</text>
     <text x="395" y="1852" font-size="13" fill="#94a3b8">金圈 = 格点胞中心；三色轴线 = 三法线，空间两两正交</text>
     <text x="395" y="1876" font-size="13" fill="#94a3b8">金点 = 面心，圆心跃迁的起点与终点；动点 = 同步跃迁折返</text>
