@@ -155,14 +155,15 @@
     <span class="lg"><span class="dot" style="background:#e6f1fb;border:1px solid #185fa5"></span>束缚振荡元相子</span>
     <span class="lg"><span class="dot" style="background:#faeeda;border:1px solid #854f0b"></span>σ 锁定缺陷（绕数累积）</span>
     <span class="lg"><span class="dot" style="background:#e24b4a"></span>碰撞折返点</span>
-    <span class="lg"><span class="dot" style="background:#0f6e56"></span>接力信号（一步一格）</span>
+    <span class="lg"><span class="dot" style="background:#0f6e56"></span>接力信号（在碰撞处交接）</span>
   </div>
 
   <div class="notes">
     <h2>机制说明</h2>
     <p><span class="k">定居与摆程。</span>每个格点由一个 x 类、一个 y 类、一个 z 类元相子构成三元组，轴向位置锁定在区间 [n·l<sub>P</sub>, (n+1)·l<sub>P</sub>] 内。一个摆程中，圆心从一侧边界单向位移到另一侧边界，同一过程里相位单调扫过 2π 完成满周闭合，速率 |ż| = c，历时 t<sub>P</sub>。螺旋刚性 z = (λ/2π)·θ 把轴向位移与相位推进绑成同一事件的两个侧面。</p>
     <p><span class="k">折返。</span>粒性不可穿透的几何含义是圆心不可重合。格点 n 与 n+1 共享边界 (n+1)·l<sub>P</sub>，两者圆心相向运动并同时抵达该处，重合瞬间即弹性碰撞，相位推进方向沿同一条螺旋曲线反向（手性守恒不变，反转的是瞬时旋转方向）。这里没有墙与外部设施，反转是波性要求继续推进与粒性禁止继续前进相互冲突的唯一出路。相邻格点必须反相，也就是动画中的交错基态；若全体同相运动，圆心间距恒为 l<sub>P</sub>，永不碰撞，系统退化为自由极限下的无限前进。</p>
-    <p><span class="k">一次摆程，三件产物。</span>轴向位移给出空间标度 x = l<sub>P</sub>·n；摆程计数给出物理时间 t = N·t<sub>P</sub>，去程回程都不倒退因而自带箭头；接力几何给出光速 c = l<sub>P</sub>/t<sub>P</sub>。动画右下角的接力信号每摆程前进一格，其速度与耦合强度无关，只取决于一步跨多远、一步耗多久。强光、弱光、单光子同速皆源于此。</p>
+    <p><span class="k">一次摆程，三件产物。</span>轴向位移给出空间标度 x = l<sub>P</sub>·n；摆程计数给出物理时间 t = N·t<sub>P</sub>，去程回程都不倒退因而自带箭头；接力几何给出光速 c = l<sub>P</sub>/t<sub>P</sub>。</p>
+    <p><span class="k">接力发生在碰撞处。</span>格点 n 完成摆程，圆心抵达公共边界，就在这一刻与相向邻居碰撞，同时把摆程完成事件交给格点 n+1；格点 n+1 接过棒，再花一个摆程走到下一条边界。动画上方的接力信号在一个摆程内从一条公共边界匀速走到下一条，抵达时绿环与红闪光同地亮起，表示交接完成。一步跨多远、一步耗多久定下速度，与耦合强度无关，强光、弱光、单光子同速皆源于此。接力信号标记的是长波集体模式即相位场包络的行进，不绑定某一个格点的圆心；基态的锯齿呼吸与光的传播属于尺度分离的两个模式，呼吸在 k = π/l<sub>P</sub> 处承载时间，光在 k → 0 处承载信号。</p>
     <p><span class="k">σ 锁定模式。</span>切换模式后，中间格点的摆程方向因子 σ 从交替锁定为恒定，相位不再折返、单方向缠绕，绕数从 0 开始累积，轴向每摆程前进一格（为便于观察，动画在链端循环）。这是大爆炸同步相变的局域缺陷，也就是有质量粒子的形成判据。相位时间轨迹由三角波转为单调上升，正是两种遗产的分野：凝固完好的部分成为时空砖块，凝固残留的部分成为粒子。</p>
   </div>
 
@@ -186,7 +187,7 @@
   var S = {
     playing: true, speed: 1, q: Q0, N: 0, locked: false,
     arrow: true, relay: true, stepping: false,
-    relayPos: 0, ripples: [], traj: []
+    relayPos: 0, ripples: [], handoffs: [], traj: []
   };
 
   function el(tag, attrs){
@@ -238,6 +239,15 @@
     stroke: "#185fa5", "stroke-width": 0.5,
     "marker-start": "url(#arB)", "marker-end": "url(#arB)"
   }));
+  var eL = el("text", {x: X0, y: YC + 46, "font-size": 10.5,
+    fill: "#cbd5e1", "text-anchor": "middle"});
+  eL.textContent = "链端";
+  gCells.appendChild(eL);
+  var eR = el("text", {x: X0 + NC * CELL, y: YC + 46, "font-size": 10.5,
+    fill: "#cbd5e1", "text-anchor": "middle"});
+  eR.textContent = "链端";
+  gCells.appendChild(eR);
+
   var lab = el("text", {x: X0 + CELL / 2, y: YC - 66, "font-size": 12,
     fill: "#185fa5", "text-anchor": "middle"});
   lab.appendChild(document.createTextNode("格距 l"));
@@ -265,9 +275,12 @@
 
   // ---------- 接力信号 ----------
   var gRelay = $("gRelay");
+  var gHandoff = el("g", {});
+  var gRelayMark = el("g", {});
   var relayMark = el("circle", {r: 8, fill: "#0f6e56", opacity: 0.9});
   var relayRing = el("circle", {r: 14, fill: "none", stroke: "#0f6e56", "stroke-width": 1, opacity: 0.5});
-  gRelay.appendChild(relayRing); gRelay.appendChild(relayMark);
+  gRelayMark.appendChild(relayRing); gRelayMark.appendChild(relayMark);
+  gRelay.appendChild(gHandoff); gRelay.appendChild(gRelayMark);
 
   // ---------- 几何函数 ----------
   // 摆程 N 内格点 n 的圆心位置（单位：格距）
@@ -383,11 +396,33 @@
       }
     }
 
-    // 接力信号
+    // 接力信号：摆程内从一条公共边界匀速走到下一条，抵达的那一刻正是碰撞时刻，
+    // 事件就在该边界交给下一格点，随后进入下一摆程。跃迁发生在碰撞处，不在格点中间。
     gRelay.setAttribute("opacity", S.relay ? 1 : 0);
-    var rx = X0 + (S.relayPos + 0.5) * CELL;
+    var rx = X0 + (S.relayPos + S.q) * CELL;
     relayMark.setAttribute("cx", rx); relayMark.setAttribute("cy", YC - 96);
     relayRing.setAttribute("cx", rx); relayRing.setAttribute("cy", YC - 96);
+
+    // 交接提示：竖虚线连到碰撞点，绿环在碰撞处扩散，与红闪光同地不同色
+    while (gHandoff.firstChild) gHandoff.removeChild(gHandoff.firstChild);
+    for (i = S.handoffs.length - 1; i >= 0; i--){
+      var hf = S.handoffs[i];
+      var hage = (now - hf.t0) / 1000;
+      if (hage > 0.45){ S.handoffs.splice(i, 1); continue; }
+      var hk = hage / 0.45;
+      var hx = X0 + hf.j * CELL;
+      gHandoff.appendChild(el("line", {
+        x1: hx, y1: YC - 82, x2: hx, y2: YC - 20,
+        stroke: "#0f6e56", "stroke-width": 1, "stroke-dasharray": "3 3",
+        opacity: (1 - hk).toFixed(2)
+      }));
+      gHandoff.appendChild(el("circle", {
+        cx: hx, cy: YC, r: (14 + 26 * hk).toFixed(2),
+        fill: "none", stroke: "#0f6e56",
+        "stroke-width": (2.5 * (1 - hk)).toFixed(2),
+        opacity: (1 - hk).toFixed(2)
+      }));
+    }
 
     // 相位轨迹
     var pts = [];
@@ -433,8 +468,11 @@
     var k = S.N;
     var edges = collisionEdges(k);
     for (var i = 0; i < edges.length; i++) S.ripples.push({j: edges[i], t0: now});
-    S.N += 1;
+    // 信号本摆程走完所抵达的那条边界，就是它把事件交给下一格点的位置
+    var hand = S.relayPos + 1;
     S.relayPos = (S.relayPos + 1) % NC;
+    if (hand >= 1 && hand <= NC - 1) S.handoffs.push({j: hand, t0: now});
+    S.N += 1;
     if (S.stepping){ S.playing = false; S.stepping = false; syncBtn(); }
   }
 
@@ -476,7 +514,7 @@
     S.stepping = true; S.playing = true; syncBtn();
   });
   $("btnReset").addEventListener("click", function(){
-    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.traj = [];
+    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.handoffs = []; S.traj = [];
     S.playing = true; S.stepping = false; syncBtn();
   });
   $("rngSpeed").addEventListener("input", function(){
@@ -488,7 +526,7 @@
     this.textContent = S.locked ? "模式：σ 锁定缺陷" : "模式：束缚振荡";
     if (S.locked) this.classList.add("on"); else this.classList.remove("on");
     if (S.locked) gOrbs.appendChild(orbs[LOCK_CELL].g);
-    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.traj = [];
+    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.handoffs = []; S.traj = [];
   });
   $("chkArrow").addEventListener("change", function(){ S.arrow = this.checked; });
   $("chkRelay").addEventListener("change", function(){ S.relay = this.checked; });
