@@ -20,8 +20,6 @@
   .pulse { animation:plz 2.6s ease-in-out infinite; }
   .pulse2 { animation:plz 2.6s ease-in-out 1.3s infinite; }
   @keyframes plz { 0%,100%{opacity:1} 50%{opacity:.45} }
-  .spin { animation:spz 7s linear infinite; transform-origin:center; }
-  @keyframes spz { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -37,16 +35,16 @@
       <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
         <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(148,163,184,0.05)" stroke-width="1"/>
       </pattern>
-      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
       </marker>
-      <marker id="arg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="arg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
       </marker>
-      <marker id="ary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="ary" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#f5c542"/>
       </marker>
-      <marker id="arp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="arp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#fb7185"/>
       </marker>
     </defs>
@@ -162,7 +160,7 @@
       <!-- 元相子：旋转 + 法线跃迁 -->
       <circle cx="330" cy="46" r="15" fill="none" stroke="#34d399" stroke-width="2.5"/>
       <line x1="330" y1="46" x2="342" y2="36" stroke="#34d399" stroke-width="2"/>
-      <path d="M 344 38 A 15 15 0 1 0 344 54" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#ar)" class="spin"/>
+      <path d="M 344 38 A 15 15 0 1 0 344 54" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#ar)"/>
       <circle cx="450" cy="46" r="15" fill="none" stroke="rgba(52,211,153,0.35)" stroke-width="2" stroke-dasharray="4 4"/>
       <circle cx="570" cy="46" r="15" fill="none" stroke="rgba(52,211,153,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
       <path d="M 348 46 L 432 46" stroke="#34d399" stroke-width="2.4" marker-end="url(#arg)" class="flow"/>
