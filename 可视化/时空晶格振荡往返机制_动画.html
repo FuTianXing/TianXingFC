@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时空晶格的振荡往返机制 · 元相子理论交互动画</title>
+<style>
+  :root{
+    --ink:#1e293b; --ink2:#475569; --ink3:#94a3b8;
+    --line:#e2e8f0; --bg:#ffffff; --surface:#f8fafc;
+    --blue:#185fa5; --blue-l:#e6f1fb; --blue-d:#0c447c;
+    --teal:#0f6e56; --teal-l:#e1f5ee;
+    --amber:#854f0b; --amber-l:#faeeda;
+    --red:#a32d2d; --red-l:#fcebeb;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC',system-ui,sans-serif;}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 20px 60px;}
+  .top{text-align:center;margin-bottom:18px;}
+  .top h1{font-size:26px;margin:0 0 8px;font-weight:500;letter-spacing:1px;}
+  .top p{margin:0;font-size:13px;color:var(--ink2);line-height:1.7;}
+  .panel{background:var(--surface);border:0.5px solid var(--line);border-radius:12px;
+    padding:14px 16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    justify-content:center;margin-bottom:14px;}
+  .grp{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2);}
+  button{font:inherit;font-size:13px;padding:6px 14px;border-radius:8px;
+    border:0.5px solid #cbd5e1;background:#fff;color:var(--ink);cursor:pointer;}
+  button:hover{border-color:var(--blue);color:var(--blue);}
+  button.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  input[type=range]{width:120px;}
+  label.chk{display:flex;gap:5px;align-items:center;cursor:pointer;}
+  .stage{width:100%;height:auto;display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;
+    font-size:12.5px;color:var(--ink2);margin:6px 0 26px;}
+  .lg{display:flex;gap:6px;align-items:center;}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .notes{border-top:0.5px solid var(--line);padding-top:20px;}
+  .notes h2{font-size:17px;font-weight:500;margin:0 0 10px;}
+  .notes p{font-size:14px;line-height:1.9;color:var(--ink2);margin:0 0 14px;
+    max-width:1000px;}
+  .notes .k{color:var(--ink);font-weight:500;}
+  code{font-family:'Consolas','SFMono-Regular',monospace;font-size:13px;
+    background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--blue-d);}
+  .foot{margin-top:22px;font-size:12px;color:var(--ink3);line-height:1.9;
+    border-top:0.5px solid var(--line);padding-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>时空晶格的振荡往返机制</h1>
+    <p>元相子定居格点，每摆程沿轴向单向位移一个格距，相向邻居在公共边界碰撞折返。<br>
+       同一次摆程同时给出空间标度、物理时间与光速换算。</p>
+  </div>
+
+  <div class="panel">
+    <div class="grp">
+      <button id="btnPlay" class="on">暂停</button>
+      <button id="btnStep">单步一个摆程</button>
+      <button id="btnReset">重置</button>
+    </div>
+    <div class="grp">
+      <span>速度</span>
+      <input type="range" id="rngSpeed" min="0.25" max="2.5" step="0.05" value="1">
+      <span id="lblSpeed">1.00x</span>
+    </div>
+    <div class="grp">
+      <button id="btnMode">模式：束缚振荡</button>
+    </div>
+    <div class="grp">
+      <label class="chk"><input type="checkbox" id="chkArrow" checked>运动方向</label>
+      <label class="chk"><input type="checkbox" id="chkRelay" checked>接力信号</label>
+    </div>
+  </div>
+
+  <svg id="stage" class="stage" viewBox="0 0 1200 700" role="img"
+       aria-label="元相子束缚振荡动画：格点链上圆心摆程、碰撞折返、相位推进与接力传播">
+
+    <!-- ========== 主视图：格点链 ========== -->
+    <text x="40" y="62" font-size="15" font-weight="500" fill="#1e293b">一、格点链：摆程与碰撞折返</text>
+    <text x="40" y="84" font-size="12.5" fill="#475569">圆心（粒性中心）在格点区间内单向位移，到达公共边界时与相向邻居碰撞并反转</text>
+
+    <g id="gCells"></g>
+
+    <line x1="80" y1="205" x2="1120" y2="205" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="4 4"/>
+    <line x1="80" y1="205" x2="1124" y2="205" stroke="#94a3b8" stroke-width="1" marker-end="url(#ar)"/>
+    <text x="1130" y="209" font-size="12" fill="#64748b">轴向 z</text>
+
+    <g id="gOrbs"></g>
+    <g id="gRipples"></g>
+    <g id="gRelay"></g>
+
+    <line x1="80" y1="290" x2="1160" y2="290" stroke="#e2e8f0" stroke-width="1"/>
+
+    <!-- ========== 单位圆相位视图 ========== -->
+    <text x="40" y="330" font-size="15" font-weight="500" fill="#1e293b">二、相位推进</text>
+    <circle cx="170" cy="470" r="85" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.5"/>
+    <line x1="85" y1="470" x2="255" y2="470" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <line x1="170" y1="385" x2="170" y2="555" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <path id="arcTheta" fill="rgba(24,95,165,0.12)" stroke="none"/>
+    <line id="ptrTheta" x1="170" y1="470" x2="255" y2="470" stroke="#185fa5" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="170" cy="470" r="4" fill="#185fa5"/>
+    <circle cx="255" cy="470" r="3" fill="#94a3b8"/>
+    <text x="170" y="368" font-size="12.5" fill="#475569" text-anchor="middle">复平面单位圆</text>
+    <text id="ptrHint" x="170" y="592" font-size="12.5" fill="#475569" text-anchor="middle">去程：逆时针（θ 递增）</text>
+    <text id="txtWinding" x="170" y="612" font-size="12.5" fill="#0f6e56" text-anchor="middle">绕数 0（束缚态）</text>
+
+    <!-- ========== 相位时间轨迹 ========== -->
+    <text x="330" y="330" font-size="15" font-weight="500" fill="#1e293b">三、相位随摆程的走向</text>
+    <rect x="340" y="360" width="420" height="220" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.5"/>
+    <line x1="340" y1="580" x2="760" y2="580" stroke="#cbd5e1" stroke-width="0.5"/>
+    <line x1="340" y1="485" x2="760" y2="485" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <line x1="340" y1="390" x2="760" y2="390" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <text x="332" y="584" font-size="11" fill="#94a3b8" text-anchor="end">0</text>
+    <text x="332" y="489" font-size="11" fill="#94a3b8" text-anchor="end">π</text>
+    <text x="332" y="394" font-size="11" fill="#94a3b8" text-anchor="end">2π</text>
+    <text x="550" y="600" font-size="11.5" fill="#94a3b8" text-anchor="middle">时间（摆程）</text>
+    <polyline id="trajLine" fill="none" stroke="#185fa5" stroke-width="2" stroke-linejoin="round"/>
+    <text id="trajHint" x="550" y="418" font-size="13" fill="#94a3b8" text-anchor="middle">三角波：相位折返，净绕数为零</text>
+
+    <!-- ========== 读数面板 ========== -->
+    <text x="800" y="330" font-size="15" font-weight="500" fill="#1e293b">四、读数</text>
+    <rect x="800" y="360" width="360" height="300" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.5"/>
+    <text x="824" y="404" font-size="13" fill="#475569">摆程计数 N</text>
+    <text id="rN" x="1136" y="408" font-size="26" font-weight="500" fill="#1e293b" text-anchor="end">0</text>
+    <text x="824" y="452" font-size="13" fill="#475569">物理时间 t = N · t<tspan dy="2" font-size="9">P</tspan></text>
+    <text id="rT" x="1136" y="452" font-size="15" fill="#1e293b" text-anchor="end">0 t<tspan dy="2" font-size="9">P</tspan></text>
+    <text x="824" y="500" font-size="13" fill="#475569">摆程内进度 θ</text>
+    <text id="rTheta" x="1136" y="500" font-size="15" fill="#1e293b" text-anchor="end">0.00 π</text>
+    <text x="824" y="548" font-size="13" fill="#475569">摆程方向 σ</text>
+    <text id="rSigma" x="1136" y="548" font-size="15" fill="#1e293b" text-anchor="end">+1（去程）</text>
+    <text x="824" y="596" font-size="13" fill="#475569">净绕数</text>
+    <text id="rWind" x="1136" y="596" font-size="15" fill="#0f6e56" text-anchor="end">0</text>
+    <text x="824" y="644" font-size="13" fill="#475569">接力速度 l<tspan dy="2" font-size="9">P</tspan><tspan dy="-2"> / t</tspan><tspan dy="2" font-size="9">P</tspan><tspan dy="-2"> = c</tspan></text>
+    <text id="rC" x="1136" y="644" font-size="15" fill="#185fa5" text-anchor="end">1.00 c</text>
+
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#185fa5" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <marker id="arT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#0f6e56" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+  </svg>
+
+  <div class="legend">
+    <span class="lg"><span class="dot" style="background:#e6f1fb;border:1px solid #185fa5"></span>束缚振荡元相子</span>
+    <span class="lg"><span class="dot" style="background:#faeeda;border:1px solid #854f0b"></span>σ 锁定缺陷（绕数累积）</span>
+    <span class="lg"><span class="dot" style="background:#e24b4a"></span>碰撞折返点</span>
+    <span class="lg"><span class="dot" style="background:#0f6e56"></span>接力信号（一步一格）</span>
+  </div>
+
+  <div class="notes">
+    <h2>机制说明</h2>
+    <p><span class="k">定居与摆程。</span>每个格点由一个 x 类、一个 y 类、一个 z 类元相子构成三元组，轴向位置锁定在区间 [n·l<sub>P</sub>, (n+1)·l<sub>P</sub>] 内。一个摆程中，圆心从一侧边界单向位移到另一侧边界，同一过程里相位单调扫过 2π 完成满周闭合，速率 |ż| = c，历时 t<sub>P</sub>。螺旋刚性 z = (λ/2π)·θ 把轴向位移与相位推进绑成同一事件的两个侧面。</p>
+    <p><span class="k">折返。</span>粒性不可穿透的几何含义是圆心不可重合。格点 n 与 n+1 共享边界 (n+1)·l<sub>P</sub>，两者圆心相向运动并同时抵达该处，重合瞬间即弹性碰撞，相位推进方向沿同一条螺旋曲线反向（手性守恒不变，反转的是瞬时旋转方向）。这里没有墙与外部设施，反转是波性要求继续推进与粒性禁止继续前进相互冲突的唯一出路。相邻格点必须反相，也就是动画中的交错基态；若全体同相运动，圆心间距恒为 l<sub>P</sub>，永不碰撞，系统退化为自由极限下的无限前进。</p>
+    <p><span class="k">一次摆程，三件产物。</span>轴向位移给出空间标度 x = l<sub>P</sub>·n；摆程计数给出物理时间 t = N·t<sub>P</sub>，去程回程都不倒退因而自带箭头；接力几何给出光速 c = l<sub>P</sub>/t<sub>P</sub>。动画右下角的接力信号每摆程前进一格，其速度与耦合强度无关，只取决于一步跨多远、一步耗多久。强光、弱光、单光子同速皆源于此。</p>
+    <p><span class="k">σ 锁定模式。</span>切换模式后，中间格点的摆程方向因子 σ 从交替锁定为恒定，相位不再折返、单方向缠绕，绕数从 0 开始累积，轴向每摆程前进一格（为便于观察，动画在链端循环）。这是大爆炸同步相变的局域缺陷，也就是有质量粒子的形成判据。相位时间轨迹由三角波转为单调上升，正是两种遗产的分野：凝固完好的部分成为时空砖块，凝固残留的部分成为粒子。</p>
+  </div>
+
+  <div class="foot">
+    模型口径：本动画按《元相子几何动力学（束缚振荡修订整合版）》公理 4 与补充注释 03、04 绘制，取一维链示意，相位差 π 的交错偏移未绘制以突出运动学。<br>
+    待闭合项：束缚排斥势的精确形式为开放问题 O10，硬核碰撞为何完美弹性的微观机制尚待声明；束缚图像下量子数的来源与守恒性为 O11；法向跃迁本身仍是模型假设，未从公理直接导出。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var NC = 8, X0 = 80, CELL = 130, YC = 205, R = 22;
+  var LOCK_CELL = 3;
+  var BASE = 1.6;
+
+  var Q0 = 0.5;
+  var S = {
+    playing: true, speed: 1, q: Q0, N: 0, locked: false,
+    arrow: true, relay: true, stepping: false,
+    relayPos: 0, ripples: [], traj: []
+  };
+
+  function el(tag, attrs){
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function $(id){ return document.getElementById(id); }
+
+  // 写入带下标的文本节点，避免直接覆盖 tspan 结构
+  function setSub(node, main, sub, tail){
+    while (node.firstChild) node.removeChild(node.firstChild);
+    node.appendChild(document.createTextNode(main));
+    if (sub){
+      var s = el("tspan", {dy: 2, "font-size": 9});
+      s.textContent = sub;
+      node.appendChild(s);
+      var r = el("tspan", {dy: -2});
+      r.textContent = tail || "";
+      node.appendChild(r);
+    } else if (tail){
+      node.appendChild(document.createTextNode(tail));
+    }
+  }
+
+  // ---------- 静态骨架：格点区间与边界 ----------
+  var gCells = $("gCells");
+  for (var n = 0; n < NC; n++){
+    gCells.appendChild(el("rect", {
+      x: X0 + n * CELL, y: YC - 26, width: CELL, height: 52,
+      fill: (n % 2 === 0) ? "#f1f5f9" : "#ffffff", stroke: "none"
+    }));
+    var t = el("text", {
+      x: X0 + (n + 0.5) * CELL, y: YC + 46,
+      "font-size": 12, fill: "#94a3b8", "text-anchor": "middle"
+    });
+    t.textContent = "格点 " + n;
+    gCells.appendChild(t);
+  }
+  for (var j = 0; j <= NC; j++){
+    gCells.appendChild(el("line", {
+      x1: X0 + j * CELL, y1: YC - 40, x2: X0 + j * CELL, y2: YC + 30,
+      stroke: "#cbd5e1", "stroke-width": 1
+    }));
+  }
+  // 格距标注
+  gCells.appendChild(el("line", {
+    x1: X0, y1: YC - 58, x2: X0 + CELL, y2: YC - 58,
+    stroke: "#185fa5", "stroke-width": 0.5,
+    "marker-start": "url(#arB)", "marker-end": "url(#arB)"
+  }));
+  var lab = el("text", {x: X0 + CELL / 2, y: YC - 66, "font-size": 12,
+    fill: "#185fa5", "text-anchor": "middle"});
+  lab.appendChild(document.createTextNode("格距 l"));
+  var labSub = el("tspan", {dy: 2, "font-size": 9});
+  labSub.textContent = "P";
+  lab.appendChild(labSub);
+  var labRst = el("tspan", {dy: -2});
+  labRst.textContent = "（摆幅）";
+  lab.appendChild(labRst);
+  gCells.appendChild(lab);
+
+  // ---------- 动态：元相子 ----------
+  var gOrbs = $("gOrbs"), orbs = [];
+  for (var i = 0; i < NC; i++){
+    var g = el("g", {});
+    var body = el("circle", {r: R, fill: "#e6f1fb", stroke: "#185fa5", "stroke-width": 0.5});
+    var ptr = el("line", {stroke: "#185fa5", "stroke-width": 2, "stroke-linecap": "round"});
+    var core = el("circle", {r: 3.5, fill: "#185fa5"});
+    var dir = el("line", {stroke: "#185fa5", "stroke-width": 1.5,
+      "marker-end": "url(#arB)", "stroke-dasharray": "3 2"});
+    g.appendChild(body); g.appendChild(ptr); g.appendChild(core); g.appendChild(dir);
+    gOrbs.appendChild(g);
+    orbs.push({g: g, body: body, ptr: ptr, core: core, dir: dir});
+  }
+
+  // ---------- 接力信号 ----------
+  var gRelay = $("gRelay");
+  var relayMark = el("circle", {r: 8, fill: "#0f6e56", opacity: 0.9});
+  var relayRing = el("circle", {r: 14, fill: "none", stroke: "#0f6e56", "stroke-width": 1, opacity: 0.5});
+  gRelay.appendChild(relayRing); gRelay.appendChild(relayMark);
+
+  // ---------- 几何函数 ----------
+  // 摆程 N 内格点 n 的圆心位置（单位：格距）
+  function cellFrac(n, N, q){
+    var dir = ((n + N) % 2 === 0) ? 1 : -1;
+    return n + (dir > 0 ? q : 1 - q);
+  }
+  // 格点 n 在摆程 N 开始时的累积相位（单位：2π）
+  function phaseStart(n, N){
+    return (N % 2 === 1) ? ((n % 2 === 0) ? 1 : -1) : 0;
+  }
+  function phaseNow(n, N, q){
+    var dir = ((n + N) % 2 === 0) ? 1 : -1;
+    return phaseStart(n, N) + dir * q;
+  }
+
+  // ---------- 渲染 ----------
+  var ptrTheta = $("ptrTheta"), arcTheta = $("arcTheta");
+  var trajLine = $("trajLine"), trajHint = $("trajHint");
+
+  function arcPath(cx, cy, r, turn){
+    var th = ((turn % 1) + 1) % 1 * 2 * Math.PI;
+    if (th < 1e-6) return "M" + cx + " " + cy;
+    var x = cx + r * Math.cos(th), y = cy - r * Math.sin(th);
+    var large = th > Math.PI ? 1 : 0;
+    return "M" + (cx + r) + " " + cy + " A" + r + " " + r + " 0 " + large + " 1 " + x + " " + y
+           + " L" + cx + " " + cy + " Z";
+  }
+
+  function render(now){
+    var i, n;
+    // 格点圆心
+    for (n = 0; n < NC; n++){
+      var o = orbs[n], frac, dirv, ph;
+      if (S.locked && n === LOCK_CELL){
+        frac = (LOCK_CELL + S.N + S.q) % NC;
+        dirv = 1;
+        ph = S.N + S.q;
+        o.body.setAttribute("fill", "#faeeda");
+        o.body.setAttribute("stroke", "#854f0b");
+        o.ptr.setAttribute("stroke", "#854f0b");
+        o.core.setAttribute("fill", "#854f0b");
+        o.dir.setAttribute("stroke", "#854f0b");
+        o.dir.setAttribute("marker-end", "url(#arT)");
+      } else {
+        frac = cellFrac(n, S.N, S.q);
+        dirv = ((n + S.N) % 2 === 0) ? 1 : -1;
+        ph = phaseNow(n, S.N, S.q);
+        o.body.setAttribute("fill", "#e6f1fb");
+        o.body.setAttribute("stroke", "#185fa5");
+        o.ptr.setAttribute("stroke", "#185fa5");
+        o.core.setAttribute("fill", "#185fa5");
+        o.dir.setAttribute("stroke", "#185fa5");
+        o.dir.setAttribute("marker-end", "url(#arB)");
+      }
+      var cx = X0 + frac * CELL, cy = YC;
+      var th = ph * 2 * Math.PI;
+      o.g.setAttribute("transform", "translate(" + cx.toFixed(2) + "," + cy + ")");
+      o.ptr.setAttribute("x1", 0); o.ptr.setAttribute("y1", 0);
+      o.ptr.setAttribute("x2", (R * Math.cos(th)).toFixed(2));
+      o.ptr.setAttribute("y2", (-R * Math.sin(th)).toFixed(2));
+      o.dir.setAttribute("x1", (dirv * R).toFixed(2));
+      o.dir.setAttribute("y1", -R - 8);
+      o.dir.setAttribute("x2", (dirv * (R + 26)).toFixed(2));
+      o.dir.setAttribute("y2", -R - 8);
+      o.dir.setAttribute("opacity", S.arrow ? 1 : 0);
+    }
+
+    // 相位指针（取格点 0 为代表）
+    var turn = S.locked ? (S.N + S.q) : phaseNow(0, S.N, S.q);
+    var ang = turn * 2 * Math.PI;
+    ptrTheta.setAttribute("x2", (170 + 85 * Math.cos(ang)).toFixed(2));
+    ptrTheta.setAttribute("y2", (470 - 85 * Math.sin(ang)).toFixed(2));
+    arcTheta.setAttribute("d", arcPath(170, 470, 85, turn));
+
+    // 涟漪
+    var gR = $("gRipples");
+    while (gR.firstChild) gR.removeChild(gR.firstChild);
+    for (i = S.ripples.length - 1; i >= 0; i--){
+      var rp = S.ripples[i];
+      var age = (now - rp.t0) / 1000;
+      if (age > 0.55){ S.ripples.splice(i, 1); continue; }
+      var k = age / 0.55;
+      var rr = 8 + 34 * k;
+      gR.appendChild(el("circle", {
+        cx: X0 + rp.j * CELL, cy: YC, r: rr.toFixed(2),
+        fill: "none", stroke: "#e24b4a",
+        "stroke-width": (2.5 * (1 - k)).toFixed(2),
+        opacity: (1 - k).toFixed(2)
+      }));
+      gR.appendChild(el("circle", {
+        cx: X0 + rp.j * CELL, cy: YC, r: 5,
+        fill: "#e24b4a", opacity: (0.9 * (1 - k)).toFixed(2)
+      }));
+    }
+
+    // 接力信号
+    gRelay.setAttribute("opacity", S.relay ? 1 : 0);
+    var rx = X0 + (S.relayPos + 0.5) * CELL;
+    relayMark.setAttribute("cx", rx); relayMark.setAttribute("cy", YC - 96);
+    relayRing.setAttribute("cx", rx); relayRing.setAttribute("cy", YC - 96);
+
+    // 相位轨迹
+    var pts = [];
+    var M = S.traj.length;
+    for (i = 0; i < M; i++){
+      var px = 340 + 420 * (i / Math.max(1, M - 1));
+      var py = 580 - 190 * (((S.traj[i] % 1) + 1) % 1);
+      pts.push(px.toFixed(1) + "," + py.toFixed(1));
+    }
+    trajLine.setAttribute("points", pts.join(" "));
+    trajLine.setAttribute("stroke", S.locked ? "#854f0b" : "#185fa5");
+    trajHint.setAttribute("opacity", M > 4 ? 0 : 1);
+
+    // 读数
+    $("rN").textContent = String(S.N);
+    setSub($("rT"), S.N + " t", "P");
+    $("rTheta").textContent = (S.q * 2).toFixed(2) + " π";
+    $("rSigma").textContent = S.locked ? "恒定 +1（锁定）"
+      : (((S.N % 2 === 0) ? "+1（去程）" : "−1（回程）"));
+    var wind = S.locked ? S.N : 0;
+    $("rWind").textContent = String(wind);
+    $("rC").textContent = "1.00 c";
+    $("txtWinding").textContent = S.locked
+      ? "绕数 " + S.N + "（σ 锁定）" : "绕数 0（束缚态）";
+    $("txtWinding").setAttribute("fill", S.locked ? "#854f0b" : "#0f6e56");
+    $("ptrHint").textContent = S.locked
+      ? "σ 锁定：单向逆时针，圈数累积"
+      : ((S.N % 2 === 0) ? "去程：逆时针（θ 递增）" : "回程：顺时针（θ 递减）");
+  }
+
+  // ---------- 摆程推进 ----------
+  function onSwingEnd(now){
+    S.N += 1;
+    S.relayPos = (S.relayPos + 1) % NC;
+    if (S.N % 2 === 0){
+      for (var j = 1; j <= NC - 1; j += 2) S.ripples.push({j: j, t0: now});
+    } else {
+      for (var m = 2; m <= NC - 2; m += 2) S.ripples.push({j: m, t0: now});
+    }
+    if (S.stepping){ S.playing = false; S.stepping = false; syncBtn(); }
+  }
+
+  function sample(){
+    var turn = S.locked ? (S.N + S.q) : phaseNow(0, S.N, S.q);
+    S.traj.push(turn);
+    if (S.traj.length > 260) S.traj.shift();
+  }
+
+  var last = 0;
+  function frame(now){
+    if (!last) last = now;
+    var dt = (now - last) / 1000; last = now;
+    if (dt > 0.25) dt = 0.25;
+    if (S.playing){
+      var per = BASE / S.speed;
+      S.q += dt / per;
+      var guard = 0;
+      while (S.q >= 1 && guard++ < 4){
+        S.q -= 1;
+        onSwingEnd(now);
+      }
+      sample();
+    }
+    render(now);
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- 控件 ----------
+  function syncBtn(){
+    var b = $("btnPlay");
+    b.textContent = S.playing ? "暂停" : "播放";
+    if (S.playing) b.classList.add("on"); else b.classList.remove("on");
+  }
+  $("btnPlay").addEventListener("click", function(){
+    S.playing = !S.playing; S.stepping = false; syncBtn();
+  });
+  $("btnStep").addEventListener("click", function(){
+    S.stepping = true; S.playing = true; syncBtn();
+  });
+  $("btnReset").addEventListener("click", function(){
+    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.traj = [];
+    S.playing = true; S.stepping = false; syncBtn();
+  });
+  $("rngSpeed").addEventListener("input", function(){
+    S.speed = parseFloat(this.value);
+    $("lblSpeed").textContent = S.speed.toFixed(2) + "x";
+  });
+  $("btnMode").addEventListener("click", function(){
+    S.locked = !S.locked;
+    this.textContent = S.locked ? "模式：σ 锁定缺陷" : "模式：束缚振荡";
+    if (S.locked) this.classList.add("on"); else this.classList.remove("on");
+    if (S.locked) gOrbs.appendChild(orbs[LOCK_CELL].g);
+    S.q = Q0; S.N = 0; S.relayPos = 0; S.ripples = []; S.traj = [];
+  });
+  $("chkArrow").addEventListener("change", function(){ S.arrow = this.checked; });
+  $("chkRelay").addEventListener("change", function(){ S.relay = this.checked; });
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
