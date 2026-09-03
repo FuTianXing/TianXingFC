@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时空晶格振荡模型 · 元相子理论三维可视化</title>
+<style>
+  :root{
+    --ink:#1e293b; --ink2:#475569; --ink3:#94a3b8;
+    --line:#e2e8f0; --bg:#ffffff; --surface:#f8fafc;
+    --blue:#185fa5; --blue-l:#e6f1fb; --blue-d:#0c447c;
+    --teal:#0f6e56; --teal-l:#e1f5ee;
+    --amber:#854f0b; --amber-l:#faeeda;
+    --red:#a32d2d; --red-l:#fcebeb;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC',system-ui,sans-serif;}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 20px 60px;}
+  .top{text-align:center;margin-bottom:16px;}
+  .top h1{font-size:26px;margin:0 0 8px;font-weight:500;letter-spacing:1px;}
+  .top p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.7;}
+
+  #stage{position:relative;width:100%;height:clamp(480px,68vh,760px);
+    border:0.5px solid var(--line);border-radius:12px;overflow:hidden;background:#f6f8fb;}
+  #stage canvas{display:block;}
+  .ovl{position:absolute;background:rgba(255,255,255,.86);border:0.5px solid var(--line);
+    border-radius:10px;backdrop-filter:blur(3px);}
+  #tabs{top:12px;left:12px;display:flex;gap:6px;padding:6px;}
+  #tabs button{font:inherit;font-size:13px;padding:6px 13px;border-radius:8px;border:0.5px solid #cbd5e1;
+    background:#fff;color:var(--ink);cursor:pointer;}
+  #tabs button:hover{border-color:var(--blue);color:var(--blue);}
+  #tabs button.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  #tabs .sub{font-size:11.5px;color:var(--ink3);align-self:center;padding:0 4px;}
+
+  #readout{top:12px;right:12px;padding:10px 14px;min-width:186px;font-size:12.5px;color:var(--ink2);}
+  #readout h3{margin:0 0 7px;font-size:13px;font-weight:500;color:var(--ink);
+    border-bottom:0.5px solid var(--line);padding-bottom:5px;}
+  #readout .r{display:flex;justify-content:space-between;gap:12px;line-height:1.85;}
+  #readout .r b{font-weight:500;color:var(--ink);}
+  #readout .hint-ins{margin-top:6px;padding-top:6px;border-top:0.5px dashed var(--line);
+    font-size:11.5px;color:var(--ink3);line-height:1.6;}
+
+  #insp{bottom:12px;left:12px;padding:10px 14px;width:266px;display:none;font-size:12.5px;color:var(--ink2);}
+  #insp h3{margin:0 0 6px;font-size:13px;font-weight:500;color:var(--ink);display:flex;
+    justify-content:space-between;align-items:center;}
+  #insp h3 button{font:inherit;font-size:11px;padding:2px 8px;border-radius:6px;border:0.5px solid #cbd5e1;
+    background:#fff;cursor:pointer;color:var(--ink2);}
+  #insp .r{display:flex;justify-content:space-between;gap:10px;line-height:1.8;}
+  #insp .r b{font-weight:500;color:var(--ink);}
+  #plot{display:block;margin-top:6px;border:0.5px solid var(--line);border-radius:6px;background:#fff;}
+
+  #hint{bottom:12px;right:12px;padding:5px 11px;font-size:11.5px;color:var(--ink3);border-radius:8px;}
+
+  .panel{background:var(--surface);border:0.5px solid var(--line);border-radius:12px;
+    padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;
+    justify-content:center;margin-top:12px;font-size:13px;color:var(--ink2);}
+  .panel button{font:inherit;font-size:13px;padding:5px 13px;border-radius:8px;
+    border:0.5px solid #cbd5e1;background:#fff;color:var(--ink);cursor:pointer;}
+  .panel button:hover{border-color:var(--blue);color:var(--blue);}
+  .panel button.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .panel input[type=range]{width:110px;vertical-align:middle;}
+  .panel label.chk{display:flex;gap:5px;align-items:center;cursor:pointer;white-space:nowrap;}
+  .panel select{font:inherit;font-size:12.5px;padding:3px 6px;border-radius:6px;border:0.5px solid #cbd5e1;background:#fff;}
+  .panel .sep{width:0.5px;height:22px;background:var(--line);}
+  .panel .lgd{display:flex;gap:5px;align-items:center;font-size:12px;}
+  .panel .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  #insertPanel{display:none;}
+  #insertPanel button{border-color:var(--teal);color:var(--teal);}
+  #insertPanel button:hover{background:var(--teal-l);}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;
+    font-size:12.5px;color:var(--ink2);margin:8px 0 4px;}
+  .lg{display:flex;gap:6px;align-items:center;}
+  .lg .dot{width:11px;height:11px;border-radius:50%;display:inline-block;}
+
+  .notes{border-top:0.5px solid var(--line);margin-top:26px;padding-top:22px;}
+  .notes h2{font-size:17px;font-weight:500;margin:0 0 10px;}
+  .notes h2:not(:first-child){margin-top:26px;}
+  .notes p{font-size:14px;line-height:1.95;color:var(--ink2);margin:0 0 14px;max-width:1020px;}
+  .notes .k{color:var(--ink);font-weight:500;}
+  .notes table{border-collapse:collapse;font-size:13px;color:var(--ink2);margin:4px 0 14px;}
+  .notes th,.notes td{border:0.5px solid var(--line);padding:5px 14px;text-align:left;line-height:1.7;}
+  .notes th{background:var(--surface);font-weight:500;color:var(--ink);}
+  .notes ul{font-size:13.5px;line-height:2.0;color:var(--ink2);max-width:1020px;margin:0 0 14px;padding-left:22px;}
+  code{font-family:'Consolas','SFMono-Regular',monospace;font-size:13px;
+    background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--blue-d);}
+  i,em{font-style:italic;font-family:'Times New Roman',Georgia,serif;}
+  .foot{margin-top:24px;font-size:12px;color:var(--ink3);line-height:1.9;
+    border-top:0.5px solid var(--line);padding-top:14px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>时空晶格振荡模型 · 三维可视化</h1>
+    <p>真空是无穷元相子的束缚振荡晶格：碰撞折返定下节律，顺滑插入撑开空间。</p>
+    <p>基于 three.js · 可拖动旋转、缩放、点击查看每个元相子的实时读数</p>
+  </div>
+
+  <div id="stage">
+    <div id="tabs" class="ovl">
+      <button id="m-breath" class="on">基态呼吸</button>
+      <button id="m-insert">顺滑插入</button>
+      <button id="m-wave">接力信号</button>
+      <span class="sub">场景切换</span>
+    </div>
+    <div id="readout" class="ovl">
+      <h3>实时读数</h3>
+      <div class="r"><span>场景</span><b id="ro-mode">基态呼吸</b></div>
+      <div class="r"><span>摆程计数 <i>N</i></span><b id="ro-N">0</b></div>
+      <div class="r"><span>物理时间 <i>t</i></span><b id="ro-t">0 <i>t<sub>P</sub></i></b></div>
+      <div class="r"><span>格点数</span><b id="ro-sites">64</b></div>
+      <div class="r" id="ro-ins-row" style="display:none"><span>插入次数</span><b id="ro-ins">0</b></div>
+      <div class="r" id="ro-scale-row" style="display:none"><span>尺度 <i>a</i>/<i>a</i><sub>0</sub></span><b id="ro-scale">1.000</b></div>
+      <div class="hint-ins">一个摆程：位移 <i>l</i><sub>P</sub>，相位扫过 2π，历时 <i>t</i><sub>P</sub>；接力速度 <i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub>。</div>
+    </div>
+    <div id="insp" class="ovl">
+      <h3><span>元相子读数</span><button id="insp-close">关闭</button></h3>
+      <div class="r"><span>类别</span><b id="insp-cls">-</b></div>
+      <div class="r"><span>格点坐标</span><b id="insp-site">-</b></div>
+      <div class="r"><span>轴向区间</span><b id="insp-int">-</b></div>
+      <div class="r"><span>摆程方向 σ</span><b id="insp-dir">-</b></div>
+      <div class="r"><span>相位 φ</span><b id="insp-phase">-</b></div>
+      <div class="r"><span>净绕数</span><b id="insp-wind">0（往返抵消）</b></div>
+      <div class="r"><span>状态</span><b id="insp-state">-</b></div>
+      <canvas id="plot" width="240" height="128"></canvas>
+    </div>
+    <div id="hint" class="ovl">左键拖动旋转 · 滚轮缩放 · 右键平移 · 点击小球查看读数</div>
+  </div>
+
+  <div class="panel">
+    <button id="btn-play">暂停</button>
+    <button id="btn-step">单步一摆程</button>
+    <button id="btn-reset">重置</button>
+    <span class="sep"></span>
+    <span>速度 <input type="range" id="rng-speed" min="0.25" max="3" step="0.05" value="1"> <b id="spd-val">1.00×</b></span>
+    <span class="sep"></span>
+    <span>晶格
+      <select id="sel-size"><option value="3">3×3×3</option><option value="4" selected>4×4×4</option><option value="5">5×5×5</option></select>
+    </span>
+  </div>
+  <div class="panel">
+    <span>视图</span>
+    <button id="v-all" class="on">三元组</button>
+    <button id="v-x">仅 x 类</button>
+    <button id="v-y">仅 y 类</button>
+    <button id="v-z">仅 z 类</button>
+    <span class="sep"></span>
+    <label class="chk"><input type="checkbox" id="chk-edges" checked> 格胞线框</label>
+    <label class="chk"><input type="checkbox" id="chk-rings" checked> 相位环</label>
+    <label class="chk"><input type="checkbox" id="chk-flash" checked> 碰撞闪光</label>
+    <label class="chk"><input type="checkbox" id="chk-paths"> 区间轨迹线</label>
+    <span class="sep"></span>
+    <span class="lgd"><span class="dot" style="background:#bf4a30"></span>x 类</span>
+    <span class="lgd"><span class="dot" style="background:#0f7a5f"></span>y 类</span>
+    <span class="lgd"><span class="dot" style="background:#2266a8"></span>z 类</span>
+  </div>
+  <div class="panel" id="insertPanel">
+    <label class="chk"><input type="checkbox" id="chk-auto" checked> 自动插入（碰撞点随机诞生）</label>
+    <span>落位频率 <input type="range" id="rng-rate" min="2" max="12" step="0.5" value="5"> 每 <b id="rate-val">5.0</b> 秒一次</span>
+    <button id="btn-insert-now">立即插入一格</button>
+    <span style="font-size:12px;color:var(--ink3)">真实概率 <i>p</i> = 3<i>H</i><sub>0</sub><i>t</i><sub>P</sub> ≈ 3.7×10<sup>−61</sup>，演示放大约 10<sup>60</sup> 倍</span>
+  </div>
+
+  <div class="notes">
+    <h2>机制说明</h2>
+    <p><span class="k">定居与摆程。</span>真空是无穷元相子的束缚振荡晶格（公理 8），空间是元相子定居形成的格点阵。每个格点由 x、y、z 三类元相子构成三元组，异类耦合把三者锁定在同一格点上；场景里每个格胞中的三颗小球即一个三元组，各沿自己的轴往返。一个摆程中，圆心从区间一侧边界单向位移到另一侧边界，同一过程里相位扫过 2π，速率 |<i>ż</i>| = <i>c</i>，历时 <i>t</i><sub>P</sub>。摆程计数给出物理时间 <i>t</i> = <i>N</i>·<i>t</i><sub>P</sub>，步距与耗时共同给出光速 <i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub>。</p>
+    <p><span class="k">折返与交错基态。</span>粒性不可穿透的几何含义是圆心不可重合。相邻格点共享一条边界面，两颗同类圆心相向运动并同时抵达该处，重合瞬间即弹性碰撞，双方运动方向反转；折返的唯一机理是邻居的存在，这里没有墙与外部设施。这要求相邻格点反相、隔一同相，即场景中的三维棋盘位形：同一拍，一半格面上同类圆心相遇并闪出琥珀色光环，下一拍轮到另一半。相位随摆程走出三角波，去程与回程的缠绕互相抵消，净绕数为零，真空因此表现为电中性。</p>
+    <p><span class="k">顺滑插入：空间如何生长。</span>切到"顺滑插入"场景，可以看到正稿（2026-09-02）给出的膨胀机制。在某次碰撞的瞬间，新元相子于碰撞点诞生（青色光环标记的诞生口），复刻即将折返者的同步节律与相位；它转一圈（相位 0 → 2π）恰好跃迁一个格距，与让位一格的原邻居在新区间边界相撞，碰撞时序与旧邻居完全一致。格点归属重排后，A、C、B 成为等距三格，相邻反相保持不变，邻居的节律分毫未动。局部看是三个元相子重新排布，全局看是骨架上多出一个格点区间：空间就此膨胀。动画中被重排的格胞在一个摆程内滑移归位，正稿注记正在处理的落位时序细节在此以放缓过渡呈现。</p>
+    <p><span class="k">稀疏插入与哈勃对接。</span>若每次碰撞都诞生新元相子，格点增长率的量级将达到 1/(2<i>t</i><sub>P</sub>) ≈ 9.3×10<sup>42</sup> s<sup>−1</sup>，远超观测。与哈勃膨胀对接要求插入是极稀疏事件：单次落位概率 <i>p</i> = 3<i>H</i><sub>0</sub><i>t</i><sub>P</sub> ≈ 3.7×10<sup>−61</sup>，指数深度 ln(1/<i>p</i>) = 139.15。三维各向同性下格点数 <i>N</i> ∝ <i>a</i><sup>3</sup>，对应的格点增长率为 <i>Ṅ</i>/<i>N</i> = 3<i>H</i><sub>0</sub>，摊到每个格点上约 47 亿年一次落位。本页演示把该频率放大约 10<sup>60</sup> 倍，让机制在人类时标上可见；读数中的尺度 <i>a</i>/<i>a</i><sub>0</sub> 按当前格点数相对初始格点数的三次方根折算。</p>
+    <p><span class="k">接力与光的传播。</span>切到"接力信号"场景，蓝色平面以 <i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub> 匀速扫过晶格，每个摆程恰好走过一个格距，跨过边界时平面短暂增亮，表示摆程完成事件向下一格交接。它标记的是长波集体模式（相位场包络）的行进，不绑定某一个格点的圆心；基态的锯齿呼吸在 <i>k</i> = π/<i>l</i><sub>P</sub> 处承载时间，光在 <i>k</i> → 0 处承载信号，二者是尺度分离的两个模式。体系里基态光子是元相子本身（时空砖块，运动不需要介质），激发光子是叠加在振荡格点上的校准波。</p>
+
+    <h2>操作一览</h2>
+    <table>
+      <tr><th>操作</th><th>效果</th></tr>
+      <tr><td>左键拖动 / 滚轮 / 右键拖动</td><td>旋转视角 / 缩放 / 平移</td></tr>
+      <tr><td>点击任意小球</td><td>选中该元相子，左下角显示类别、格点、区间、方向、相位与相位三角波轨迹</td></tr>
+      <tr><td>场景页签</td><td>基态呼吸（束缚振荡晶格）、顺滑插入（空间膨胀机制）、接力信号（光速接力）</td></tr>
+      <tr><td>暂停 / 单步一摆程</td><td>逐拍观察碰撞闪光与折返时序</td></tr>
+    </table>
+
+    <h2>模型口径与简化声明</h2>
+    <p>本页按《元相子几何动力学（束缚振荡修订整合版）》公理 4 与补充注释 03、04、15，以及《顺滑插入：元相子潜无穷增长与空间膨胀的微观机制》（2026-09-02）绘制，并作如下演示性简化。三元组的三颗小球按各自轴独立往返绘制，同格点内的异类耦合振动未展开；相位环表示内部 U(1) 复平面单位圆，属数学层的弧长标度，按注释 15 不构成外部空间的位置延伸，环上亮点一个摆程扫过一周，旋转方向随折返反转。插入事件中，新格点除诞生类别外的两类元相子随异类耦合锁定一并淡入；被重排格胞采用一个摆程的放缓过渡，瞬时落位时序的微观细节见《注记-落位时序同步性约束的候选精确形式》。演示取有限晶格窗口，边界处折返机理与内部相同（邻居在窗外），真实晶格为潜无穷。</p>
+
+    <h2>参考</h2>
+    <ul>
+      <li>《顺滑插入：元相子潜无穷增长与空间膨胀的微观机制》（2026-09-02，正稿）</li>
+      <li>《元相子几何动力学（束缚振荡修订整合版）》公理 4，补充注释 03、04、15</li>
+      <li>《理论总纲/元相子理论要点总览》A6 束缚振荡框架</li>
+      <li>同仓库二维版动画：《可视化/时空晶格振荡往返机制_动画.html》</li>
+    </ul>
+  </div>
+
+  <div class="foot">元相子理论 · 时空晶格振荡模型三维可视化 · 物理量以普朗克量纲为背景（<i>l</i><sub>P</sub>、<i>t</i><sub>P</sub>、<i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub>）</div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script>if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"><\/script>');}</script>
+<script src="lib/OrbitControls.js"></script>
+<script>if(window.THREE&&!window.THREE.OrbitControls){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"><\/script>');}</script>
+<script>
+(function(){
+'use strict';
+
+/* ================= 常量 ================= */
+var LP = 1.0;                 // 格距（场景单位）
+var T_P = 1.2;                // 一个摆程的现实秒数（1x 速度）
+var ZHAT = new THREE.Vector3(0,0,1);
+var AXV = { x:new THREE.Vector3(1,0,0), y:new THREE.Vector3(0,1,0), z:new THREE.Vector3(0,0,1) };
+var IDXK = { x:'ix', y:'iy', z:'iz' };
+var CLS = ['x','y','z'];
+var COL = { x:0xbf4a30, y:0x0f7a5f, z:0x2266a8 };
+var COLHEX = { x:'#bf4a30', y:'#0f7a5f', z:'#2266a8' };
+var CLSNAME = { x:'x 类（模态 |X⟩）', y:'y 类（模态 |Y⟩）', z:'z 类（模态 |Z⟩）' };
+var AMBER = 0xd9822b, TEAL = 0x0fa87a;
+
+/* ================= 场景基础 ================= */
+var stage = document.getElementById('stage');
+var renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+stage.appendChild(renderer.domElement);
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf6f8fb);
+var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 300);
+camera.position.set(7.2, 5.6, 9.6);
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.target.set(2, 2, 2);
+controls.maxDistance = 60; controls.minDistance = 2.5;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xdde5ee, 0.95));
+var dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+dirLight.position.set(7, 12, 8); scene.add(dirLight);
+scene.add(new THREE.AmbientLight(0xffffff, 0.28));
+
+/* ================= 几何与分组 ================= */
+var sphGeo   = new THREE.SphereGeometry(0.125, 26, 18);
+var ringGeo  = new THREE.TorusGeometry(0.26, 0.007, 8, 46);
+var markGeo  = new THREE.SphereGeometry(0.032, 10, 8);
+var flashGeo = new THREE.RingGeometry(0.52, 0.66, 44);
+var haloGeo  = new THREE.SphereGeometry(0.21, 20, 14);
+var waveGeo  = new THREE.PlaneGeometry(1, 1);
+
+var gSph   = new THREE.Group();
+var gRing  = new THREE.Group();
+var gFlash = new THREE.Group();
+var gWave  = new THREE.Group(); gWave.visible = false;
+var gHalo  = new THREE.Group();
+scene.add(gSph); scene.add(gRing); scene.add(gFlash); scene.add(gWave); scene.add(gHalo);
+
+function mkLines(color, opacity){
+  var mat = new THREE.LineBasicMaterial({color:color, transparent:true, opacity:opacity});
+  var geo = new THREE.BufferGeometry();
+  var obj = new THREE.LineSegments(geo, mat);
+  scene.add(obj); return obj;
+}
+var edges = mkLines(0x94a6b8, 0.5);
+var paths = mkLines(0x888888, 0.3); paths.visible = false;
+
+/* ================= 状态 ================= */
+var sites = new Map();          // "ix,iy,iz" -> site
+var N0SIDE = 4, N0SITES = 64;
+var sClock = 0;                 // 全局钟，单位：摆程
+var playing = true, speed = 1;
+var mode = 'breath';            // breath | insert | wave
+var viewFilter = 'all';
+var insertions = 0;
+var pending = null;             // {aKey, axis, sStar}
+var nextAutoAt = 0;
+var selected = null;            // {site, cls}
+var showFlash = true;
+
+/* ================= 工具 ================= */
+function parity(st){ return (st.ix + st.iy + st.iz) % 2; }
+function keyOf(ix,iy,iz){ return ix+','+iy+','+iz; }
+function triPattern(p){
+  p = ((p % 2) + 2) % 2;
+  return p < 1 ? {u:p, s:1} : {u:2-p, s:-1};
+}
+function easeInOut(t){ t=Math.max(0,Math.min(1,t)); return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function smooth01(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+/* ================= 格点增删 ================= */
+function addSite(ix, iy, iz, birth, bornCls){
+  var key = keyOf(ix,iy,iz);
+  if(sites.has(key)) return sites.get(key);
+  var site = { ix:ix, iy:iy, iz:iz, key:key, parts:{},
+               birth:(birth==null?-1:birth), bornCls:bornCls||null, morph:null };
+  CLS.forEach(function(c){
+    var mat = new THREE.MeshStandardMaterial({color:COL[c], roughness:0.42, metalness:0.06,
+              emissive:COL[c], emissiveIntensity:0.16});
+    var mesh = new THREE.Mesh(sphGeo, mat);
+    mesh.userData = {site:site, cls:c};
+    gSph.add(mesh);
+    var qAlign = new THREE.Quaternion().setFromUnitVectors(ZHAT, AXV[c]);
+    var ring = new THREE.Group();
+    var torus = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({color:COL[c], transparent:true, opacity:0.42}));
+    var mark = new THREE.Mesh(markGeo, new THREE.MeshBasicMaterial({color:0x1e293b}));
+    mark.position.set(0.26, 0, 0);
+    ring.add(torus); ring.add(mark);
+    ring.userData = {qAlign:qAlign, qSpin:new THREE.Quaternion()};
+    gRing.add(ring);
+    site.parts[c] = {mesh:mesh, ring:ring};
+  });
+  applyView(site);
+  sites.set(key, site);
+  return site;
+}
+function removeSite(key){
+  var st = sites.get(key); if(!st) return;
+  CLS.forEach(function(c){
+    var pt = st.parts[c];
+    gSph.remove(pt.mesh); pt.mesh.material.dispose();
+    gRing.remove(pt.ring);
+    pt.ring.children.forEach(function(ch){ ch.material.dispose(); });
+  });
+  sites.delete(key);
+  if(selected && selected.site === st){ select(null); }
+}
+function clearAll(){
+  Array.from(sites.keys()).forEach(removeSite);
+  sites.clear(); selected = null; pending = null; insertions = 0; sClock = 0;
+}
+
+/* ================= 骨架与轨迹线 ================= */
+function rebuildEdges(){
+  var pos = [];
+  var C = [[0,0,0],[1,0,0],[1,1,0],[0,1,0]];
+  sites.forEach(function(st){
+    var o = [st.ix*LP, st.iy*LP, st.iz*LP];
+    var corners = C.map(function(c){ return [o[0]+c[0]*LP, o[1]+c[1]*LP, o[2]+c[2]*LP]; });
+    for(var i=0;i<4;i++){
+      var a = corners[i], b = corners[(i+1)%4];
+      pos.push(a[0],a[1],a[2], b[0],b[1],b[2]);
+      pos.push(a[0],a[1],a[2], a[0],a[1],a[2]+LP);
+      pos.push(b[0],b[1],b[2], b[0],b[1],b[2]+LP);
+    }
+  });
+  edges.geometry.dispose();
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  edges.geometry = g;
+  edges.material.opacity = 0.14;             // 骨架重排：淡入恢复
+}
+function rebuildPaths(){
+  var pos = [], col = [];
+  var cv = {x:new THREE.Color(COL.x), y:new THREE.Color(COL.y), z:new THREE.Color(COL.z)};
+  sites.forEach(function(st){
+    CLS.forEach(function(c){
+      var o = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
+      var e = o.clone().add(AXV[c].clone().multiplyScalar(LP));
+      pos.push(o.x,o.y,o.z, e.x,e.y,e.z);
+      var cc = cv[c];
+      col.push(cc.r,cc.g,cc.b, cc.r,cc.g,cc.b);
+    });
+  });
+  paths.geometry.dispose();
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  paths.geometry = g;
+  paths.material.vertexColors = true;
+}
+
+/* ================= 碰撞闪光池 ================= */
+var flashPool = [];
+function spawnFlash(pos, axis, scale, color){
+  if(!showFlash) return;
+  var f = null;
+  for(var i=0;i<flashPool.length;i++){ if(!flashPool[i].userData.busy){ f = flashPool[i]; break; } }
+  if(!f){
+    if(flashPool.length >= 260) return;
+    f = new THREE.Mesh(flashGeo, new THREE.MeshBasicMaterial({color:AMBER, transparent:true, opacity:0.85, side:THREE.DoubleSide, depthWrite:false}));
+    f.userData.busy = false; gFlash.add(f); flashPool.push(f);
+  }
+  f.userData.busy = true;
+  f.userData.t0 = sClock; f.userData.dur = 0.45; f.userData.s0 = scale;
+  f.material.color.setHex(color||AMBER);
+  f.position.copy(pos);
+  f.quaternion.setFromUnitVectors(ZHAT, axis);
+  f.visible = true;
+}
+function updateFlashes(){
+  flashPool.forEach(function(f){
+    if(!f.userData.busy) return;
+    var pr = (sClock - f.userData.t0) / f.userData.dur;
+    if(pr >= 1){ f.userData.busy = false; f.visible = false; return; }
+    var sc = f.userData.s0 * (0.45 + 1.35*pr);
+    f.scale.setScalar(sc);
+    f.material.opacity = 0.85 * (1-pr);
+  });
+}
+
+/* ================= 拍事件（整数摆程） ================= */
+function onBeat(k){
+  // 全部到达边界的圆心：闪光
+  sites.forEach(function(st){
+    var q = parity(st);
+    CLS.forEach(function(c){
+      var p = triPattern(k + q);
+      if(p.u > 0.9){
+        if(st.morph && st.morph.pp[c] === 'slide') return;   // 滑移中的 B 由插入闪光负责
+        var org = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
+        var pos = org.add(AXV[c].clone().multiplyScalar(LP));
+        var nb = keyOf(st.ix + (c==='x'?1:0), st.iy + (c==='y'?1:0), st.iz + (c==='z'?1:0));
+        spawnFlash(pos, AXV[c], sites.has(nb)?0.85:0.55, AMBER);
+      }
+    });
+  });
+  wavePulse();
+  if(pending && k >= pending.sStar && mode === 'insert'){ doInsertion(pending); pending = null; hidePendingMark(); }
+}
+
+/* ================= 顺滑插入 ================= */
+var pendingMark = new THREE.Mesh(
+  new THREE.RingGeometry(0.5, 0.62, 40),
+  new THREE.MeshBasicMaterial({color:TEAL, transparent:true, opacity:0.7, side:THREE.DoubleSide, depthWrite:false}));
+pendingMark.visible = false; scene.add(pendingMark);
+function hidePendingMark(){ pendingMark.visible = false; }
+
+function pickFace(){
+  var arr = Array.from(sites.values()).filter(function(st){ return !st.morph; });
+  if(!arr.length) return null;
+  for(var t=0;t<60;t++){
+    var st = arr[Math.floor(Math.random()*arr.length)];
+    var c = CLS[Math.floor(Math.random()*3)];
+    var nb = keyOf(st.ix + (c==='x'?1:0), st.iy + (c==='y'?1:0), st.iz + (c==='z'?1:0));
+    if(sites.has(nb)) return {a:st, axis:c};
+  }
+  return null;
+}
+function scheduleInsertion(){
+  if(sites.size >= 500) return false;
+  var f = pickFace(); if(!f) return false;
+  var qA = parity(f.a);
+  var sStar = Math.ceil(sClock + 0.25);
+  if((((sStar + qA) % 2) + 2) % 2 !== 1) sStar += 1;
+  pending = {aKey:f.a.key, axis:f.axis, sStar:sStar};
+  // 预标记诞生口
+  var st = f.a;
+  pendingMark.position.set(st.ix*LP + (f.axis==='x'?LP:0.5*LP), st.iy*LP + (f.axis==='y'?LP:0.5*LP), st.iz*LP + (f.axis==='z'?LP:0.5*LP));
+  pendingMark.quaternion.setFromUnitVectors(ZHAT, AXV[f.axis]);
+  pendingMark.visible = true;
+  return true;
+}
+function doInsertion(p){
+  var A = sites.get(p.aKey);
+  if(!A || A.morph){ return; }
+  var c = p.axis, kv = IDXK[c];
+  var k = A[kv];
+  var sameRow = function(st){ return st.iy===A.iy && st.iz===A.iz; };
+  if(c === 'y') sameRow = function(st){ return st.ix===A.ix && st.iz===A.iz; };
+  if(c === 'z') sameRow = function(st){ return st.ix===A.ix && st.iy===A.iy; };
+
+  // 收集本行中 index >= k+1 的格点，记录旧相位
+  var shifted = [];
+  sites.forEach(function(st){
+    if(sameRow(st) && st[kv] >= k+1){
+      var qOld = parity(st);
+      var uOld = {};
+      CLS.forEach(function(cc){ uOld[cc] = triPattern(p.sStar + qOld).u; });
+      shifted.push({st:st, oldIdx:st[kv], qOld:qOld, uOld:uOld});
+    }
+  });
+  var Binfo = shifted.filter(function(r){ return r.oldIdx === k+1; })[0];
+  if(!Binfo) return;
+  var B = Binfo.st;
+
+  // 诞生口大闪光
+  var facePos = new THREE.Vector3(A.ix*LP, A.iy*LP, A.iz*LP).add(AXV[c].clone().multiplyScalar(LP));
+  spawnFlash(facePos, AXV[c], 1.7, TEAL);
+
+  // 重排：index +1，重建键
+  sites.forEach(function(st){ if(sameRow(st) && st[kv] >= k+1){ st[kv] += 1; } });
+  var oldKeys = shifted.map(function(r){ return r.st.key; });
+  oldKeys.forEach(function(key){ sites.delete(key); });
+  shifted.forEach(function(r){ r.st.key = keyOf(r.st.ix, r.st.iy, r.st.iz); sites.set(r.st.key, r.st); });
+
+  // 形变设定：B 轴向类滑移，其余按 off0 规则
+  var t0 = p.sStar;
+  shifted.forEach(function(r){
+    var pp = {};
+    CLS.forEach(function(cc){
+      if(r.st === B && cc === c){ pp[cc] = 'slide'; }
+      else{ pp[cc] = (r.uOld[cc] > 0.9) ? 0 : -2; }
+    });
+    r.st.morph = {t0:t0, dur:1, axis:c, pp:pp};
+  });
+
+  // 新格点 C：诞生于碰撞点，轴类即时出现，另两类随后淡入
+  var nC = {ix:A.ix, iy:A.iy, iz:A.iz}; nC[kv] = k+1;
+  addSite(nC.ix, nC.iy, nC.iz, sClock, c);
+
+  insertions += 1;
+  rebuildEdges(); rebuildPaths(); waveSetup();
+  refreshStaticReadout();
+}
+
+/* ================= 接力信号 ================= */
+var wave = {plane:null, frame:null, base:new THREE.Vector3(), len:1, spanX:1, spanY:1, pulse:0};
+function waveSetup(){
+  if(!wave.plane){
+    wave.plane = new THREE.Mesh(waveGeo, new THREE.MeshBasicMaterial({color:0x2266a8, transparent:true, opacity:0.15, side:THREE.DoubleSide, depthWrite:false}));
+    var eg = new THREE.EdgesGeometry(waveGeo);
+    wave.frame = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({color:0x2266a8, transparent:true, opacity:0.75}));
+    wave.plane.add(wave.frame);
+    gWave.add(wave.plane);
+  }
+  var mnx=1e9,mny=1e9,mnz=1e9,mxx=-1e9,mxy=-1e9,mxz=-1e9;
+  sites.forEach(function(st){
+    mnx=Math.min(mnx,st.ix); mxx=Math.max(mxx,st.ix);
+    mny=Math.min(mny,st.iy); mxy=Math.max(mxy,st.iy);
+    mnz=Math.min(mnz,st.iz); mxz=Math.max(mxz,st.iz);
+  });
+  wave.spanX = (mxx-mnx+1.2)*LP; wave.spanY = (mxy-mny+1.2)*LP;
+  wave.len = (mxz-mnz+1)*LP;
+  wave.base.set((mnx+mxx)/2*LP, (mny+mxy)/2*LP, mnz*LP);
+  wave.plane.scale.set(wave.spanX, wave.spanY, 1);
+}
+function wavePulse(){ if(mode==='wave') wave.pulse = 1; }
+function updateWave(){
+  if(mode !== 'wave') return;
+  var z = wave.base.z + ((sClock * LP) % wave.len);
+  wave.plane.position.set(wave.base.x, wave.base.y, z);
+  wave.pulse = Math.max(0, wave.pulse - 0.06);
+  wave.plane.material.opacity = 0.15 + 0.22*wave.pulse;
+  // 掠过的元相子增亮
+  gSph.children.forEach(function(m){
+    if(!m.visible) return;
+    var d = Math.abs(m.position.z - z);
+    m.material.emissiveIntensity = d < 0.5 ? 0.16 + 1.15*(1 - d/0.5) : 0.16;
+  });
+}
+
+/* ================= 逐帧更新 ================= */
+var ZPI = 2*Math.PI;
+var qTmp = new THREE.Quaternion();
+function updateVisuals(){
+  var edgeOp = edges.material.opacity;
+  if(edgeOp < 0.5) edges.material.opacity = Math.min(0.5, edgeOp + 0.006);
+  sites.forEach(function(st){
+    var q = parity(st);
+    var org = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
+    var axv = st.morph ? AXV[st.morph.axis] : null;
+    var pr = st.morph ? (sClock - st.morph.t0)/st.morph.dur : 0;
+    if(st.morph && pr >= 1){ st.morph = null; }
+    CLS.forEach(function(c){
+      var pt = st.parts[c];
+      var u, sigma;
+      var pos = org.clone();
+      if(st.morph){
+        var kind = st.morph.pp[c];
+        if(kind === 'slide'){
+          var e = easeInOut(pr);
+          pos.add(axv.clone().multiplyScalar((e - 1)*LP));
+          u = e; sigma = 1;
+        }else{
+          var p = triPattern(sClock + q);
+          u = p.u; sigma = p.s;
+          pos.add(axv.clone().multiplyScalar(kind*(1 - easeInOut(pr))*LP));
+        }
+        pt.mesh.material.emissiveIntensity = 0.55;
+      }else{
+        var p0 = triPattern(sClock + q);
+        u = p0.u; sigma = p0.s;
+        pt.mesh.material.emissiveIntensity = 0.16;
+      }
+      pos.add(AXV[c].clone().multiplyScalar(u*LP));
+      // 新生淡入
+      var sc = 1;
+      if(st.birth >= 0){
+        var dtb = sClock - st.birth;
+        var fast = (c === st.bornCls) ? 0.5 : 0.95;
+        sc = smooth01(dtb/fast);
+        if(sc <= 0.01){ pt.mesh.visible = false; pt.ring.visible = false; return; }
+        pt.mesh.visible = (viewFilter==='all' || viewFilter===c);
+        pt.ring.visible = chk.rings.checked && sc>0.2 && (viewFilter==='all' || viewFilter===c);
+      }
+      pt.mesh.scale.setScalar(sc);
+      pt.mesh.position.copy(pos);
+      pt.ring.position.copy(pos);
+      pt.ring.scale.setScalar(sc);
+      var phi = ZPI * u;
+      qTmp.setFromAxisAngle(ZHAT, phi);
+      pt.ring.quaternion.multiplyQuaternions(pt.ring.userData.qAlign, qTmp);
+      pt.mesh.userData.cur = {u:u, sigma:sigma, morph:!!st.morph};
+    });
+  });
+  updateFlashes();
+  updateWave();
+  if(pendingMark.visible){
+    pendingMark.material.opacity = 0.35 + 0.35*Math.sin(performance.now()*0.006);
+  }
+  if(selected){ updateHalo(); updateInsp(); pushHist(); }
+}
+
+/* ================= 读数面板 ================= */
+var ro = {};
+['ro-mode','ro-N','ro-t','ro-sites','ro-ins','ro-scale','ro-ins-row','ro-scale-row'].forEach(function(id){ ro[id] = document.getElementById(id); });
+var MODECN = {breath:'基态呼吸', insert:'顺滑插入', wave:'接力信号'};
+function refreshStaticReadout(){
+  ro['ro-sites'].textContent = sites.size;
+  ro['ro-ins'].textContent = insertions;
+  ro['ro-scale'].textContent = (Math.pow(sites.size/N0SITES, 1/3)).toFixed(3);
+}
+function updateReadout(){
+  ro['ro-N'].textContent = Math.floor(sClock + 1e-9);
+  ro['ro-t'].innerHTML = Math.floor(sClock + 1e-9) + ' <i>t</i><sub>P</sub>';
+}
+
+/* ================= 选中与读数卡 ================= */
+var insp = document.getElementById('insp');
+var plot = document.getElementById('plot'), pctx = plot.getContext('2d');
+var halo = new THREE.Mesh(haloGeo, new THREE.MeshBasicMaterial({color:0xf5b942, transparent:true, opacity:0.32, depthWrite:false}));
+halo.visible = false; gHalo.add(halo);
+var hist = [];
+function select(sel){
+  selected = sel; hist = [];
+  insp.style.display = sel ? 'block' : 'none';
+  halo.visible = !!sel;
+  if(!sel) gSph.children.forEach(function(m){ m.material.emissiveIntensity = 0.16; });
+}
+function updateHalo(){
+  var pt = selected.site.parts[selected.cls];
+  halo.position.copy(pt.mesh.position);
+  halo.scale.setScalar(pt.mesh.scale.x);
+  halo.material.opacity = 0.22 + 0.12*Math.sin(performance.now()*0.005);
+}
+function pushHist(){
+  var cur = selected.site.parts[selected.cls].mesh.userData.cur;
+  if(!cur) return;
+  hist.push({s:sClock, u:cur.u});
+  while(hist.length && hist[0].s < sClock - 6.3) hist.shift();
+  drawPlot(cur);
+}
+function drawPlot(cur){
+  var w = plot.width, h = plot.height, padL = 30, padR = 8, padT = 10, padB = 18;
+  pctx.clearRect(0,0,w,h);
+  pctx.strokeStyle = '#e2e8f0'; pctx.fillStyle = '#94a3b8';
+  pctx.lineWidth = 1; pctx.font = '10px sans-serif';
+  var s0 = sClock - 6, s1 = sClock;
+  function X(s){ return padL + (s - s0)/6*(w - padL - padR); }
+  function Y(u){ return padT + (1 - u/1)*(h - padT - padB); }
+  [0, 0.5, 1].forEach(function(v, i){
+    pctx.beginPath(); pctx.moveTo(padL, Y(v)); pctx.lineTo(w - padR, Y(v)); pctx.stroke();
+    pctx.textAlign = 'right';
+    pctx.fillText(['0','π','2π'][i], padL - 4, Y(v) + 3);
+  });
+  pctx.strokeStyle = '#d9822b'; pctx.lineWidth = 1.6;
+  pctx.beginPath();
+  var started = false;
+  hist.forEach(function(pt){
+    if(pt.s < s0) return;
+    var x = X(pt.s), y = Y(pt.u);
+    if(!started){ pctx.moveTo(x,y); started = true; } else pctx.lineTo(x,y);
+  });
+  pctx.stroke();
+  if(cur){
+    pctx.fillStyle = '#1e293b';
+    pctx.beginPath(); pctx.arc(X(sClock), Y(cur.u), 3, 0, ZPI); pctx.fill();
+  }
+  pctx.fillStyle = '#94a3b8'; pctx.textAlign = 'center';
+  pctx.fillText('相位三角波（近 6 个摆程）', (padL + w - padR)/2, h - 4);
+}
+var inspE = {};
+['insp-cls','insp-site','insp-int','insp-dir','insp-phase','insp-wind','insp-state'].forEach(function(id){ inspE[id] = document.getElementById(id); });
+function updateInsp(){
+  var st = selected.site, c = selected.cls;
+  var cur = st.parts[c].mesh.userData.cur || {u:0, sigma:1, morph:false};
+  var n = st[IDXK[c]];
+  inspE['insp-cls'].textContent = CLSNAME[c];
+  inspE['insp-site'].textContent = '(' + st.ix + ', ' + st.iy + ', ' + st.iz + ')';
+  inspE['insp-int'].innerHTML = '[ ' + n + ' <i>l</i><sub>P</sub>, ' + (n+1) + ' <i>l</i><sub>P</sub> ]';
+  inspE['insp-dir'].textContent = cur.morph ? '重排过渡' : (cur.sigma > 0 ? '去程（σ = +1）' : '回程（σ = −1）');
+  inspE['insp-phase'].innerHTML = (2*cur.u).toFixed(2) + ' π';
+  inspE['insp-wind'].textContent = '0（往返抵消）';
+  inspE['insp-state'].textContent = (st.birth >= 0 && sClock - st.birth < 3) ? '新生（插入落位）'
+                                   : st.morph ? '重排过渡中' : '定居（束缚振荡）';
+}
+
+/* ================= 拾取 ================= */
+var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), downXY = null;
+renderer.domElement.addEventListener('pointerdown', function(e){ downXY = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', function(e){
+  if(!downXY) return;
+  var dx = e.clientX - downXY[0], dy = e.clientY - downXY[1];
+  downXY = null;
+  if(dx*dx + dy*dy > 25) return;
+  var r = renderer.domElement.getBoundingClientRect();
+  ndc.x = ((e.clientX - r.left)/r.width)*2 - 1;
+  ndc.y = -((e.clientY - r.top)/r.height)*2 + 1;
+  ray.setFromCamera(ndc, camera);
+  var vis = gSph.children.filter(function(m){ return m.visible && m.scale.x > 0.5; });
+  var hit = ray.intersectObjects(vis, false)[0];
+  if(hit){
+    var ud = hit.object.userData;
+    select({site:ud.site, cls:ud.cls});
+  }else select(null);
+});
+document.getElementById('insp-close').addEventListener('click', function(){ select(null); });
+
+/* ================= 控制 ================= */
+function $(id){ return document.getElementById(id); }
+var chk = { edges:$('chk-edges'), rings:$('chk-rings'), flash:$('chk-flash'), paths:$('chk-paths') };
+
+$('btn-play').addEventListener('click', function(){
+  playing = !playing;
+  this.textContent = playing ? '暂停' : '继续';
+});
+$('btn-step').addEventListener('click', function(){
+  var target = Math.floor(sClock + 1e-9) + 1;
+  playing = false; $('btn-play').textContent = '继续';
+  advanceTo(target);
+});
+$('btn-reset').addEventListener('click', function(){ initLattice(); });
+$('rng-speed').addEventListener('input', function(){
+  speed = parseFloat(this.value);
+  $('spd-val').textContent = speed.toFixed(2) + '×';
+});
+$('sel-size').addEventListener('change', function(){ initLattice(); });
+chk.edges.addEventListener('change', function(){ edges.visible = this.checked; });
+chk.rings.addEventListener('change', function(){ gRing.visible = this.checked; });
+chk.flash.addEventListener('change', function(){ showFlash = this.checked; if(!this.checked){ gFlash.children.forEach(function(f){f.visible=false;f.userData.busy=false;}); } });
+chk.paths.addEventListener('change', function(){ paths.visible = this.checked; if(this.checked) rebuildPaths(); });
+
+function setView(v){
+  viewFilter = v;
+  ['all','x','y','z'].forEach(function(k){ $('v-'+k).classList.toggle('on', k===v); });
+  sites.forEach(applyView);
+}
+function applyView(st){
+  CLS.forEach(function(c){
+    var vis = (viewFilter==='all' || viewFilter===c);
+    st.parts[c].mesh.visible = vis;
+    st.parts[c].ring.visible = vis && chk.rings.checked;
+  });
+}
+$('v-all').addEventListener('click', function(){ setView('all'); });
+$('v-x').addEventListener('click', function(){ setView('x'); });
+$('v-y').addEventListener('click', function(){ setView('y'); });
+$('v-z').addEventListener('click', function(){ setView('z'); });
+
+function setMode(m){
+  mode = m;
+  ['breath','insert','wave'].forEach(function(k){ $('m-'+k).classList.toggle('on', k===m); });
+  ro['ro-mode'].textContent = MODECN[m];
+  $('insertPanel').style.display = (m==='insert') ? 'flex' : 'none';
+  ro['ro-ins-row'].style.display = (m==='insert') ? 'flex' : 'none';
+  ro['ro-scale-row'].style.display = (m==='insert') ? 'flex' : 'none';
+  gWave.visible = (m==='wave');
+  if(m === 'wave'){ waveSetup(); }
+  if(m !== 'insert'){ pending = null; hidePendingMark(); }
+  else { nextAutoAt = performance.now() + 1200; }
+}
+$('m-breath').addEventListener('click', function(){ setMode('breath'); });
+$('m-insert').addEventListener('click', function(){ setMode('insert'); });
+$('m-wave').addEventListener('click', function(){ setMode('wave'); });
+
+$('chk-auto').addEventListener('change', function(){ if(this.checked) nextAutoAt = performance.now() + 800; });
+$('rng-rate').addEventListener('input', function(){ $('rate-val').textContent = parseFloat(this.value).toFixed(1); });
+$('btn-insert-now').addEventListener('click', function(){ if(mode==='insert' && !pending) scheduleInsertion(); });
+
+/* ================= 时间推进 ================= */
+function advanceTo(target, noClamp){
+  if(!noClamp) target = Math.min(target, sClock + 0.5);
+  var k0 = Math.floor(sClock + 1e-9);
+  var k1 = Math.floor(target + 1e-9);
+  for(var k = k0 + 1; k <= k1; k++) onBeat(k);
+  sClock = target;
+}
+var lastT = null;
+function frame(t){
+  requestAnimationFrame(frame);
+  if(lastT == null) lastT = t;
+  var dt = Math.min((t - lastT)/1000, 0.1); lastT = t;
+  if(playing){
+    advanceTo(sClock + dt*speed/T_P);
+    if(mode === 'insert' && $('chk-auto').checked && !pending && performance.now() >= nextAutoAt){
+      if(scheduleInsertion()) nextAutoAt = performance.now() + parseFloat($('rng-rate').value)*1000;
+      else nextAutoAt = performance.now() + 2000;
+    }
+  }
+  controls.update();
+  updateVisuals();
+  updateReadout();
+  renderer.render(scene, camera);
+}
+
+/* ================= 初始化 ================= */
+function initLattice(){
+  clearAll();
+  N0SIDE = parseInt($('sel-size').value, 10);
+  for(var ix=0; ix<N0SIDE; ix++)
+    for(var iy=0; iy<N0SIDE; iy++)
+      for(var iz=0; iz<N0SIDE; iz++)
+        addSite(ix, iy, iz, -1, null);
+  N0SITES = sites.size;
+  controls.target.set(N0SIDE/2, N0SIDE/2, N0SIDE/2);
+  rebuildEdges(); rebuildPaths();
+  edges.material.opacity = 0.5;
+  waveSetup();
+  refreshStaticReadout();
+  select(null);
+}
+function resize(){
+  var w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+/* URL 参数：用于确定性截图（?mode=insert&shot=mid 等） */
+function applyUrlParams(){
+  var q = new URLSearchParams(location.search);
+  var m = q.get('mode');
+  if(m && MODECN[m]) setMode(m);
+  var shot = q.get('shot');
+  if(shot){
+    playing = false; $('btn-play').textContent = '继续';
+    if(shot === 'mid'){
+      if(mode !== 'insert') setMode('insert');
+      $('chk-auto').checked = false;
+      for(var i=0;i<2;i++){
+        if(!pending) scheduleInsertion();
+        if(!pending) break;
+        var sStar = pending.sStar;
+        advanceTo(sStar + 0.01, true);
+        advanceTo(sStar + 0.5, true);
+        pending = null; hidePendingMark();
+      }
+    }else if(shot === 'wave'){
+      if(mode !== 'wave') setMode('wave');
+      sClock = 2.35;
+    }else if(shot === 'beat'){
+      sClock = Math.floor(sClock) + 1 - 0.06;
+      advanceTo(sClock + 0.06);
+    }
+  }
+}
+
+resize();
+initLattice();
+applyUrlParams();
+requestAnimationFrame(frame);
+window.__lattice = {sites:sites, sClock:function(){return sClock;}};
+})();
+</script>
+</body>
+</html>
