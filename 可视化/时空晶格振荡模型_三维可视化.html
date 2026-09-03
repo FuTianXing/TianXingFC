@@ -143,9 +143,9 @@
   <div class="panel">
     <span>视图</span>
     <button id="v-all" class="on">三元组</button>
-    <button id="v-x">仅 x 类</button>
-    <button id="v-y">仅 y 类</button>
-    <button id="v-z">仅 z 类</button>
+    <button id="v-x">x 类</button>
+    <button id="v-y">y 类</button>
+    <button id="v-z">z 类</button>
     <span class="sep"></span>
     <label class="chk"><input type="checkbox" id="chk-edges" checked> 格胞线框</label>
     <label class="chk"><input type="checkbox" id="chk-rings" checked> 相位环</label>
@@ -216,6 +216,13 @@ var COLHEX = { x:'#2266a8', y:'#7a55c7', z:'#0f8a63' };
 var CLSNAME = { x:'x 类（模态 |X⟩）', y:'y 类（模态 |Y⟩）', z:'z 类（模态 |Z⟩）' };
 var AMBER = 0xd9822b, TEAL = 0x0fa87a;
 var EMIS_BASE = 0.2;
+// 相位圆环朝向：圆面包含振荡轴（像沿链滚动的轮子），局部X=轴、局部Y=面内垂直、局部Z=法线
+var E2 = { x:new THREE.Vector3(0,1,0), y:new THREE.Vector3(0,0,1), z:new THREE.Vector3(1,0,0) };
+var RING_Q = {};
+CLS.forEach(function(c){
+  var n = new THREE.Vector3().crossVectors(AXV[c], E2[c]);
+  RING_Q[c] = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(AXV[c], E2[c], n));
+});
 
 /* ================= 场景基础 ================= */
 var stage = document.getElementById('stage');
@@ -258,7 +265,7 @@ function mkLines(color, opacity){
   scene.add(obj); return obj;
 }
 var edges = null;
-var edgeMat = new THREE.MeshStandardMaterial({color:0x7fb0dd, roughness:0.45, metalness:0.0});
+var edgeMat = new THREE.MeshStandardMaterial({color:0x185fa5, roughness:0.45, metalness:0.0});
 var cylGeo = new THREE.CylinderGeometry(0.010, 0.010, 1, 6, 1);
 var paths = mkLines(0xffffff, 0.5); paths.visible = true;
 
@@ -268,7 +275,7 @@ var N0SIDE = 4, N0SITES = 64;
 var sClock = 0;                 // 全局钟，单位：摆程
 var playing = true, speed = 1;
 var mode = 'breath';            // breath | insert | wave
-var viewFilter = 'all';
+var viewSet = { x:true, y:true, z:true };   // 视图多选：可任意组合 x/y/z
 var insertions = 0;
 var pending = null;             // {aKey, axis, sStar}
 var nextAutoAt = 0;
@@ -279,8 +286,10 @@ var showFlash = true;
 function parity(st){ return (st.ix + st.iy + st.iz) % 2; }
 function keyOf(ix,iy,iz){ return ix+','+iy+','+iz; }
 function triPattern(p){
-  p = ((p % 2) + 2) % 2;
-  return p < 1 ? {u:p, s:1} : {u:2-p, s:-1};
+  p = ((p % 2) + 2) % 2;                       // p in [0,2)
+  var u = 0.5 - 0.5*Math.cos(Math.PI*p);        // 钟摆式简谐：端点减速停顿，中段最快
+  var s = Math.sin(Math.PI*p) >= 0 ? 1 : -1;    // 速度方向（去程/回程）
+  return {u:u, s:s};
 }
 function easeInOut(t){ t=Math.max(0,Math.min(1,t)); return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
 function smooth01(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
@@ -297,7 +306,7 @@ function addSite(ix, iy, iz, birth, bornCls){
     var mesh = new THREE.Mesh(sphGeo, mat);
     mesh.userData = {site:site, cls:c};
     gSph.add(mesh);
-    var qAlign = new THREE.Quaternion().setFromUnitVectors(ZHAT, AXV[c]);
+    var qAlign = RING_Q[c];
     var ring = new THREE.Group();
     var torus = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({color:COL[c], transparent:true, opacity:0.42}));
     var mark = new THREE.Mesh(markGeo, new THREE.MeshBasicMaterial({color:0x1e293b}));
@@ -374,6 +383,7 @@ function rebuildPaths(){
   var cv = {x:new THREE.Color(COL.x), y:new THREE.Color(COL.y), z:new THREE.Color(COL.z)};
   sites.forEach(function(st){
     CLS.forEach(function(c){
+      if(!viewSet[c]) return;   // 轴线随视图选择同步：只显示选中类别的轴
       var o = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP).add(PERP[c]);
       var e = o.clone().add(AXV[c].clone().multiplyScalar(LP));
       pos.push(o.x,o.y,o.z, e.x,e.y,e.z);
@@ -550,11 +560,15 @@ function updateWave(){
   wave.plane.position.set(wave.base.x, wave.base.y, z);
   wave.pulse = Math.max(0, wave.pulse - 0.06);
   wave.plane.material.opacity = 0.15 + 0.22*wave.pulse;
-  // 掠过的元相子增亮
+  // 接力信号：波前掠过的小球提亮（信号测量效果）
   gSph.children.forEach(function(m){
     if(!m.visible) return;
     var d = Math.abs(m.position.z - z);
-    m.material.emissiveIntensity = d < 0.5 ? EMIS_BASE + 1.15*(1 - d/0.5) : EMIS_BASE;
+    if(d < 0.5){
+      m.material.emissiveIntensity = EMIS_BASE + 1.15*(1 - d/0.5);
+    }else{
+      m.material.emissiveIntensity = EMIS_BASE;
+    }
   });
 }
 
@@ -587,11 +601,9 @@ function updateVisuals(){
           u = p.u; sigma = p.s;
           pos.add(axv.clone().multiplyScalar(kind*(1 - easeInOut(pr))*LP));
         }
-        pt.mesh.material.emissiveIntensity = 0.55;
       }else{
         var p0 = triPattern(sClock + q);
         u = p0.u; sigma = p0.s;
-        pt.mesh.material.emissiveIntensity = EMIS_BASE;
       }
       pos.add(AXV[c].clone().multiplyScalar(u*LP));
       // 新生淡入
@@ -601,17 +613,23 @@ function updateVisuals(){
         var fast = (c === st.bornCls) ? 0.5 : 0.95;
         sc = smooth01(dtb/fast);
         if(sc <= 0.01){ pt.mesh.visible = false; pt.ring.visible = false; return; }
-        pt.mesh.visible = (viewFilter==='all' || viewFilter===c);
-        pt.ring.visible = chk.rings.checked && sc>0.2 && (viewFilter==='all' || viewFilter===c);
+        pt.mesh.visible = viewSet[c];
+        pt.ring.visible = chk.rings.checked && sc>0.2 && viewSet[c];
       }
       pt.mesh.scale.setScalar(sc);
       pt.mesh.position.copy(pos);
       pt.ring.position.copy(pos);
       pt.ring.scale.setScalar(sc);
-      var phi = ZPI * u;
+      // 小球保持单一恒定颜色（不随位置变色）；仅插入重排时轻微提亮
+      pt.mesh.material.emissiveIntensity = st.morph ? 0.55 : EMIS_BASE;
+      // 相位指针：每个摆程转满一圈，去程逆时针、回程顺时针（碰撞处换向，净绕数为零）
+      var pp = sClock + q;
+      var tr = ((pp % 2) + 2) % 2;
+      tr = tr < 1 ? tr : 2 - tr;            // 三角波 0→1→0
+      var phi = ZPI * tr;                    // 0→2π（去程）→0（回程）
       qTmp.setFromAxisAngle(ZHAT, phi);
       pt.ring.quaternion.multiplyQuaternions(pt.ring.userData.qAlign, qTmp);
-      pt.mesh.userData.cur = {u:u, sigma:sigma, morph:!!st.morph};
+      pt.mesh.userData.cur = {u:u, ph:tr, sigma:sigma, morph:!!st.morph};
     });
   });
   updateFlashes();
@@ -657,7 +675,7 @@ function updateHalo(){
 function pushHist(){
   var cur = selected.site.parts[selected.cls].mesh.userData.cur;
   if(!cur) return;
-  hist.push({s:sClock, u:cur.u});
+  hist.push({s:sClock, u:cur.ph});
   while(hist.length && hist[0].s < sClock - 6.3) hist.shift();
   drawPlot(cur);
 }
@@ -685,7 +703,7 @@ function drawPlot(cur){
   pctx.stroke();
   if(cur){
     pctx.fillStyle = '#1e293b';
-    pctx.beginPath(); pctx.arc(X(sClock), Y(cur.u), 3, 0, ZPI); pctx.fill();
+    pctx.beginPath(); pctx.arc(X(sClock), Y(cur.ph), 3, 0, ZPI); pctx.fill();
   }
   pctx.fillStyle = '#94a3b8'; pctx.textAlign = 'center';
   pctx.fillText('相位三角波（近 6 个摆程）', (padL + w - padR)/2, h - 4);
@@ -700,7 +718,7 @@ function updateInsp(){
   inspE['insp-site'].textContent = '(' + st.ix + ', ' + st.iy + ', ' + st.iz + ')';
   inspE['insp-int'].innerHTML = '[ ' + n + ' <i>l</i><sub>P</sub>, ' + (n+1) + ' <i>l</i><sub>P</sub> ]';
   inspE['insp-dir'].textContent = cur.morph ? '重排过渡' : (cur.sigma > 0 ? '去程（σ = +1）' : '回程（σ = −1）');
-  inspE['insp-phase'].innerHTML = (2*cur.u).toFixed(2) + ' π';
+  inspE['insp-phase'].innerHTML = (2*cur.ph).toFixed(2) + ' π';
   inspE['insp-wind'].textContent = '0（往返抵消）';
   inspE['insp-state'].textContent = (st.birth >= 0 && sClock - st.birth < 3) ? '新生（插入落位）'
                                    : st.morph ? '重排过渡中' : '定居（束缚振荡）';
@@ -747,7 +765,7 @@ $('btn-play').addEventListener('click', function(){
 $('btn-step').addEventListener('click', function(){
   var target = Math.floor(sClock + 1e-9) + 1;
   playing = false; $('btn-play').textContent = '继续';
-  advanceTo(target);
+  advanceTo(target, true);   // 不钳制：整步走完一个摆程，落到对面面心（碰撞点）
 });
 $('btn-reset').addEventListener('click', function(){ initLattice(); });
 $('rng-speed').addEventListener('input', function(){
@@ -760,22 +778,28 @@ chk.rings.addEventListener('change', function(){ gRing.visible = this.checked; }
 chk.flash.addEventListener('change', function(){ showFlash = this.checked; if(!this.checked){ gFlash.children.forEach(function(f){f.visible=false;f.userData.busy=false;}); } });
 chk.paths.addEventListener('change', function(){ paths.visible = this.checked; if(this.checked) rebuildPaths(); });
 
-function setView(v){
-  viewFilter = v;
-  ['all','x','y','z'].forEach(function(k){ $('v-'+k).classList.toggle('on', k===v); });
+function refreshView(){
+  $('v-all').classList.toggle('on', viewSet.x && viewSet.y && viewSet.z);
+  CLS.forEach(function(c){ $('v-'+c).classList.toggle('on', viewSet[c]); });
   sites.forEach(applyView);
+  rebuildPaths();   // 三色轴线随选择同步过滤
+}
+function toggleView(c){
+  viewSet[c] = !viewSet[c];
+  if(!viewSet.x && !viewSet.y && !viewSet.z) viewSet[c] = true;   // 至少保留一组
+  refreshView();
 }
 function applyView(st){
   CLS.forEach(function(c){
-    var vis = (viewFilter==='all' || viewFilter===c);
+    var vis = viewSet[c];
     st.parts[c].mesh.visible = vis;
     st.parts[c].ring.visible = vis && chk.rings.checked;
   });
 }
-$('v-all').addEventListener('click', function(){ setView('all'); });
-$('v-x').addEventListener('click', function(){ setView('x'); });
-$('v-y').addEventListener('click', function(){ setView('y'); });
-$('v-z').addEventListener('click', function(){ setView('z'); });
+$('v-all').addEventListener('click', function(){ viewSet = { x:true, y:true, z:true }; refreshView(); });
+$('v-x').addEventListener('click', function(){ toggleView('x'); });
+$('v-y').addEventListener('click', function(){ toggleView('y'); });
+$('v-z').addEventListener('click', function(){ toggleView('z'); });
 
 function setMode(m){
   mode = m;
@@ -872,6 +896,8 @@ function applyUrlParams(){
     }else if(shot === 'beat'){
       sClock = Math.floor(sClock) + 1 - 0.06;
       advanceTo(sClock + 0.06);
+    }else if(shot === 'swing'){
+      sClock = 1.5;   // 中段：小球位于格胞中心，无折返发光
     }
   }
 }
