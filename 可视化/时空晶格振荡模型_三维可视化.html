@@ -150,11 +150,11 @@
     <label class="chk"><input type="checkbox" id="chk-edges" checked> 格胞线框</label>
     <label class="chk"><input type="checkbox" id="chk-rings" checked> 相位环</label>
     <label class="chk"><input type="checkbox" id="chk-flash" checked> 碰撞闪光</label>
-    <label class="chk"><input type="checkbox" id="chk-paths"> 区间轨迹线</label>
+    <label class="chk"><input type="checkbox" id="chk-paths" checked> 三色轴线</label>
     <span class="sep"></span>
-    <span class="lgd"><span class="dot" style="background:#bf4a30"></span>x 类</span>
-    <span class="lgd"><span class="dot" style="background:#0f7a5f"></span>y 类</span>
-    <span class="lgd"><span class="dot" style="background:#2266a8"></span>z 类</span>
+    <span class="lgd"><span class="dot" style="background:#2266a8"></span>x 类</span>
+    <span class="lgd"><span class="dot" style="background:#7a55c7"></span>y 类</span>
+    <span class="lgd"><span class="dot" style="background:#0f8a63"></span>z 类</span>
   </div>
   <div class="panel" id="insertPanel">
     <label class="chk"><input type="checkbox" id="chk-auto" checked> 自动插入（碰撞点随机诞生）</label>
@@ -165,7 +165,7 @@
 
   <div class="notes">
     <h2>机制说明</h2>
-    <p><span class="k">定居与摆程。</span>真空是无穷元相子的束缚振荡晶格（公理 8），空间是元相子定居形成的格点阵。每个格点由 x、y、z 三类元相子构成三元组，异类耦合把三者锁定在同一格点上；场景里每个格胞中的三颗小球即一个三元组，各沿自己的轴往返。一个摆程中，圆心从区间一侧边界单向位移到另一侧边界，同一过程里相位扫过 2π，速率 |<i>ż</i>| = <i>c</i>，历时 <i>t</i><sub>P</sub>。摆程计数给出物理时间 <i>t</i> = <i>N</i>·<i>t</i><sub>P</sub>，步距与耗时共同给出光速 <i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub>。</p>
+    <p><span class="k">定居与摆程。</span>真空是无穷元相子的束缚振荡晶格（公理 8），空间是元相子定居形成的格点阵。每个格点由 x、y、z 三类元相子构成三元组，异类耦合把三者锁定在同一格点上；场景里每个格胞中的三颗小球即一个三元组，各沿格胞的一条法线往返，三条轴线都穿过格胞中心、两两正交，与《元相子理论的时空观》信息图的胞中心三法线口径一致。一个摆程中，圆心从一个面心位移到对面面心，同一过程里相位扫过 2π，速率 |<i>ż</i>| = <i>c</i>，历时 <i>t</i><sub>P</sub>。摆程计数给出物理时间 <i>t</i> = <i>N</i>·<i>t</i><sub>P</sub>，步距与耗时共同给出光速 <i>c</i> = <i>l</i><sub>P</sub>/<i>t</i><sub>P</sub>。</p>
     <p><span class="k">折返与交错基态。</span>粒性不可穿透的几何含义是圆心不可重合。相邻格点共享一条边界面，两颗同类圆心相向运动并同时抵达该处，重合瞬间即弹性碰撞，双方运动方向反转；折返的唯一机理是邻居的存在，这里没有墙与外部设施。这要求相邻格点反相、隔一同相，即场景中的三维棋盘位形：同一拍，一半格面上同类圆心相遇并闪出琥珀色光环，下一拍轮到另一半。相位随摆程走出三角波，去程与回程的缠绕互相抵消，净绕数为零，真空因此表现为电中性。</p>
     <p><span class="k">顺滑插入：空间如何生长。</span>切到"顺滑插入"场景，可以看到正稿（2026-09-02）给出的膨胀机制。在某次碰撞的瞬间，新元相子于碰撞点诞生（青色光环标记的诞生口），复刻即将折返者的同步节律与相位；它转一圈（相位 0 → 2π）恰好跃迁一个格距，与让位一格的原邻居在新区间边界相撞，碰撞时序与旧邻居完全一致。格点归属重排后，A、C、B 成为等距三格，相邻反相保持不变，邻居的节律分毫未动。局部看是三个元相子重新排布，全局看是骨架上多出一个格点区间：空间就此膨胀。动画中被重排的格胞在一个摆程内滑移归位，正稿注记正在处理的落位时序细节在此以放缓过渡呈现。</p>
     <p><span class="k">稀疏插入与哈勃对接。</span>若每次碰撞都诞生新元相子，格点增长率的量级将达到 1/(2<i>t</i><sub>P</sub>) ≈ 9.3×10<sup>42</sup> s<sup>−1</sup>，远超观测。与哈勃膨胀对接要求插入是极稀疏事件：单次落位概率 <i>p</i> = 3<i>H</i><sub>0</sub><i>t</i><sub>P</sub> ≈ 3.7×10<sup>−61</sup>，指数深度 ln(1/<i>p</i>) = 139.15。三维各向同性下格点数 <i>N</i> ∝ <i>a</i><sup>3</sup>，对应的格点增长率为 <i>Ṅ</i>/<i>N</i> = 3<i>H</i><sub>0</sub>，摊到每个格点上约 47 亿年一次落位。本页演示把该频率放大约 10<sup>60</sup> 倍，让机制在人类时标上可见；读数中的尺度 <i>a</i>/<i>a</i><sub>0</sub> 按当前格点数相对初始格点数的三次方根折算。</p>
@@ -181,7 +181,7 @@
     </table>
 
     <h2>模型口径与简化声明</h2>
-    <p>本页按《元相子几何动力学（束缚振荡修订整合版）》公理 4 与补充注释 03、04、15，以及《顺滑插入：元相子潜无穷增长与空间膨胀的微观机制》（2026-09-02）绘制，并作如下演示性简化。三元组的三颗小球按各自轴独立往返绘制，同格点内的异类耦合振动未展开；相位环表示内部 U(1) 复平面单位圆，属数学层的弧长标度，按注释 15 不构成外部空间的位置延伸，环上亮点一个摆程扫过一周，旋转方向随折返反转。插入事件中，新格点除诞生类别外的两类元相子随异类耦合锁定一并淡入；被重排格胞采用一个摆程的放缓过渡，瞬时落位时序的微观细节见《注记-落位时序同步性约束的候选精确形式》。演示取有限晶格窗口，边界处折返机理与内部相同（邻居在窗外），真实晶格为潜无穷。</p>
+    <p>本页按《元相子几何动力学（束缚振荡修订整合版）》公理 4 与补充注释 03、04、15，以及《顺滑插入：元相子潜无穷增长与空间膨胀的微观机制》（2026-09-02）绘制，并作如下演示性简化。三元组的三颗小球沿过格胞中心的三条法线往返（两两正交），小球与相位环的尺寸为示意放大；同格点内的异类耦合振动未展开；相位环表示内部 U(1) 复平面单位圆，属数学层的弧长标度，按注释 15 不构成外部空间的位置延伸，环上亮点一个摆程扫过一周，旋转方向随折返反转。插入事件中，新格点除诞生类别外的两类元相子随异类耦合锁定一并淡入；被重排格胞采用一个摆程的放缓过渡，瞬时落位时序的微观细节见《注记-落位时序同步性约束的候选精确形式》。演示取有限晶格窗口，边界处折返机理与内部相同（邻居在窗外），真实晶格为潜无穷。</p>
 
     <h2>参考</h2>
     <ul>
@@ -208,12 +208,14 @@ var LP = 1.0;                 // 格距（场景单位）
 var T_P = 1.2;                // 一个摆程的现实秒数（1x 速度）
 var ZHAT = new THREE.Vector3(0,0,1);
 var AXV = { x:new THREE.Vector3(1,0,0), y:new THREE.Vector3(0,1,0), z:new THREE.Vector3(0,0,1) };
+var PERP = { x:new THREE.Vector3(0,0.5,0.5), y:new THREE.Vector3(0.5,0,0.5), z:new THREE.Vector3(0.5,0.5,0) };
 var IDXK = { x:'ix', y:'iy', z:'iz' };
 var CLS = ['x','y','z'];
-var COL = { x:0xbf4a30, y:0x0f7a5f, z:0x2266a8 };
-var COLHEX = { x:'#bf4a30', y:'#0f7a5f', z:'#2266a8' };
+var COL = { x:0x2266a8, y:0x7a55c7, z:0x0f8a63 };
+var COLHEX = { x:'#2266a8', y:'#7a55c7', z:'#0f8a63' };
 var CLSNAME = { x:'x 类（模态 |X⟩）', y:'y 类（模态 |Y⟩）', z:'z 类（模态 |Z⟩）' };
 var AMBER = 0xd9822b, TEAL = 0x0fa87a;
+var EMIS_BASE = 0.2;
 
 /* ================= 场景基础 ================= */
 var stage = document.getElementById('stage');
@@ -235,11 +237,11 @@ dirLight.position.set(7, 12, 8); scene.add(dirLight);
 scene.add(new THREE.AmbientLight(0xffffff, 0.28));
 
 /* ================= 几何与分组 ================= */
-var sphGeo   = new THREE.SphereGeometry(0.125, 26, 18);
-var ringGeo  = new THREE.TorusGeometry(0.26, 0.007, 8, 46);
-var markGeo  = new THREE.SphereGeometry(0.032, 10, 8);
-var flashGeo = new THREE.RingGeometry(0.52, 0.66, 44);
-var haloGeo  = new THREE.SphereGeometry(0.21, 20, 14);
+var sphGeo   = new THREE.SphereGeometry(0.06, 24, 16);
+var ringGeo  = new THREE.TorusGeometry(0.115, 0.006, 8, 40);
+var markGeo  = new THREE.SphereGeometry(0.02, 10, 8);
+var flashGeo = new THREE.RingGeometry(0.24, 0.32, 44);
+var haloGeo  = new THREE.SphereGeometry(0.115, 20, 14);
 var waveGeo  = new THREE.PlaneGeometry(1, 1);
 
 var gSph   = new THREE.Group();
@@ -256,7 +258,7 @@ function mkLines(color, opacity){
   scene.add(obj); return obj;
 }
 var edges = mkLines(0x94a6b8, 0.5);
-var paths = mkLines(0x888888, 0.3); paths.visible = false;
+var paths = mkLines(0xffffff, 0.5); paths.visible = true;
 
 /* ================= 状态 ================= */
 var sites = new Map();          // "ix,iy,iz" -> site
@@ -289,7 +291,7 @@ function addSite(ix, iy, iz, birth, bornCls){
                birth:(birth==null?-1:birth), bornCls:bornCls||null, morph:null };
   CLS.forEach(function(c){
     var mat = new THREE.MeshStandardMaterial({color:COL[c], roughness:0.42, metalness:0.06,
-              emissive:COL[c], emissiveIntensity:0.16});
+              emissive:COL[c], emissiveIntensity:EMIS_BASE});
     var mesh = new THREE.Mesh(sphGeo, mat);
     mesh.userData = {site:site, cls:c};
     gSph.add(mesh);
@@ -297,7 +299,7 @@ function addSite(ix, iy, iz, birth, bornCls){
     var ring = new THREE.Group();
     var torus = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({color:COL[c], transparent:true, opacity:0.42}));
     var mark = new THREE.Mesh(markGeo, new THREE.MeshBasicMaterial({color:0x1e293b}));
-    mark.position.set(0.26, 0, 0);
+    mark.position.set(0.115, 0, 0);
     ring.add(torus); ring.add(mark);
     ring.userData = {qAlign:qAlign, qSpin:new THREE.Quaternion()};
     gRing.add(ring);
@@ -348,7 +350,7 @@ function rebuildPaths(){
   var cv = {x:new THREE.Color(COL.x), y:new THREE.Color(COL.y), z:new THREE.Color(COL.z)};
   sites.forEach(function(st){
     CLS.forEach(function(c){
-      var o = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
+      var o = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP).add(PERP[c]);
       var e = o.clone().add(AXV[c].clone().multiplyScalar(LP));
       pos.push(o.x,o.y,o.z, e.x,e.y,e.z);
       var cc = cv[c];
@@ -401,8 +403,7 @@ function onBeat(k){
       var p = triPattern(k + q);
       if(p.u > 0.9){
         if(st.morph && st.morph.pp[c] === 'slide') return;   // 滑移中的 B 由插入闪光负责
-        var org = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
-        var pos = org.add(AXV[c].clone().multiplyScalar(LP));
+        var pos = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP).add(PERP[c]).add(AXV[c].clone().multiplyScalar(LP));
         var nb = keyOf(st.ix + (c==='x'?1:0), st.iy + (c==='y'?1:0), st.iz + (c==='z'?1:0));
         spawnFlash(pos, AXV[c], sites.has(nb)?0.85:0.55, AMBER);
       }
@@ -414,7 +415,7 @@ function onBeat(k){
 
 /* ================= 顺滑插入 ================= */
 var pendingMark = new THREE.Mesh(
-  new THREE.RingGeometry(0.5, 0.62, 40),
+  new THREE.RingGeometry(0.24, 0.31, 40),
   new THREE.MeshBasicMaterial({color:TEAL, transparent:true, opacity:0.7, side:THREE.DoubleSide, depthWrite:false}));
 pendingMark.visible = false; scene.add(pendingMark);
 function hidePendingMark(){ pendingMark.visible = false; }
@@ -468,7 +469,7 @@ function doInsertion(p){
   var B = Binfo.st;
 
   // 诞生口大闪光
-  var facePos = new THREE.Vector3(A.ix*LP, A.iy*LP, A.iz*LP).add(AXV[c].clone().multiplyScalar(LP));
+  var facePos = new THREE.Vector3(A.ix*LP, A.iy*LP, A.iz*LP).add(PERP[c]).add(AXV[c].clone().multiplyScalar(LP));
   spawnFlash(facePos, AXV[c], 1.7, TEAL);
 
   // 重排：index +1，重建键
@@ -529,7 +530,7 @@ function updateWave(){
   gSph.children.forEach(function(m){
     if(!m.visible) return;
     var d = Math.abs(m.position.z - z);
-    m.material.emissiveIntensity = d < 0.5 ? 0.16 + 1.15*(1 - d/0.5) : 0.16;
+    m.material.emissiveIntensity = d < 0.5 ? EMIS_BASE + 1.15*(1 - d/0.5) : EMIS_BASE;
   });
 }
 
@@ -548,7 +549,7 @@ function updateVisuals(){
     CLS.forEach(function(c){
       var pt = st.parts[c];
       var u, sigma;
-      var pos = org.clone();
+      var pos = org.clone().add(PERP[c]);
       if(st.morph){
         var kind = st.morph.pp[c];
         if(kind === 'slide'){
@@ -564,7 +565,7 @@ function updateVisuals(){
       }else{
         var p0 = triPattern(sClock + q);
         u = p0.u; sigma = p0.s;
-        pt.mesh.material.emissiveIntensity = 0.16;
+        pt.mesh.material.emissiveIntensity = EMIS_BASE;
       }
       pos.add(AXV[c].clone().multiplyScalar(u*LP));
       // 新生淡入
@@ -619,7 +620,7 @@ function select(sel){
   selected = sel; hist = [];
   insp.style.display = sel ? 'block' : 'none';
   halo.visible = !!sel;
-  if(!sel) gSph.children.forEach(function(m){ m.material.emissiveIntensity = 0.16; });
+  if(!sel) gSph.children.forEach(function(m){ m.material.emissiveIntensity = EMIS_BASE; });
 }
 function updateHalo(){
   var pt = selected.site.parts[selected.cls];
@@ -693,6 +694,15 @@ renderer.domElement.addEventListener('pointerup', function(e){
   ray.setFromCamera(ndc, camera);
   var vis = gSph.children.filter(function(m){ return m.visible && m.scale.x > 0.5; });
   var hit = ray.intersectObjects(vis, false)[0];
+  if(!hit){
+    // 小球缩小后补充近似拾取：取射线距离最近且在容差内的球
+    var best = null, bd = 0.14;
+    vis.forEach(function(m){
+      var d = ray.ray.distanceToPoint(m.position);
+      if(d < bd){ bd = d; best = m; }
+    });
+    if(best) hit = {object:best};
+  }
   if(hit){
     var ud = hit.object.userData;
     select({site:ud.site, cls:ud.cls});
