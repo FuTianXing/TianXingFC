@@ -151,6 +151,7 @@
     <label class="chk"><input type="checkbox" id="chk-rings" checked> 相位环</label>
     <label class="chk"><input type="checkbox" id="chk-flash" checked> 碰撞闪光</label>
     <label class="chk"><input type="checkbox" id="chk-paths" checked> 三色轴线</label>
+    <label class="chk"><input type="checkbox" id="chk-labels" checked> 标号</label>
     <span class="sep"></span>
     <span class="lgd"><span class="dot" style="background:#2266a8"></span>x 类</span>
     <span class="lgd"><span class="dot" style="background:#7a55c7"></span>y 类</span>
@@ -178,6 +179,7 @@
       <tr><td>点击任意小球</td><td>选中该元相子，左下角显示类别、格点、区间、方向、相位与相位三角波轨迹</td></tr>
       <tr><td>场景页签</td><td>基态呼吸（束缚振荡晶格）、顺滑插入（空间膨胀机制）、接力信号（光速接力）</td></tr>
       <tr><td>暂停 / 单步一摆程</td><td>逐拍观察碰撞闪光与折返时序</td></tr>
+      <tr><td>标号（默认开）</td><td>为三条过格胞中心的正交链上的元相子编号（x0…、y0…、z0…，颜色随类别）。同一编号的小球沿自己的轴去程、在公共面心与相邻编号碰撞折返、再回程，便于追踪往返机制</td></tr>
     </table>
 
     <h2>模型口径与简化声明</h2>
@@ -240,7 +242,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.28));
 var sphGeo   = new THREE.SphereGeometry(0.06, 24, 16);
 var ringGeo  = new THREE.TorusGeometry(0.115, 0.006, 8, 40);
 var markGeo  = new THREE.SphereGeometry(0.02, 10, 8);
-var flashGeo = new THREE.RingGeometry(0.24, 0.32, 44);
+var flashGeo = new THREE.SphereGeometry(0.07, 16, 12);
 var haloGeo  = new THREE.SphereGeometry(0.115, 20, 14);
 var waveGeo  = new THREE.PlaneGeometry(1, 1);
 
@@ -249,7 +251,8 @@ var gRing  = new THREE.Group();
 var gFlash = new THREE.Group();
 var gWave  = new THREE.Group(); gWave.visible = false;
 var gHalo  = new THREE.Group();
-scene.add(gSph); scene.add(gRing); scene.add(gFlash); scene.add(gWave); scene.add(gHalo);
+var gLabel = new THREE.Group();
+scene.add(gSph); scene.add(gRing); scene.add(gFlash); scene.add(gWave); scene.add(gHalo); scene.add(gLabel);
 
 function mkLines(color, opacity){
   var mat = new THREE.LineBasicMaterial({color:color, transparent:true, opacity:opacity});
@@ -257,7 +260,7 @@ function mkLines(color, opacity){
   var obj = new THREE.LineSegments(geo, mat);
   scene.add(obj); return obj;
 }
-var edges = mkLines(0x94a6b8, 0.5);
+var edges = mkLines(0x334155, 0.72);
 var paths = mkLines(0xffffff, 0.5); paths.visible = true;
 
 /* ================= 状态 ================= */
@@ -328,16 +331,18 @@ function clearAll(){
 /* ================= 骨架与轨迹线 ================= */
 function rebuildEdges(){
   var pos = [];
-  var C = [[0,0,0],[1,0,0],[1,1,0],[0,1,0]];
+  // 立方体 8 角点：0-3 底面(z)，4-7 顶面(z+LP)
+  function corner(o, idx){
+    return [ o[0] + ((idx&1)?LP:0), o[1] + ((idx&2)?LP:0), o[2] + ((idx&4)?LP:0) ];
+  }
+  // 12 条棱：底面4 + 顶面4 + 竖边4
+  var EDGES = [[0,1],[1,3],[3,2],[2,0], [4,5],[5,7],[7,6],[6,4], [0,4],[1,5],[2,6],[3,7]];
   sites.forEach(function(st){
     var o = [st.ix*LP, st.iy*LP, st.iz*LP];
-    var corners = C.map(function(c){ return [o[0]+c[0]*LP, o[1]+c[1]*LP, o[2]+c[2]*LP]; });
-    for(var i=0;i<4;i++){
-      var a = corners[i], b = corners[(i+1)%4];
+    EDGES.forEach(function(e){
+      var a = corner(o, e[0]), b = corner(o, e[1]);
       pos.push(a[0],a[1],a[2], b[0],b[1],b[2]);
-      pos.push(a[0],a[1],a[2], a[0],a[1],a[2]+LP);
-      pos.push(b[0],b[1],b[2], b[0],b[1],b[2]+LP);
-    }
+    });
   });
   edges.geometry.dispose();
   var g = new THREE.BufferGeometry();
@@ -373,14 +378,14 @@ function spawnFlash(pos, axis, scale, color){
   for(var i=0;i<flashPool.length;i++){ if(!flashPool[i].userData.busy){ f = flashPool[i]; break; } }
   if(!f){
     if(flashPool.length >= 260) return;
-    f = new THREE.Mesh(flashGeo, new THREE.MeshBasicMaterial({color:AMBER, transparent:true, opacity:0.85, side:THREE.DoubleSide, depthWrite:false}));
+    f = new THREE.Mesh(flashGeo, new THREE.MeshBasicMaterial({color:AMBER, transparent:true, opacity:0.95, depthWrite:false, depthTest:false}));
+    f.renderOrder = 5;
     f.userData.busy = false; gFlash.add(f); flashPool.push(f);
   }
   f.userData.busy = true;
-  f.userData.t0 = sClock; f.userData.dur = 0.45; f.userData.s0 = scale;
+  f.userData.t0 = sClock; f.userData.dur = 0.4; f.userData.s0 = scale;
   f.material.color.setHex(color||AMBER);
   f.position.copy(pos);
-  f.quaternion.setFromUnitVectors(ZHAT, axis);
   f.visible = true;
 }
 function updateFlashes(){
@@ -388,9 +393,68 @@ function updateFlashes(){
     if(!f.userData.busy) return;
     var pr = (sClock - f.userData.t0) / f.userData.dur;
     if(pr >= 1){ f.userData.busy = false; f.visible = false; return; }
-    var sc = f.userData.s0 * (0.45 + 1.35*pr);
+    var sc = f.userData.s0 * (0.9 + 0.9*pr);
     f.scale.setScalar(sc);
-    f.material.opacity = 0.85 * (1-pr);
+    f.material.opacity = 0.95 * (1 - pr*pr);
+  });
+}
+
+/* ================= 标号（追踪往返） ================= */
+var labelsOn = true;
+var labelSprites = [];
+function makeTextSprite(text, colorHex){
+  var cv = document.createElement('canvas'); cv.width = 128; cv.height = 80;
+  var g = cv.getContext('2d');
+  g.font = 'bold 46px "Microsoft YaHei", sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 9; g.strokeStyle = 'rgba(255,255,255,0.98)';
+  g.strokeText(text, 64, 42);
+  g.fillStyle = colorHex; g.fillText(text, 64, 42);
+  var tex = new THREE.CanvasTexture(cv); tex.needsUpdate = true;
+  var mat = new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false, depthWrite:false});
+  var sp = new THREE.Sprite(mat); sp.scale.set(0.66, 0.41, 0.41); sp.renderOrder = 6;
+  return sp;
+}
+function clearLabels(){
+  labelSprites.forEach(function(o){
+    gLabel.remove(o.sprite); o.sprite.material.map.dispose(); o.sprite.material.dispose();
+  });
+  labelSprites = [];
+}
+function rebuildLabels(){
+  clearLabels();
+  if(!labelsOn) return;
+  var mid = Math.floor((N0SIDE - 1)/2);
+  var chains = [
+    {cls:'x', fix:{iy:mid, iz:mid}},
+    {cls:'y', fix:{ix:mid, iz:mid}},
+    {cls:'z', fix:{ix:mid, iy:mid}}
+  ];
+  chains.forEach(function(ch){
+    var arr = [];
+    sites.forEach(function(st){
+      var ok = true;
+      for(var kk in ch.fix){ if(st[kk] !== ch.fix[kk]) ok = false; }
+      if(ok) arr.push(st);
+    });
+    arr.sort(function(a,b){ return a[IDXK[ch.cls]] - b[IDXK[ch.cls]]; });
+    arr.forEach(function(st, idx){
+      var sp = makeTextSprite(ch.cls + idx, COLHEX[ch.cls]);
+      gLabel.add(sp);
+      labelSprites.push({sprite:sp, site:st, cls:ch.cls});
+    });
+  });
+}
+function updateLabels(){
+  labelSprites.forEach(function(o){
+    var pt = o.site.parts[o.cls];
+    var show = labelsOn && pt.mesh.visible;
+    o.sprite.visible = show;
+    if(show){
+      o.sprite.position.copy(pt.mesh.position);
+      o.sprite.position.y += 0.22;
+      o.sprite.scale.set(0.66, 0.41, 0.41);
+    }
   });
 }
 
@@ -494,7 +558,7 @@ function doInsertion(p){
   addSite(nC.ix, nC.iy, nC.iz, sClock, c);
 
   insertions += 1;
-  rebuildEdges(); rebuildPaths(); waveSetup();
+  rebuildEdges(); rebuildPaths(); waveSetup(); rebuildLabels();
   refreshStaticReadout();
 }
 
@@ -539,7 +603,7 @@ var ZPI = 2*Math.PI;
 var qTmp = new THREE.Quaternion();
 function updateVisuals(){
   var edgeOp = edges.material.opacity;
-  if(edgeOp < 0.5) edges.material.opacity = Math.min(0.5, edgeOp + 0.006);
+  if(edgeOp < 0.72) edges.material.opacity = Math.min(0.72, edgeOp + 0.008);
   sites.forEach(function(st){
     var q = parity(st);
     var org = new THREE.Vector3(st.ix*LP, st.iy*LP, st.iz*LP);
@@ -588,6 +652,7 @@ function updateVisuals(){
       pt.mesh.userData.cur = {u:u, sigma:sigma, morph:!!st.morph};
     });
   });
+  updateLabels();
   updateFlashes();
   updateWave();
   if(pendingMark.visible){
@@ -712,7 +777,7 @@ document.getElementById('insp-close').addEventListener('click', function(){ sele
 
 /* ================= 控制 ================= */
 function $(id){ return document.getElementById(id); }
-var chk = { edges:$('chk-edges'), rings:$('chk-rings'), flash:$('chk-flash'), paths:$('chk-paths') };
+var chk = { edges:$('chk-edges'), rings:$('chk-rings'), flash:$('chk-flash'), paths:$('chk-paths'), labels:$('chk-labels') };
 
 $('btn-play').addEventListener('click', function(){
   playing = !playing;
@@ -733,6 +798,7 @@ chk.edges.addEventListener('change', function(){ edges.visible = this.checked; }
 chk.rings.addEventListener('change', function(){ gRing.visible = this.checked; });
 chk.flash.addEventListener('change', function(){ showFlash = this.checked; if(!this.checked){ gFlash.children.forEach(function(f){f.visible=false;f.userData.busy=false;}); } });
 chk.paths.addEventListener('change', function(){ paths.visible = this.checked; if(this.checked) rebuildPaths(); });
+chk.labels.addEventListener('change', function(){ labelsOn = this.checked; rebuildLabels(); });
 
 function setView(v){
   viewFilter = v;
@@ -808,7 +874,8 @@ function initLattice(){
   N0SITES = sites.size;
   controls.target.set(N0SIDE/2, N0SIDE/2, N0SIDE/2);
   rebuildEdges(); rebuildPaths();
-  edges.material.opacity = 0.5;
+  edges.material.opacity = 0.72;
+  rebuildLabels();
   waveSetup();
   refreshStaticReadout();
   select(null);
