@@ -51,9 +51,12 @@
 
 ## git 规范
 
-- **每次改动文件后自动 `git commit` + `git push origin master`**。
+- **禁止每次改动文件后自动提交**。改动完成后保持工作区未提交状态，累积改动。
+- **提交须由作者显式确认**：只有作者明确说"提交""commit""推送"等指令后，才执行 `git add` + `git commit` + `git push origin master`。作者未确认前，一律不提交、不推送，也不主动反复询问。
+- 一轮工作结束（如一篇论文改完、一次评审修订闭环完成）时，可一句话告知作者"本次改动共 N 个文件，尚未提交，需要提交请告知"，等待作者决定。
 - **git add 只加目标文件，禁用 `git add -A`**（曾误纳 images/ 浏览器缓存 1500+ 文件，已清理并加 .gitignore）
 - commit message 用单引号 here-string `@'...'@`。
+- 提交前用 `git status --short` 与 `git diff --ignore-cr-at-eol --numstat` 核对范围，确认无纯行尾符假差异、无误纳无关文件。
 
 ## 修改纪律
 

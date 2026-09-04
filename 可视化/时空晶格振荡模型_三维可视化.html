@@ -160,6 +160,7 @@
     <label class="chk"><input type="checkbox" id="chk-auto" checked> 自动插入（碰撞点随机诞生）</label>
     <span>落位频率 <input type="range" id="rng-rate" min="2" max="12" step="0.5" value="5"> 每 <b id="rate-val">5.0</b> 秒一次</span>
     <button id="btn-insert-now">立即插入一格</button>
+    <span class="lgd"><span class="dot" style="background:#d92b2b"></span>新插入的格胞（红框）</span>
     <span style="font-size:12px;color:var(--ink3)">真实概率 <i>p</i> = 3<i>H</i><sub>0</sub><i>t</i><sub>P</sub> ≈ 3.7×10<sup>−61</sup>，演示放大约 10<sup>60</sup> 倍</span>
   </div>
 
@@ -215,6 +216,8 @@ var COL = { x:0x2266a8, y:0x7a55c7, z:0x0f8a63 };
 var COLHEX = { x:'#2266a8', y:'#7a55c7', z:'#0f8a63' };
 var CLSNAME = { x:'x 类（模态 |X⟩）', y:'y 类（模态 |Y⟩）', z:'z 类（模态 |Z⟩）' };
 var AMBER = 0xd9822b, TEAL = 0x0fa87a;
+var RED = 0xd92b2b;   // 新插入格胞边框的标记色
+var EDGE_BASE = 0x185fa5;   // 常规格胞边框色（深蓝）
 var EMIS_BASE = 0.2;
 // 相位圆环朝向：圆面包含振荡轴（像沿链滚动的轮子），局部X=轴、局部Y=面内垂直、局部Z=法线
 var E2 = { x:new THREE.Vector3(0,1,0), y:new THREE.Vector3(0,0,1), z:new THREE.Vector3(1,0,0) };
@@ -265,7 +268,7 @@ function mkLines(color, opacity){
   scene.add(obj); return obj;
 }
 var edges = null;
-var edgeMat = new THREE.MeshStandardMaterial({color:0x185fa5, roughness:0.45, metalness:0.0});
+var edgeMat = new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.45, metalness:0.0});
 var cylGeo = new THREE.CylinderGeometry(0.010, 0.010, 1, 6, 1);
 var paths = mkLines(0xffffff, 0.5); paths.visible = true;
 
@@ -347,13 +350,14 @@ function rebuildEdges(){
   function key(a,b){ var ka=a.join(','), kb=b.join(','); return ka<kb ? ka+'|'+kb : kb+'|'+ka; }
   var seen = {}, list = [];
   sites.forEach(function(st){
-    var x=st.ix, y=st.iy, z=st.iz;
+    var x=st.ix, y=st.iy, z=st.iz, isNew = (st.birth >= 0);
     E.forEach(function(e){
       var a=[x+e[0][0], y+e[0][1], z+e[0][2]];
       var b=[x+e[1][0], y+e[1][1], z+e[1][2]];
       var kk = key(a,b);
-      if(seen[kk]) return; seen[kk] = 1;
-      list.push([a,b]);
+      if(seen[kk] !== undefined){ if(isNew) list[seen[kk]].red = true; return; }
+      seen[kk] = list.length;
+      list.push({a:a, b:b, red:isNew});
     });
   });
   if(edges) scene.remove(edges);
@@ -361,17 +365,20 @@ function rebuildEdges(){
   im.count = list.length;
   var m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0,1,0);
   var A = new THREE.Vector3(), B = new THREE.Vector3(), dir = new THREE.Vector3(), mid = new THREE.Vector3(), scl = new THREE.Vector3();
-  list.forEach(function(e, i){
-    A.set(e[0][0]*LP, e[0][1]*LP, e[0][2]*LP);
-    B.set(e[1][0]*LP, e[1][1]*LP, e[1][2]*LP);
+  var cBase = new THREE.Color(EDGE_BASE), cRed = new THREE.Color(RED);
+  list.forEach(function(ed, i){
+    A.set(ed.a[0]*LP, ed.a[1]*LP, ed.a[2]*LP);
+    B.set(ed.b[0]*LP, ed.b[1]*LP, ed.b[2]*LP);
     dir.subVectors(B, A); var len = dir.length();
     mid.addVectors(A, B).multiplyScalar(0.5);
     q.setFromUnitVectors(up, dir.normalize());
     scl.set(1, len, 1);
     m.compose(mid, q, scl);
     im.setMatrixAt(i, m);
+    im.setColorAt(i, ed.red ? cRed : cBase);   // 新格胞边框染红
   });
   im.instanceMatrix.needsUpdate = true;
+  if(im.instanceColor) im.instanceColor.needsUpdate = true;
   im.frustumCulled = false;
   im.visible = chk.edges.checked;
   edges = im;

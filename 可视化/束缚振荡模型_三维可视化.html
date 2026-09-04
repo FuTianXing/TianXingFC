@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>束缚振荡模型 · 元相子时空理论三维可视化</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<style>
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --line:#e3e8ef; --line2:#cdd7e4;
+  --ink:#1f2937; --ink2:#4b5563; --ink3:#8a97a8;
+  --wave:#1a5fb4; --grain:#9a5b12; --couple:#0f766e; --warn:#a53030;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.7}
+.wrap{max-width:1360px;margin:0 auto;padding:0 20px 70px}
+
+.hd{padding:30px 0 18px;text-align:center}
+.hd h1{font-size:27px;font-weight:500;letter-spacing:1px;margin:0 0 6px}
+.hd .sub{font-size:13px;color:var(--ink3);letter-spacing:2px;margin:0 0 14px}
+.hd p{max-width:820px;margin:0 auto;font-size:14px;color:var(--ink2);text-align:left}
+
+.tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px 0 16px}
+.tab{font:inherit;font-size:13.5px;padding:8px 16px;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line2);background:#fff;color:var(--ink2);transition:.15s}
+.tab:hover{border-color:var(--wave);color:var(--wave)}
+.tab.on{background:var(--wave);border-color:var(--wave);color:#fff}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 326px;gap:16px;align-items:start}
+@media (max-width:1000px){.main{grid-template-columns:1fr}}
+.stage{position:relative;width:100%;height:560px;background:#fff;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#c2d{display:none;cursor:ew-resize}
+.hud{position:absolute;left:14px;top:14px;font-size:12px;color:var(--ink2);
+  background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:9px;
+  padding:9px 12px;pointer-events:none;min-width:190px;backdrop-filter:blur(3px)}
+.hud b{font-weight:500;color:var(--ink)}
+.hud .k{color:var(--ink3);display:inline-block;min-width:80px}
+.hud .num{font-variant-numeric:tabular-nums}
+.tag{position:absolute;right:14px;top:14px;font-size:12px;color:var(--ink2);
+  background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:9px;
+  padding:7px 11px;max-width:290px;pointer-events:none;backdrop-filter:blur(3px);text-align:right}
+.legend{position:absolute;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:12px;
+  font-size:11.5px;color:var(--ink2);background:rgba(255,255,255,.86);
+  border:1px solid var(--line);border-radius:9px;padding:7px 11px;pointer-events:none;max-width:70%}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;
+  vertical-align:-1px}
+#err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:#fff9f9;color:var(--warn);font-size:14px;text-align:center;padding:30px;line-height:2}
+
+.side{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px 16px}
+.side h3{margin:0 0 12px;font-size:13px;font-weight:500;color:var(--ink2);letter-spacing:1px;
+  border-bottom:1px solid var(--line);padding-bottom:9px}
+.pane{display:none}.pane.on{display:block}
+.row{display:flex;align-items:center;gap:9px;margin-bottom:11px;font-size:12.5px;color:var(--ink2)}
+.row .lab{flex:0 0 78px;color:var(--ink2)}
+.row .val{margin-left:auto;font-size:11.5px;color:var(--wave);font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{flex:1;min-width:0;accent-color:var(--wave);height:4px}
+.seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;flex:1}
+.seg button{flex:1;font:inherit;font-size:11.5px;padding:5px 4px;border:0;background:#fff;
+  color:var(--ink2);cursor:pointer;border-right:1px solid var(--line2);white-space:nowrap}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--wave);color:#fff}
+.checks{display:flex;flex-wrap:wrap;gap:4px 14px;margin:2px 0 12px;font-size:12px;color:var(--ink2)}
+.checks label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.checks input{accent-color:var(--wave)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.btns button{font:inherit;font-size:12px;padding:6px 12px;border-radius:8px;
+  border:1px solid var(--line2);background:#fff;color:var(--ink);cursor:pointer}
+.btns button:hover{border-color:var(--wave);color:var(--wave)}
+.btns button.pri{background:var(--wave);border-color:var(--wave);color:#fff}
+.note{font-size:11.5px;color:var(--ink3);line-height:1.75;margin:2px 0 10px}
+.mini{width:100%;height:96px;display:block;margin:6px 0 10px;border:1px solid var(--line);
+  border-radius:8px;background:#fcfdff}
+.rd{border-top:1px dashed var(--line);margin-top:12px;padding-top:10px;font-size:11.5px;
+  color:var(--ink2);line-height:1.9}
+.rd span{float:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.hint{font-size:11px;color:var(--ink3);line-height:1.7;margin-top:10px;
+  border-left:2px solid var(--line2);padding-left:9px}
+
+.notes{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 24px 22px}
+.notes h2{font-size:16px;font-weight:500;margin:0 0 4px}
+.notes .lead{font-size:13px;color:var(--ink3);margin:0 0 16px}
+.notes h4{font-size:13px;font-weight:500;margin:20px 0 8px;color:var(--wave);
+  border-left:3px solid var(--wave);padding-left:9px}
+.notes p{font-size:13.5px;color:var(--ink2);margin:0 0 12px;text-align:justify}
+.notes .eq{overflow-x:auto;overflow-y:hidden;padding:3px 0}
+.ft{margin-top:22px;text-align:center;font-size:11.5px;color:var(--ink3);line-height:2}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hd">
+  <h1>束缚振荡模型</h1>
+  <div class="sub">元相子时空理论 · 三维交互可视化</div>
+  <p>元相子定居格点，圆心每摆程从区间一侧单向位移 $l_P$ 到另一侧，相位同步扫过 $2\pi$；抵达与邻居共享的公共边界时，两个圆心重合，因粒性不可穿透而弹性折返。真空不空，是无穷元相子的振荡晶格；光是这片晶格中的弹性波。</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab on" data-s="1">① 摆程解剖</button>
+  <button class="tab" data-s="2">② 折返：圆心不可重合</button>
+  <button class="tab" data-s="3">③ 格点三元组</button>
+  <button class="tab" data-s="4">④ 振荡晶格与光</button>
+  <button class="tab" data-s="5">⑤ 色散与能带</button>
+</nav>
+
+<div class="main">
+  <div class="stage" id="stage">
+    <canvas id="gl"></canvas>
+    <canvas id="c2d"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="tag" id="tag"></div>
+    <div class="legend" id="legend"></div>
+    <div id="err"><div>三维模块未能加载。<br>本页需要联网获取 three.js（jsDelivr CDN）。<br>请检查网络后刷新，或把 three.js 放到本地并修改 importmap 路径。</div></div>
+  </div>
+
+  <aside class="side">
+    <h3>控制面板</h3>
+
+    <div class="pane on" data-p="1">
+      <div class="row"><span class="lab">模式</span>
+        <div class="seg" id="s1-mode"><button class="on" data-v="bound">束缚振荡</button><button data-v="free">自由极限</button></div>
+      </div>
+      <div class="row"><span class="lab">相位速度</span>
+        <input type="range" id="s1-om" min="0.15" max="2.5" step="0.05" value="1"><span class="val" id="s1-om-v"></span></div>
+      <div class="row"><span class="lab">轴向压缩</span>
+        <input type="range" id="s1-az" min="0.25" max="1" step="0.01" value="1"><span class="val" id="s1-az-v"></span></div>
+      <div class="row"><span class="lab">实轴取向</span>
+        <input type="range" id="s1-al" min="0" max="6.28" step="0.01" value="0"><span class="val" id="s1-al-v"></span></div>
+      <div class="checks">
+        <label><input type="checkbox" id="s1-trail" checked>螺旋轨迹</label>
+        <label><input type="checkbox" id="s1-axes" checked>实轴与虚轴</label>
+        <label><input type="checkbox" id="s1-cell" checked>格点区间</label>
+        <label><input type="checkbox" id="s1-nb" checked>邻居示意</label>
+      </div>
+      <div class="btns"><button id="s1-step">单步一个摆程</button><button id="s1-reset">重置</button></div>
+      <div class="note">螺距取 $\lambda=2\pi R=l_P$。真实比例下圆半径仅为格距的 $1/(2\pi)$，螺旋显得稀疏，这正是理论的几何真相，轴向压缩只改变观感。</div>
+      <div class="rd" id="s1-rd"></div>
+      <div class="hint">自由极限中轴向匀速 $v_z=c$，层数无限递增，空间随之流动并留下空洞，因此它只能用于确立换算率族。束缚振荡让每个元相子成为时空的一块稳定砖石。</div>
+    </div>
+
+    <div class="pane" data-p="2">
+      <div class="row"><span class="lab">慢动作</span>
+        <input type="range" id="s2-sp" min="0.04" max="1.2" step="0.02" value="0.6"><span class="val" id="s2-sp-v"></span></div>
+      <div class="row"><span class="lab">相位差</span>
+        <input type="range" id="s2-ph" min="0" max="6.28" step="0.01" value="0"><span class="val" id="s2-ph-v"></span></div>
+      <div class="row"><span class="lab">视角</span>
+        <div class="seg" id="s2-view"><button data-v="near">贴近边界</button><button class="on" data-v="wide">全景</button></div>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="s2-cell" checked>格点区间</label>
+        <label><input type="checkbox" id="s2-trail" checked>圆心轨迹</label>
+        <label><input type="checkbox" id="s2-lab" checked>标注</label>
+      </div>
+      <div class="btns"><button id="s2-step">单步到下次碰撞</button><button id="s2-reset">重置</button></div>
+      <div class="note">同相锁定时两者同时抵达公共边界。注入相位差后抵达时刻错开，格点整体的相干性由三元组内部的异类耦合保证。</div>
+      <div class="rd" id="s2-rd"></div>
+      <div class="hint">折返不需要墙。边界并非额外设施，它就是邻居的圆心所在之处：两个圆心同时到达同一位置，粒性的不可穿透使它们弹开。</div>
+    </div>
+
+    <div class="pane" data-p="3">
+      <div class="row"><span class="lab">耦合 κ<sub>φ</sub></span>
+        <input type="range" id="s3-k" min="0" max="3" step="0.02" value="0"><span class="val" id="s3-k-v"></span></div>
+      <div class="row"><span class="lab">相位噪声</span>
+        <input type="range" id="s3-n" min="0" max="1.2" step="0.02" value="0.35"><span class="val" id="s3-n-v"></span></div>
+      <div class="row"><span class="lab">载波速度</span>
+        <input type="range" id="s3-om" min="0.2" max="3" step="0.05" value="1.2"><span class="val" id="s3-om-v"></span></div>
+      <div class="checks">
+        <label><input type="checkbox" id="s3-box" checked>格点立方</label>
+        <label><input type="checkbox" id="s3-axes" checked>三向正交轴</label>
+      </div>
+      <div class="btns"><button id="s3-sync" class="pri">锁定（κ 渐增）</button><button id="s3-reset">重置</button></div>
+      <canvas class="mini" id="s3-chart"></canvas>
+      <div class="note">纵轴为相位差模值（弧度，上界 π），三条曲线分别对应 $\theta^x-\theta^y$、$\theta^y-\theta^z$、$\theta^z-\theta^x$。耦合开启后相位差被拉向零，格点整体相干。</div>
+      <div class="rd" id="s3-rd"></div>
+      <div class="hint">波性统一与粒性独立并行不悖。三个方向的相位被锁定为一个整体相位，而格点坐标 $\mathbb{Z}^3$ 与量子数完全保持独立。</div>
+    </div>
+
+    <div class="pane" data-p="4">
+      <div class="row"><span class="lab">模式</span>
+        <div class="seg" id="s4-mode">
+          <button class="on" data-v="sync">同步相变</button><button data-v="wave">单色行波</button><button data-v="pulse">脉冲光锥</button>
+        </div>
+      </div>
+      <div class="row"><span class="lab">晶格规模</span>
+        <input type="range" id="s4-n" min="4" max="8" step="1" value="6"><span class="val" id="s4-n-v"></span></div>
+
+      <div class="sub4" data-m="sync">
+        <div class="row"><span class="lab">噪声 T</span>
+          <input type="range" id="s4-t" min="0" max="1.4" step="0.02" value="0.9"><span class="val" id="s4-t-v"></span></div>
+        <div class="row"><span class="lab">耦合 K</span>
+          <input type="range" id="s4-k" min="0" max="4" step="0.05" value="2.2"><span class="val" id="s4-k-v"></span></div>
+        <div class="row"><span class="lab">载波速度</span>
+          <input type="range" id="s4-om" min="0.2" max="3" step="0.05" value="1.2"><span class="val" id="s4-om-v"></span></div>
+      </div>
+
+      <div class="sub4" data-m="wave" style="display:none">
+        <div class="row"><span class="lab">波矢大小</span>
+          <input type="range" id="s4-kk" min="0.08" max="3.14" step="0.01" value="0.6"><span class="val" id="s4-kk-v"></span></div>
+        <div class="row"><span class="lab">传播方向</span>
+          <div class="seg" id="s4-dir"><button class="on" data-v="100">[100]</button><button data-v="110">[110]</button><button data-v="111">[111]</button></div>
+        </div>
+        <div class="row"><span class="lab">显示振幅</span>
+          <input type="range" id="s4-amp" min="0.05" max="0.5" step="0.01" value="0.3"><span class="val" id="s4-amp-v"></span></div>
+      </div>
+
+      <div class="sub4" data-m="pulse" style="display:none">
+        <div class="row"><span class="lab">演化速度</span>
+          <input type="range" id="s4-ps" min="0.2" max="3" step="0.05" value="1.2"><span class="val" id="s4-ps-v"></span></div>
+        <div class="row"><span class="lab">脉冲宽度</span>
+          <input type="range" id="s4-sg" min="0.5" max="2.6" step="0.05" value="1.1"><span class="val" id="s4-sg-v"></span></div>
+      </div>
+
+      <div class="checks">
+        <label><input type="checkbox" id="s4-cone" checked>光锥球壳</label>
+        <label><input type="checkbox" id="s4-site">格点标记</label>
+      </div>
+      <div class="btns"><button id="s4-fire" class="pri">重新激发</button><button id="s4-reset">重置</button></div>
+      <canvas class="mini" id="s4-chart"></canvas>
+      <div class="note" id="s4-note"></div>
+      <div class="rd" id="s4-rd"></div>
+      <div class="hint">长度以格距 $l_P$ 为单位、时间以摆程时间 $t_P$ 为单位时，晶格波动方程化为 $\partial_\tau^2\theta=\nabla^2\theta$，波速恰为 $1$，与 $c=l_P/t_P$ 一致。光锥球壳半径就是 $\tau$。</div>
+    </div>
+
+    <div class="pane" data-p="5">
+      <div class="row"><span class="lab">波矢 k·l<sub>P</sub></span>
+        <input type="range" id="s5-k" min="0.02" max="5.4" step="0.01" value="0.8"><span class="val" id="s5-k-v"></span></div>
+      <div class="row"><span class="lab">方向</span>
+        <div class="seg" id="s5-dir"><button class="on" data-v="100">[100]</button><button data-v="110">[110]</button><button data-v="111">[111]</button></div>
+      </div>
+      <div class="row"><span class="lab">能隙 κ<sub>φ</sub>/ω<sub>P</sub></span>
+        <input type="range" id="s5-g" min="0" max="0.5" step="0.005" value="0.12"><span class="val" id="s5-g-v"></span></div>
+      <div class="checks">
+        <label><input type="checkbox" id="s5-app" checked>首阶近似</label>
+        <label><input type="checkbox" id="s5-gap" checked>能隙分支</label>
+        <label><input type="checkbox" id="s5-emax" checked>能带顶</label>
+      </div>
+      <div class="note">在图上按住并左右拖动可直接改变 $k$。低能端三条曲线与光线重合；接近布里渊区边界时曲线明显下弯且彼此分离。</div>
+      <div class="rd" id="s5-rd"></div>
+      <div class="hint">首阶修正 $\delta\omega/\omega=-\frac{l_P^2}{24}\frac{\sum_a k_a^4}{k^2}$ 具有方向依赖，量级由 $(E/E_P)^2$ 标定。三个方向的系数比为 $3:1.5:1$，构成普朗克层的可检验签名。</div>
+    </div>
+
+  </aside>
+</div>
+
+<section class="notes" id="notes"></section>
+
+<div class="ft">
+  理论基准：《元相子几何动力学（束缚振荡修订整合版）》《元相子振荡晶格的色散关系：低能光速涌现与洛伦兹破坏首阶项》<br>
+  可视化页面 · 天行新学研究院 · 2026-09-03
+</div>
+</div>
+
+<script>
+window.addEventListener('load',function(){
+  setTimeout(function(){ if(!window.__OK){ document.getElementById('err').style.display='flex'; } },9000);
+});
+</script>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const TAU = Math.PI*2;
+const COL = {wave:0x1a5fb4, grain:0x9a5b12, couple:0x0f766e, x:0x1a5fb4, y:0x0f766e, z:0x9a5b12,
+  line:0xb9c4d2, ghost:0xdbe2ea, warn:0xa53030, site:0xa9b6c6, ink:0x1f2937};
+
+const stage = document.getElementById('stage');
+const glCanvas = document.getElementById('gl');
+const c2d = document.getElementById('c2d');
+const renderer = new THREE.WebGLRenderer({canvas:glCanvas, antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xfbfcfd);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 800);
+const controls = new OrbitControls(camera, glCanvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+scene.add(new THREE.HemisphereLight(0xffffff, 0xdde5ee, 0.9));
+const dl = new THREE.DirectionalLight(0xffffff, 0.5); dl.position.set(7,12,9); scene.add(dl);
+const dl2 = new THREE.DirectionalLight(0xffffff, 0.22); dl2.position.set(-8,-4,-6); scene.add(dl2);
+
+const M4=new THREE.Matrix4(), VP=new THREE.Vector3(), VS=new THREE.Vector3(1,1,1), tmpC=new THREE.Color();
+const ZEROQ = new THREE.Quaternion();
+function stdMat(c,o){ return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:0.5,metalness:0.05},o||{})); }
+function lineMat(c,o){ return new THREE.LineBasicMaterial(Object.assign({color:c},o||{})); }
+
+function makeLabel(text,color,sc){
+  sc = sc||1; color = color||'#1f2937';
+  const fs=30, pad=14;
+  const mc=document.createElement('canvas').getContext('2d');
+  mc.font='500 '+fs+'px "Noto Sans SC","Microsoft YaHei",sans-serif';
+  const w=Math.ceil(mc.measureText(text).width)+pad*2, h=fs+20;
+  const c=document.createElement('canvas'); const dpr=2;
+  c.width=w*dpr; c.height=h*dpr;
+  const x=c.getContext('2d'); x.scale(dpr,dpr);
+  x.font='500 '+fs+'px "Noto Sans SC","Microsoft YaHei",sans-serif';
+  x.fillStyle='rgba(255,255,255,.9)';
+  x.beginPath();
+  if(x.roundRect) x.roundRect(0.5,0.5,w-1,h-1,9); else x.rect(0.5,0.5,w-1,h-1);
+  x.fill();
+  x.strokeStyle='rgba(178,193,212,.95)'; x.lineWidth=1; x.stroke();
+  x.fillStyle=color; x.textBaseline='middle'; x.fillText(text,pad,h/2+1);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false}));
+  sp.scale.set(w*0.0105*sc, h*0.0105*sc, 1);
+  sp.renderOrder = 999;
+  return sp;
+}
+
+class Trail{
+  constructor(max,color,op){
+    this.max=max; this.n=0;
+    this.pos=new Float32Array(max*3);
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(this.pos,3));
+    g.setDrawRange(0,0);
+    this.line=new THREE.Line(g, lineMat(color,{transparent:true,opacity:(op==null?1:op)}));
+    this.line.frustumCulled=false;
+  }
+  push(x,y,z){
+    if(this.n>=this.max){
+      const half=this.max>>1;
+      this.pos.copyWithin(0, half*3, this.max*3);
+      this.n=half;
+    }
+    const i=this.n*3; this.pos[i]=x; this.pos[i+1]=y; this.pos[i+2]=z; this.n++;
+    this.line.geometry.setDrawRange(0,this.n);
+    this.line.geometry.attributes.position.needsUpdate=true;
+  }
+  reset(){ this.n=0; this.line.geometry.setDrawRange(0,0); }
+}
+
+function basisOf(a){
+  const up = Math.abs(a.z)<0.9 ? new THREE.Vector3(0,0,1) : new THREE.Vector3(1,0,0);
+  const u = new THREE.Vector3().crossVectors(a,up).normalize();
+  const v = new THREE.Vector3().crossVectors(a,u).normalize();
+  return [u,v];
+}
+function triWave(x){ const u=((x/TAU)%2+2)%2; return u<1?u:2-u; }
+function wrapPi(x){ let v=x%TAU; if(v<0)v+=TAU; return v>Math.PI? TAU-v : v; }
+
+function makePhasor(R, axis, color, opt){
+  opt = opt||{};
+  const g = new THREE.Group();
+  const [u,v] = basisOf(axis);
+  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), axis);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(R, opt.tube||0.02, 8, 88), stdMat(color,{roughness:.4}));
+  ring.quaternion.copy(q);
+  const hub = new THREE.Mesh(new THREE.SphereGeometry((opt.hub||0.07),18,14), stdMat(COL.grain));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry((opt.dot||0.085),20,16), stdMat(color));
+  const mk = (col,op)=>{
+    const gg=new THREE.BufferGeometry();
+    gg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6),3));
+    const l=new THREE.Line(gg, lineMat(col,{transparent:true,opacity:op}));
+    l.frustumCulled=false; return l;
+  };
+  const rad = mk(COL.grain, 1), axl = mk(0xc94f8a, .85), iml = mk(0x8aa0bb, .75);
+  g.add(ring,hub,dot,rad,axl,iml);
+  return { group:g, ring, hub, dot, rad, axl, iml, u, v, q, R,
+    setPhase(theta, alpha){
+      const ct=Math.cos(theta), st=Math.sin(theta);
+      const ca=Math.cos(alpha||0), sa=Math.sin(alpha||0);
+      VP.copy(u).multiplyScalar(R*ct).addScaledVector(v, R*st);
+      this.dot.position.copy(VP);
+      let p=this.rad.geometry.attributes.position.array;
+      p[0]=0;p[1]=0;p[2]=0;p[3]=VP.x;p[4]=VP.y;p[5]=VP.z;
+      this.rad.geometry.attributes.position.needsUpdate=true;
+      VP.copy(u).multiplyScalar(ca).addScaledVector(v, sa);
+      p=this.axl.geometry.attributes.position.array;
+      p[0]=-VP.x*R*1.3;p[1]=-VP.y*R*1.3;p[2]=-VP.z*R*1.3;
+      p[3]=VP.x*R*1.3;p[4]=VP.y*R*1.3;p[5]=VP.z*R*1.3;
+      this.axl.geometry.attributes.position.needsUpdate=true;
+      VP.copy(u).multiplyScalar(-sa).addScaledVector(v, ca);
+      p=this.iml.geometry.attributes.position.array;
+      p[0]=-VP.x*R*1.15;p[1]=-VP.y*R*1.15;p[2]=-VP.z*R*1.15;
+      p[3]=VP.x*R*1.15;p[4]=VP.y*R*1.15;p[5]=VP.z*R*1.15;
+      this.iml.geometry.attributes.position.needsUpdate=true;
+    }
+  };
+}
+
+/* ============================================================
+   场景 1：摆程解剖
+   ============================================================ */
+const R1 = 1.0, LAM1 = TAU*R1;
+const g1 = new THREE.Group(); scene.add(g1);
+const S1 = (function(){
+  const grp = new THREE.Group(); g1.add(grp);
+  const AX = new THREE.Vector3(0,1,0);
+  const ph = makePhasor(R1, AX, COL.wave, {tube:0.022, hub:0.085, dot:0.1});
+  grp.add(ph.group);
+  const helix = new Trail(4200, COL.wave, 0.95);
+  const ctrail = new Trail(4200, COL.grain, 0.5);
+  grp.add(helix.line, ctrail.line);
+
+  const cell = new THREE.Group(); grp.add(cell);
+  const bnd = [];
+  for(let i=0;i<2;i++){
+    const m = new THREE.Mesh(new THREE.TorusGeometry(R1,0.014,8,72),
+      new THREE.MeshBasicMaterial({color:COL.site, transparent:true, opacity:.9}));
+    m.rotation.x = -Math.PI/2; cell.add(m); bnd.push(m);
+  }
+  const edgeG = new THREE.BufferGeometry();
+  edgeG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(4*2*3),3));
+  const edges = new THREE.LineSegments(edgeG, lineMat(COL.site,{transparent:true,opacity:.6}));
+  cell.add(edges);
+
+  const nbG = new THREE.Group(); grp.add(nbG);
+  const nbRings = [];
+  for(let i=0;i<3;i++){
+    const m = new THREE.Mesh(new THREE.TorusGeometry(R1*0.82,0.012,6,56),
+      new THREE.MeshBasicMaterial({color:COL.ghost, transparent:true, opacity:.9}));
+    m.rotation.x=-Math.PI/2; nbG.add(m); nbRings.push(m);
+  }
+  const nbPh = [];
+  for(let i=0;i<2;i++){
+    const p = makePhasor(R1*0.82, AX, 0xc3ccd8, {tube:0.014, hub:0.06, dot:0.07});
+    p.ring.material = new THREE.MeshBasicMaterial({color:0xd7dee6, transparent:true, opacity:.8});
+    p.hub.material  = new THREE.MeshBasicMaterial({color:0xd7dee6, transparent:true, opacity:.9});
+    p.dot.material  = new THREE.MeshBasicMaterial({color:0xc3ccd8, transparent:true, opacity:.95});
+    p.axl.visible=false; p.iml.visible=false; p.rad.visible=false;
+    nbG.add(p.group); nbPh.push(p);
+  }
+
+  const hole = new THREE.Mesh(new THREE.CylinderGeometry(R1*1.02,R1*1.02,LAM1,26,1,true),
+    new THREE.MeshBasicMaterial({color:COL.warn, transparent:true, opacity:.10, side:THREE.DoubleSide}));
+  grp.add(hole);
+  const holeLab = makeLabel('空洞：元相子已离开', '#a53030'); grp.add(holeLab);
+  const lab0 = makeLabel('格点 n 下边界'); grp.add(lab0);
+  const lab1 = makeLabel('公共边界 (n+1)l_P'); grp.add(lab1);
+
+  const st = {tau:0, mode:'bound', om:1, az:1, alpha:0, trail:true, axes:true, cellv:true, nbv:true, stepTo:null};
+
+  function place(){
+    const az = st.az;
+    const th = st.mode==='bound' ? TAU*triWave(st.om*st.tau) : st.om*st.tau;
+    const yc = LAM1*(th/TAU);
+    ph.group.position.set(0, yc*az, 0);
+    ph.setPhase(th, st.alpha);
+    if(st.trail){
+      helix.push(R1*Math.cos(th), yc*az, -R1*Math.sin(th));
+      ctrail.push(0, yc*az, 0);
+    }
+    bnd[0].position.y = 0; bnd[1].position.y = LAM1*az;
+    const p = edges.geometry.attributes.position.array; let k=0;
+    for(let a=0;a<4;a++){
+      const ang = a*Math.PI/2 + Math.PI/4;
+      const cx=Math.cos(ang)*R1, cz=Math.sin(ang)*R1;
+      p[k++]=cx;p[k++]=0;p[k++]=cz; p[k++]=cx;p[k++]=LAM1*az;p[k++]=cz;
+    }
+    edges.geometry.attributes.position.needsUpdate=true;
+    nbRings[0].position.y = -LAM1*az;
+    nbRings[1].position.y = 2*LAM1*az;
+    nbRings[2].position.y = 3*LAM1*az;
+    const s = triWave(st.om*st.tau);
+    nbPh[0].group.position.set(0, (-1 + s)*LAM1*az, 0);
+    nbPh[1].group.position.set(0, (2 - s)*LAM1*az, 0);
+    nbPh[0].setPhase(TAU*s, 0); nbPh[1].setPhase(TAU*s, 0);
+
+    lab0.position.set(R1*1.55, 0.06, R1*1.35);
+    lab1.position.set(R1*1.55, LAM1*az+0.12, R1*1.35);
+    hole.visible = st.mode==='free';
+    holeLab.visible = st.mode==='free' && (st.om*st.tau/TAU) > 0.5;
+    hole.scale.y = az; hole.position.y = LAM1*az/2;
+    holeLab.position.set(-R1*2.1, LAM1*az*0.42, 0);
+    cell.visible = st.cellv; nbG.visible = st.nbv;
+    helix.line.visible = st.trail; ctrail.line.visible = st.trail;
+    ph.axl.visible = st.axes; ph.iml.visible = st.axes;
+    lab0.visible = st.cellv; lab1.visible = st.cellv;
+  }
+  place();
+  return {grp, st, place,
+    reset(){ st.tau=0; st.stepTo=null; helix.reset(); ctrail.reset(); place(); },
+    stepSwing(){ st.stepTo = (Math.floor(st.om*st.tau/TAU)+1)*TAU/st.om + 1e-6; },
+    update(dt){
+      if(st.stepTo!=null){
+        st.tau = Math.min(st.stepTo, st.tau + dt*4);
+        if(st.tau>=st.stepTo-1e-9) st.stepTo=null;
+      } else st.tau += dt;
+      place();
+    },
+    focus(){
+      camera.position.set(9.5, LAM1*0.62*st.az+1.2, 11.5);
+      controls.target.set(0, LAM1*0.5*st.az, 0); controls.update();
+    }
+  };
+})();
+
+/* ============================================================
+   场景 2：折返 · 圆心不可重合
+   ============================================================ */
+const g2 = new THREE.Group(); g2.visible=false; scene.add(g2);
+const S2 = (function(){
+  const grp = new THREE.Group(); g2.add(grp);
+  const AX = new THREE.Vector3(0,1,0);
+  const R2 = R1, L2 = LAM1;
+  const A = makePhasor(R2, AX, COL.wave,  {tube:0.022, hub:0.095, dot:0.105});
+  const B = makePhasor(R2, AX, COL.grain, {tube:0.022, hub:0.095, dot:0.105});
+  grp.add(A.group, B.group);
+
+  const cell = new THREE.Group(); grp.add(cell);
+  const rings = [];
+  for(let i=0;i<3;i++){
+    const m = new THREE.Mesh(new THREE.TorusGeometry(R2,0.014,8,72),
+      new THREE.MeshBasicMaterial({color:COL.site, transparent:true, opacity:.9}));
+    m.rotation.x=-Math.PI/2; cell.add(m); rings.push(m);
+  }
+  const eg = new THREE.BufferGeometry();
+  eg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3*4*2*3),3));
+  const edges = new THREE.LineSegments(eg, lineMat(COL.site,{transparent:true,opacity:.5}));
+  cell.add(edges);
+
+  const trA = new Trail(2000, COL.wave, .5), trB = new Trail(2000, COL.grain, .5);
+  grp.add(trA.line, trB.line);
+
+  const shocks = [];
+  for(let i=0;i<5;i++){
+    const m = new THREE.Mesh(new THREE.RingGeometry(0.58,0.74,64),
+      new THREE.MeshBasicMaterial({color:COL.warn, transparent:true, opacity:0, side:THREE.DoubleSide}));
+    m.rotation.x=-Math.PI/2; m.visible=false; grp.add(m);
+    shocks.push({m, t:-1});
+  }
+  const flashBall = new THREE.Mesh(new THREE.SphereGeometry(0.17,20,16),
+    new THREE.MeshBasicMaterial({color:0xd85454, transparent:true, opacity:0}));
+  grp.add(flashBall);
+
+  const labA = makeLabel('元相子 A · 格点 n'); grp.add(labA);
+  const labB = makeLabel('元相子 B · 格点 n+1'); grp.add(labB);
+  const labS = makeLabel('公共边界：两圆心重合', '#a53030', 1.06); grp.add(labS);
+  const labNo = makeLabel('无墙：边界就是邻居的圆心', '#4b5563', .96); grp.add(labNo);
+
+  const st = {tau:0, sp:0.35, dphi:0, view:'near', cellv:true, trailv:true, labv:true,
+    hits:0, stepTo:null, flash:0};
+  const OM = 1.0;
+  function sA(){ return triWave(OM*st.tau); }
+  function sB(){ return triWave(OM*st.tau + st.dphi); }
+
+  function place(){
+    const ya = L2*sA(), yb = 2*L2 - L2*sB();
+    A.group.position.set(0, ya, 0); B.group.position.set(0, yb, 0);
+    A.setPhase(TAU*sA(), 0); B.setPhase(TAU*sB(), 0);
+    if(st.trailv){ trA.push(0,ya,0); trB.push(0,yb,0); }
+    rings[0].position.y=0; rings[1].position.y=L2; rings[2].position.y=2*L2;
+    const p = edges.geometry.attributes.position.array; let k=0;
+    for(let s=0;s<3;s++) for(let a=0;a<4;a++){
+      const ang=a*Math.PI/2+Math.PI/4, cx=Math.cos(ang)*R2, cz=Math.sin(ang)*R2;
+      p[k++]=cx;p[k++]=s*L2;p[k++]=cz; p[k++]=cx;p[k++]=(s+1)*L2;p[k++]=cz;
+    }
+    edges.geometry.attributes.position.needsUpdate=true;
+    labA.visible=st.labv; labB.visible=st.labv; labNo.visible=st.labv;
+    labA.position.set(-R2*2.0, L2*0.5, R2*1.3);
+    labB.position.set(-R2*2.0, L2*1.5, R2*1.3);
+    labNo.position.set(R2*2.2, L2*1.0, -R2*1.2);
+    labS.position.set(R2*2.0, L2+0.6, R2*1.2);
+    cell.visible = st.cellv;
+    trA.line.visible=st.trailv; trB.line.visible=st.trailv;
+  }
+  function hit(){
+    const s = shocks.find(x=>x.t<0) || shocks[0];
+    s.t=0; s.m.position.y=L2; s.m.visible=true;
+    flashBall.position.y=L2; flashBall.material.opacity=0.9; st.flash=1;
+    st.hits++;
+  }
+  place();
+  return {grp, st, place, sA, sB,
+    reset(){
+      st.tau=0; st.hits=0; st.stepTo=null; st.flash=0;
+      trA.reset(); trB.reset();
+      shocks.forEach(s=>{ s.t=-1; s.m.visible=false; s.m.material.opacity=0; });
+      flashBall.material.opacity=0; place();
+    },
+    hit,
+    stepTo(){
+      let n = Math.floor(OM*st.tau/TAU)+1;
+      while(n%2!==1) n++;
+      st.stepTo = n*TAU/OM + 1e-7;
+    },
+    update(dt){
+      const prev = st.tau;
+      if(st.stepTo!=null){
+        st.tau = Math.min(st.stepTo, st.tau + dt*4);
+        if(st.tau >= st.stepTo-1e-9) st.stepTo=null;
+      } else st.tau += dt*st.sp;
+      const nPrev = Math.floor(OM*prev/TAU), nNow = Math.floor(OM*st.tau/TAU);
+      if(nNow>nPrev){
+        for(let n=nPrev+1;n<=nNow;n++) if(n%2===1) hit();
+      }
+      place();
+      shocks.forEach(s=>{
+        if(s.t>=0){
+          s.t += dt*1.5;
+          const sc = 1 + s.t*3.4;
+          s.m.scale.set(sc,sc,1);
+          s.m.material.opacity = Math.max(0, 0.6*(1-s.t));
+          if(s.t>1){ s.t=-1; s.m.visible=false; }
+        }
+      });
+      if(flashBall.material.opacity>0)
+        flashBall.material.opacity = Math.max(0, flashBall.material.opacity - dt*2.2);
+      labS.visible = st.labv && flashBall.material.opacity>0.02;
+    },
+    focus(v){
+      if(v==='near'){ camera.position.set(5.0, L2*1.06, 6.0); controls.target.set(0, L2*1.0, 0); }
+      else { camera.position.set(11.5, L2*1.05, 13.5); controls.target.set(0, L2*1.0, 0); }
+      controls.update();
+    }
+  };
+})();
+
+/* ============================================================
+   场景 3：格点三元组
+   ============================================================ */
+const g3 = new THREE.Group(); g3.visible=false; scene.add(g3);
+const S3 = (function(){
+  const grp = new THREE.Group(); g3.add(grp);
+  const L3 = 2.6;
+  const axes = [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)];
+  const cols = [COL.x, COL.y, COL.z];
+  const names = ['x 类','y 类','z 类'];
+  const P = axes.map((a,i)=>makePhasor(0.7, a, cols[i], {tube:0.02, hub:0.08, dot:0.095}));
+  P.forEach(p=>grp.add(p.group));
+
+  const box = new THREE.Mesh(new THREE.BoxGeometry(L3,L3,L3),
+    new THREE.MeshBasicMaterial({color:COL.site, wireframe:true, transparent:true, opacity:.5}));
+  grp.add(box);
+  const axG = new THREE.BufferGeometry();
+  axG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3*2*3),3));
+  const axL = new THREE.LineSegments(axG, lineMat(COL.site,{transparent:true,opacity:.65}));
+  grp.add(axL);
+  const p=axL.geometry.attributes.position.array; let k=0;
+  axes.forEach(a=>{ p[k++]=-a.x*L3*0.98;p[k++]=-a.y*L3*0.98;p[k++]=-a.z*L3*0.98;
+                    p[k++]=a.x*L3*0.98;p[k++]=a.y*L3*0.98;p[k++]=a.z*L3*0.98; });
+  axL.geometry.attributes.position.needsUpdate=true;
+
+  const labs = names.map((n,i)=>{
+    const l=makeLabel(n, '#'+cols[i].toString(16).padStart(6,'0'), .95);
+    grp.add(l); return l;
+  });
+  const st = {th:[0.0, 2.1, 4.2], k:0, noise:0.35, om:1.2, boxv:true, axesv:true, hist:[], lock:false};
+
+  function place(){
+    const half = L3/2;
+    P.forEach((pp,i)=>{
+      const off = (triWave(st.th[i])*2-1)*half*0.92;
+      pp.group.position.set(axes[i].x*off, axes[i].y*off, axes[i].z*off);
+      pp.setPhase(TAU*triWave(st.th[i]), 0);
+      labs[i].position.set(axes[i].x*L3*1.15 + 0.3, axes[i].y*L3*1.15 + 0.26, axes[i].z*L3*1.15);
+    });
+    box.visible = st.boxv; axL.visible = st.axesv;
+  }
+  place();
+  return {grp, st, place,
+    reset(){ st.th=[0.0,2.1,4.2]; st.hist.length=0; st.lock=false; st.k=0; place(); },
+    setK(v){ st.k=v; const el=document.getElementById('s3-k'); if(el){ el.value=v;
+      const o=document.getElementById('s3-k-v'); if(o) o.textContent=v.toFixed(2); } },
+    update(dt){
+      const th = st.th;
+      const d = [0,0,0];
+      for(let i=0;i<3;i++){
+        let s=0;
+        for(let j=0;j<3;j++) if(j!==i) s += Math.sin(th[j]-th[i]);
+        d[i] = st.om + st.k*s + st.noise*(Math.random()-0.5)*2.4;
+      }
+      for(let i=0;i<3;i++) th[i] += d[i]*dt;
+      if(st.lock && st.k < 2.2){ this.setK(Math.min(2.2, st.k + dt*0.6)); }
+      st.hist.push([wrapPi(th[0]-th[1]), wrapPi(th[1]-th[2]), wrapPi(th[2]-th[0])]);
+      if(st.hist.length>280) st.hist.shift();
+      place();
+    },
+    focus(){ camera.position.set(5.8,4.6,6.6); controls.target.set(0,0,0); controls.update(); }
+  };
+})();
+
+/* ============================================================
+   场景 4：振荡晶格与光
+   ============================================================ */
+const g4 = new THREE.Group(); g4.visible=false; scene.add(g4);
+const S4 = (function(){
+  const grp = new THREE.Group(); g4.add(grp);
+  const a = 1.0;
+  const AXV = [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)];
+  const QA = AXV.map(ax=>new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), ax));
+  const RT = 0.155;
+  const geo = new THREE.TorusGeometry(RT, 0.032, 8, 30);
+  const matR = stdMat(0xffffff, {roughness:.42});
+  const ringMeshes = [null,null,null];
+  let N = 6, NNN = 216, theta = new Float32Array(NNN), thetaOld = new Float32Array(NNN);
+  let lap = new Float32Array(NNN), sBuf = new Float32Array(NNN);
+  let siteMesh = null;
+  const cone = new THREE.Mesh(new THREE.SphereGeometry(1,36,20),
+    new THREE.MeshBasicMaterial({color:COL.warn, wireframe:true, transparent:true, opacity:.17}));
+  grp.add(cone);
+  const cage = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshBasicMaterial({color:COL.site, wireframe:true, transparent:true, opacity:.4}));
+  grp.add(cage);
+
+  const st = {mode:'sync', N:6, T:0.9, K:2.2, om:1.2, kk:0.6, dir:'100', amp:0.3,
+    ps:1.2, sg:1.1, cone:true, site:false, tau:0, maxAbs:1, psi:0, ordHist:[], wt:0, acc:0, vp:1, vg:1};
+
+  const idx = (ix,iy,iz)=> ix + N*(iy + N*iz);
+  function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v); }
+
+  function build(n){
+    N = n; NNN = N*N*N; st.N = n;
+    theta = new Float32Array(NNN); thetaOld = new Float32Array(NNN);
+    lap = new Float32Array(NNN); sBuf = new Float32Array(NNN);
+    for(let i=0;i<3;i++){
+      if(ringMeshes[i]) grp.remove(ringMeshes[i]);
+      const m = new THREE.InstancedMesh(geo, matR, NNN);
+      m.frustumCulled=false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      grp.add(m); ringMeshes[i]=m;
+    }
+    if(siteMesh){ grp.remove(siteMesh); siteMesh.geometry.dispose(); }
+    siteMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.045,10,8), stdMat(0xc8d2de,{roughness:.7}), NNN);
+    siteMesh.frustumCulled=false; grp.add(siteMesh);
+    const half=(N-1)/2;
+    for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+      M4.compose(VP.set((ix-half)*a,(iy-half)*a,(iz-half)*a), ZEROQ, VS);
+      siteMesh.setMatrixAt(idx(ix,iy,iz), M4);
+    }
+    siteMesh.instanceMatrix.needsUpdate=true;
+    cage.scale.set(N*a, N*a, N*a);
+    reset();
+  }
+  function reset(){
+    st.tau=0; st.acc=0; st.wt=0; st.maxAbs=1; st.ordHist.length=0; st.psi=0;
+    const half=(N-1)/2;
+    if(st.mode==='sync'){
+      for(let i=0;i<NNN;i++) theta[i] = Math.random()*TAU;
+      let re=0,im=0; for(let i=0;i<NNN;i++){ re+=Math.cos(theta[i]); im+=Math.sin(theta[i]); }
+      st.psi = Math.sqrt(re*re+im*im)/NNN;
+    } else if(st.mode==='wave'){
+      for(let i=0;i<NNN;i++) theta[i]=0;
+      waveField(0);
+    } else {
+      for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+        const dx=ix-half, dy=iy-half, dz=iz-half;
+        theta[idx(ix,iy,iz)] = Math.exp(-(dx*dx+dy*dy+dz*dz)/(2*st.sg*st.sg));
+      }
+      st.maxAbs=1; thetaOld.set(theta);
+    }
+    render();
+  }
+
+  function kuramoto(dt){
+    const K=st.K, T=st.T, sq = Math.sqrt(2*T*dt);
+    for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+      const i=idx(ix,iy,iz); let sum=0;
+      const ti = theta[i];
+      if(ix>0)   sum+=Math.sin(theta[idx(ix-1,iy,iz)]-ti);
+      if(ix<N-1) sum+=Math.sin(theta[idx(ix+1,iy,iz)]-ti);
+      if(iy>0)   sum+=Math.sin(theta[idx(ix,iy-1,iz)]-ti);
+      if(iy<N-1) sum+=Math.sin(theta[idx(ix,iy+1,iz)]-ti);
+      if(iz>0)   sum+=Math.sin(theta[idx(ix,iy,iz-1)]-ti);
+      if(iz<N-1) sum+=Math.sin(theta[idx(ix,iy,iz+1)]-ti);
+      sBuf[i] = st.om + (K/6)*sum;
+    }
+    for(let i=0;i<NNN;i++) theta[i] += sBuf[i]*dt + sq*gauss();
+    let re=0, im=0;
+    for(let i=0;i<NNN;i++){ re+=Math.cos(theta[i]); im+=Math.sin(theta[i]); }
+    st.psi = Math.sqrt(re*re+im*im)/NNN;
+    st.ordHist.push(st.psi); if(st.ordHist.length>260) st.ordHist.shift();
+  }
+
+  const DIRV = {'100':[1,0,0],'110':[1/Math.SQRT2,1/Math.SQRT2,0],'111':[1/Math.sqrt(3),1/Math.sqrt(3),1/Math.sqrt(3)]};
+  function kvec(kk,dir){ const d=DIRV[dir]||DIRV['100']; return [kk*d[0],kk*d[1],kk*d[2]]; }
+  function omega(k){
+    let s=0; for(let i=0;i<3;i++) s += Math.sin(k[i]/2)*Math.sin(k[i]/2);
+    return 2*Math.sqrt(s);
+  }
+  function waveField(tau){
+    const kv = kvec(st.kk, st.dir);
+    const w = omega(kv);
+    const half=(N-1)/2;
+    for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+      theta[idx(ix,iy,iz)] = Math.sin(kv[0]*(ix-half)+kv[1]*(iy-half)+kv[2]*(iz-half) - w*tau);
+    }
+    st.tau = tau; st.maxAbs = 1;
+    const eps=1e-4;
+    st.vp = (st.kk>1e-6) ? w/st.kk : 1;
+    st.vg = (omega(kvec(st.kk+eps,st.dir)) - omega(kvec(Math.max(1e-5,st.kk-eps),st.dir)))/(2*eps);
+  }
+
+  function pulse(dt){
+    const h = 0.08;
+    st.acc += dt*st.ps;
+    let steps = 0;
+    while(st.acc >= h && steps < 24){
+      for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+        const i=idx(ix,iy,iz);
+        let nb=0;
+        nb += ix>0?theta[idx(ix-1,iy,iz)]:0;
+        nb += ix<N-1?theta[idx(ix+1,iy,iz)]:0;
+        nb += iy>0?theta[idx(ix,iy-1,iz)]:0;
+        nb += iy<N-1?theta[idx(ix,iy+1,iz)]:0;
+        nb += iz>0?theta[idx(ix,iy,iz-1)]:0;
+        nb += iz<N-1?theta[idx(ix,iy,iz+1)]:0;
+        lap[i] = nb - 6*theta[i];
+      }
+      for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+        const i=idx(ix,iy,iz);
+        const nt = 2*theta[i] - thetaOld[i] + h*h*lap[i];
+        thetaOld[i] = theta[i];
+        theta[i] = nt;
+        const d = Math.min(ix,iy,iz,N-1-ix,N-1-iy,N-1-iz);
+        if(d===0){ theta[i]*=0.90; thetaOld[i]*=0.90; }
+        else if(d===1){ theta[i]*=0.975; thetaOld[i]*=0.975; }
+      }
+      st.tau += h; st.acc -= h; steps++;
+    }
+    let mx=1e-6; for(let i=0;i<NNN;i++){ const v=Math.abs(theta[i]); if(v>mx)mx=v; }
+    st.maxAbs = mx;
+  }
+
+  function render(){
+    const half=(N-1)/2;
+    const norm = Math.max(st.maxAbs, 1e-6);
+    for(let iz=0;iz<N;iz++)for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){
+      const i=idx(ix,iy,iz);
+      const px=(ix-half)*a, py=(iy-half)*a, pz=(iz-half)*a;
+      const th = theta[i];
+      let off, col;
+      if(st.mode==='sync'){
+        off = (triWave(th)*2-1)*0.46;
+        col = tmpC.setHSL((((th%TAU)+TAU)%TAU)/TAU, 0.58, 0.52);
+      } else {
+        const t = Math.max(-1, Math.min(1, th/norm));
+        off = t*st.amp;
+        col = t>=0 ? tmpC.setHSL(0.030, 0.62, 0.60-0.20*t) : tmpC.setHSL(0.600, 0.55, 0.60+0.20*t);
+      }
+      for(let ax=0;ax<3;ax++){
+        M4.compose(VP.set(px + (ax===0?off:0), py + (ax===1?off:0), pz + (ax===2?off:0)), QA[ax], VS);
+        ringMeshes[ax].setMatrixAt(i, M4);
+        ringMeshes[ax].setColorAt(i, col);
+      }
+    }
+    for(let ax=0;ax<3;ax++){
+      ringMeshes[ax].instanceMatrix.needsUpdate=true;
+      if(ringMeshes[ax].instanceColor) ringMeshes[ax].instanceColor.needsUpdate=true;
+    }
+    if(siteMesh) siteMesh.visible = st.site;
+    cone.visible = st.cone && st.mode==='pulse';
+    if(cone.visible){
+      const r = Math.max(0.001, st.tau);
+      cone.scale.set(r,r,r);
+      cone.material.opacity = r > (N*a*0.6) ? 0.05 : 0.17;
+    }
+  }
+
+  build(6);
+  return {grp, st, build, reset, render,
+    getN:()=>N, getTheta:()=>theta,
+    update(dt){
+      if(st.mode==='sync') kuramoto(dt);
+      else if(st.mode==='pulse') pulse(dt);
+      else { st.wt += dt*2.0; waveField(st.wt); }
+      render();
+    },
+    switchMode(m){ st.mode=m; st.wt=0; reset(); },
+    focus(){
+      const s = N*a;
+      camera.position.set(s*1.35, s*0.95, s*1.55);
+      controls.target.set(0,0,0); controls.update();
+    }
+  };
+})();
+
+/* ============================================================
+   场景 5：色散与能带（2D）
+   ============================================================ */
+const S5 = {
+  st:{ k:0.8, dir:'100', gap:0.12, app:true, gapOn:true, emax:true, drag:false },
+  dirs:{ '100':[1,0,0], '110':[1/Math.SQRT2,1/Math.SQRT2,0], '111':[1/Math.sqrt(3),1/Math.sqrt(3),1/Math.sqrt(3)] },
+  bz:{ '100':Math.PI, '110':Math.SQRT2*Math.PI, '111':Math.sqrt(3)*Math.PI },
+  omega(k){ let s=0; for(let i=0;i<3;i++) s+=Math.sin(k[i]/2)*Math.sin(k[i]/2); return 2*Math.sqrt(s); },
+  kv(kk,dir){ const d=this.dirs[dir]||this.dirs['100']; return [kk*d[0],kk*d[1],kk*d[2]]; },
+  wOverWP(kk,dir){ return this.omega(this.kv(kk,dir))/TAU; },
+  s4(dir){ const d=this.dirs[dir]; return d[0]**4 + d[1]**4 + d[2]**4; }
+};
+
+/* ================= 场景切换 ================= */
+const G = {1:g1, 2:g2, 3:g3, 4:g4};
+let cur = 1;
+function setScene(n){
+  cur = n;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on', +b.dataset.s===n));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', +p.dataset.p===n));
+  for(const k in G) G[k].visible = (+k===n);
+  const is2d = (n===5);
+  glCanvas.style.display = is2d ? 'none' : 'block';
+  c2d.style.display = is2d ? 'block' : 'none';
+  document.getElementById('legend').innerHTML = LEG[n]||'';
+  document.getElementById('tag').innerHTML = TAG[n]||'';
+  document.getElementById('notes').innerHTML = NOTE[n]||'';
+  if(window.renderMathInElement) window.renderMathInElement(document.getElementById('notes'),{throwOnError:false});
+  if(!is2d){
+    if(n===1) S1.focus();
+    else if(n===2) S2.focus(S2.st.view);
+    else if(n===3) S3.focus();
+    else if(n===4) S4.focus();
+  }
+  resize();
+}
+const LEG = {
+  1:'<span><i style="background:#1a5fb4"></i>相位（波性）</span><span><i style="background:#9a5b12"></i>半径与圆心（粒性）</span><span><i style="background:#c94f8a"></i>实轴（相位零点）</span>',
+  2:'<span><i style="background:#1a5fb4"></i>元相子 A</span><span><i style="background:#9a5b12"></i>元相子 B</span><span><i style="background:#a53030"></i>公共边界碰撞</span>',
+  3:'<span><i style="background:#1a5fb4"></i>x 类</span><span><i style="background:#0f766e"></i>y 类</span><span><i style="background:#9a5b12"></i>z 类</span>',
+  4:'<span><i style="background:#c0392b"></i>相位超前</span><span><i style="background:#1a5fb4"></i>相位滞后</span><span><i style="background:#a53030"></i>光锥球壳 r = c·t</span>',
+  5:'<span><i style="background:#6aa4e2"></i>[111]</span><span><i style="background:#3b7fd0"></i>[110]</span><span><i style="background:#1a5fb4"></i>[100]</span><span><i style="background:#0f766e"></i>低能光线</span><span><i style="background:#a53030"></i>首阶近似</span>'
+};
+const TAG = {
+  1:'每摆程：相位扫过 2π，圆心位移 l_P，时间计一次',
+  2:'折返的动力来自邻居，不来自墙',
+  3:'一格点三元胞：波性统一，粒性独立',
+  4:'长度单位 l_P，时间单位 t_P，于是 c = 1',
+  5:'低能端三线合一，高能端方向依赖地弯下'
+};
+
+/* ================= 说明文案 ================= */
+const NOTE = {
+1:`
+<h2>摆程解剖：一个元相子在格点里做什么</h2>
+<p class="lead">自由极限与束缚振荡的对照</p>
+<p>元相子定义为 $\\Phi_i=(\\tilde\\theta_i,\\varepsilon_i,\\hat n_i)$，其中 $\\tilde\\theta_i$ 是提升相位，$\\varepsilon_i$ 是旋向，$\\hat n_i\\in\\{\\hat x,\\hat y,\\hat z\\}$ 是方向标签。它的几何实现是一条单螺旋 $\\gamma_i(\\tilde\\theta_i)=\\left(e^{i\\tilde\\theta_i},\\,\\frac{\\lambda}{2\\pi}\\tilde\\theta_i\\right)$，螺距 $\\lambda=2\\pi R=l_P$。相位每推进 $2\\pi$，圆心沿轴正好前进一个螺距，也就是一个格距。这个几何关系不是外加的约定，它就是波与粒互根的数学表达：圆给出连续量，轴给出可测的离散量，两者由螺距锁在一起。</p>
+<h4>束缚振荡的三条规定</h4>
+<div class="eq">$$z(t)\\in[nl_P,\\,(n+1)l_P],\\qquad |\\dot\\theta|=\\omega_P,\\qquad t=N_{\\text{swing}}\\,t_P$$</div>
+<p>圆心被限制在自己的格点区间内，每摆程从一侧边界单向位移到另一侧边界；相位在每个摆程内单调扫过 $2\\pi$，摆程之间方向反转；时间由摆程计数给出且单调递增，不因相位反向而倒退。瞬时轴向速度的大小恒为 $c$，来回往复。把开关切到自由极限可以看到对照：轴向匀速上升、层数无限递增，空间随之流动并留下空洞，因此自由极限只能用于确立换算率族，不能充当物理现实的描述。</p>
+<h4>换算率族</h4>
+<div class="eq">$$\\lambda=2\\pi R=l_P,\\qquad h=2\\pi\\hbar,\\qquad c=\\frac{\\lambda}{t_P},\\qquad \\bar l_P=c\\,\\bar t_P$$</div>
+<p>一个完整摆程同时给出周期族 $\\Pi=(t_P,\\lambda,h)$ 与弧度族 $\\bar\\Pi=(\\bar t_P,\\bar l_P,\\hbar)$。基模能量为 $E_\\Phi=\\hbar\\omega_P=2\\pi E_P$，满足恒等式 $E_\\Phi\\,\\bar t_P=\\hbar$。页面中圆半径与轴向位移之比保持 $\\lambda=2\\pi R$，因此螺旋看上去相当稀疏，这正是理论在真实比例下的几何面貌。</p>`,
+2:`
+<h2>折返：圆心不可重合</h2>
+<p class="lead">边界不是设施，边界就是邻居</p>
+<p>元相子为什么会在边界折返，是束缚振荡模型里最关键的一问。答案落在粒性上：粒性由圆心承载，圆心是几何中心，不可重叠、不可分割。相邻格点 $n$ 与 $n+1$ 共享边界 $(n+1)l_P$，两者的圆心相向运动，同时抵达该公共边界并重合。重合那一瞬，粒性的不可穿透与波性的相位继续推进发生冲突，冲突的唯一解决方式是运动折返。</p>
+<h4>束缚势</h4>
+<div class="eq">$$\\mathcal{H}_{\\text{束缚}}=\\sum_i V_{\\text{rep}}\\big(|z_i-z_{i\\pm1}|\\big),\\qquad V_{\\text{rep}}(r)\\to\\infty\\ \\text{当}\\ r\\to0$$</div>
+<p>这是一个硬核排斥势，其精确形式仍是开放问题 O10。它没有引入任何外部设施：场景里看不到墙、看不到容器，只有两个互为邻居的圆心。波驱动使运动得以发生，粒阻挡使运动得以反转，两者互根互成，振荡由此成为波粒互斥互补的动态平衡。折返过程保持保守可逆，时间反演加整体旋向翻转是精确对称性，耗散只出现在涌现层的粗粒化描述中。</p>
+<h4>相位的角色</h4>
+<p>同相锁定时两者同时抵达公共边界，碰撞干净利落。拖动相位差滑块可以看到抵达时刻错开：一个已经越过公共边界，另一个尚未到达，折返的时序随之紊乱。格点整体的相干性由三元组内部的异类耦合保证，这一点在下一个场景中展开。</p>`,
+3:`
+<h2>格点三元组：波性统一，粒性独立</h2>
+<p class="lead">$U(1)^3$ 到 $U(1)$ 的显式破缺</p>
+<p>一个格点由三个元相子构成，$x$ 类、$y$ 类、$z$ 类各一个，三方向两两正交。三者同居一个格点，靠的是三元组内部的异类耦合。</p>
+<h4>异类耦合</h4>
+<div class="eq">$$\\mathcal{H}_{\\text{异类}}=-\\hbar\\kappa_\\phi\\sum_p\\sum_{a<b}\\cos\\big(\\theta_p^a-\\theta_p^b\\big)$$</div>
+<p>这一项显式依赖三类相位之差，因此它把纯同类极限下的 $U(1)^3$ 对称显式破缺为整体 $U(1)$，属于显式破缺而非自发破缺。打开 $\\kappa_\\phi$ 滑块，可以看到三条相位差曲线被迅速拉向零，三个方向的振荡锁定为同一个整体相位，这就是波性统一。与此同时，格点坐标 $\\mathbb{Z}^3$ 与量子数完全保持独立，粒性的个体性没有被削弱。</p>
+<h4>谱结构</h4>
+<p>耦合只依赖相位差，整体 $U(1)$ 得以保持，Goldstone 定理保证一个无质量模式，它是光的候选；两个相位差模式获得能隙 $\\sim\\sqrt{\\kappa_\\phi}$，是规范结构的候选。相位噪声滑块演示的是耦合的抗扰能力：噪声不断把相位推开，耦合持续把它们拉回，二者的比值决定格点是否相干。</p>
+<div class="eq">$$\\Psi^a=\\lim_{N^a\\to\\infty}\\frac{1}{N^a}\\sum_{i\\in a}e^{i\\theta_i},\\qquad \\phi^a=\\arg\\Psi^a$$</div>
+<p>集体相位空间在理想极限下是 $T^3=S^1\\times S^1\\times S^1$，低能有效描述中退化为单个 $S^1$，即整体相位。</p>`,
+4:`
+<h2>振荡晶格与光：真空不空</h2>
+<p class="lead">光是振荡砖石中的弹性波</p>
+<p>物理真空是无穷元相子的振荡晶格，每个格点定居三个正交元相子，各携带基模能量 $E_\\Phi=\\hbar\\omega_P$，每格点合计 $3E_\\Phi$。这份能量处处均匀，没有梯度、没有势差，已被吸收为时空的基础建设成本，因此不构成真空灾难。一个格点的相位扰动通过耦合传给邻居，扰动在晶格中传播，这就是光。</p>
+<h4>波动方程与光速涌现</h4>
+<div class="eq">$$\\partial_t^2\\delta\\phi-v_s^2\\nabla^2\\delta\\phi=0,\\qquad v_s^2=\\frac{K_0l_P^2}{\\bar t_P}=c^2,\\qquad K_0=\\frac{\\bar t_Pc^2}{l_P^2}=\\frac{1}{2\\pi t_P}$$</div>
+<p>页面采用格距 $l_P$ 为长度单位、摆程时间 $t_P$ 为时间单位，此时线性化晶格动力学化为 $\\partial_\\tau^2\\theta=\\nabla^2\\theta$，波速恰为 $1$，与 $c=l_P/t_P$ 一致。脉冲模式下红色球壳的半径就是 $\\tau$，可以直接读出波前与光锥是否吻合。</p>
+<div class="eq">$$\\mathcal{H}_{\\text{lin}}=\\sum_n\\frac{\\hbar}{2\\omega_P}\\dot\\theta_n^2+\\frac{\\hbar K_0}{2}\\sum_{\\langle nm\\rangle}(\\theta_n-\\theta_m)^2$$</div>
+<h4>三种模式</h4>
+<p>同步相变模式对应公理 7：初始态是相位在 $S^1$ 上均匀分布的最大熵态，序参量 $\\Psi=0$。调低噪声 $T$ 或调高耦合 $K$，可以看到序参量模长从接近零跃升，晶格由杂色转为同色脉动，这就是同步相变，时空在此凝固。单色行波模式给出相速度与群速度的实时读数，低能端两者都趋于 $c$，高能端群速度明显落后。脉冲模式直接积分线性化晶格动力学，低能长波分量以 $c$ 领跑，短波分量落后并拖出色散尾巴。</p>
+<p>振荡的存在同时给出了时钟与尺：固有时间等于摆钟计数 $t_\\alpha=N_{\\text{osc},\\alpha}t_P$，同时性等于振荡同步。观测者由晶格构成，因而无法探测相对格点的整体运动，这一介质不可探测性论证列为待证命题 P11。</p>`,
+5:`
+<h2>色散与能带：光速涌现的精确位置</h2>
+<p class="lead">低能端三线合一，高能端方向依赖地弯下</p>
+<p>把公理 4 的本体哈密顿在同步态邻域线性化，代入平面波，得到三维最近邻晶格的色散关系：</p>
+<div class="eq">$$\\omega^2(\\mathbf k)=2\\omega_PK_0\\sum_a\\big(1-\\cos k_al_P\\big)=\\frac{4}{t_P^2}\\sum_a\\sin^2\\frac{k_al_P}{2}$$</div>
+<h4>低能极限</h4>
+<div class="eq">$$\\omega^2=c^2k^2-\\frac{c^2l_P^2}{12}\\sum_a k_a^4+\\mathcal{O}(k^6),\\qquad c=\\frac{l_P}{t_P}$$</div>
+<p>低能端精确重现 $\\omega=c|\\mathbf k|$，首阶色散为 $k^2$ 且与格点的立方对称性无关，低能旋转各向同性由此成立。于是 $\\partial_t^2\\delta\\phi-c^2\\nabla^2\\delta\\phi=0$ 不再是假设，而是被导出的低能有效方程，光锥与低能声锥一致。</p>
+<h4>首阶洛伦兹破坏</h4>
+<div class="eq">$$\\frac{\\delta\\omega}{\\omega}=-\\frac{l_P^2}{24}\\,\\frac{\\sum_a k_a^4}{k^2}$$</div>
+<p>这一项具有方向依赖，量级由 $(E/E_P)^2$ 标定。图中洋红虚线是它的预测，它在低能区与精确曲线贴合，接近布里渊区边界时明显分离，这正是首阶展开的适用范围边界。三个方向的系数比 $3:1.5:1$ 构成普朗克层的可检验签名。</p>
+<h4>能带顶与能隙</h4>
+<div class="eq">$$\\omega_{\\max}=\\frac{2\\sqrt3}{t_P},\\qquad E_{\\max}=2\\sqrt3\\,E_P\\approx3.46\\,E_P\\ <\\ E_\\Phi=2\\pi E_P\\approx6.28\\,E_P$$</div>
+<p>晶格声子的能带上限低于元相子基模能量，能带结构不越过单粒子基模，两种能量标度自洽。异类耦合赋予两个相位差模式能隙 $\\sqrt{3\\omega_P\\kappa_\\phi}$，其群速度恒小于 $c$，因果边界得以保持。能隙分支的 $k$ 依赖形式依赖 $\\kappa_\\phi$ 的几何值，列为开放问题 O9，图中以水平线示意。</p>`
+};
+
+/* ================= UI ================= */
+const $ = id => document.getElementById(id);
+function bindRange(id, fn, fmt){
+  const el=$(id), out=$(id+'-v');
+  const upd=()=>{ const v=parseFloat(el.value); if(out) out.textContent = fmt?fmt(v):v.toFixed(2); fn(v); };
+  el.addEventListener('input', upd); upd();
+}
+function bindSeg(id, fn){
+  const el=$(id);
+  el.addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); fn(b.dataset.v);
+  });
+}
+function bindChk(id, fn){ const el=$(id); const u=()=>fn(el.checked); el.addEventListener('change',u); u(); }
+
+bindSeg('s1-mode', v=>{ S1.st.mode=v; S1.reset(); });
+bindRange('s1-om', v=>{ S1.st.om=v; }, v=>v.toFixed(2)+' ωP');
+bindRange('s1-az', v=>{ S1.st.az=v; S1.place(); }, v=>v.toFixed(2));
+bindRange('s1-al', v=>{ S1.st.alpha=v; }, v=>Math.round(v*180/Math.PI)+'°');
+bindChk('s1-trail', v=>{ S1.st.trail=v; });
+bindChk('s1-axes',  v=>{ S1.st.axes=v; });
+bindChk('s1-cell',  v=>{ S1.st.cellv=v; });
+bindChk('s1-nb',    v=>{ S1.st.nbv=v; });
+$('s1-step').onclick = ()=>S1.stepSwing();
+$('s1-reset').onclick = ()=>S1.reset();
+
+bindRange('s2-sp', v=>{ S2.st.sp=v; }, v=>v.toFixed(2)+'×');
+bindRange('s2-ph', v=>{ S2.st.dphi=v; }, v=>Math.round(v*180/Math.PI)+'°');
+bindSeg('s2-view', v=>{ S2.st.view=v; if(cur===2) S2.focus(v); });
+bindChk('s2-cell', v=>{ S2.st.cellv=v; });
+bindChk('s2-trail',v=>{ S2.st.trailv=v; });
+bindChk('s2-lab',  v=>{ S2.st.labv=v; });
+$('s2-step').onclick = ()=>S2.stepTo();
+$('s2-reset').onclick = ()=>S2.reset();
+
+bindRange('s3-k',  v=>{ S3.st.k=v; S3.st.lock=false; }, v=>v.toFixed(2));
+bindRange('s3-n',  v=>{ S3.st.noise=v; }, v=>v.toFixed(2));
+bindRange('s3-om', v=>{ S3.st.om=v; }, v=>v.toFixed(2));
+bindChk('s3-box',  v=>{ S3.st.boxv=v; });
+bindChk('s3-axes', v=>{ S3.st.axesv=v; });
+$('s3-sync').onclick = ()=>{ S3.st.k=0; S3.st.lock=true; };
+$('s3-reset').onclick = ()=>S3.reset();
+
+const NOTE4 = {
+  sync:'左为相位在单位圆上的分布：散开即最大熵态，聚拢即同步相变。右为序参量模长 |Ψ| 的时间序列。',
+  wave:'下为沿传播方向的一维快照。颜色是相位扰动的符号，位移是摆程因扰动产生的偏移。',
+  pulse:'红色球壳半径为 τ = t/t_P，即光锥。对比波前位置即可检验低能波速是否为 c。'
+};
+bindSeg('s4-mode', v=>{
+  S4.switchMode(v);
+  document.querySelectorAll('.sub4').forEach(d=>d.style.display = (d.dataset.m===v)?'block':'none');
+  $('s4-note').textContent = NOTE4[v];
+});
+bindRange('s4-n',  v=>{ S4.build(v); if(cur===4) S4.focus(); }, v=>v+'³');
+bindRange('s4-t',  v=>{ S4.st.T=v; }, v=>v.toFixed(2));
+bindRange('s4-k',  v=>{ S4.st.K=v; }, v=>v.toFixed(2));
+bindRange('s4-om', v=>{ S4.st.om=v; }, v=>v.toFixed(2));
+bindRange('s4-kk', v=>{ S4.st.kk=v; }, v=>v.toFixed(2));
+bindSeg('s4-dir',  v=>{ S4.st.dir=v; });
+bindRange('s4-amp',v=>{ S4.st.amp=v; }, v=>v.toFixed(2));
+bindRange('s4-ps', v=>{ S4.st.ps=v; }, v=>v.toFixed(2));
+bindRange('s4-sg', v=>{ S4.st.sg=v; S4.reset(); }, v=>v.toFixed(2));
+bindChk('s4-cone', v=>{ S4.st.cone=v; });
+bindChk('s4-site', v=>{ S4.st.site=v; });
+$('s4-fire').onclick  = ()=>S4.reset();
+$('s4-reset').onclick = ()=>S4.reset();
+
+bindRange('s5-k', v=>{ S5.st.k=v; drawS5(); }, v=>v.toFixed(2));
+bindSeg('s5-dir', v=>{ S5.st.dir=v; drawS5(); });
+bindRange('s5-g', v=>{ S5.st.gap=v; drawS5(); }, v=>v.toFixed(3));
+bindChk('s5-app',  v=>{ S5.st.app=v; drawS5(); });
+bindChk('s5-gap',  v=>{ S5.st.gapOn=v; drawS5(); });
+bindChk('s5-emax', v=>{ S5.st.emax=v; drawS5(); });
+
+$('tabs').addEventListener('click', e=>{
+  const b=e.target.closest('.tab'); if(!b) return; setScene(+b.dataset.s);
+});
+
+/* ================= 小图表 ================= */
+function miniCtx(cv){
+  const dpr=Math.min(window.devicePixelRatio,2);
+  const w=cv.clientWidth||292, h=cv.clientHeight||96;
+  if(cv.width!==w*dpr||cv.height!==h*dpr){ cv.width=w*dpr; cv.height=h*dpr; }
+  const x=cv.getContext('2d');
+  x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  return {x,w,h};
+}
+function drawS3(){
+  const cv=$('s3-chart'); if(!cv||!cv.clientWidth) return;
+  const {x,w,h}=miniCtx(cv); const pad=7;
+  x.strokeStyle='#eef2f7'; x.lineWidth=1;
+  for(let i=0;i<=2;i++){ const y=pad+(h-2*pad)*i/2; x.beginPath(); x.moveTo(pad,y); x.lineTo(w-pad,y); x.stroke(); }
+  const H=S3.st.hist; if(H.length<2) return;
+  const cols=['#1a5fb4','#0f766e','#9a5b12'];
+  for(let s=0;s<3;s++){
+    x.strokeStyle=cols[s]; x.lineWidth=1.6; x.beginPath();
+    for(let i=0;i<H.length;i++){
+      const px=pad+(w-2*pad)*i/(H.length-1);
+      const py=pad+(h-2*pad)*(1-Math.min(1,H[i][s]/Math.PI));
+      i?x.lineTo(px,py):x.moveTo(px,py);
+    }
+    x.stroke();
+  }
+  x.fillStyle='#8a97a8'; x.font='10px sans-serif';
+  x.fillText('π',3,pad+9); x.fillText('0',3,h-pad+3);
+}
+function sampleAlong(){
+  const N=S4.getN(), th=S4.getTheta(), half=(N-1)/2, d=S5.dirs[S4.st.dir]||S5.dirs['100'];
+  const out=[];
+  for(let i=0;i<N;i++){
+    const t=i-half;
+    let ix=Math.round(half+d[0]*t), iy=Math.round(half+d[1]*t), iz=Math.round(half+d[2]*t);
+    ix=Math.max(0,Math.min(N-1,ix)); iy=Math.max(0,Math.min(N-1,iy)); iz=Math.max(0,Math.min(N-1,iz));
+    out.push(th[ix + N*(iy + N*iz)]);
+  }
+  return out;
+}
+function drawS4(){
+  const cv=$('s4-chart'); if(!cv||!cv.clientWidth) return;
+  const {x,w,h}=miniCtx(cv);
+  if(S4.st.mode!=='sync'){
+    x.strokeStyle='#e6ebf2'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(6,h/2); x.lineTo(w-6,h/2); x.stroke();
+    const pts=sampleAlong(); let mx=1e-6; pts.forEach(v=>mx=Math.max(mx,Math.abs(v)));
+    x.strokeStyle='#1a5fb4'; x.lineWidth=1.8; x.beginPath();
+    pts.forEach((v,i)=>{
+      const px=8+(w-16)*i/(pts.length-1), py=h/2-(v/mx)*(h/2-12);
+      i?x.lineTo(px,py):x.moveTo(px,py);
+    });
+    x.stroke();
+    x.fillStyle='#c8d2de';
+    pts.forEach((v,i)=>{ const px=8+(w-16)*i/(pts.length-1);
+      x.beginPath(); x.arc(px,h/2,1.6,0,TAU); x.fill(); });
+    x.fillStyle='#8a97a8'; x.font='10px "Noto Sans SC",sans-serif';
+    x.fillText('沿 ['+S4.st.dir+'] 方向的 δφ 快照', 8, 12);
+    return;
+  }
+  const cx=w*0.27, cy=h/2, r=Math.min(h*0.40,33);
+  x.strokeStyle='#dde4ed'; x.lineWidth=1;
+  x.beginPath(); x.arc(cx,cy,r,0,TAU); x.stroke();
+  x.beginPath(); x.moveTo(cx-r,cy); x.lineTo(cx+r,cy); x.moveTo(cx,cy-r); x.lineTo(cx,cy+r); x.stroke();
+  const raw=S4.getTheta(), n=S4.getN()**3;
+  const step=Math.max(1,Math.floor(n/420));
+  x.fillStyle='rgba(26,95,180,.55)';
+  for(let i=0;i<n;i+=step){
+    const ang=raw[i];
+    x.beginPath(); x.arc(cx+Math.cos(ang)*r*0.92, cy-Math.sin(ang)*r*0.92, 1.5, 0, TAU); x.fill();
+  }
+  let re=0, im=0;
+  for(let i=0;i<n;i++){ re+=Math.cos(raw[i]); im+=Math.sin(raw[i]); }
+  re/=n; im/=n;
+  x.strokeStyle='#a53030'; x.lineWidth=2.2;
+  x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+re*r, cy-im*r); x.stroke();
+  const H=S4.st.ordHist, gx=w*0.56, gw=w-w*0.56-8;
+  x.strokeStyle='#e6ebf2'; x.lineWidth=1;
+  x.beginPath(); x.moveTo(gx,h-8); x.lineTo(gx+gw,h-8); x.moveTo(gx,8); x.lineTo(gx,h-8); x.stroke();
+  if(H.length>1){
+    x.strokeStyle='#0f766e'; x.lineWidth=1.7; x.beginPath();
+    H.forEach((v,i)=>{ const px=gx+gw*i/(H.length-1), py=h-8-(h-16)*v; i?x.lineTo(px,py):x.moveTo(px,py); });
+    x.stroke();
+  }
+  x.fillStyle='#8a97a8'; x.font='10px "Noto Sans SC",sans-serif';
+  x.fillText('相位分布', cx-r, h-2); x.fillText('|Ψ| 历史', gx+2, 12);
+}
+
+/* ================= 场景 5 绘制 ================= */
+function drawS5(){
+  const cv=c2d;
+  const dpr=Math.min(window.devicePixelRatio,2);
+  const W=cv.clientWidth, H=cv.clientHeight;
+  if(!W||!H) return;
+  if(cv.width!==W*dpr||cv.height!==H*dpr){ cv.width=W*dpr; cv.height=H*dpr; }
+  const x=cv.getContext('2d');
+  x.setTransform(dpr,0,0,dpr,0,0);
+  x.fillStyle='#fff'; x.fillRect(0,0,W,H);
+
+  const L=66, Rp=52, T=26, B=142;
+  const pw=W-L-Rp, ph=H-T-B;
+  if(pw<120||ph<120) return;
+  const XMAX=Math.sqrt(3)*Math.PI*1.02, YMAX=0.62;
+  const px=v=>L+pw*(v/XMAX), py=v=>T+ph*(1-v/YMAX);
+
+  x.strokeStyle='#eef1f5'; x.lineWidth=1;
+  for(let i=0;i<=6;i++){ const gx=L+pw*i/6; x.beginPath(); x.moveTo(gx,T); x.lineTo(gx,T+ph); x.stroke(); }
+  for(let i=0;i<=6;i++){ const gy=T+ph*i/6; x.beginPath(); x.moveTo(L,gy); x.lineTo(L+pw,gy); x.stroke(); }
+  x.strokeStyle='#c3ccd8'; x.lineWidth=1.2;
+  x.beginPath(); x.moveTo(L,T); x.lineTo(L,T+ph); x.lineTo(L+pw,T+ph); x.stroke();
+
+  x.fillStyle='#4b5563'; x.font='12px "Noto Sans SC",sans-serif'; x.textAlign='center';
+  x.fillText('k · l_P', L+pw/2, H-B+58);
+  x.textAlign='left';
+  x.save(); x.translate(19, T+ph/2+56); x.rotate(-Math.PI/2); x.textAlign='center';
+  x.fillText('ω / ω_P', 0, 0); x.restore();
+  x.save(); x.translate(W-13, T+ph/2+72); x.rotate(-Math.PI/2); x.textAlign='center';
+  x.fillStyle='#8a97a8'; x.font='11px "Noto Sans SC",sans-serif'; x.fillText('E / E_P', 0, 0); x.restore();
+
+  for(let i=0;i<=6;i++){
+    const v=YMAX*i/6, gy=py(v);
+    x.fillStyle='#8a97a8'; x.font='10.5px sans-serif'; x.textAlign='right';
+    x.fillText(v.toFixed(2), L-7, gy+3.5);
+    x.fillStyle='#b6c0cd'; x.textAlign='left';
+    x.fillText((v*TAU).toFixed(2), L+pw+7, gy+3.5);
+  }
+  x.textAlign='center';
+  for(let i=0;i<=6;i++){
+    const v=XMAX*i/6;
+    x.fillStyle='#8a97a8'; x.font='10.5px sans-serif';
+    x.fillText(v.toFixed(1), px(v), T+ph+16);
+  }
+  x.textAlign='left';
+
+  ['100','110','111'].forEach(d=>{
+    const bx=px(S5.bz[d]);
+    x.strokeStyle='#ccd5e0'; x.setLineDash([3,4]); x.lineWidth=1;
+    x.beginPath(); x.moveTo(bx,T); x.lineTo(bx,T+ph); x.stroke(); x.setLineDash([]);
+  });
+
+  // 低能光线 ω = c k
+  x.strokeStyle='#0f766e'; x.lineWidth=1.7; x.setLineDash([6,4]); x.beginPath();
+  for(let i=0;i<=300;i++){
+    const kk=XMAX*i/300, v=kk/TAU;
+    if(v>YMAX) break;
+    const gx=px(kk), gy=py(v);
+    i?x.lineTo(gx,gy):x.moveTo(gx,gy);
+  }
+  x.stroke(); x.setLineDash([]);
+  x.fillStyle='#0f766e'; x.font='11px sans-serif';
+  x.fillText('ω = c|k|', px(XMAX*0.30), py(XMAX*0.30/TAU)-7);
+
+  const cols={'100':'#1a5fb4','110':'#3b7fd0','111':'#6aa4e2'};
+  const lbl={'100':'[100]','110':'[110]','111':'[111]'};
+  ['111','110','100'].forEach(d=>{
+    const bx=S5.bz[d];
+    x.strokeStyle=cols[d]; x.lineWidth=(d===S5.st.dir?2.6:1.5); x.beginPath();
+    for(let i=0;i<=300;i++){
+      const kk=bx*i/300, v=S5.wOverWP(kk,d);
+      const gx=px(kk), gy=py(v);
+      i?x.lineTo(gx,gy):x.moveTo(gx,gy);
+    }
+    x.stroke();
+    const lx=px(bx*0.66), ly=py(S5.wOverWP(bx*0.66,d));
+    x.fillStyle=cols[d]; x.font='11px sans-serif';
+    x.fillText(lbl[d], lx+5, ly-6);
+  });
+
+  if(S5.st.app){
+    const d=S5.st.dir, s4=S5.s4(d), bx=S5.bz[d];
+    x.strokeStyle='#a53030'; x.lineWidth=1.6; x.setLineDash([2,3]); x.beginPath();
+    for(let i=1;i<=300;i++){
+      const kk=bx*i/300;
+      const w0=kk, dw=-s4*Math.pow(kk,3)/24;
+      const v=(w0+dw)/TAU;
+      if(v<0) break;
+      const gx=px(kk), gy=py(v);
+      i?x.lineTo(gx,gy):x.moveTo(gx,gy);
+    }
+    x.stroke(); x.setLineDash([]);
+  }
+
+  if(S5.st.emax){
+    const v=2*Math.sqrt(3)/TAU;
+    x.strokeStyle='#a53030'; x.lineWidth=1; x.setLineDash([7,4]);
+    x.beginPath(); x.moveTo(L,py(v)); x.lineTo(L+pw,py(v)); x.stroke(); x.setLineDash([]);
+    x.fillStyle='#a53030'; x.font='10.5px "Noto Sans SC",sans-serif';
+    x.fillText('能带顶 E = 2√3 E_P', L+6, py(v)-5);
+  }
+  if(S5.st.gapOn && S5.st.gap>0){
+    const v=Math.sqrt(3*S5.st.gap);
+    if(v<YMAX){
+      x.strokeStyle='#0f766e'; x.lineWidth=1.6; x.setLineDash([5,3]);
+      x.beginPath(); x.moveTo(L,py(v)); x.lineTo(L+pw,py(v)); x.stroke(); x.setLineDash([]);
+      x.fillStyle='#0f766e'; x.font='10.5px "Noto Sans SC",sans-serif';
+      x.fillText('相位差模式能隙 √(3ω_P κ_φ)', L+6, py(v)-5);
+    }
+  }
+
+  const k0=S5.st.k, d0=S5.st.dir, v0=S5.wOverWP(k0,d0), gx=px(k0);
+  x.strokeStyle='#1f2937'; x.lineWidth=1; x.setLineDash([4,3]);
+  x.beginPath(); x.moveTo(gx,T); x.lineTo(gx,T+ph); x.stroke(); x.setLineDash([]);
+  x.fillStyle='#1a5fb4'; x.beginPath(); x.arc(gx,py(v0),4.4,0,TAU); x.fill();
+  x.fillStyle='#fff'; x.beginPath(); x.arc(gx,py(v0),1.8,0,TAU); x.fill();
+
+  // 一维链快照
+  const cy0=H-B+76, chainW=pw;
+  x.fillStyle='#4b5563'; x.font='11.5px "Noto Sans SC",sans-serif';
+  x.fillText('沿 ['+d0+'] 方向的一维快照（24 个元相子，颜色为 δφ 的符号）', L, cy0-26);
+  const nch=24;
+  x.strokeStyle='#e6ebf2'; x.lineWidth=1;
+  x.beginPath(); x.moveTo(L,cy0); x.lineTo(L+chainW,cy0); x.stroke();
+  for(let i=0;i<nch;i++){
+    const v=Math.sin(k0*i);
+    const cxp=L+chainW*i/(nch-1), off=v*20;
+    x.strokeStyle = v>=0 ? 'rgba(192,57,43,'+(0.32+0.58*Math.abs(v))+')' : 'rgba(26,95,180,'+(0.32+0.58*Math.abs(v))+')';
+    x.lineWidth=2.4;
+    x.beginPath(); x.moveTo(cxp,cy0-off); x.lineTo(cxp,cy0+off); x.stroke();
+    x.fillStyle='#d8e0ea'; x.beginPath(); x.arc(cxp,cy0,1.8,0,TAU); x.fill();
+  }
+
+  const w0=S5.omega(S5.kv(k0,d0));
+  const vp = k0>1e-6 ? w0/k0 : 1;
+  const eps=1e-4;
+  const vg = (S5.omega(S5.kv(k0+eps,d0)) - S5.omega(S5.kv(Math.max(1e-5,k0-eps),d0)))/(2*eps);
+  const rows = [
+    ['k · l_P', k0.toFixed(3)],
+    ['波长 λ / l_P', (TAU/Math.max(k0,1e-6)).toFixed(2)],
+    ['ω / ω_P', (w0/TAU).toFixed(4)],
+    ['E / E_P', (w0).toFixed(3)],
+    ['v_p / c', vp.toFixed(4)],
+    ['v_g / c', vg.toFixed(4)],
+    ['δω/ω 精确', (vp-1).toFixed(4)],
+    ['δω/ω 首阶', (-S5.s4(d0)*k0*k0/24).toFixed(4)]
+  ];
+  $('s5-rd').innerHTML = rows.map(r=>'<div>'+r[0]+'<span>'+r[1]+'</span></div>').join('');
+}
+function setKFromClient(clientX){
+  const r=c2d.getBoundingClientRect();
+  const L=66, Rp=52, pw=r.width-L-Rp;
+  if(pw<=0) return;
+  const XMAX=Math.sqrt(3)*Math.PI*1.02;
+  let kk=(clientX-r.left-L)/pw*XMAX;
+  kk=Math.max(0.02, Math.min(5.4, kk));
+  $('s5-k').value=kk; $('s5-k-v').textContent=kk.toFixed(2);
+  S5.st.k=kk; drawS5();
+}
+c2d.addEventListener('pointerdown', e=>{ if(cur!==5) return; S5.st.drag=true; setKFromClient(e.clientX); });
+window.addEventListener('pointermove', e=>{ if(S5.st.drag && cur===5) setKFromClient(e.clientX); });
+window.addEventListener('pointerup', ()=>{ S5.st.drag=false; });
+
+/* ================= 尺寸 ================= */
+function resize(){
+  const w=stage.clientWidth, h=stage.clientHeight;
+  if(!w||!h) return;
+  camera.aspect=w/h; camera.updateProjectionMatrix();
+  renderer.setSize(w,h,false);
+  if(cur===5) drawS5();
+}
+window.addEventListener('resize', resize);
+
+/* ================= 主循环 ================= */
+let playing=true, last=performance.now();
+document.addEventListener('keydown', e=>{
+  if(e.code==='Space'){ e.preventDefault(); playing=!playing; }
+});
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min(0.05,(now-last)/1000); last=now;
+  if(playing){
+    if(cur===1) S1.update(dt);
+    else if(cur===2) S2.update(dt);
+    else if(cur===3) S3.update(dt);
+    else if(cur===4) S4.update(dt);
+  }
+  if(cur===1){
+    const st=S1.st;
+    const th = st.mode==='bound' ? TAU*triWave(st.om*st.tau) : st.om*st.tau;
+    const zc = th/TAU;
+    $('hud').innerHTML =
+      '<div><span class="k">模式</span><b>'+(st.mode==='bound'?'束缚振荡':'自由极限')+'</b></div>'+
+      '<div><span class="k">相位 θ</span><b class="num">'+(th%TAU).toFixed(2)+' rad</b></div>'+
+      '<div><span class="k">轴向 z/l_P</span><b class="num">'+zc.toFixed(3)+'</b></div>'+
+      '<div><span class="k">摆程计数 N</span><b class="num">'+Math.floor(st.om*st.tau/TAU)+'</b></div>'+
+      '<div><span class="k">t / t_P</span><b class="num">'+(st.om*st.tau/TAU).toFixed(2)+'</b></div>'+
+      '<div><span class="k">|v_z| / c</span><b class="num">1.000</b></div>';
+    $('s1-rd').innerHTML =
+      '<div>摆程进度<span>'+(triWave(st.om*st.tau)*100).toFixed(0)+'%</span></div>'+
+      '<div>已完成摆程<span>'+Math.floor(st.om*st.tau/TAU)+'</span></div>'+
+      '<div>螺距 λ / 圆半径 R<span>6.283</span></div>'+
+      '<div>区间宽度<span>1.000 l_P</span></div>';
+  } else if(cur===2){
+    const st=S2.st;
+    const ya=LAM1*S2.sA(), yb=2*LAM1-LAM1*S2.sB();
+    $('hud').innerHTML =
+      '<div><span class="k">A 圆心 y</span><b class="num">'+(ya/LAM1).toFixed(3)+' l_P</b></div>'+
+      '<div><span class="k">B 圆心 y</span><b class="num">'+(yb/LAM1).toFixed(3)+' l_P</b></div>'+
+      '<div><span class="k">圆心间距</span><b class="num">'+(Math.abs(yb-ya)/LAM1).toFixed(3)+' l_P</b></div>'+
+      '<div><span class="k">碰撞次数</span><b class="num">'+st.hits+'</b></div>'+
+      '<div><span class="k">t / t_P</span><b class="num">'+(st.tau/TAU).toFixed(2)+'</b></div>';
+    $('s2-rd').innerHTML =
+      '<div>格点 n 区间<span>[0, 1] l_P</span></div>'+
+      '<div>格点 n+1 区间<span>[1, 2] l_P</span></div>'+
+      '<div>公共边界<span>y = 1.000 l_P</span></div>'+
+      '<div>累计碰撞<span>'+st.hits+' 次</span></div>';
+  } else if(cur===3){
+    const st=S3.st;
+    $('hud').innerHTML =
+      '<div><span class="k">κ_φ</span><b class="num">'+st.k.toFixed(2)+'</b></div>'+
+      '<div><span class="k">|θx−θy|</span><b class="num">'+wrapPi(st.th[0]-st.th[1]).toFixed(3)+'</b></div>'+
+      '<div><span class="k">|θy−θz|</span><b class="num">'+wrapPi(st.th[1]-st.th[2]).toFixed(3)+'</b></div>'+
+      '<div><span class="k">|θz−θx|</span><b class="num">'+wrapPi(st.th[2]-st.th[0]).toFixed(3)+'</b></div>';
+    const mx=Math.max(wrapPi(st.th[0]-st.th[1]),wrapPi(st.th[1]-st.th[2]),wrapPi(st.th[2]-st.th[0]));
+    $('s3-rd').innerHTML =
+      '<div>最大相位差<span>'+mx.toFixed(3)+' rad</span></div>'+
+      '<div>格点状态<span>'+(mx<0.12?'锁相':(mx<1.2?'部分锁定':'去相干'))+'</span></div>'+
+      '<div>整体 U(1)<span>保持</span></div>'+
+      '<div>格点坐标 Z³<span>独立</span></div>';
+    drawS3();
+  } else if(cur===4){
+    const st=S4.st;
+    if(st.mode==='sync'){
+      $('hud').innerHTML =
+        '<div><span class="k">序参量 |Ψ|</span><b class="num">'+st.psi.toFixed(3)+'</b></div>'+
+        '<div><span class="k">噪声 T</span><b class="num">'+st.T.toFixed(2)+'</b></div>'+
+        '<div><span class="k">耦合 K</span><b class="num">'+st.K.toFixed(2)+'</b></div>'+
+        '<div><span class="k">格点数</span><b class="num">'+st.N+'³</b></div>'+
+        '<div><span class="k">每格点</span><b>3 E_Φ</b></div>';
+      $('s4-rd').innerHTML =
+        '<div>|Ψ|<span>'+st.psi.toFixed(3)+'</span></div>'+
+        '<div>相态<span>'+(st.psi>0.75?'同步（时空凝固）':(st.psi>0.3?'部分同步':'最大熵态'))+'</span></div>'+
+        '<div>本体层熵<span>'+(st.psi>0.75?'已降低':'接近 3 ln 2π')+'</span></div>'+
+        '<div>真空能<span>处处均匀</span></div>';
+    } else if(st.mode==='wave'){
+      $('hud').innerHTML =
+        '<div><span class="k">k · l_P</span><b class="num">'+st.kk.toFixed(2)+'</b></div>'+
+        '<div><span class="k">方向</span><b>['+st.dir+']</b></div>'+
+        '<div><span class="k">ω / ω_P</span><b class="num">'+S5.wOverWP(st.kk,st.dir).toFixed(4)+'</b></div>'+
+        '<div><span class="k">v_p / c</span><b class="num">'+(st.vp||1).toFixed(4)+'</b></div>'+
+        '<div><span class="k">v_g / c</span><b class="num">'+(st.vg||1).toFixed(4)+'</b></div>';
+      $('s4-rd').innerHTML =
+        '<div>相速度 v_p/c<span>'+(st.vp||1).toFixed(4)+'</span></div>'+
+        '<div>群速度 v_g/c<span>'+(st.vg||1).toFixed(4)+'</span></div>'+
+        '<div>δω/ω<span>'+((st.vp||1)-1).toFixed(4)+'</span></div>'+
+        '<div>低能极限<span>v_p → c</span></div>';
+    } else {
+      $('hud').innerHTML =
+        '<div><span class="k">t / t_P</span><b class="num">'+st.tau.toFixed(2)+'</b></div>'+
+        '<div><span class="k">光锥半径</span><b class="num">'+st.tau.toFixed(2)+' l_P</b></div>'+
+        '<div><span class="k">峰值 |δφ|</span><b class="num">'+st.maxAbs.toFixed(3)+'</b></div>'+
+        '<div><span class="k">格点数</span><b class="num">'+st.N+'³</b></div>';
+      $('s4-rd').innerHTML =
+        '<div>演化时间 τ<span>'+st.tau.toFixed(2)+'</span></div>'+
+        '<div>球壳半径 c·t<span>'+st.tau.toFixed(2)+' l_P</span></div>'+
+        '<div>波速单位<span>c = l_P/t_P = 1</span></div>'+
+        '<div>低能波前<span>与光锥重合</span></div>';
+    }
+    drawS4();
+  } else if(cur===5){
+    $('hud').innerHTML =
+      '<div><span class="k">方向</span><b>['+S5.st.dir+']</b></div>'+
+      '<div><span class="k">k · l_P</span><b class="num">'+S5.st.k.toFixed(2)+'</b></div>'+
+      '<div><span class="k">低能极限</span><b>ω = c|k|</b></div>'+
+      '<div><span class="k">能带顶</span><b>2√3 / t_P</b></div>';
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+/* ================= 启动 ================= */
+window.__OK = true;
+$('s4-note').textContent = NOTE4.sync;
+setScene(1);
+requestAnimationFrame(loop);
+
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
+  s.onload=function(){
+    const r=document.createElement('script');
+    r.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js';
+    r.onload=function(){
+      window.renderMathInElement(document.body,{
+        delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+        throwOnError:false
+      });
+      setScene(cur);
+    };
+    document.head.appendChild(r);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

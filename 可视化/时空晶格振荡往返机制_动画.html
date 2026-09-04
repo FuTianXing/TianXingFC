@@ -98,11 +98,13 @@
     <circle cx="170" cy="470" r="85" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.5"/>
     <line x1="85" y1="470" x2="255" y2="470" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="3 3"/>
     <line x1="170" y1="385" x2="170" y2="555" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <circle id="discTheta" cx="170" cy="470" r="85" fill="rgba(133,79,11,0.10)" stroke="none" opacity="0"/>
     <path id="arcTheta" fill="rgba(24,95,165,0.12)" stroke="none"/>
     <line id="ptrTheta" x1="170" y1="470" x2="255" y2="470" stroke="#185fa5" stroke-width="2.5" stroke-linecap="round"/>
     <circle cx="170" cy="470" r="4" fill="#185fa5"/>
     <circle cx="255" cy="470" r="3" fill="#94a3b8"/>
     <text x="170" y="368" font-size="12.5" fill="#475569" text-anchor="middle">复平面单位圆</text>
+    <text id="txtShade" x="170" y="575" font-size="11.5" fill="#64748b" text-anchor="middle">阴影 = 本摆程已扫过的相位</text>
     <text id="ptrHint" x="170" y="592" font-size="12.5" fill="#475569" text-anchor="middle">去程：逆时针（θ 递增）</text>
     <text id="txtWinding" x="170" y="612" font-size="12.5" fill="#0f6e56" text-anchor="middle">绕数 0（束缚态）</text>
 
@@ -298,16 +300,32 @@
   }
 
   // ---------- 渲染 ----------
-  var ptrTheta = $("ptrTheta"), arcTheta = $("arcTheta");
+  var ptrTheta = $("ptrTheta"), arcTheta = $("arcTheta"), discTheta = $("discTheta");
   var trajLine = $("trajLine"), trajHint = $("trajHint");
 
-  function arcPath(cx, cy, r, turn){
-    var th = ((turn % 1) + 1) % 1 * 2 * Math.PI;
-    if (th < 1e-6) return "M" + cx + " " + cy;
-    var x = cx + r * Math.cos(th), y = cy - r * Math.sin(th);
-    var large = th > Math.PI ? 1 : 0;
-    return "M" + (cx + r) + " " + cy + " A" + r + " " + r + " 0 " + large + " 1 " + x + " " + y
-           + " L" + cx + " " + cy + " Z";
+  // 角度约定：点 = (cx + r·cos a, cy − r·sin a)，故 a 增大在屏幕上是逆时针。
+  // SVG 的 sweep=1 指屏幕顺时针，所以逆时针弧段必须写 sweep=0。sweep 与 large 配错时
+  // 端点反解会落到另一个候选圆上，弧就跑出单位圆之外（旧版阴影画成月牙状即由此而来）。
+  function f2(v){ return (Math.round(v * 100) / 100).toString(); }
+  function polar(cx, cy, r, a){
+    return f2(cx + r * Math.cos(a)) + " " + f2(cy - r * Math.sin(a));
+  }
+  // 从角 a0 扫到角 a1 的实心扇形，d = a1 − a0 带符号，正负决定绕行方向
+  function sectorPath(cx, cy, r, a0, a1){
+    var d = a1 - a0, ad = Math.abs(d);
+    if (ad < 1e-6) return "M" + f2(cx) + " " + f2(cy);
+    var sweep = d > 0 ? 0 : 1;
+    if (ad >= 2 * Math.PI - 1e-6){
+      // 整圆无法用一段弧闭合，拆成两个半圆
+      var p0 = polar(cx, cy, r, a0);
+      var pm = polar(cx, cy, r, a0 + (d > 0 ? Math.PI : -Math.PI));
+      return "M" + f2(cx) + " " + f2(cy) + " L" + p0
+           + " A" + r + " " + r + " 0 0 " + sweep + " " + pm
+           + " A" + r + " " + r + " 0 0 " + sweep + " " + p0 + " Z";
+    }
+    return "M" + f2(cx) + " " + f2(cy) + " L" + polar(cx, cy, r, a0)
+         + " A" + r + " " + r + " 0 " + (ad > Math.PI ? 1 : 0) + " " + sweep + " "
+         + polar(cx, cy, r, a1) + " Z";
   }
 
   function render(now){
@@ -370,7 +388,24 @@
     var ang = turn * 2 * Math.PI;
     ptrTheta.setAttribute("x2", (170 + 85 * Math.cos(ang)).toFixed(2));
     ptrTheta.setAttribute("y2", (470 - 85 * Math.sin(ang)).toFixed(2));
-    arcTheta.setAttribute("d", arcPath(170, 470, 85, turn));
+
+    // 阴影 = 本摆程内已扫过的那段相位：从摆程起点沿推进方向扫到指针当前位置。
+    // 去程逆时针张开、回程顺时针退回，两者张角同为 2πq；回程不是去程的补角。
+    var a0, a1;
+    if (S.locked){
+      a0 = 0;
+      a1 = (((turn % 1) + 1) % 1) * 2 * Math.PI;
+    } else {
+      a0 = phaseStart(0, S.N) * 2 * Math.PI;
+      a1 = a0 + ((S.N % 2 === 0) ? 1 : -1) * S.q * 2 * Math.PI;
+    }
+    arcTheta.setAttribute("d", sectorPath(170, 470, 85, a0, a1));
+    arcTheta.setAttribute("fill", S.locked ? "rgba(133,79,11,0.24)" : "rgba(24,95,165,0.12)");
+    // σ 锁定后相位单向累积，整圆表示已经绕过的整圈，不再每满圈清零
+    discTheta.setAttribute("opacity", (S.locked && S.N >= 1) ? 1 : 0);
+    $("txtShade").textContent = S.locked
+      ? "整圆 = 已绕过的圈数，扇形 = 当前圈内进度"
+      : "阴影 = 本摆程已扫过的相位";
 
     // 碰撞闪光：闪在两圆心重合的那一点，也就是公共边界处，撞击瞬间最亮，随后扩散消散
     var gR = $("gRipples");
