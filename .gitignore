@@ -23,3 +23,6 @@ images/_cp_*/
 images/_ed_*/
 images/_min_*/
 
+# 工作过程临时产物
+_tools/_tmp/
+
