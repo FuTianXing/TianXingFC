@@ -30,7 +30,7 @@ cN = N // 2
 def set_K(Kv):
     global K, w2, c_s
     K = Kv
-    w2 = (2 * np.pi) ** 2 * K
+    w2 = 2 * np.pi * K
     c_s = np.sqrt(k)
 
 def accel(u, v, f=0.0, gamma_d=0.0):
