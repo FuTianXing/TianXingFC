@@ -14,6 +14,7 @@
 | `理论总纲/` | 知识库基准，未经作者确认不得修改 |
 | `内部草稿/` | 未确认的新内容先入此，确认后固化进理论总纲 |
 | `验证脚本/` | 理论验证材料：脚本 `minimal_verification_<主题>.py` + 验证注记 + `README.md` 索引，规范见下文 |
+| `wiki/` | 重要名词的通俗解释词条（wiki 风格：定义首句 + 元数据表 + 八节模板，见 `wiki/README.md`），每个名词一个文件 |
 | `images/` | 图片预览；浏览器缓存已被 .gitignore 排除，勿 add |
 
 ## 写作铁律（每条修改后必须全文验证）
@@ -56,7 +57,6 @@
 ## git 规范
 
 - 禁止自动提交：仅作者明示"提交/commit/推送"后才执行 `git add` + `git commit` + `git push origin master`；作者未确认前不提交不推送也不反复询问。一轮工作结束可一句话报告"N 个文件未提交"。
-- `git add` 只加目标文件，禁用 `-A`（曾误纳 images/ 缓存 1500+ 文件）。
 - commit message 在 Git Bash 用单引号。
 - 提交前用 `git status --short` 与 `git diff --ignore-cr-at-eol --numstat` 核对，确认无行尾符假差异、无误纳无关文件。
 
