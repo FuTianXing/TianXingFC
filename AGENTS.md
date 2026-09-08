@@ -64,6 +64,7 @@
 
 - `edit_file` 报 `old_string not found` 时，用 Python 脚本验证实际字符（Unicode 弯引号/em-dash/CRLF 是高频陷阱），或从 `read_file` 输出复制锚点。
 - 批量同类替换用 Python 脚本一次完成；修改后必查：em-dash、禁句式、"账"字。
+- 读大文件（超约 200 行或 30KB）勿用 `read_file` 一次读完：单次可见有字节上限，截断会触发宿主的"分页续读协议"，该协议要求 `limit=0` 续读而工具 schema 拒绝 `limit=0`，形成死锁并锁定其他操作。改用 `bash` 分段读（`sed -n '起,止p'`、`grep -n '^#'` 看结构、`tail -n`）；必须用 `read_file` 时主动小窗口分页（`limit` 50-100 行、`offset` 逐段推进），保持每页在可见上限内。遇 INCOMPLETE 按提示用 `use_capability` 恢复至 `complete=true`，其后宿主若仍要求 `limit=0` 续读，立即换 bash 读取，不要重试同一参数。
 
 ## 开放问题同步规范（常驻，默认执行无需提示）
 
