@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>轨迹切线即光速方向 · 螺旋时空</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#060912; color:#e5e7eb;
+        font-family:'Noto Sans SC','Microsoft YaHei',sans-serif; overflow:hidden; }
+  #c3d { position:fixed; inset:0; display:block; }
+  .hero { position:fixed; top:18px; left:22px; z-index:10; pointer-events:none; }
+  .hero h1 { font-size:24px; font-weight:800; letter-spacing:3px; margin:0 0 4px; color:#fff; }
+  .hero p  { color:#94a3b8; font-size:13px; letter-spacing:1.5px; margin:0; }
+  .hero p b { color:#f5c542; font-weight:600; }
+  .panel { position:fixed; right:18px; top:18px; z-index:10; background:rgba(10,14,26,0.82);
+           border:1px solid rgba(148,163,184,0.18); border-radius:12px; padding:14px 16px;
+           width:248px; backdrop-filter:blur(6px); }
+  .panel h3 { margin:0 0 10px; font-size:13px; letter-spacing:2px; color:#cbd5e1; font-weight:600; }
+  .ctrl { display:flex; align-items:center; gap:8px; margin:7px 0; font-size:13px; color:#cbd5e1; cursor:pointer; }
+  .ctrl input[type=checkbox] { accent-color:#f5c542; width:15px; height:15px; cursor:pointer; }
+  .btn-row { display:flex; gap:8px; margin:10px 0 4px; }
+  .btn { flex:1; padding:7px 0; border:1px solid rgba(245,197,66,0.5); background:rgba(245,197,66,0.08);
+         color:#f5c542; border-radius:8px; font-size:13px; cursor:pointer; letter-spacing:1px;
+         font-family:inherit; transition:all .15s; }
+  .btn:hover { background:rgba(245,197,66,0.2); }
+  .speed-row { display:flex; align-items:center; gap:8px; margin-top:6px; font-size:12px; color:#94a3b8; }
+  .speed-row input { flex:1; accent-color:#f5c542; }
+  .readout { position:fixed; left:22px; bottom:20px; z-index:10; background:rgba(10,14,26,0.82);
+             border:1px solid rgba(148,163,184,0.18); border-radius:12px; padding:12px 16px;
+             min-width:300px; backdrop-filter:blur(6px); font-size:13px; line-height:1.75; color:#cbd5e1; }
+  .readout b { color:#f5c542; font-weight:600; }
+  .readout .u { color:#22d3ee; font-weight:600; }
+  .readout .v { color:#a78bfa; font-weight:600; }
+  .bar { height:6px; border-radius:3px; background:rgba(148,163,184,0.15); margin-top:4px; overflow:hidden; }
+  .bar i { display:block; height:100%; width:100%; border-radius:3px;
+           background:linear-gradient(90deg,#f5c542,#fbbf24); }
+  .legend { position:fixed; right:18px; bottom:20px; z-index:10; background:rgba(10,14,26,0.7);
+            border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:10px 14px;
+            font-size:12px; color:#94a3b8; line-height:1.9; }
+  .legend i { display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:middle; margin-right:7px; }
+  .legend .l-c { background:#f5c542; }
+  .legend .l-t { background:#22d3ee; }
+  .legend .l-z { background:#a78bfa; }
+  .legend .l-p { background:rgba(245,197,66,0.45); }
+  .legend .l-s { background:#38bdf8; }
+  @media (max-width:860px) {
+    .panel { width:200px; right:10px; top:10px; }
+    .readout { left:10px; bottom:10px; min-width:0; max-width:58vw; font-size:12px; }
+    .legend { display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="c3d"></div>
+
+<div class="hero">
+  <h1>轨迹切线即光速方向</h1>
+  <p>空间点沿圆柱螺旋运动 · 速度矢量 <b>C</b> 恒沿轨迹切线 · 模长恒为 <b>c</b>，方向持续旋转</p>
+</div>
+
+<div class="panel">
+  <h3>显 示 控 制</h3>
+  <div class="btn-row">
+    <button class="btn" id="btnPlay">暂停</button>
+    <button class="btn" id="btnReset">重置</button>
+  </div>
+  <div class="speed-row">
+    <span>速度</span>
+    <input type="range" id="speed" min="0.1" max="2.0" step="0.05" value="0.7">
+  </div>
+  <label class="ctrl"><input type="checkbox" id="chkC" checked> 矢量光速 C（切线）</label>
+  <label class="ctrl"><input type="checkbox" id="chkT" checked> 横向分量（旋转方向 rω）</label>
+  <label class="ctrl"><input type="checkbox" id="chkZ" checked> 轴向分量（推进方向 v_z）</label>
+  <label class="ctrl"><input type="checkbox" id="chkFam" checked> 切线族（方向持续旋转）</label>
+  <label class="ctrl"><input type="checkbox" id="chkPlane" checked> 旋转平面与法线轴</label>
+</div>
+
+<div class="readout">
+  位置 <b id="rPos">(0, 0, 0)</b><br>
+  切线单位向量 <b id="rTan">(0, 0, 1)</b><br>
+  横向速度 <span class="u" id="rVt">0.00c</span> · 轴向速度 <span class="v" id="rVz">0.00c</span><br>
+  合速度 |C| = <b id="rC">1.000c</b>&nbsp;<span style="color:#6ee7b7">恒定</span>
+  <div class="bar"><i id="rBar"></i></div>
+</div>
+
+<div class="legend">
+  <i class="l-c"></i>矢量光速 C（轨迹切线，模恒 = c）<br>
+  <i class="l-t"></i>横向旋转分量 rω<br>
+  <i class="l-z"></i>轴向推进分量 v_z<br>
+  <i class="l-p"></i>历史切线（方向持续旋转）<br>
+  <i class="l-s"></i>螺旋轨迹
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  // ========== 螺旋参数 ==========
+  // 圆柱螺旋：x = R cos(ωt), y = R sin(ωt), z = v_z·t
+  // 切线方向即速度矢量；横向 v_T = Rω = 0.8c，轴向 v_z = 0.6c，合速度恒为 c（勾股 0.8²+0.6²=1²）
+  var R     = 2.2;   // 螺旋半径
+  var c     = 1.0;   // 光速标量（归一化单位）
+  var omega = 0.8;   // 横向旋转角速度
+  var vz    = 0.6;   // 轴向推进速度
+  var vT    = R * omega;            // 横向速度 = 0.8c
+  var SPAN  = 12;                   // 轨迹参数 t 的总跨度（约 1.5 圈）
+
+  // ========== 场景 / 相机 / 渲染器 ==========
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 200);
+  cam.position.set(6.5, 5.5, 9); cam.lookAt(0, 0, 0);
+  var ren = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  ren.setSize(innerWidth, innerHeight);
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  document.getElementById('c3d').appendChild(ren.domElement);
+
+  var orbit = new THREE.OrbitControls(cam, ren.domElement);
+  orbit.enableDamping = true; orbit.dampingFactor = 0.08; orbit.target.set(0, 0, 1.2);
+
+  var world = new THREE.Group();
+  scene.add(world);
+
+  // ========== 背景星空 ==========
+  (function(){
+    var n = 700, pos = new Float32Array(n * 3);
+    for (var i = 0; i < n; i++){
+      pos[i*3]   = (Math.random() - 0.5) * 80;
+      pos[i*3+1] = (Math.random() - 0.5) * 80;
+      pos[i*3+2] = (Math.random() - 0.5) * 80;
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    var m = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.5 });
+    scene.add(new THREE.Points(g, m));
+  })();
+
+  // ========== 几何函数 ==========
+  function posAt(t){ return new THREE.Vector3(R * Math.cos(omega * t), R * Math.sin(omega * t), vz * t); }
+  function velAt(t){ return new THREE.Vector3(-vT * Math.sin(omega * t), vT * Math.cos(omega * t), vz); }
+  function tanDirAt(t){ return velAt(t).normalize(); }   // 轨迹切线单位方向 = 光速 C 的方向
+
+  // ========== 螺旋轨迹（发光线） ==========
+  var N = 900, trajPts = [];
+  for (var i = 0; i <= N; i++) trajPts.push(posAt(i * SPAN / N));
+  world.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(trajPts),
+    new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55 })));
+
+  // ========== 旋转平面（横向圆环 × 多层）+ 法线轴（z 轴虚线） ==========
+  var planeGrp = new THREE.Group();
+  (function(){
+    var ringPts = [];
+    for (var i = 0; i <= 96; i++) ringPts.push(new THREE.Vector3(R * Math.cos(i / 96 * Math.PI * 2), R * Math.sin(i / 96 * Math.PI * 2), 0));
+    for (var k = 0; k < 6; k++){
+      var g = new THREE.BufferGeometry().setFromPoints(ringPts);
+      var a = g.attributes.position.array;
+      for (var j = 0; j < a.length; j += 3) a[j + 2] += (-0.8 + k * 0.8);
+      planeGrp.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.10 })));
+    }
+    var disc = new THREE.Mesh(
+      new THREE.CircleGeometry(R, 72),
+      new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.045, side: THREE.DoubleSide }));
+    disc.rotation.x = -Math.PI / 2;
+    planeGrp.add(disc);
+    var ax = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, -1.6), new THREE.Vector3(0, 0, 7.6)]);
+    var axLine = new THREE.Line(ax, new THREE.LineDashedMaterial({ color: 0x94a3b8, dashSize: 0.14, gapSize: 0.1, transparent: true, opacity: 0.5 }));
+    axLine.computeLineDistances();
+    planeGrp.add(axLine);
+  })();
+  world.add(planeGrp);
+
+  // ========== 切线族（历史切线，展示切线方向沿螺旋持续旋转） ==========
+  var tanFamGrp = new THREE.Group();
+  (function(){
+    var M = 26, len = 1.9;
+    for (var i = 0; i < M; i++){
+      var t = i * SPAN / M + 0.4;
+      var p0 = posAt(t), d = tanDirAt(t);
+      tanFamGrp.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([p0, p0.clone().addScaledVector(d, len * 0.9)]),
+        new THREE.LineBasicMaterial({ color: 0xf5c542, transparent: true, opacity: 0.16 })));
+    }
+  })();
+  world.add(tanFamGrp);
+
+  // ========== 光点（运动的空间点） ==========
+  var dot = new THREE.Mesh(
+    new THREE.SphereGeometry(0.16, 24, 24),
+    new THREE.MeshBasicMaterial({ color: 0xfff7d6 }));
+  var glow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.42, 20, 20),
+    new THREE.MeshBasicMaterial({ color: 0xf5c542, transparent: true, opacity: 0.18 }));
+  world.add(dot, glow);
+
+  // ========== 三个矢量箭头 ==========
+  // 箭头长度按分量成比例：光速 C 全长 2.3，横向 0.8c→1.92，轴向 0.6c→1.44
+  var arrowC = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(), 2.3, 0xf5c542, 0.34, 0.2);
+  var arrowT = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(), vT * 2.4, 0x22d3ee, 0.26, 0.16);
+  var arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(), vz * 2.4, 0xa78bfa, 0.24, 0.15);
+  world.add(arrowC, arrowT, arrowZ);
+
+  // ========== 分量合成虚线（各自独立几何，起点 → 横向端点 → 合速度端点） ==========
+  var dashMat = new THREE.LineDashedMaterial({ color: 0x64748b, dashSize: 0.08, gapSize: 0.06, transparent: true, opacity: 0.5 });
+  var dashA = new THREE.Line(new THREE.BufferGeometry(), dashMat);
+  var dashB = new THREE.Line(new THREE.BufferGeometry(), dashMat);
+  world.add(dashA, dashB);
+
+  // ========== 动画状态 ==========
+  var t = 0, playing = true, speed = 0.7;
+
+  // ========== DOM 元素引用 ==========
+  var $ = function(id){ return document.getElementById(id); };
+  var el = {
+    pos: $('rPos'), tan: $('rTan'), vt: $('rVt'), vz: $('rVz'),
+    c: $('rC'), bar: $('rBar'),
+    chkC: $('chkC'), chkT: $('chkT'), chkZ: $('chkZ'),
+    chkFam: $('chkFam'), chkPlane: $('chkPlane'), spd: $('speed')
+  };
+
+  // ========== 事件绑定 ==========
+  $('btnPlay').onclick = function(){
+    playing = !playing;
+    this.textContent = playing ? '暂停' : '播放';
+  };
+  $('btnReset').onclick = function(){ t = 0; };
+  el.spd.oninput = function(){ speed = parseFloat(this.value); };
+  el.chkC.onchange    = function(){ arrowC.visible  = this.checked; };
+  el.chkT.onchange    = function(){ arrowT.visible  = this.checked; dashA.visible = this.checked; };
+  el.chkZ.onchange    = function(){ arrowZ.visible  = this.checked; dashB.visible = this.checked; };
+  el.chkFam.onchange  = function(){ tanFamGrp.visible = this.checked; };
+  el.chkPlane.onchange = function(){ planeGrp.visible = this.checked; };
+
+  // ========== 动画循环 ==========
+  function animate(){
+    requestAnimationFrame(animate);
+    if (playing) t += 0.012 * speed;
+    var tt = t % SPAN;
+    var p = posAt(tt);
+    var d = tanDirAt(tt);
+    var dT = new THREE.Vector3(-Math.sin(omega * tt), Math.cos(omega * tt), 0);  // 横向单位方向
+    var vC = Math.sqrt(vT * vT + vz * vz);  // 合速度 = 恒为 c
+
+    // 光点
+    dot.position.copy(p); glow.position.copy(p);
+
+    // 矢量光速 C：位置跟随光点，方向 = 轨迹切线
+    arrowC.position.copy(p); arrowC.setDirection(d); arrowC.setLength(2.3, 0.34, 0.2);
+    // 横向分量
+    arrowT.position.copy(p); arrowT.setDirection(dT); arrowT.setLength(vT * 2.4, 0.26, 0.16);
+    // 轴向分量
+    arrowZ.position.copy(p); arrowZ.setDirection(new THREE.Vector3(0, 0, 1)); arrowZ.setLength(vz * 2.4, 0.24, 0.15);
+
+    // 分量合成虚线：p → 横向端点 → 合速度端点（两条线各自独立几何）
+    var eT = p.clone().addScaledVector(dT, vT * 2.4);
+    var eC = p.clone().addScaledVector(d, 2.3);
+    dashA.geometry.setFromPoints([p, eT]); dashA.computeLineDistances();
+    dashB.geometry.setFromPoints([eT, eC]); dashB.computeLineDistances();
+
+    // 读数
+    el.pos.textContent = '(' + p.x.toFixed(2) + ', ' + p.y.toFixed(2) + ', ' + p.z.toFixed(2) + ')';
+    el.tan.textContent = '(' + d.x.toFixed(2) + ', ' + d.y.toFixed(2) + ', ' + d.z.toFixed(2) + ')';
+    el.vt.textContent = (vT / c).toFixed(2) + 'c';
+    el.vz.textContent = (vz / c).toFixed(2) + 'c';
+    el.c.textContent = (vC / c).toFixed(3) + 'c';
+    el.bar.style.width = '100%';   // 合速度恒为 c，指示条恒定满格
+
+    orbit.update();
+    ren.render(scene, cam);
+  }
+
+  addEventListener('resize', function(){
+    cam.aspect = innerWidth / innerHeight;
+    cam.updateProjectionMatrix();
+    ren.setSize(innerWidth, innerHeight);
+  });
+
+  animate();
+})();
+</script>
+</body>
+</html>
