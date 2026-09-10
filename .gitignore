@@ -25,4 +25,10 @@ images/_min_*/
 
 # 工作过程临时产物
 _tools/_tmp/
+_tools/_trash_*/
+
+# Python 编译产物（可由 .py 再生，不入库）
+__pycache__/
+*.pyc
+*.pyo
 
