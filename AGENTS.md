@@ -69,6 +69,8 @@
 - OCR：`python3 C:\Users\Administrator\.agents\skills\mineru\scripts\mineru.py "<绝对路径>" --ocr --stdout`。
 - 搜索：优先 anysearch 技能；抓全文用 `https://r.jina.ai/<URL>`。
 - 数值验证：根目录执行 `python 验证脚本/<脚本名>.py`。
+- 内链化：`/wikilink-batch`（书名号引用转 wikilink、清单条目补链与链接审计，含同名消歧与目标唯一性验证）。
+- 固化：`/tianxing-solidify`（把内部草稿、验证脚本判据与作者裁决固化进 `理论总纲/`：落点分工、计数涟漪同步、修订记录格式、落盘后统一检查）。
 
 ## 数值验证脚本规范（常驻）
 
