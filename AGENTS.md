@@ -100,6 +100,8 @@
 
 - `edit_file` 报 `old_string not found` 时，用 Python 脚本验证实际字符（Unicode 弯引号/em-dash/CRLF 是高频陷阱），或从 `read_file` 输出复制锚点。
 - 批量同类替换用 Python 脚本一次完成；修改后必查：em-dash、禁句式、"账"字。
+- 含 LaTeX 的批量替换一律用 r-string：Python 普通字符串里的 `\t`/`\v`/`\n`/`\b` 会被解释成控制字符，把 LaTeX 写成乱码（`$\theta$` 变成 TAB + `heta`）。落盘后必查控制字符，替换脚本用后点名清理。
+- r-string 内不得直接出现 ASCII 双引号：锚点或新文本里带 `"` 时会在该处提前终止字符串并报 `SyntaxError`（实测踩两次）。含双引号的文本改用全角引号（`「」`/`“”`），或把锚点缩到双引号之外的短句；content 里必须带双引号时，脚本改用单引号三引号 r-string（`r'''...'''`）。
 - 读大文件（超约 200 行或 30KB）勿用 `read_file` 一次读完：单次可见有字节上限，截断会触发宿主的"分页续读协议"，该协议要求 `limit=0` 续读而工具 schema 拒绝 `limit=0`，形成死锁并锁定其他操作。改用 `bash` 分段读（`sed -n '起,止p'`、`grep -n '^#'` 看结构、`tail -n`）；必须用 `read_file` 时主动小窗口分页（`limit` 50-100 行、`offset` 逐段推进），保持每页在可见上限内。遇 INCOMPLETE 按提示用 `use_capability` 恢复至 `complete=true`，其后宿主若仍要求 `limit=0` 续读，立即换 bash 读取，不要重试同一参数。
 
 ## 开放问题同步规范（常驻，默认执行无需提示）
