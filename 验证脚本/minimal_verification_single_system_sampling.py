@@ -77,6 +77,17 @@ tvds = np.array([wrapped_normal_tvd(s) for s in sigs])
 mono = bool(np.all(np.diff(tvds) < 0))
 sig_star_arr = sigs[tvds < 0.05]
 sig_star = sig_star_arr[0] if sig_star_arr.size else float('inf')
+if sig_star_arr.size:
+    # 细化：粗网格（步长 0.5）只给首个穿越格点，二分收敛到 TVD = 0.05 真穿越点
+    # 2026-09-13 评审复核：粗网格报 2.50，解析与细网格实值约 2.256
+    lo, hi = sigs[tvds >= 0.05][-1], sig_star_arr[0]
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if wrapped_normal_tvd(mid) > 0.05:
+            lo = mid
+        else:
+            hi = mid
+    sig_star = 0.5 * (lo + hi)
 print(f'\n[J2 候选二 背景涨落] TVD(sigma): '
       + ', '.join(f'{s:.1f}:{t:.4f}' for s, t in zip(sigs, tvds)))
 print(f'  单调递减 = {mono}（判据 True）；TVD<0.05 穿越点 sigma* = {sig_star:.2f} rad（判据 <= 5）')
