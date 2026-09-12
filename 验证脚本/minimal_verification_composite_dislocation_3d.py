@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 minimal_verification_composite_dislocation_3d.py
 
 判据 C1：三维复合位错的最小实例（锚核钉扎能否使环驻留）。
 
-**状态：未定案，作为中间尝试存档（2026-09-12）。**
-本脚本的测量装置已修对（M0 自检：直线涡 π₂ = 1.0000），A1 基准复核通过，
-但**环的涡旋初态构造有缺陷**：把横截面角直接当作相位取值，得到光滑分布而非
-涡旋，故环芯横截面上的 π₂ 读数恒零，A3/A4 的拓扑荷判定不可用。该缺陷已登记
-为 C1-0 的任务内容，见《三维复合位错攻坚计划：形态、驻留与宽度窗口》§三。
-本脚本可复现的结果只有两条：A1 的负面基准，以及 A3 的能量驻留信号（相位锁定
-型锚核下构型不塌缩）。拓扑荷守恒与否未判，不得引用为结论。
+**状态：2026-09-12 中间尝试的存档与修正，判据读数已可用。**
+原读数把环芯横截面绕数记为零，并据此判定环的涡旋初态有缺陷。该判定已被 C1-0
+（`minimal_verification_vortex_init_apparatus.py`）否定：初态本身是合法的绕数
+构型，零读数来自测量平面的选取，法向取成了环轴方向（顶点法向平面），该平面上
+交叉落在环外或为平切，且大窗口会同时套住两个取向相反的交叉点而相消。本脚本的
+测量已按 C1-0 约定改为横切芯线的平面，A1/A3/A4 读数随之可用，证据见 C1-0 的
+判据 M4、M5 与 M7 及其注记。同步更正三处：线缺陷分类的记为 $\pi_1(S^1)$
+（原记 π₂）、测量平面、结果表述。
+可引用结果：A1 负面基准（裸环塌缩，绕数由 1 落到 0）；A2 键弱化型锚核不改变
+结局；A3/A4 相位锁定型锚核下构型驻留、能量有限，横截面绕数读数见终端输出。
 
 缘起
 ----
@@ -29,18 +32,20 @@ kink3d A 部分模型（与环裁决实验同族），但改用开放边界（�
   (甲) 键耦合弱化：环芯处把 J 降到 J0(1-depth)
   (乙) 相位锁定：钉扎势 κ_p (1 - cos 2(φ - φ_pin)) 把芯位锁到目标相位
 
-拓扑荷测量（本脚本的关键修正）
+拓扑荷测量（2026-09-12 修正）
 --------
-环芯是圆，其拓扑荷为 π₂（绕环芯的横截面）。测量方式：在与环芯垂直的平面上，
-取以芯位为中心的小窗口，逐 plaquette 累加相位差（最小像）除以 2π。
-要点：窗口中心必须落在 plaquette 内（半格偏移），否则奇点正好落在格点上会
-使 plaquette 和归零（本脚本过程记录第 2 条）。直线涡校验给出 1.0000。
+环芯是圆，其绕数在横切芯线的平面内测。取环顶点 $\theta = 0$，芯位
+$(\rho, z) = (R_c, 0)$，该处芯线切线为 $\hat y$，故测量平面法向取 $\hat y$：
+在 $y = \pm 0.5$ 两个格面上，以 $(x, z) = (R_c, 0)$ 为中心取半宽 2 格的窗口，
+逐 plaquette 累加最小像相位差并除以 $2\pi$。三条要点：平面须横切芯线；窗口
+不得同时套住环的两个交叉点；格点须半格偏移（芯位落格点时跨芯键相位差为
+$\pm\pi$，最小像失去反对称性，读数退化为一侧 0、另一侧加倍）。
 
 判据
 ----
 A1 基准复核：无锚核时环塌缩（复现环裁决实验）
 A2 键耦合弱化型锚核：depth 扫描，是否改变塌缩结局
-A3 相位锁定型锚核：κ_p 扫描，环是否驻留、π₂ 是否守恒
+A3 相位锁定型锚核：κ_p 扫描，环是否驻留、绕数是否守恒
 A4 半径扫描：相位锁定型锚核在不同 Rc 下的驻留
 A5 能量地貌：驻留态的绑定能与钉扎深度的关系
 
@@ -94,18 +99,19 @@ def grad_phi(phi, kp=0.0, Rc=4.0, pin_w=1.5):
     return g
 
 
-def pi2_cross(phi, Rc, rad=3, axis="x"):
-    """在环芯的横截面上逐 plaquette 累加，得 π₂ 荷。"""
-    i = int(round(Rc + N / 2.0 - 0.5))       # 沿 x 在 Rc 处的格面
-    i = min(max(i, 1), N - 2)
-    jc, kc = IC, IC
-    tot = 0.0
-    for j in range(jc - rad, jc + rad):
-        for k in range(kc - rad, kc + rad):
-            p00 = phi[i, j, k]; p10 = phi[i, j + 1, k]
-            p11 = phi[i, j + 1, k + 1]; p01 = phi[i, j, k + 1]
-            tot += mi(p10 - p00) + mi(p11 - p10) + mi(p01 - p11) + mi(p00 - p01)
-    return float(tot / (2.0 * np.pi))
+def winding(phi, axis, s, c0, c1, rad=2):
+    """法向 axis 的第 s 层格面上，以平面内坐标 (c0, c1) 为中心、半宽 rad 的窗口绕数。"""
+    P = np.take(phi, s, axis=axis)
+    a00, a10, a11, a01 = P[:-1, :-1], P[1:, :-1], P[1:, 1:], P[:-1, 1:]
+    dens = (mi(a10 - a00) + mi(a11 - a10) + mi(a01 - a11) + mi(a00 - a01)) / (2.0 * np.pi)
+    i0 = int(np.argmin(np.abs(coords - c0)))
+    i1 = int(np.argmin(np.abs(coords - c1)))
+    return float(dens[i0 - rad:i0 + rad, i1 - rad:i1 + rad].sum())
+
+
+def ring_charge(phi, Rc, rad=2):
+    """环在顶点 theta = 0 处的横截面绕数：法向 y，芯位 (x, z) = (Rc, 0)。"""
+    return winding(phi, 1, IC, Rc, 0.0, rad)
 
 
 def flow(phi, kp, Rc, steps=1200, eta=0.02):
@@ -118,12 +124,12 @@ def flow(phi, kp, Rc, steps=1200, eta=0.02):
 def main():
     print("=" * 78)
     print("minimal_verification_composite_dislocation_3d.py")
-    print("判据 C1：三维复合位错的最小实例（开放边界 + 横截面 π₂ 测量）")
+    print("判据 C1：三维复合位错的最小实例（开放边界 + 横截面绕数测量）")
     print("=" * 78)
 
     # 测量装置自检
     print()
-    print("M0 测量装置自检：直线涡 phi=atan2(z,y) 的 π₂ 应为 1")
+    print("M0 测量装置自检：直线涡 phi=atan2(z,y) 的绕数应为 1")
     x2, y2, z2 = np.meshgrid(coords, coords, coords, indexing="ij")
     lin = np.arctan2(z2, y2)
     tot = 0.0
@@ -132,17 +138,17 @@ def main():
             p00 = lin[IC, j, k]; p10 = lin[IC, j + 1, k]
             p11 = lin[IC, j + 1, k + 1]; p01 = lin[IC, j, k + 1]
             tot += mi(p10 - p00) + mi(p11 - p10) + mi(p01 - p11) + mi(p00 - p01)
-    print(f"  π₂ = {tot/(2*np.pi):.4f}（期望 1.0000）")
+    print(f"  W = {tot/(2*np.pi):.4f}（期望 1.0000）")
 
     print()
     print("A1 基准复核：无锚核（kp = 0）时环塌缩")
     for Rc in [4.0]:
         phi = ring_psi(Rc)
-        W0 = pi2_cross(phi, Rc)
+        W0 = ring_charge(phi, Rc)
         E0 = energy(phi, 0.0, Rc)
         phi2 = flow(phi, 0.0, Rc)
-        W1 = pi2_cross(phi2, Rc)
-        print(f"  Rc={Rc:.1f}  E0={E0:.1f} π₂(初)={W0:+.2f} -> E={energy(phi2,0.0,Rc):.3f} π₂(末)={W1:+.3f}")
+        W1 = ring_charge(phi2, Rc)
+        print(f"  Rc={Rc:.1f}  E0={E0:.1f} W(初)={W0:+.2f} -> E={energy(phi2,0.0,Rc):.3f} W(末)={W1:+.3f}")
 
     print()
     print("A2 键耦合弱化型锚核（本轮先前的错误实现，作为对照保留）")
@@ -150,25 +156,25 @@ def main():
 
     print()
     print("A3 相位锁定型锚核（Rc = 4，锁宽 1.5，步数 1200，η = 0.02）")
-    print(f"  {'kp':>6}{'E_init':>12}{'E_final':>12}{'pi2_init':>11}{'pi2_final':>11}")
+    print(f"  {'kp':>6}{'E_init':>12}{'E_final':>12}{'W_init':>11}{'W_final':>11}")
     for kp in [0.0, 0.5, 1.0, 2.0, 4.0]:
         phi = ring_psi(4.0)
         E0 = energy(phi, kp, 4.0)
-        W0 = pi2_cross(phi, 4.0)
+        W0 = ring_charge(phi, 4.0)
         phi2 = flow(phi, kp, 4.0)
         E1 = energy(phi2, kp, 4.0)
-        W1 = pi2_cross(phi2, 4.0)
+        W1 = ring_charge(phi2, 4.0)
         print(f"  {kp:>6.1f}{E0:>12.1f}{E1:>12.3f}{W0:>11.3f}{W1:>11.3f}")
 
     print()
     print("A4 半径扫描（kp = 2.0）")
-    print(f"  {'Rc':>6}{'E_init':>12}{'E_final':>12}{'pi2_final':>11}")
+    print(f"  {'Rc':>6}{'E_init':>12}{'E_final':>12}{'W_final':>11}")
     for Rc in [3.0, 4.0, 5.0, 6.0]:
         phi = ring_psi(Rc)
         E0 = energy(phi, 2.0, Rc)
         phi2 = flow(phi, 2.0, Rc)
         E1 = energy(phi2, 2.0, Rc)
-        W1 = pi2_cross(phi2, Rc)
+        W1 = ring_charge(phi2, Rc)
         print(f"  {Rc:>6.1f}{E0:>12.1f}{E1:>12.3f}{W1:>11.3f}")
 
     print()
@@ -176,7 +182,7 @@ def main():
     print("读数")
     print("=" * 78)
     print("判据链：M0 校验测量装置；A1 复现裸环负面结果；A3/A4 检验相位锁定型")
-    print("锚核能否使环驻留（π₂ 守恒 + 能量有限）。")
+    print("锚核能否使环驻留（绕数守恒 + 能量有限）。")
 
 
 if __name__ == "__main__":
