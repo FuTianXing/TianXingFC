@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FK 链直观演示：弹簧链与周期基底势</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --line:#e3e6ea; --text:#1f2328; --muted:#6b7280;
+  --ball:#9a5b12; --spring:#0f766e; --pot:#b07d2a; --soft:#eef1f5; --warn:#c0392b;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.75;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px;}
+header h1{font-size:24px;font-weight:600;margin:0 0 10px;}
+header p{margin:0;color:var(--muted);font-size:14.5px;}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px;margin-top:22px;}
+h2{font-size:17px;font-weight:600;margin:0 0 14px;}
+h3{font-size:14.5px;font-weight:600;margin:16px 0 8px;}
+canvas{display:block;width:100%;border-radius:8px;background:#fbfcfd;}
+.controls{display:flex;flex-wrap:wrap;gap:22px;margin:16px 0 6px;align-items:flex-end;}
+.ctrl{flex:1 1 280px;}
+.ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.ctrl output{font-variant-numeric:tabular-nums;color:var(--text);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--spring);}
+.btns{display:flex;gap:10px;}
+button{font:inherit;font-size:13px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);
+  background:var(--soft);color:var(--text);cursor:pointer;}
+button:hover{border-color:#c9ced6;background:#e6eaef;}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px;}
+.ro{background:var(--soft);border-radius:8px;padding:10px 12px;}
+.ro span{display:block;font-size:12px;color:var(--muted);}
+.ro b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;}
+.note{color:var(--muted);font-size:13px;margin:12px 0 0;}
+p{margin:10px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:780px){.grid2{grid-template-columns:1fr;}}
+.card{background:var(--soft);border-radius:10px;padding:14px 16px;}
+.card h3{margin-top:0;}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;
+  background:#e6eaef;color:var(--muted);margin-left:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>FK 链直观演示</h1>
+  <p>Frenkel-Kontorova 链：一排由弹簧相连的球，坐在一条周期性起伏的基底势上。弹簧想把球排成均匀间距，基底势想把球拉进波谷。两个周期是否匹配，决定链上有没有 kink。</p>
+</header>
+
+<section>
+  <h2>一、调参数，看链自己怎么排</h2>
+  <canvas id="stage" height="400"></canvas>
+  <div class="controls">
+    <div class="ctrl">
+      <label>弹簧自然长度 b（基底势周期固定为 1）<output id="vB">0.95</output></label>
+      <input id="sB" type="range" min="0.86" max="1.14" step="0.01" value="0.95">
+    </div>
+    <div class="ctrl">
+      <label>基底势强度 K <output id="vK">0.08</output></label>
+      <input id="sK" type="range" min="0.02" max="0.20" step="0.01" value="0.08">
+    </div>
+    <div class="ctrl" style="flex:0 0 auto;">
+      <label>&nbsp;</label>
+      <div class="btns">
+        <button id="btnMatch">回到匹配态 b = 1</button>
+        <button id="btnReset">重新弛豫</button>
+      </div>
+    </div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span>平均间距</span><b id="rGap">0.950</b></div>
+    <div class="ro"><span>最大间距</span><b id="rMax">1.000</b></div>
+    <div class="ro"><span>最小间距</span><b id="rMin">1.000</b></div>
+    <div class="ro"><span>弹簧能量</span><b id="rEs">0.000</b></div>
+    <div class="ro"><span>势能</span><b id="rEp">0.000</b></div>
+    <div class="ro"><span>总能量</span><b id="rEt">0.000</b></div>
+  </div>
+  <p class="note">链的两端固定，中间的球按能量最小化自行弛豫。b = 1 时弹簧自然长度正好等于势周期，每个波谷落一个球，弹簧处于自然长度，总能量最低。b 偏离 1 即产生失配，失配无法在每一处都满足，只能集中成 kink。</p>
+</section>
+
+<section>
+  <h2>二、两个力在拔河</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>弹簧：想让间距均匀</h3>
+      <p>相邻球之间的弹性耦合，能量正比于间距对自然长度 b 的偏离平方。弹簧不管球落在哪里，只管球与球之间拉得舒不舒服。</p>
+    </div>
+    <div class="card">
+      <h3>基底势：想让球进波谷</h3>
+      <p>球坐在一条周期为 1 的起伏势上，波谷是能量最低处。势把球往谷底拉，与球之间的间距无关。</p>
+    </div>
+  </div>
+  <p>当 b 与势周期相等时，两种要求同时满足，链的排布是匹配态，能量最低。当 b 偏离 1 时，两个周期对不齐，矛盾无法在每一处都满足，全部失配集中到一处释放，形成 kink。b &lt; 1 时链比势密，某处两个球挤进同一个波谷；b &gt; 1 时链比势疏，某处出现一个空波谷。两种情形下，链与势的相位差都在那里跳变一个周期，那一段错位就是 kink。</p>
+</section>
+
+<section>
+  <h2>三、kink 是拓扑的</h2>
+  <p>kink 不能靠局部微调抹掉。要把球重新全部送回波谷，必须把链拉开或压缩到匹配长度，而链两端的固定条件锁住了总长度。kink 的数目由总长度与势周期的差决定，是一个整数级的量，在连续形变下守恒。这正是它被称为拓扑缺陷的原因。</p>
+  <p>把 K 调小，球与基底势的耦合变弱，kink 会舒展开来，几乎看不出局部结构；把 K 调大，球被牢牢钉在波谷里，kink 收缩成一处尖锐的错位。这条对比是 FK 链最直观的一课：同一个拓扑缺陷，形态由两个能量尺度的比决定。</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var N = 30;
+  var stage = document.getElementById('stage');
+  var sB = document.getElementById('sB');
+  var sK = document.getElementById('sK');
+  var vB = document.getElementById('vB');
+  var vK = document.getElementById('vK');
+  var x = [];
+  var running = false;
+
+  function bNow(){ return parseFloat(sB.value); }
+  function kNow(){ return parseFloat(sK.value); }
+
+  function init(){
+    var b = bNow();
+    x = [];
+    for(var i=0;i<N;i++){ x.push(i*b + 0.07*Math.sin(i*1.7)); }
+    x[0] = 0;
+    x[N-1] = (N-1)*b;
+  }
+
+  function relax(steps){
+    var K = kNow(), eta = 0.08;
+    for(var s=0;s<steps;s++){
+      for(var i=1;i<N-1;i++){
+        var g = (2*x[i]-x[i-1]-x[i+1]) + 2*Math.PI*K*Math.sin(2*Math.PI*x[i]);
+        x[i] -= eta*g;
+      }
+    }
+  }
+
+  function stats(){
+    var b = bNow(), K = kNow(), Es = 0, Ep = 0;
+    for(var i=0;i<N-1;i++){
+      var d = x[i+1]-x[i];
+      var e = d - b;
+      Es += 0.5*e*e;
+    }
+    for(var j=0;j<N;j++){ Ep += K*(1-Math.cos(2*Math.PI*x[j])); }
+    var dmax=-1e9, dmin=1e9;
+    for(var m=0;m<N-1;m++){
+      var dd = x[m+1]-x[m];
+      if(dd>dmax) dmax=dd;
+      if(dd<dmin) dmin=dd;
+    }
+    return {Es:Es, Ep:Ep, E:Es+Ep, dmax:dmax, dmin:dmin};
+  }
+
+  function setup(cv, hLogical){
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || 1000;
+    cv.width = Math.round(w*dpr);
+    cv.height = Math.round(hLogical*dpr);
+    cv.style.height = hLogical+'px';
+    var c = cv.getContext('2d');
+    c.setTransform(dpr,0,0,dpr,0,0);
+    return {c:c, w:w, h:hLogical};
+  }
+
+  function draw(){
+    var g = setup(stage,400), c = g.c, W = g.w, H = g.h;
+    var b = bNow();
+    var xmax = (N-1)*b + 0.7;
+    var padL = 44, padR = 44, padT = 34, padB = 62;
+    var baseY = H - padB, A = 84;
+    function px(v){ return padL + v/xmax*(W-padL-padR); }
+    function cy(v){ return baseY - A*(1-Math.cos(2*Math.PI*v))/2; }
+
+    c.clearRect(0,0,W,H);
+
+    var v, i;
+    c.strokeStyle='#eef1f5'; c.lineWidth=1;
+    for(v=0; v<=Math.floor(xmax); v++){
+      c.beginPath(); c.moveTo(px(v), padT); c.lineTo(px(v), baseY+14); c.stroke();
+    }
+
+    c.strokeStyle='#b07d2a'; c.lineWidth=2.2;
+    c.beginPath();
+    for(i=0;i<=700;i++){
+      v = xmax*i/700;
+      var X = px(v), Y = cy(v);
+      if(i===0){ c.moveTo(X,Y); } else { c.lineTo(X,Y); }
+    }
+    c.stroke();
+
+    c.strokeStyle='#0f766e'; c.lineWidth=1.4;
+    for(i=0;i<N-1;i++){
+      var ax = px(x[i]), ay = cy(x[i])-8;
+      var bx = px(x[i+1]), by = cy(x[i+1])-8;
+      var dx = bx-ax, dy = by-ay, len = Math.sqrt(dx*dx+dy*dy) || 1;
+      var nx = -dy/len, ny = dx/len, amp = 6;
+      c.beginPath(); c.moveTo(ax,ay);
+      c.lineTo(ax+dx*0.25+nx*amp, ay+dy*0.25+ny*amp);
+      c.lineTo(ax+dx*0.50-nx*amp, ay+dy*0.50-ny*amp);
+      c.lineTo(ax+dx*0.75+nx*amp, ay+dy*0.75+ny*amp);
+      c.lineTo(bx,by);
+      c.stroke();
+    }
+
+    var st = stats();
+    for(i=0;i<N;i++){
+      var cx = px(x[i]), cyv = cy(x[i])-8;
+      var frac = x[i]-Math.round(x[i]);
+      var far = Math.abs(frac) > 0.28;
+      c.beginPath(); c.arc(cx, cyv, 7, 0, Math.PI*2);
+      c.fillStyle = far ? '#c0392b' : '#9a5b12';
+      c.fill();
+      c.strokeStyle = '#ffffff'; c.lineWidth = 1.6; c.stroke();
+    }
+
+    c.fillStyle = '#6b7280'; c.font = '12px system-ui,sans-serif';
+    c.textAlign = 'left'; c.textBaseline = 'top';
+    c.fillText('基底势：周期固定为 1', padL, padT-22);
+    c.textAlign = 'right';
+    c.fillText('波谷位置', W-padR, padT-22);
+    c.textAlign = 'left';
+    c.fillText('总长度 = (N−1) × b', padL, H-padB+30);
+    c.fillStyle = '#c0392b';
+    c.textAlign = 'right';
+    c.fillText('红色球 = 偏离波谷较远的球', W-padR, H-padB+30);
+
+    vB.textContent = b.toFixed(2);
+    vK.textContent = kNow().toFixed(2);
+    document.getElementById('rGap').textContent = ((x[N-1]-x[0])/(N-1)).toFixed(3);
+    document.getElementById('rMax').textContent = st.dmax.toFixed(3);
+    document.getElementById('rMin').textContent = st.dmin.toFixed(3);
+    document.getElementById('rEs').textContent = st.Es.toFixed(3);
+    document.getElementById('rEp').textContent = st.Ep.toFixed(3);
+    document.getElementById('rEt').textContent = st.E.toFixed(3);
+  }
+
+  function startRelax(){
+    if(running) return;
+    running = true;
+    var t0 = performance.now();
+    function frame(){
+      relax(18);
+      draw();
+      if(performance.now() - t0 < 2600){ requestAnimationFrame(frame); }
+      else { running = false; relax(60); draw(); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function reset(){
+    init();
+    draw();
+    startRelax();
+  }
+
+  sB.addEventListener('input', reset);
+  sK.addEventListener('input', reset);
+  document.getElementById('btnMatch').addEventListener('click', function(){
+    sB.value = '1.00';
+    reset();
+  });
+  document.getElementById('btnReset').addEventListener('click', reset);
+  window.addEventListener('resize', draw);
+
+  reset();
+})();
+</script>
+</body>
+</html>

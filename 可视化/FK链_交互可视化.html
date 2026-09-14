@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FK 链：元相子时空晶格的一维代理模型</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --line:#e3e6ea; --text:#1f2328; --muted:#6b7280;
+  --wave:#1a5fb4; --grain:#9a5b12; --couple:#0f766e; --soft:#eef1f5;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.75;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px;}
+header h1{font-size:24px;font-weight:600;margin:0 0 10px;letter-spacing:.01em;}
+header p{margin:0;color:var(--muted);font-size:14.5px;}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px;margin-top:22px;}
+h2{font-size:17px;font-weight:600;margin:0 0 14px;}
+h3{font-size:14.5px;font-weight:600;margin:0 0 8px;}
+canvas{display:block;width:100%;border-radius:8px;background:#fbfcfd;}
+.controls{display:flex;flex-wrap:wrap;gap:22px;margin:16px 0 6px;}
+.ctrl{flex:1 1 300px;}
+.ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.ctrl output{font-variant-numeric:tabular-nums;color:var(--text);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--wave);}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-top:14px;}
+.ro{background:var(--soft);border-radius:8px;padding:10px 12px;}
+.ro span{display:block;font-size:12px;color:var(--muted);}
+.ro b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th,td{text-align:left;padding:9px 11px;border:1px solid var(--line);vertical-align:top;}
+th{background:var(--soft);font-weight:600;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:780px){.grid2{grid-template-columns:1fr;}}
+.card{background:var(--soft);border-radius:10px;padding:14px 16px;}
+.card ul{margin:8px 0 0;padding-left:18px;}
+.card li{margin:7px 0;}
+.note{color:var(--muted);font-size:13px;margin:12px 0 0;}
+.k{color:var(--wave);font-weight:600;}
+.g{color:var(--grain);font-weight:600;}
+.c{color:var(--couple);font-weight:600;}
+footer{margin-top:22px;color:var(--muted);font-size:13px;}
+footer ul{padding-left:18px;margin:8px 0 0;}
+footer li{margin:4px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>FK 链：元相子时空晶格的一维代理模型</h1>
+  <p>Frenkel-Kontorova 链由一排弹簧相连的粒子坐在周期性基底势上构成；当弹簧的自然间距与基底势周期不匹配时，失配集中到一处，形成 kink。体系以它作为时空晶格的一维代理：格点取法线轴层位，位形取元相子提升相位，kink 即复合位错粒子。</p>
+</header>
+
+<section>
+  <h2>一、kink 剖面与核宽</h2>
+  <canvas id="stage" height="380"></canvas>
+  <div class="controls">
+    <div class="ctrl">
+      <label>周期势强度比 K/k <output id="vK">0.005</output></label>
+      <input id="sK" type="range" min="-3.30" max="-1.30" step="0.01" value="-2.301">
+    </div>
+    <div class="ctrl">
+      <label>kink 位置 x <output id="vX">24.0</output></label>
+      <input id="sX" type="range" min="6" max="42" step="0.5" value="24">
+    </div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span>核宽 ℓ（格距）</span><b id="rL">2.25</b></div>
+    <div class="ro"><span>宽度窗口判定</span><b id="rWin">落窗</b></div>
+    <div class="ro"><span>缠绕 W</span><b id="rW">1</b></div>
+    <div class="ro"><span>弹簧能量</span><b id="rEs">0.000</b></div>
+    <div class="ro"><span>周期势能</span><b id="rEp">0.000</b></div>
+  </div>
+  <p class="note">横轴为格点 n，纵轴为位形 u<sub>n</sub> 减去均匀缠绕背景后的偏离 Δu。左侧 Δu = 0、右侧 Δu = 1，两侧都是均匀缠绕区，右侧比左侧多一层，即多一个粒子（缠绕 W = 1）。调小 K/k 使核宽变大，kink 由尖锐变得舒展；调大 K/k 则收紧，直至塌缩为单键尖锐位错。</p>
+</section>
+
+<section>
+  <h2>二、弹性形式决定宽度窗口</h2>
+  <canvas id="window" height="330"></canvas>
+  <p class="note">横轴为 K/k（对数），纵轴为实测核宽 ℓ*（格距）。青色曲线为平方弹性（非紧致，体系原始形式），赭石直线为紧致 cos 弹性。紧致 cos 下位错塌缩为单键尖锐位错，ℓ* 恒为 1.00 且与参数比无关，宽度窗口为空；平方弹性下 ℓ* 随 K/k 下降而展宽，K/k ≤ 0.02 时进入洛伦兹色散所需的宽度窗口。</p>
+</section>
+
+<section>
+  <h2>三、与元相子时空晶格的逐项对应</h2>
+  <table>
+    <thead>
+      <tr><th>FK 链要素</th><th>数学形式</th><th>元相子时空晶格中的对应物</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>格点索引 n</td><td>整数</td><td>法线轴层位 |n⟩，距离归粒 x<sup>a</sup> = l<sub>P</sub> n<sup>a</sup></td></tr>
+      <tr><td>位形 u<sub>n</sub></td><td>实数场</td><td>第 n 层元相子的提升相位（相位展开到实轴）：小数部分为 S<sup>1</sup> 相位角，整数部分为已叠层数</td></tr>
+      <tr><td>弹簧项</td><td>(k/2)(u<sub>n+1</sub> − u<sub>n</sub> − 1)<sup>2</sup></td><td>键弹性 κ<sub>∥</sub>：法线轴高度差（非紧致，自然长度为一个周期）</td></tr>
+      <tr><td>周期势</td><td>K(1 − cos 2πu<sub>n</sub>)</td><td>格点内锁定 κ<sub>φ</sub>：锚核阱，把元相子钉在格点内</td></tr>
+      <tr><td>kink</td><td>Δu 由 1 过渡到 2</td><td>复合位错粒子：电荷核 + 锚核 + 包层</td></tr>
+      <tr><td>缠绕 W</td><td>u<sub>N−1</sub> − u<sub>0</sub> − (N−1)</td><td>绕数 = 粒子数 = 电荷（超选择荷）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>四、两侧的用法</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>量子力学侧</h3>
+      <ul>
+        <li>粒子本相与超选择荷：kink 的缠绕数即粒子数与电荷，边界条件 u<sub>N−1</sub> = u<sub>0</sub> + N 从拓扑上禁锢 kink。</li>
+        <li>概率权重：局域序参量的亏空份额承载位置概率，线性泛函精确承载 Born 权重。</li>
+        <li>叠加与测量：三类对象对照定出叠加态的场侧载体（17 项判据）；碰撞协议区分 U 过程与 R 过程。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>引力侧</h3>
+      <ul>
+        <li>缺陷作为源：绑定能等于质量，自撑阱的自洽结构使响应系数自动均匀（κ = 1）。</li>
+        <li>记录场写入与传导：每拍写入 δθ = m/m<sub>P</sub> 的标架倾斜，邻居接力传导，稳态即离散泊松格林函数，4π 自动涌现。</li>
+        <li>运动与惯性：等效质量、测地响应与相对论色散在能量、动量、不变量三层面闭合。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>五、差异与代理适用性</h2>
+  <table>
+    <thead>
+      <tr><th>差异</th><th>是否导致代理错误</th><th>依据与处置</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>维度：一维与三维</td><td>是，已实证</td><td>环的裁决实验：光滑场涡旋环在三维塌缩、绕数流失；一维 kink 的稳定不外推三维</td></tr>
+      <tr><td>守恒机制：经典拓扑与量子保护</td><td>是，已实证</td><td>经典层绕数在弛豫中流失；守恒须搬进量子层（toric code，[H, W] = 0）</td></tr>
+      <tr><td>弹性形式：平方与紧致 cos</td><td>是，口径敏感</td><td>紧致 cos 下位错塌缩为单键、宽度窗口为空；原始形式经裁定为螺旋高度差</td></tr>
+      <tr><td>场性质：经典标量与量子态</td><td>是，已标注近似</td><td>叠加像的对角通道为 O(s<sub>0</sub>(D)) 近似，论文已显式声明</td></tr>
+      <tr><td>场变量：实标量与 S<sup>1</sup>×ℤ</td><td>否，已裁决</td><td>底层晶格刚性使相位与层数同步，不存在独立变化，打包在底层精确</td></tr>
+      <tr><td>背景序：均匀缠绕与交错序</td><td>未判定，遗留</td><td>交错序 π 与铁磁 2π 的 cos 对应未建立</td></tr>
+      <tr><td>引力侧对象：记录场与相位场</td><td>是，表述风险</td><td>引力侧共享工具链而非同一泛函</td></tr>
+    </tbody>
+  </table>
+  <p class="note">处置原则：链上结论一律标注为模型内判据级，凡依赖非紧致弹性、经典拓扑或一维几何的结论都写明条件，不外推的场合单列遗留。</p>
+</section>
+
+<footer>
+  <strong>参考资料</strong>
+  <ul>
+    <li><a href="../内部草稿/注记-FK链：从Frenkel-Kontorova模型到元相子时空晶格的一维代理.md">注记-FK 链：从 Frenkel-Kontorova 模型到元相子时空晶格的一维代理</a>（内部草稿/，2026-09-14）</li>
+    <li><a href="../验证脚本/注记-复合模型：粒子%20=%20均匀缠绕背景上的%20FK%20kink%20位错与宽度参数区.md">注记-复合模型：粒子 = 均匀缠绕背景上的 FK kink 位错与宽度参数区</a>（验证脚本/，2026-09-06）</li>
+    <li><a href="../验证脚本/注记-弹性身份裁决：紧致cos与螺旋平方弹性下的位错窗口.md">注记-弹性身份裁决：紧致 cos 与螺旋平方弹性下的位错窗口</a>（验证脚本/，2026-09-06）</li>
+    <li><a href="../验证脚本/注记-环的裁决实验：裸模型无亚稳与绕数承载层问题.md">注记-环的裁决实验：裸模型无亚稳与绕数承载层问题</a>（验证脚本/，2026-09-06）</li>
+    <li><a href="../验证脚本/注记-扇区约束动力学：两种绕数的裁决与T4T5判定.md">注记-扇区约束动力学：两种绕数的裁决与 T4T5 判定</a>（验证脚本/，2026-09-06）</li>
+    <li><a href="../从复合位错到爱因斯坦场方程：粒子机制现状综合与攻坚纲领.md">从复合位错到爱因斯坦场方程：粒子机制现状综合与攻坚纲领</a>（根目录，2026-09-12）</li>
+    <li><a href="../叠加态的场侧画像：单一场承载、份额折叠与相位通道.md">叠加态的场侧画像：单一场承载、份额折叠与相位通道</a>（根目录，2026-09-14）</li>
+  </ul>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var N = 48;
+  var stage = document.getElementById('stage');
+  var win = document.getElementById('window');
+  var sK = document.getElementById('sK');
+  var sX = document.getElementById('sX');
+  var vK = document.getElementById('vK');
+  var vX = document.getElementById('vX');
+
+  function ell(K){ return 1/(2*Math.PI*Math.sqrt(K)); }
+  function du(n,x,l){ return (2/Math.PI)*Math.atan(Math.exp((n-x)/l)); }
+
+  function setup(cv,hLogical){
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || 1000;
+    cv.width = Math.round(w*dpr);
+    cv.height = Math.round(hLogical*dpr);
+    cv.style.height = hLogical+'px';
+    var c = cv.getContext('2d');
+    c.setTransform(dpr,0,0,dpr,0,0);
+    return {c:c, w:w, h:hLogical};
+  }
+
+  function drawStage(){
+    var K = Math.pow(10, parseFloat(sK.value));
+    var x0 = parseFloat(sX.value);
+    var l = ell(K);
+    var g = setup(stage,380), c = g.c, W = g.w, H = g.h;
+    var padL=58, padR=24, padT=30, padB=52;
+    var ymin=-0.18, ymax=1.18;
+    function px(n){ return padL + (n/N)*(W-padL-padR); }
+    function py(d){ return padT + (ymax-d)/(ymax-ymin)*(H-padT-padB); }
+
+    c.clearRect(0,0,W,H);
+
+    var i;
+    for(i=0;i<=N;i+=2){
+      c.strokeStyle='#eef1f5'; c.lineWidth=1;
+      c.beginPath(); c.moveTo(px(i),padT); c.lineTo(px(i),H-padB); c.stroke();
+    }
+    c.setLineDash([5,5]);
+    c.strokeStyle='#c9ced6'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(padL,py(0)); c.lineTo(W-padR,py(0)); c.stroke();
+    c.beginPath(); c.moveTo(padL,py(1)); c.lineTo(W-padR,py(1)); c.stroke();
+    c.setLineDash([]);
+
+    c.strokeStyle='#9aa2ad'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(padL,py(0)); c.lineTo(padL,py(1)); c.stroke();
+    c.beginPath(); c.moveTo(padL,py(0)); c.lineTo(W-padR,py(0)); c.stroke();
+    c.fillStyle='#6b7280'; c.font='12px system-ui,sans-serif';
+    c.textAlign='right'; c.textBaseline='middle';
+    c.fillText('0', padL-8, py(0));
+    c.fillText('1', padL-8, py(1));
+    c.save(); c.translate(18,(py(0)+py(1))/2); c.rotate(-Math.PI/2);
+    c.textAlign='center'; c.fillText('Δu', 0, 0); c.restore();
+    c.textAlign='center'; c.textBaseline='top';
+    c.fillText('格点 n', (padL+W-padR)/2, H-padB+22);
+
+    c.strokeStyle='#1a5fb4'; c.lineWidth=2.4;
+    c.beginPath();
+    for(i=0;i<=N*4;i++){
+      var n=i/4, X=px(n), Y=py(du(n,x0,l));
+      if(i===0){ c.moveTo(X,Y); } else { c.lineTo(X,Y); }
+    }
+    c.stroke();
+
+    var step=3, pts=[];
+    for(i=0;i<=N;i+=step){ pts.push([px(i),py(du(i,x0,l))]); }
+    c.strokeStyle='#0f766e'; c.lineWidth=1.4;
+    for(i=0;i<pts.length-1;i++){
+      var a=pts[i], b=pts[i+1];
+      var dx=b[0]-a[0], dy=b[1]-a[1], len=Math.sqrt(dx*dx+dy*dy);
+      var nx=-dy/len, ny=dx/len, amp=5;
+      c.beginPath(); c.moveTo(a[0],a[1]);
+      c.lineTo(a[0]+dx*0.25+nx*amp, a[1]+dy*0.25+ny*amp);
+      c.lineTo(a[0]+dx*0.50-nx*amp, a[1]+dy*0.50-ny*amp);
+      c.lineTo(a[0]+dx*0.75+nx*amp, a[1]+dy*0.75+ny*amp);
+      c.lineTo(b[0],b[1]);
+      c.stroke();
+    }
+    for(i=0;i<=N;i+=step){
+      var X2=px(i), Y2=py(du(i,x0,l));
+      c.beginPath(); c.arc(X2,Y2,5,0,Math.PI*2);
+      c.fillStyle='#9a5b12'; c.fill();
+      c.strokeStyle='#ffffff'; c.lineWidth=1.5; c.stroke();
+    }
+
+    c.setLineDash([4,4]);
+    c.strokeStyle='#c0392b'; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(px(x0),padT); c.lineTo(px(x0),H-padB); c.stroke();
+    c.setLineDash([]);
+    c.fillStyle='#c0392b'; c.font='12px system-ui,sans-serif';
+    c.textAlign='center'; c.textBaseline='bottom';
+    c.fillText('kink 中心', px(x0), padT-8);
+
+    c.fillStyle='#6b7280'; c.textBaseline='top';
+    c.textAlign='left'; c.fillText('均匀缠绕区', padL+4, H-padB+4);
+    c.textAlign='right'; c.fillText('均匀缠绕区（层数 +1）', W-padR-4, H-padB+4);
+
+    var Es=0, Ep=0;
+    for(i=0;i<N;i++){
+      var d=du(i+1,x0,l)-du(i,x0,l);
+      Es += 0.5*d*d;
+      Ep += K*(1-Math.cos(2*Math.PI*(i+du(i,x0,l))));
+    }
+    var uStart=0+du(0,x0,l), uEnd=(N-1)+du(N-1,x0,l);
+    document.getElementById('rL').textContent = l.toFixed(2);
+    document.getElementById('rWin').textContent = (K<=0.02? '落窗（ℓ ≥ 2）' : '未落窗');
+    document.getElementById('rWin').style.color = (K<=0.02? '#0f766e' : '#c0392b');
+    document.getElementById('rW').textContent = (uEnd-uStart-(N-1)).toFixed(3);
+    document.getElementById('rEs').textContent = Es.toFixed(3);
+    document.getElementById('rEp').textContent = Ep.toFixed(3);
+    vK.textContent = K.toFixed(5);
+    vX.textContent = x0.toFixed(1);
+  }
+
+  function drawWindow(){
+    var g = setup(win,330), c=g.c, W=g.w, H=g.h;
+    var padL=64, padR=110, padT=26, padB=48;
+    var x0=-3.35, x1=-0.95, y0=0, y1=14;
+    function px(v){ return padL + (v-x0)/(x1-x0)*(W-padL-padR); }
+    function py(v){ return padT + (y1-v)/(y1-y0)*(H-padT-padB); }
+    c.clearRect(0,0,W,H);
+
+    c.strokeStyle='#eef1f5'; c.lineWidth=1;
+    var t;
+    for(t=0;t<=14;t+=2){
+      c.beginPath(); c.moveTo(padL,py(t)); c.lineTo(W-padR,py(t)); c.stroke();
+      c.fillStyle='#6b7280'; c.font='12px system-ui,sans-serif';
+      c.textAlign='right'; c.textBaseline='middle';
+      c.fillText(String(t), padL-8, py(t));
+    }
+    var ticks=[-3.301,-3,-2.301,-2,-1.699,-1.301,-1];
+    var labels=['0.0005','0.001','0.005','0.01','0.02','0.05','0.1'];
+    c.textAlign='center'; c.textBaseline='top';
+    for(t=0;t<ticks.length;t++){
+      c.beginPath(); c.moveTo(px(ticks[t]),padT); c.lineTo(px(ticks[t]),H-padB); c.stroke();
+      c.fillText(labels[t], px(ticks[t]), H-padB+8);
+    }
+    c.fillStyle='#6b7280';
+    c.textAlign='center'; c.fillText('K / k（对数刻度）', (padL+W-padR)/2, H-padB+28);
+
+    c.fillStyle='rgba(15,118,110,0.07)';
+    c.fillRect(px(-3.35), padT, px(-1.699)-px(-3.35), H-padT-padB);
+
+    c.strokeStyle='#0f766e'; c.lineWidth=2.4; c.beginPath();
+    var data=[[-3.301,12.90],[-3.0,9.12],[-2.301,4.06],[-2.0,2.86],[-1.699,2.01],[-1.301,1.35],[-1.0,1.13]];
+    for(t=0;t<data.length;t++){
+      var X=px(data[t][0]), Y=py(data[t][1]);
+      if(t===0){ c.moveTo(X,Y); } else { c.lineTo(X,Y); }
+    }
+    c.stroke();
+    for(t=0;t<data.length;t++){
+      c.beginPath(); c.arc(px(data[t][0]),py(data[t][1]),4,0,Math.PI*2);
+      c.fillStyle='#0f766e'; c.fill();
+    }
+    c.strokeStyle='#9a5b12'; c.lineWidth=2.4;
+    c.beginPath(); c.moveTo(padL,py(1)); c.lineTo(W-padR,py(1)); c.stroke();
+
+    c.setLineDash([6,4]);
+    c.strokeStyle='#c0392b'; c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(padL,py(2)); c.lineTo(W-padR,py(2)); c.stroke();
+    c.setLineDash([]);
+    c.fillStyle='#c0392b'; c.textAlign='left'; c.textBaseline='bottom';
+    c.fillText('宽度窗口下界 ℓ* = 2', padL+6, py(2)-6);
+
+    c.fillStyle='#0f766e'; c.font='13px system-ui,sans-serif'; c.textBaseline='middle';
+    c.fillText('平方弹性（非紧致）', px(-2.6)+6, py(7.4));
+    c.fillStyle='#9a5b12';
+    c.fillText('紧致 cos 弹性：ℓ* 恒为 1.00', px(-2.35)+6, py(1)+18);
+
+    c.fillStyle='#6b7280'; c.font='12px system-ui,sans-serif';
+    c.textAlign='right'; c.textBaseline='middle';
+    c.fillText('实测核宽 ℓ*', padL-8, padT-10);
+  }
+
+  function redraw(){ drawStage(); drawWindow(); }
+
+  sK.addEventListener('input', redraw);
+  sX.addEventListener('input', redraw);
+  window.addEventListener('resize', redraw);
+  redraw();
+})();
+</script>
+</body>
+</html>
