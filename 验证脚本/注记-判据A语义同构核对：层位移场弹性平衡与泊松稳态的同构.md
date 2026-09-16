@@ -37,7 +37,7 @@ $$\text{标量泊松（碰撞写入）}:\ -\nabla^2\theta = s\,\delta \qquad \te
 | A5 | 数值同一 | 同一算子同源唯一解（CG info = 0，残差 1.8e-14） | 唯一 | ✅ |
 | A6 | 换算恒等 h = l_P·θ | max 偏差 = 0（l_P = 1 恒等） | 恒等 | ✅ |
 
-![图 1：判据 A 两项读数。(a) 弹性平衡稳态 $u(r)$ 对 $1/(4\pi r)$；(b) 线性：源点位移 $u(0) \propto s$。](../images/minimal_verification_elastic_balance.png)
+![图 1：判据 A 两项读数。(a) 弹性平衡稳态 u(r) 对 1/(4\pi r)；(b) 线性：源点位移 u(0) \propto s。](../images/minimal_verification_elastic_balance.png)
 
 
 ## 四、判定与解读

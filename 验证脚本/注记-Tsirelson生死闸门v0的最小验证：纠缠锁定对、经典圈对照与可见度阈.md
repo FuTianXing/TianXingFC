@@ -47,7 +47,7 @@
 | J9 | 可见度 $1.00000000000000$；相位回收 $\pi/3$ 精确 | $1$、$\gamma$ | PASS |
 | J10 | 全网格最大 $2.828427$（$241^3$） | $2\sqrt2$ | PASS |
 
-![图 1：生死闸门四联（种子 20260914）。(a) 可见度阈：$S(p) = 2\sqrt2\,p$ 对经典界 $2$ 与 Tsirelson 界 $2\sqrt2$；(b) 锁定族剖面：数值最大 $S$ 对锁定相对表针夹角 $\gamma$ 与理论 $2\sqrt{1+\cos^2\gamma}$；(c) Ramsey 条纹（零模踢角对层位概率，$\gamma = \pi/3$ 采样）；(d) 四种读法对照。](../images/minimal_verification_tsirelson_gate_v0.png)
+![图 1：生死闸门四联（种子 20260914）。(a) 可见度阈：S(p) = 2\sqrt2\,p 对经典界 2 与 Tsirelson 界 2\sqrt2；(b) 锁定族剖面：数值最大 S 对锁定相对表针夹角 \gamma 与理论 2\sqrt{1+\cos^2\gamma}；(c) Ramsey 条纹（零模踢角对层位概率，\gamma = \pi/3 采样）；(d) 四种读法对照。](../images/minimal_verification_tsirelson_gate_v0.png)
 
 
 汇总 11/11 PASS。复现：根目录执行 `python 验证脚本/minimal_verification_tsirelson_gate_v0.py`，全确定性（种子 20260914），终端打印全部对照行，图存 `images/minimal_verification_tsirelson_gate_v0.png`，见 §三 图 1（四联：可见度阈、锁定族剖面、Ramsey 条纹、四读法对照）。
