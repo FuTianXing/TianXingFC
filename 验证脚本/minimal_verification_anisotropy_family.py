@@ -6,8 +6,9 @@
 "提取"该因子（不假定其形式），再比较两者是否同一个，从而把"同族"从说法变成核对。
 
 判据（先立判据，再实现）：
-  A1 途径一（色散）：三维七点方案的色散 omega = 2 arcsin sqrt(sum sin^2(k_i/2)) 在小 k 处
-     给 omega/k - 1 = -(k^2/24) sum n_i^4；提取方向比值。
+  A1 途径一（色散）：判据 L3 所用方案（连续时间、离散空间）色散 omega = 2 sqrt(sum sin^2(k_i/2))
+     在小 k 处给 omega/k - 1 = -(k^2/24) sum n_i^4；提取方向比值。
+     （初版误用含时间离散的 arcsin 形式，轴向因精确恒等式给零，见注记第二轮。）
   A2 途径二（符号）：七点拉普拉斯符号 lambda/(-k^2) = 1 - (k^2/12) sum n_i^4；提取方向比值。
   A3 两条途径提取的方向比值相同（相对偏差 <= 1e-9），即同一个因子。
   A4 差分算子的四阶项：中心差分符号 (sin x / x)^2 的四阶系数同样携带该因子。
@@ -32,7 +33,7 @@ def check(tag, ok, detail):
 def path_dispersion(nhat, kappa=2e-3):
     k = kappa * nhat
     inner = np.sum(np.sin(k / 2.0) ** 2)
-    omega = 2.0 * np.arcsin(np.sqrt(inner))
+    omega = 2.0 * np.sqrt(inner)   # 判据 L3 方案：连续时间、离散空间
     return (omega / kappa - 1.0) / (-kappa ** 2 / 24.0)
 
 
@@ -95,8 +96,9 @@ print("=" * 78)
 r2c = factors(path_symbol, aniso=0.05)
 print("  对照提取到的因子：{}".format({k: round(v, 6) for k, v in r2c.items()}))
 print("  与靶值的偏差：{}".format({k: round(r2c[k] - TARGET[k], 6) for k in DIRS}))
-check("A5", max(abs(r2c[k] - TARGET[k]) for k in DIRS) >= 1e-2,
-      "各向异性对照使提取到的因子偏离 (1, 1/2, 1/3)")
+dev5 = max(abs(r2c[k] - TARGET[k]) for k in DIRS)
+check("A5", 1e-2 <= dev5 <= 1.0,
+      "各向异性对照使提取到的因子偏离 (1, 1/2, 1/3)，且偏离有上界（防除零假象）")
 
 print()
 n_pass = sum(1 for _, ok in CHECKS if ok)
