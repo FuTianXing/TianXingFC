@@ -255,3 +255,33 @@ print("判据汇总：%d/%d 通过" % (n_pass, len(CHECKS)))
 for tag, ok in CHECKS:
     print("  %-10s %s" % (tag, "PASS" if ok else "FAIL"))
 print("=" * 78)
+
+
+# ----------------------------------------------------------------------
+# 图 1：转动生成元的谱与传播检验
+# ----------------------------------------------------------------------
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    ev_plot = np.sort(np.linalg.eigvals(spin_generator(k_hat)).real)
+    f_iso = run(SP, steps=40, mix=0.0)
+    r_iso = content(f_iso, SM) / content(f_iso, SP)
+    f_ctl = run(SP, steps=40, mix=0.05)
+    r_ctl = content(f_ctl, SM) / content(f_ctl, SP)
+    fig, axs = plt.subplots(1, 2, figsize=(9.5, 3.8))
+    axs[0].plot([-2, -1, 0, 0, 1, 2], ev_plot, "o", label="实测本征值")
+    axs[0].plot([-2, 2], [-2, 2], "--", label="整数靶")
+    axs[0].set_xlabel("整数靶"); axs[0].set_ylabel("实测谱")
+    axs[0].legend(); axs[0].set_title("(a) 转动生成元的谱")
+    axs[1].bar([0, 1], [max(r_iso, 1e-18), r_ctl], color=["#3b6ea5", "#b45309"])
+    axs[1].set_yscale("log"); axs[1].set_xticks([0, 1])
+    axs[1].set_xticklabels(["各向同性", "张量混合对照"])
+    axs[1].set_ylabel("反螺旋度分量相对幅度"); axs[1].set_title("(b) 传播检验")
+    fig.tight_layout()
+    fig.savefig("D:/software/TianXingFC/images/minimal_verification_helicity.png", dpi=150)
+    print("图存 images/minimal_verification_helicity.png")
+except Exception as exc:
+    print("绘图跳过：%s" % exc)

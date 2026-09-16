@@ -119,3 +119,32 @@ print("判据汇总：%d/%d 通过" % (n_pass, len(CHECKS)))
 for tag, ok in CHECKS:
     print("  %-6s %s" % (tag, "PASS" if ok else "FAIL"))
 print("=" * 78)
+
+
+# ----------------------------------------------------------------------
+# 图 1：各向同性组合与 Born 速度
+# ----------------------------------------------------------------------
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
+    fig, axs = plt.subplots(1, 2, figsize=(9.5, 3.8))
+    axs[0].bar([0, 1], [c11 - c12 - 2.0 * c44, d11 - d12 - 2.0 * d44],
+               color=["#3b6ea5", "#b45309"])
+    axs[0].set_xticks([0, 1]); axs[0].set_xticklabels(["框架键能", "中心力对照"])
+    axs[0].set_ylabel("C11 - C12 - 2 C44"); axs[0].set_title("(a) 各向同性组合")
+    labs = ["L[100]", "T[100]", "L[111]", "T[111]"]
+    fw = [sp["L[100]"], sp["T[100]"], sp["L[111]"], sp["T[111]"]]
+    ct = [spc["L[100]"], spc["T[100]"], spc["L[111]"], spc["T[111]"]]
+    xs = np.arange(4)
+    axs[1].bar(xs - 0.2, fw, width=0.4, label="框架键能")
+    axs[1].bar(xs + 0.2, ct, width=0.4, label="中心力对照")
+    axs[1].set_xticks(xs); axs[1].set_xticklabels(labs)
+    axs[1].set_ylabel("Born 速度"); axs[1].legend(); axs[1].set_title("(b) 速度读数")
+    fig.tight_layout()
+    fig.savefig("D:/software/TianXingFC/images/minimal_verification_elastic_isotropy.png", dpi=150)
+    print("图存 images/minimal_verification_elastic_isotropy.png")
+except Exception as exc:
+    print("绘图跳过：%s" % exc)
