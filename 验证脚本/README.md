@@ -196,7 +196,7 @@
 
 结论：三联裁决（光滑场环死 + 孤立疤不可构造 + 线非粒子）⇒ 裸单值场没有粒子载体，载体必须进入三元组格点内离散结构（与质量机制定案合流）；下一实验 = 体系哈密顿量窄区静态碗判决性下降 + 格点内离散保护数值实现。耗时约 4 分钟。
 
-### 77. `minimal_verification_ring_fourpiece_recheck.py` + `minimal_verification_ring_collapse_recheck.py`（裁决实验四件套复跑，2026-09-06 成稿 / 2026-09-16 补登记）
+### 78. `minimal_verification_ring_fourpiece_recheck.py` + `minimal_verification_ring_collapse_recheck.py`（裁决实验四件套复跑，2026-09-06 成稿 / 2026-09-17 补登记）
 
 **对应注记**：`验证脚本/注记-裁决实验四件套复跑：窄区静态极小与单值场绕数承载限制.md`（P1-33）
 
