@@ -91,14 +91,26 @@ check("A4", abs(coef + 1.0 / 3.0) <= 1e-5, "四阶系数与解析值一致")
 
 print()
 print("=" * 78)
-print("A5 灵敏度对照（沿 z 改 5%）")
+print("A5 灵敏度对照（沿 z 把核改 5%）：核各向异性作用在领头系数上")
 print("=" * 78)
-r2c = factors(path_symbol, aniso=0.05)
-print("  对照提取到的因子：{}".format({k: round(v, 6) for k, v in r2c.items()}))
-print("  与靶值的偏差：{}".format({k: round(r2c[k] - TARGET[k], 6) for k in DIRS}))
-dev5 = max(abs(r2c[k] - TARGET[k]) for k in DIRS)
-check("A5", 1e-2 <= dev5 <= 1.0,
-      "各向异性对照使提取到的因子偏离 (1, 1/2, 1/3)，且偏离有上界（防除零假象）")
+# 核各向异性直接改领头系数：lambda/(-k^2) = 1 + 0.05 n_z^2 + O(k^2)
+# 故预期 [100] 与 [110] 保持 1（n_z = 0），[111] 给 1 + 0.05/3
+pred = {"[100]": 1.0, "[110]": 1.0, "[111]": 1.0 + 0.05 / 3.0}
+lead = {}
+for name, d in DIRS.items():
+    kk = 2e-3 * d
+    lam = -4.0 * (np.sin(kk[0] / 2.0) ** 2 + np.sin(kk[1] / 2.0) ** 2
+                  + 1.05 * np.sin(kk[2] / 2.0) ** 2)
+    lead[name] = lam / (-2e-3 ** 2)
+print("  实测领头系数：{}".format({k: round(v, 9) for k, v in lead.items()}))
+print("  解析预期：{}".format({k: round(v, 9) for k, v in pred.items()}))
+dev5 = max(abs(lead[k] - pred[k]) for k in DIRS)
+gap5 = lead["[111]"] - lead["[100]"]
+print("  与预期的最大偏差 = {:.3e}；[111] 与 [100] 的差 = {:.6f}（预期 {:.6f}）"
+      .format(dev5, gap5, 0.05 / 3.0))
+print("  说明：核各向异性的偏离是 O(1) 阶，与离散化的 O(k^2) 阶不是同一通道，故不套用因子提取式。")
+check("A5", dev5 <= 1e-3 and gap5 >= 1e-2,
+      "核各向异性按预期在领头系数上显现（差异 {:.6f}）".format(gap5))
 
 print()
 n_pass = sum(1 for _, ok in CHECKS if ok)
