@@ -5,7 +5,7 @@
   W5a 对照复现：均匀 h = 1 的最低模与解析 2J - sqrt((2J)^2 + (lam h)^2) 一致（<= 1e-10）。
   W5b 两端复现：单点 h = 1 最低模 > 0；均匀 h = 1 最低模 < 0。
   W5c 最小失稳覆盖：块状构型族（h0 = 1）存在最小失稳宽 w*（1 < w* < 64）；
-       并报告最低模对块宽的非单调性（驻波匹配效应，报告项）。
+       并报告最低模对块宽的非单调性（报告项）。
   W5d 弱失稳判定（修正版）：真实 1/r 衰减构型（h_n = h0/(1+d_n)，h0 = 1）的失稳幅度
        不超过均匀情形的 5%（|ω_min| / |ω_uniform| < 0.05）。
        原始预期为「漏斗最低模 > 0（不失稳）」，实测 -0.0033 < 0，预期被推翻；
@@ -103,8 +103,8 @@ check("W5c", w_star is not None and 1 < w_star < N,
       % (w_star, F_star, mins[w_star - 2], mins[w_star - 1]))
 
 print("\n  块族扫描（h0=1，报告非单调性）：")
-print("      w:      " + " ".join("%7d" % w for w in ws[:12]))
-print("      ω²_min: " + " ".join("%+7.4f" % mins[i] for i in range(12)))
+print("      w:      " + " ".join("%7d" % w for w in ws[:18]))
+print("      ω²_min: " + " ".join("%+7.4f" % mins[i] for i in range(18)))
 nonmono = bool(np.any(np.diff(mins) > 0))
 print("      非单调（存在上升段）：%s" % nonmono)
 
@@ -150,13 +150,14 @@ ax.set_title("构型剖面", fontsize=9)
 ax.legend(fontsize=8)
 
 ax = axs[1]
-ax.plot(ws, mins, "-", color="tab:orange", lw=1.2, label="块族（h0=1）")
-ax.plot([ws[0], ws[-1]], [m_u, m_u], ":", color="gray", lw=1.0, label="均匀值 %.3f" % m_u)
+wsF = np.array(ws) / N
+ax.plot(wsF, mins, "-", color="tab:orange", lw=1.2, label="块族（h0=1，横轴 F=w/N）")
+ax.axhline(m_u, color="gray", lw=1.0, ls=":", label="均匀值 %.3f" % m_u)
 ax.plot([flatness(h_f)], [m_f], "k*", ms=12, label="1/r 漏斗（h0=1）")
 ax.plot([flatness(prof_single(1.0))], [m_s], "k^", ms=8, label="单点（h0=1）")
 ax.axhline(0.0, color="gray", lw=0.8)
 ax.set_xscale("log")
-ax.set_xlabel("块宽 w（对数轴）")
+ax.set_xlabel("平坦度 F（均匀 = 1，单点 = 1/N；块族按 F = w/N）")
 ax.set_ylabel("最低模（ω²_min）")
 ax.set_title("失稳门槛与真实构型位置", fontsize=9)
 ax.legend(fontsize=7.5)
