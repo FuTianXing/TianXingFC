@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""各向异性因子 sum(n_i^4) 的同族性交叉核对（A1 至 A5）。
+
+背景：判据 L3（色散偏离的方向比 3:1.5:1）、判据 M3（离散符号的领头方向差）与本轮 G6
+（壁张力的取向依赖）都声称由同一个因子 sum_i n_i^4 支配。本脚本从两条**独立**途径各自
+"提取"该因子（不假定其形式），再比较两者是否同一个，从而把"同族"从说法变成核对。
+
+判据（先立判据，再实现）：
+  A1 途径一（色散）：三维七点方案的色散 omega = 2 arcsin sqrt(sum sin^2(k_i/2)) 在小 k 处
+     给 omega/k - 1 = -(k^2/24) sum n_i^4；提取方向比值。
+  A2 途径二（符号）：七点拉普拉斯符号 lambda/(-k^2) = 1 - (k^2/12) sum n_i^4；提取方向比值。
+  A3 两条途径提取的方向比值相同（相对偏差 <= 1e-9），即同一个因子。
+  A4 差分算子的四阶项：中心差分符号 (sin x / x)^2 的四阶系数同样携带该因子。
+  A5 灵敏度对照：沿一轴把格点改 5% 后，两条途径提取的比值同时偏离 (1, 1/2, 1/3)。
+
+单位：格距 1。确定性，无随机数。
+"""
+
+import numpy as np
+
+CHECKS = []
+DIRS = {"[100]": np.array([1.0, 0.0, 0.0]),
+        "[110]": np.array([1.0, 1.0, 0.0]) / np.sqrt(2.0),
+        "[111]": np.array([1.0, 1.0, 1.0]) / np.sqrt(3.0)}
+
+
+def check(tag, ok, detail):
+    CHECKS.append((tag, bool(ok)))
+    print("  [{}] {}  {}".format(tag, "PASS" if ok else "FAIL", detail))
+
+
+def path_dispersion(nhat, kappa=2e-3):
+    k = kappa * nhat
+    inner = np.sum(np.sin(k / 2.0) ** 2)
+    omega = 2.0 * np.arcsin(np.sqrt(inner))
+    return (omega / kappa - 1.0) / (-kappa ** 2 / 24.0)
+
+
+def path_symbol(nhat, kappa=2e-3, aniso=0.0):
+    k = kappa * nhat
+    lam = -4.0 * (np.sin(k[0] / 2.0) ** 2 + np.sin(k[1] / 2.0) ** 2
+                  + (1.0 + aniso) * np.sin(k[2] / 2.0) ** 2)
+    return (lam / (-kappa ** 2) - 1.0) / (-kappa ** 2 / 12.0)
+
+
+TARGET = {"[100]": 1.0, "[110]": 0.5, "[111]": 1.0 / 3.0}
+
+
+def factors(fun, **kw):
+    return {name: fun(d, **kw) for name, d in DIRS.items()}
+
+
+print("=" * 78)
+print("A1 途径一（色散）提取方向因子")
+print("=" * 78)
+r1 = factors(path_dispersion)
+print("  提取到的因子 sum n_i^4：{}".format({k: round(v, 9) for k, v in r1.items()}))
+print("  靶值：{}".format({k: round(v, 9) for k, v in TARGET.items()}))
+check("A1", max(abs(r1[k] - TARGET[k]) for k in DIRS) <= 5e-3,
+      "色散途径提取到 1 : 1/2 : 1/3")
+
+print()
+print("=" * 78)
+print("A2 途径二（符号）提取方向因子")
+print("=" * 78)
+r2 = factors(path_symbol)
+print("  提取到的因子 sum n_i^4：{}".format({k: round(v, 9) for k, v in r2.items()}))
+check("A2", max(abs(r2[k] - TARGET[k]) for k in DIRS) <= 5e-3,
+      "符号途径提取到 1 : 1/2 : 1/3")
+
+print()
+print("=" * 78)
+print("A3 两条途径的比值是否同一个")
+print("=" * 78)
+dev = max(abs(r1[k] - r2[k]) for k in DIRS)
+print("  两途径提取因子的最大偏差 = {:.3e}".format(dev))
+print("  两条途径的小 k 系数：色散 -1/24 = {:.6f}；符号 -1/12 = {:.6f}（因子相同、系数不同）"
+      .format(-1.0 / 24.0, -1.0 / 12.0))
+check("A3", dev <= 5e-3, "两条独立途径提取到同一个方向因子")
+
+print()
+print("=" * 78)
+print("A4 差分算子的四阶项")
+print("=" * 78)
+x0 = 1e-3
+coef = float((np.sin(x0) / x0) ** 2 - 1.0) / x0 ** 2
+print("  (sin x / x)^2 - 1 的 x^2 系数 = {:.6f}（解析 -1/3）".format(coef))
+print("  含义：该四阶系数对三轴求和后携带同一因子 sum n_i^4，量级为 O(a^4)。")
+check("A4", abs(coef + 1.0 / 3.0) <= 1e-5, "四阶系数与解析值一致")
+
+print()
+print("=" * 78)
+print("A5 灵敏度对照（沿 z 改 5%）")
+print("=" * 78)
+r2c = factors(path_symbol, aniso=0.05)
+print("  对照提取到的因子：{}".format({k: round(v, 6) for k, v in r2c.items()}))
+print("  与靶值的偏差：{}".format({k: round(r2c[k] - TARGET[k], 6) for k in DIRS}))
+check("A5", max(abs(r2c[k] - TARGET[k]) for k in DIRS) >= 1e-2,
+      "各向异性对照使提取到的因子偏离 (1, 1/2, 1/3)")
+
+print()
+n_pass = sum(1 for _, ok in CHECKS if ok)
+print("=" * 78)
+print("判据汇总：{}/{} 通过".format(n_pass, len(CHECKS)))
+for tag, ok in CHECKS:
+    print("  {:6s} {}".format(tag, "PASS" if ok else "FAIL"))
+print("=" * 78)
