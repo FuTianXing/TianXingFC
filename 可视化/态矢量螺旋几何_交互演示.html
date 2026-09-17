@@ -138,7 +138,26 @@ footer.end{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);fon
 
 <div class="note key"><b>这个演示最值得盯住的一处</b>切换"全同频"与"等差"两个预设，看面板 C：同频时条纹纹丝不动，份额也不变；改成等差之后份额依旧不变，条纹却开始移动并从一条变成多条。份额给"有多少"，相对相位给"在哪里"。</div>
 
-<h2 class="sec"><span class="no">4</span>边界与严格程度</h2>
+<h2 class="sec"><span class="no">4</span>半径、法线轴与螺距各代表什么</h2>
+<p>面板 A 里每一个图形元素都有对应的物理量，也都有对应的档位，逐项列出如下。凡是显示尺寸（像素半径、像素间距、列宽）都属排版，不对应物理差别。</p>
+
+<table>
+  <tr><th>图上的元素</th><th>物理对应</th><th>档位</th></tr>
+  <tr><td>圆的半径</td><td>单体半径 <code>ℏ</code>，固定且不可分，属构成条件</td><td>定案</td></tr>
+  <tr><td>圆周长</td><td>作用量子的几何载体，<code>2πℏ = h</code></td><td>定案</td></tr>
+  <tr><td>竖直方向</td><td>层数轴，也就是法线方向（跃迁方向由定理 3.2 锁定）</td><td>定案</td></tr>
+  <tr><td>每格的竖直间距（螺距）</td><td>一圈一格的步长：空间侧 <code>l_P</code>，时间侧 <code>t_P</code></td><td>定案（晶格刚性，2026-09-11）</td></tr>
+  <tr><td>竖轴上的高度差</td><td>键弹性与法线场记录（引力记录即沿法线轴的高度差）</td><td>定案（作者裁决）</td></tr>
+  <tr><td>螺旋圈数</td><td>摆程数，也就是物理时间的计数</td><td>定案</td></tr>
+  <tr><td>把相位角与圈数合成的那个连续量</td><td>提升相位，也是这条螺旋的弧长参数</td><td>定案</td></tr>
+  <tr><td>并排的条数或粗细</td><td>份额（参与该块的元相子数占比）</td><td>判定级（本演示取等权，未画粗细）</td></tr>
+</table>
+
+<div class="note key"><b>份额不能画成圆半径</b>份额是人数占比，要显示它就加粗那一条螺旋或并列多条细针；圆的半径被 <code>ℏ</code> 占住，不随分量变化。演示里所有螺旋用同一个显示半径，正是为了避免这处误读；面板 B 的圆半径随条数变化，属排版。</div>
+
+<p>同一个竖轴读出两种物理量：按 <code>l_P</code> 读是空间（层数即距离），按 <code>t_P</code> 读是时间（摆程计数）。一次摆程同时给出空间一格与时间一拍，这条阶梯因此是时空同源的直观。</p>
+
+<h2 class="sec"><span class="no">5</span>边界与严格程度</h2>
 <p>这是演示，不是验证。它做三件事：把"一条螺旋与一族并排"的差别画出来，把"速率比决定走法"的判据摆明，把相对相位与条纹的因果链连上。</p>
 <p>数值方法：每条螺旋以 <code>θₖ(t)=ωₖt+φₖ</code> 演化，层数取 <code>⌊θₖ/2π⌋</code>；条纹按 <code>I(u)=|Σₖ e^{iθₖ}e^{iku}|²</code> 在 320 个采样点上求和，可见度按 (最大值减最小值) 除以 (最大值加最小值) 给出。这些是标准计算，不含体系特有的近似。</p>
 <p>本演示不验证：能级结构从何而来、份额如何从系综得到、测量如何落定。相关口径见 [[注记-态矢量与波函数的几何对应：分层结构、振幅与相位的来源分居]] §七·六 与其补节；份额侧见 [[wiki/序参量份额定理]]。</p>
@@ -254,8 +273,7 @@ function drawHelix(){
     var tt = win * 2 * Math.PI + tw;
     var mx = cx + r * Math.cos(tt), my = yBot - (tt / (2 * Math.PI)) * per - ry * Math.sin(tt);
     ci(g, mx, my, 5.4, COL[k], "#fff", 1.4);
-    txt(g, cx, yBot + 26, "因子 " + (k + 1) + "｜层数 " + layer, COL[k], 11.5, "middle", "650");
-    txt(g, cx, 40, "速率 " + S.rates[k].toFixed(3), "#68718c", 11, "middle");
+    txt(g, cx, yBot + 26, "因子 " + (k + 1) + "｜层 " + layer + "｜ω " + S.rates[k].toFixed(2), COL[k], 11, "middle", "650");
   }
   if (same){
     var yy = null, mx2 = [];
@@ -267,11 +285,12 @@ function drawHelix(){
       mx2.push([cx2 + r2 * Math.cos(tt2), yBot - (tt2 / (2 * Math.PI)) * per - ry2 * Math.sin(tt2)]);
     }
     for (k = 1; k < N; k++){ seg(g, mx2[k-1][0], mx2[k-1][1], mx2[k][0], mx2[k][1], "#b45309", 1.4, "5 4"); }
-    txt(g, 490, 340, "全体同频：各标记同高，同步前进，可压成一条公共螺旋", "#b45309", 12, "middle", "650");
+    txt(g, 660, 356, "全体同频：各标记同高，同步前进，可压成一条公共螺旋", "#b45309", 12, "middle", "650");
   } else {
-    txt(g, 490, 340, "速率不同：各标记不同高，只能一族并排，相对相位随之走动", "#be123c", 12, "middle", "650");
+    txt(g, 660, 356, "速率不同：各标记不同高，只能一族并排，相对相位随之走动", "#be123c", 12, "middle", "650");
   }
-  txt(g, 30, 40, "窗口只画 " + WIN + " 层：走满后从底部重新进入，层数另计", "#9aa1b0", 11, "start");
+  txt(g, 30, 40, "竖直轴 = 层数轴（法线）：每格 = l_P（空间）或 t_P（摆程）；圆半径 = ℏ（固定）", "#68718c", 11, "start");
+  txt(g, 30, 356, "窗口只画 " + WIN + " 层：走满后从底部重新进入，层数另计", "#9aa1b0", 11, "start");
 }
 
 /* ---------- 面板 B：相对相位圆 ---------- */
@@ -300,11 +319,11 @@ function drawPhase(){
     var px = cx + Rc * Math.cos(a2), py = cy - Rc * Math.sin(a2);
     ci(g, px, py, 4.6, "#be123c");
     txt(g, cx, cy - Rc - 12, "δ" + (m + 2), "#4a5260", 12, "middle", "650");
-    txt(g, cx, cy + Rc + 20, (a2 * 180 / Math.PI).toFixed(0) + "°", "#68718c", 11, "middle");
-    txt(g, cx, cy + Rc + 38, laps > 0 ? ("已走 " + laps + " 圈") : "未满一圈", "#9aa1b0", 10.5, "middle");
+    txt(g, cx, cy + Rc + 18, (a2 * 180 / Math.PI).toFixed(0) + "°", "#68718c", 11, "middle");
+    txt(g, cx, cy + Rc + 34, laps > 0 ? ("已走 " + laps + " 圈") : "未满一圈", "#9aa1b0", 10.5, "middle");
   }
   txt(g, 240, 34, "相位差 δₖ = θₖ − θ₁ 在圆上的走动", "#4f46e5", 12.5, "middle", "650");
-  txt(g, 240, 276, "空心点是起点：回到它即周期复位", "#68718c", 11, "middle");
+  txt(g, 240, 294, "空心点是起点：回到它即周期复位", "#68718c", 11, "middle");
 }
 
 /* ---------- 面板 C：条纹 ---------- */
@@ -331,7 +350,7 @@ function drawFringe(){
   seg(g, X0, Y0, X0, 64, "#eef0f5", 1.2);
   txt(g, X0 - 8, Y0 + 4, "0", "#9aa1b0", 10.5, "end");
   txt(g, X0 - 8, 70, "1", "#9aa1b0", 10.5, "end");
-  txt(g, X0 - 30, 70, "强度", "#68718c", 11, "start");
+  txt(g, X0 - 30, 54, "强度", "#68718c", 11, "start");
   var cur = fringe(S.theta);
   if (!S.I0) { S.I0 = cur.arr.slice(); }
   var gp = [], cp = [], i, x;
