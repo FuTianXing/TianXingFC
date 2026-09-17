@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="交互演示：态矢量相位在各自圆上的旋转。速率相同可压成一条公共螺旋，速率不同只能一族并排；相对相位的走法决定条纹静止、周期复原或永不重复。" />
+<title>一条螺旋，还是一族并排 · 态矢量螺旋几何的交互演示</title>
+<style>
+:root{
+  --paper:#f7f5f0; --sheet:#fff; --ink:#1f2328; --ink2:#4a5260; --ink3:#68718c;
+  --line:#e6e3dc; --line2:#d9d5cb;
+  --indigo:#4f46e5; --blue:#2563eb; --purple:#7c3aed; --pink:#be185d;
+  --amber:#b45309; --teal:#0f766e; --rose:#be123c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  font-size:16.5px;line-height:1.95;letter-spacing:.012em;-webkit-font-smoothing:antialiased}
+.sheet{max-width:1100px;margin:0 auto;background:var(--sheet);
+  box-shadow:0 1px 3px rgba(31,35,40,.05), 0 18px 50px rgba(31,35,40,.06);
+  border-radius:0 0 20px 20px;padding:0 0 70px}
+.inner{max-width:980px;margin:0 auto;padding:0 26px}
+.cover{background:linear-gradient(150deg,#1d2a4d 0%,#4f46e5 48%,#b45309 100%);
+  color:#fff;padding:52px 26px 46px;border-radius:0 0 20px 20px;margin-bottom:26px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-90px;top:-90px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.07)}
+.cover::before{content:"";position:absolute;right:50px;bottom:-150px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.16)}
+.cover .kicker{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin-bottom:16px}
+.cover h1{font-size:32px;line-height:1.42;margin:0 0 12px;font-weight:700}
+.cover .sub{font-size:16px;opacity:.9;line-height:1.85;max-width:700px;margin:0}
+.cover .meta{margin-top:22px;font-size:13px;opacity:.72}
+.ctl{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);padding:12px 26px}
+.ctl .row{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.ctl label{font-size:13.5px;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.ctl .seg{display:flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.ctl .seg button{border:0;background:#fff;padding:6px 12px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.ctl .seg button+button{border-left:1px solid var(--line2)}
+.ctl .seg button.on{background:#eef2ff;color:var(--indigo);font-weight:650}
+.ctl input[type=range]{width:132px;accent-color:var(--indigo)}
+.ctl button.act{border:1px solid var(--line2);background:#fff;border-radius:9px;padding:6px 14px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.ctl button.act:hover{border-color:var(--indigo);color:var(--indigo)}
+.ctl select{border:1px solid var(--line2);border-radius:9px;padding:6px 10px;font-size:13.5px;color:var(--ink2);background:#fff}
+.ctl .val{font-variant-numeric:tabular-nums;color:var(--indigo);font-weight:650;min-width:46px;display:inline-block}
+h2.sec{font-size:22px;line-height:1.5;margin:34px 0 6px;font-weight:700;display:flex;gap:12px;align-items:baseline}
+h2.sec .no{font-family:Georgia,serif;font-size:28px;color:var(--indigo);opacity:.42;font-weight:400;line-height:1}
+h3{font-size:18px;margin:30px 0 8px;font-weight:650}
+p{margin:0 0 16px}
+strong{font-weight:650}
+code{font-family:"Cascadia Code",Consolas,"SFMono-Regular",monospace;font-size:14.5px;
+  background:#f2f0ea;border:1px solid #e8e5dd;border-radius:5px;padding:1px 6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0 8px}
+.grid .wide{grid-column:1 / -1}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px 6px}
+.panel h4{margin:2px 0 8px;font-size:14.5px;color:var(--indigo);font-weight:650}
+.panel .hint{font-size:13px;color:var(--ink3);line-height:1.7;margin:6px 2px 4px}
+.panel svg{display:block;width:100%;height:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:20px 0}
+th,td{border:1px solid var(--line2);padding:10px 14px;text-align:left;vertical-align:top;line-height:1.7}
+th{background:#fbfaf7;font-weight:650}
+.note{border-left:4px solid;border-radius:10px;padding:13px 17px;margin:22px 0;font-size:15.5px;line-height:1.85}
+.note b{display:block;margin-bottom:4px}
+.note.ins{background:#eef2ff;border-color:var(--indigo)} .note.ins b{color:var(--indigo)}
+.note.key{background:#fff8ec;border-color:var(--amber)} .note.key b{color:var(--amber)}
+.note.adv{background:#f2fbf8;border-color:var(--teal)} .note.adv b{color:var(--teal)}
+footer.end{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink3);line-height:1.9}
+@media (max-width:820px){ .grid{grid-template-columns:1fr} .cover h1{font-size:24px} .inner{padding:0 16px} .ctl{padding:10px 16px} }
+@media print{ .ctl{display:none} .sheet{box-shadow:none} }
+</style>
+</head>
+<body>
+<div class="sheet">
+<header class="cover">
+  <div class="kicker">元相子理论 · 交互演示</div>
+  <h1>一条螺旋，还是一族并排</h1>
+  <p class="sub">态矢量的相位在各自的圆上转。速率相同，全体同步前进，可压成一条公共螺旋；速率不同，只能一族并排，相对相位随之走动，干涉条纹因此静止、周期复原，或永不重复。</p>
+  <div class="meta">三块联动面板 · 五个可调参数 · 建议阅读 10 分钟</div>
+</header>
+
+<div class="ctl">
+  <div class="row">
+    <label>螺旋条数 <span class="seg" id="nBtns"></span></label>
+    <label>速率预设 <select id="rate">
+      <option value="same" selected>全同频（速率相同）</option>
+      <option value="linear">等差（1 : 2 : 3 …）</option>
+      <option value="rational">有理比（2 : 3 : 4 …）</option>
+      <option value="irrational">无理比（1 : √2 : √3 …）</option>
+    </select></label>
+    <label>初始相位差 Δφ <input type="range" id="dphi" min="0" max="628" value="0"><span class="val" id="dphiV">0.00π</span></label>
+    <label>时间缩放 <input type="range" id="speed" min="0" max="200" value="100"><span class="val" id="speedV">1.0×</span></label>
+    <button class="act" id="play">暂停</button>
+    <button class="act" id="reset">重置</button>
+  </div>
+</div>
+
+<div class="inner">
+
+<div class="grid">
+  <div class="panel wide">
+    <h4>面板 A｜螺旋：每个因子的相位在自己的圆上转，层数各自跳格</h4>
+    <svg id="helixSvg" viewBox="0 0 980 360" role="img" aria-label="并排的螺旋：每个因子一条相位圆与层数轴，速率相同则同步前进"></svg>
+    <div class="hint">每条螺旋对应一个相位通道（一个因子）。横轴是相位在圆上的投影，纵轴是层数（每满周加一格）。读数：层数 <span id="layers" style="color:#4f46e5;font-weight:650">1,1</span>，份额合计 <span id="share" style="color:#4f46e5;font-weight:650">1.000</span>（守恒）。</div>
+  </div>
+
+  <div class="panel">
+    <h4>面板 B｜相对相位圆：差值在圆上怎么走</h4>
+    <svg id="phaseSvg" viewBox="0 0 480 300" role="img" aria-label="相对相位差在圆上的走动轨迹"></svg>
+    <div class="hint">画的是各因子与第一个因子的相位差 <code>δₖ = θₖ − θ₁</code>。判据：速率为零则冻结，比值为有理数则周期复位，含无理数则稠密扫描。当前：<span id="walk" style="color:#4f46e5;font-weight:650">冻结</span>。</div>
+  </div>
+
+  <div class="panel">
+    <h4>面板 C｜条纹：相对相位驱动的可观测痕迹</h4>
+    <svg id="fringeSvg" viewBox="0 0 480 300" role="img" aria-label="由各分量相位合成的干涉条纹"></svg>
+    <div class="hint">把各分量当作多缝的贡献，条纹强度 <code>I(u)=Σₖ e^{iθₖ} e^{ik u}</code> 的模方。可见度 <span id="vis" style="color:#4f46e5;font-weight:650">1.00</span>；同频时条纹静止，速率不同时条纹整体移动或改变形状。</div>
+  </div>
+</div>
+
+<h2 class="sec"><span class="no">1</span>三块面板各看什么</h2>
+<p>面板 A 画相位与层数本身；面板 B 画相对相位的走法，那是唯一进入干涉的量；面板 C 画相对相位留下的可观测痕迹。三块面板共享同一组速率，改动任一参数会同时改变三处。</p>
+
+<table>
+  <tr><th>面板</th><th>画的是什么</th><th>对应口径</th></tr>
+  <tr><td>A 螺旋</td><td>每个因子的相位圆与层数轴，以及两者合成的一条螺旋</td><td>单体物侧几何 <code>S¹×Z</code>，层数即距离</td></tr>
+  <tr><td>B 相对相位圆</td><td>相位差 δₖ 在圆上的走动</td><td>相对相位是唯一物理量，实轴取向差即波矢</td></tr>
+  <tr><td>C 条纹</td><td>各分量按相位叠加后的强度分布</td><td>叠加按幅相加，模方给读数</td></tr>
+</table>
+
+<h2 class="sec"><span class="no">2</span>判据只有一条：速率是否相同</h2>
+<p>全体同频时，各因子不携带独立参数：整段历史是"一个公共相位加若干固定相位差"，层数也同步进位。此时全体同步前进，可以压成一条公共螺旋。速率不同时，每个因子各走各的，只能画成一族并排的螺旋，相对相位随时间走动。</p>
+
+<div class="note ins"><b>压成一条压缩的是轨迹的参数个数，不是状态空间的维数</b>状态空间仍是张量积，维数不变。相对相位差也没有消失，它作为常量留在"这是哪一条螺旋"里，决定曲线在构型空间中的位置。同频与同相是两件事：同频只锁速率。</div>
+
+<h2 class="sec"><span class="no">3</span>相对相位的三种走法</h2>
+<p><strong>冻结。</strong>速率相同，相位差恒定，条纹静止。这就是"压成一条"的可观测含义：干涉图样不动。</p>
+<p><strong>周期复位。</strong>速率之比为有理数（例如 2 : 3），相位差走一段之后回到原值，条纹周期性复原。整体轨迹在环面上闭合，螺旋首尾相接。</p>
+<p><strong>稠密扫描。</strong>比值含无理数（例如 1 : √2），相位差永不回到原值，轨迹在环面上稠密缠绕，条纹持续改变形状，永不重复。</p>
+
+<div class="note key"><b>这个演示最值得盯住的一处</b>切换"全同频"与"等差"两个预设，看面板 C：同频时条纹纹丝不动，份额也不变；改成等差之后份额依旧不变，条纹却开始移动并从一条变成多条。份额给"有多少"，相对相位给"在哪里"。</div>
+
+<h2 class="sec"><span class="no">4</span>边界与严格程度</h2>
+<p>这是演示，不是验证。它做三件事：把"一条螺旋与一族并排"的差别画出来，把"速率比决定走法"的判据摆明，把相对相位与条纹的因果链连上。</p>
+<p>数值方法：每条螺旋以 <code>θₖ(t)=ωₖt+φₖ</code> 演化，层数取 <code>⌊θₖ/2π⌋</code>；条纹按 <code>I(u)=|Σₖ e^{iθₖ}e^{iku}|²</code> 在 320 个采样点上求和，可见度按 (最大值减最小值) 除以 (最大值加最小值) 给出。这些是标准计算，不含体系特有的近似。</p>
+<p>本演示不验证：能级结构从何而来、份额如何从系综得到、测量如何落定。相关口径见 [[注记-态矢量与波函数的几何对应：分层结构、振幅与相位的来源分居]] §七·六 与其补节；份额侧见 [[wiki/序参量份额定理]]。</p>
+
+<footer class="end">
+  <p><strong>配套材料</strong>：<code>可视化/态矢量演化与波函数_交互演示.html</code>（波包与布洛赫球）、<code>可视化/螺旋阶梯几何与时空晶格_图解笔记.html</code>（旋转楼梯上的世界）、<code>wiki/螺旋阶梯几何.md</code>、<code>理论总纲/元相方程.md</code>。</p>
+  <p><strong>关于这份文档</strong>：自包含单文件，无外部依赖，三块面板均由页面内脚本用 SVG 实时绘制，可离线运行与打印。</p>
+</footer>
+
+</div>
+</div>
+<script>
+(function(){
+"use strict";
+var NS = "http://www.w3.org/2000/svg";
+function mk(tag, a){ var e = document.createElementNS(NS, tag); for (var k in a) { e.setAttribute(k, a[k]); } return e; }
+function txt(p, x, y, s, c, size, anchor, weight){
+  var t = mk("text", {x:x, y:y, fill: c || "#1f2328", "font-size": (size || 12.5), "text-anchor": (anchor || "middle")});
+  if (weight) { t.setAttribute("font-weight", weight); }
+  t.textContent = s; p.appendChild(t); return t;
+}
+function seg(p, x1, y1, x2, y2, c, w, dash){
+  var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:c, "stroke-width": (w || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("line", a));
+}
+function arrow(p, x1, y1, x2, y2, c, w){
+  w = w || 2.6;
+  var dx = x2-x1, dy = y2-y1, L = Math.sqrt(dx*dx+dy*dy);
+  if (L < 0.6) { return; }
+  var ux = dx/L, uy = dy/L, head = Math.min(10, L*0.5);
+  var bx = x2-ux*head, by = y2-uy*head;
+  p.appendChild(mk("line", {x1:x1, y1:y1, x2:bx, y2:by, stroke:c, "stroke-width":w, "stroke-linecap":"round"}));
+  var px = -uy, py = ux, h = 4.4;
+  p.appendChild(mk("polygon", {points: x2+","+y2+" "+(bx+px*h)+","+(by+py*h)+" "+(bx-px*h)+","+(by-py*h), fill:c}));
+}
+function rr(p, x, y, w, h, fill, stroke, sw, rx){
+  p.appendChild(mk("rect", {x:x, y:y, width:w, height:h, rx: (rx === undefined ? 8 : rx),
+    fill: fill || "#fff", stroke: stroke || "none", "stroke-width": (sw || 1.2)}));
+}
+function ci(p, cx, cy, r, fill, stroke, sw, dash){
+  var a = {cx:cx, cy:cy, r:r, fill: fill || "none", stroke: stroke || "none", "stroke-width": (sw || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("circle", a));
+}
+function poly(p, pts, stroke, w, dash, fill){
+  var a = {points: pts.join(" "), fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 2)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("polyline", a));
+}
+function path(p, d, fill, stroke, w, dash, op){
+  var a = {d:d, fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  if (op !== undefined) { a["fill-opacity"] = op; }
+  p.appendChild(mk("path", a));
+}
+function clear(g){ while (g && g.firstChild) { g.removeChild(g.firstChild); } }
+function svg(id){ var s = document.getElementById(id); if (!s) { return null; } clear(s); var g = mk("g", {}); s.appendChild(g); return g; }
+function root(id){ return document.getElementById(id); }
+
+var COL = ["#2563eb", "#7c3aed", "#be185d", "#b45309", "#0f766e"];
+var S = { N: 2, preset: "same", dphi: 0, speed: 1, playing: true,
+          theta: [], rates: [], trace: [], I0: null };
+var WIN = 4;            /* 螺旋窗口层数 */
+
+function rates(){
+  var r = [], k;
+  for (k = 1; k <= S.N; k++){
+    if (S.preset === "same") { r.push(1); }
+    else if (S.preset === "linear") { r.push(k); }
+    else if (S.preset === "rational") { r.push(k + 1); }
+    else { r.push([1, Math.SQRT2, Math.sqrt(3), Math.sqrt(5), Math.sqrt(7)][k-1]); }
+  }
+  return r;
+}
+function reset(){
+  S.rates = rates();
+  S.theta = [];
+  for (var k = 0; k < S.N; k++){ S.theta.push(S.dphi * k); }
+  S.trace = [];
+  for (var m = 0; m < S.N - 1; m++){ S.trace.push([]); }
+  S.I0 = null;
+  drawAll();
+}
+function step(dt){
+  for (var k = 0; k < S.N; k++){ S.theta[k] += S.rates[k] * dt; }
+}
+
+/* ---------- 面板 A：并排螺旋 ---------- */
+function drawHelix(){
+  var g = svg("helixSvg"); if (!g) return;
+  var N = S.N, W = 940 / N, yBot = 306, per = 50;
+  rr(g, 18, 14, 944, 330, "#fbfaf7", "#eceef4", 1.2, 14);
+  var same = true, k;
+  for (k = 1; k < N; k++){ if (Math.abs(S.rates[k] - S.rates[0]) > 1e-9) { same = false; } }
+  for (k = 0; k < N; k++){
+    var cx = 18 + W * (k + 0.5), r = Math.min(46, W * 0.26), ry = r * 0.36;
+    seg(g, cx - r - 10, 46, cx - r - 10, yBot + 10, "#eef0f5", 1.2);
+    seg(g, cx + r + 10, 46, cx + r + 10, yBot + 10, "#eef0f5", 1.2);
+    var pts = [], t;
+    for (t = 0; t <= WIN * 2 * Math.PI + 0.01; t += 0.08){
+      pts.push((cx + r * Math.cos(t)).toFixed(1) + "," + (yBot - (t / (2 * Math.PI)) * per - ry * Math.sin(t)).toFixed(1));
+    }
+    poly(g, pts, COL[k], 2.2);
+    for (var L = 1; L <= WIN; L++){
+      var yl = yBot - L * per;
+      seg(g, cx - r - 12, yl, cx + r + 12, yl, "#e2e5ee", 1);
+      txt(g, cx + r + 20, yl + 4, String(L), "#9aa1b0", 10.5, "start");
+    }
+    var th = S.theta[k], layer = Math.floor(th / (2 * Math.PI));
+    var tw = th - Math.floor(th / (2 * Math.PI)) * 2 * Math.PI;
+    var win = Math.floor(th / (2 * Math.PI)) % WIN;
+    var tt = win * 2 * Math.PI + tw;
+    var mx = cx + r * Math.cos(tt), my = yBot - (tt / (2 * Math.PI)) * per - ry * Math.sin(tt);
+    ci(g, mx, my, 5.4, COL[k], "#fff", 1.4);
+    txt(g, cx, yBot + 26, "因子 " + (k + 1) + "｜层数 " + layer, COL[k], 11.5, "middle", "650");
+    txt(g, cx, 40, "速率 " + S.rates[k].toFixed(3), "#68718c", 11, "middle");
+  }
+  if (same){
+    var yy = null, mx2 = [];
+    for (k = 0; k < N; k++){
+      var th2 = S.theta[k], tw2 = th2 - Math.floor(th2 / (2 * Math.PI)) * 2 * Math.PI;
+      var win2 = Math.floor(th2 / (2 * Math.PI)) % WIN;
+      var tt2 = win2 * 2 * Math.PI + tw2;
+      var cx2 = 18 + W * (k + 0.5), r2 = Math.min(46, W * 0.26), ry2 = r2 * 0.36;
+      mx2.push([cx2 + r2 * Math.cos(tt2), yBot - (tt2 / (2 * Math.PI)) * per - ry2 * Math.sin(tt2)]);
+    }
+    for (k = 1; k < N; k++){ seg(g, mx2[k-1][0], mx2[k-1][1], mx2[k][0], mx2[k][1], "#b45309", 1.4, "5 4"); }
+    txt(g, 490, 340, "全体同频：各标记同高，同步前进，可压成一条公共螺旋", "#b45309", 12, "middle", "650");
+  } else {
+    txt(g, 490, 340, "速率不同：各标记不同高，只能一族并排，相对相位随之走动", "#be123c", 12, "middle", "650");
+  }
+  txt(g, 30, 40, "窗口只画 " + WIN + " 层：走满后从底部重新进入，层数另计", "#9aa1b0", 11, "start");
+}
+
+/* ---------- 面板 B：相对相位圆 ---------- */
+function drawPhase(){
+  var g = svg("phaseSvg"); if (!g) return;
+  rr(g, 8, 12, 464, 276, "#fbfaf7", "#eceef4", 1.2, 14);
+  var M = S.N - 1;
+  var spacing = M === 1 ? 0 : Math.min(112, 400 / M);
+  var Rc = M === 1 ? 82 : Math.min(40, spacing * 0.34);
+  for (var m = 0; m < M; m++){
+    var cx = 240 + (m - (M - 1) / 2) * spacing, cy = 148;
+    ci(g, cx, cy, Rc, "#fff", "#e6e3dc", 1.3);
+    var d = S.theta[m + 1] - S.theta[0];
+    var laps = Math.floor(d / (2 * Math.PI));
+    var a1 = 0, a2 = d - laps * 2 * Math.PI;
+    if (laps >= 1){
+      ci(g, cx, cy, Rc, "none", "#7c3aed", 2.2);
+    } else if (a2 > 0.002){
+      var large = a2 > Math.PI ? 1 : 0;
+      var x1 = cx + Rc * Math.cos(a1), y1 = cy - Rc * Math.sin(a1);
+      var x2 = cx + Rc * Math.cos(a2), y2 = cy - Rc * Math.sin(a2);
+      path(g, "M " + x1.toFixed(1) + " " + y1.toFixed(1) + " A " + Rc + " " + Rc + " 0 " + large + " 0 " + x2.toFixed(1) + " " + y2.toFixed(1),
+        "none", "#7c3aed", 2.2);
+    }
+    ci(g, cx + Rc, cy, 4.4, "none", "#9aa1b0", 1.4);
+    var px = cx + Rc * Math.cos(a2), py = cy - Rc * Math.sin(a2);
+    ci(g, px, py, 4.6, "#be123c");
+    txt(g, cx, cy - Rc - 12, "δ" + (m + 2), "#4a5260", 12, "middle", "650");
+    txt(g, cx, cy + Rc + 20, (a2 * 180 / Math.PI).toFixed(0) + "°", "#68718c", 11, "middle");
+    txt(g, cx, cy + Rc + 38, laps > 0 ? ("已走 " + laps + " 圈") : "未满一圈", "#9aa1b0", 10.5, "middle");
+  }
+  txt(g, 240, 34, "相位差 δₖ = θₖ − θ₁ 在圆上的走动", "#4f46e5", 12.5, "middle", "650");
+  txt(g, 240, 276, "空心点是起点：回到它即周期复位", "#68718c", 11, "middle");
+}
+
+/* ---------- 面板 C：条纹 ---------- */
+function fringe(thetas){
+  var N = S.N, a = 1 / Math.sqrt(N), u, k, re, im, out = [], mn = 1e9, mx = -1e9;
+  for (var i = 0; i <= 320; i++){
+    u = (i / 320) * 2 * Math.PI; re = 0; im = 0;
+    for (k = 0; k < N; k++){
+      var ph = thetas[k] + (k + 1) * u;
+      re += a * Math.cos(ph); im += a * Math.sin(ph);
+    }
+    var I = (re * re + im * im) / N;   /* 归一到理论最大值，使显示区间为 [0,1] */
+    if (I < mn) { mn = I; }
+    if (I > mx) { mx = I; }
+    out.push(I);
+  }
+  return { arr: out, min: mn, max: mx };
+}
+function drawFringe(){
+  var g = svg("fringeSvg"); if (!g) return;
+  rr(g, 8, 12, 464, 276, "#fbfaf7", "#eceef4", 1.2, 14);
+  var X0 = 44, X1 = 452, Y0 = 236, SC = 170;
+  seg(g, X0, Y0, X1, Y0, "#d9d5cb", 1.3);
+  seg(g, X0, Y0, X0, 64, "#eef0f5", 1.2);
+  txt(g, X0 - 8, Y0 + 4, "0", "#9aa1b0", 10.5, "end");
+  txt(g, X0 - 8, 70, "1", "#9aa1b0", 10.5, "end");
+  txt(g, X0 - 30, 70, "强度", "#68718c", 11, "start");
+  var cur = fringe(S.theta);
+  if (!S.I0) { S.I0 = cur.arr.slice(); }
+  var gp = [], cp = [], i, x;
+  for (i = 0; i <= 320; i++){
+    x = X0 + (X1 - X0) * (i / 320);
+    gp.push(x.toFixed(1) + "," + (Y0 - S.I0[i] * SC).toFixed(1));
+    cp.push(x.toFixed(1) + "," + (Y0 - cur.arr[i] * SC).toFixed(1));
+  }
+  path(g, "M " + X0 + "," + Y0 + " L " + cp.join(" L ") + " L " + X1 + "," + Y0 + " Z", "#0f766e", "none", 0, null, 0.16);
+  poly(g, gp, "#e7bcc4", 1.4, "5 4");
+  poly(g, cp, "#0f766e", 2.2);
+  txt(g, 240, 34, "条纹强度 I(u)（虚线为初始图样）", "#4f46e5", 12.5, "middle", "650");
+  txt(g, X1, Y0 + 20, "u", "#68718c", 11, "end");
+  txt(g, 240, 276, "可见度 = （最大 − 最小）/（最大 + 最小）", "#68718c", 11, "middle");
+  S.vis = (cur.max - cur.min) / (cur.max + cur.min);
+  S.fringe = cur;
+}
+
+/* ---------- 读数、控件与主循环 ---------- */
+function walkLabel(){
+  if (S.preset === "same") { return "冻结（条纹静止）"; }
+  if (S.preset === "rational") { return "周期复位（有理比）"; }
+  if (S.preset === "irrational") { return "稠密扫描（无理比）"; }
+  return "等差（每次复位都不重样）";
+}
+function drawAll(){
+  drawHelix(); drawPhase(); drawFringe();
+  var lay = [], k;
+  for (k = 0; k < S.N; k++){ lay.push(Math.floor(S.theta[k] / (2 * Math.PI))); }
+  root("layers").textContent = lay.join(",");
+  root("share").textContent = "1.000";
+  root("walk").textContent = walkLabel();
+  root("vis").textContent = S.vis.toFixed(2);
+}
+(function(){
+  var seg2 = root("nBtns"), N, b;
+  for (N = 2; N <= 5; N++){
+    b = document.createElement("button");
+    b.textContent = String(N);
+    b.setAttribute("data-n", String(N));
+    if (N === S.N) { b.className = "on"; }
+    b.addEventListener("click", function(ev){
+      S.N = parseInt(ev.target.getAttribute("data-n"), 10);
+      var bs = seg2.querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++){
+        bs[i].className = (parseInt(bs[i].getAttribute("data-n"), 10) === S.N) ? "on" : "";
+      }
+      reset();
+    });
+    seg2.appendChild(b);
+  }
+  root("rate").addEventListener("change", function(ev){ S.preset = ev.target.value; reset(); });
+  root("dphi").addEventListener("input", function(ev){ S.dphi = ev.target.value / 100; root("dphiV").textContent = (S.dphi / Math.PI).toFixed(2) + "π"; reset(); });
+  root("speed").addEventListener("input", function(ev){ S.speed = ev.target.value / 100; root("speedV").textContent = S.speed.toFixed(1) + "×"; });
+  root("play").addEventListener("click", function(ev){ S.playing = !S.playing; ev.target.textContent = S.playing ? "暂停" : "播放"; });
+  root("reset").addEventListener("click", function(){ reset(); });
+})();
+var lastTs = 0;
+function frame(ts){
+  if (!lastTs) { lastTs = ts; }
+  var dts = Math.min(0.05, (ts - lastTs) / 1000);
+  lastTs = ts;
+  if (S.playing){
+    var dt = dts * 2.0 * S.speed;
+    for (var i = 0; i < 4; i++){ step(dt / 4); }
+    drawAll();
+  }
+  requestAnimationFrame(frame);
+}
+reset();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
