@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="交互演示：希尔伯特空间里态矢量的转动、概率幅的相位旋转、波函数在位置空间的三重读数，参数可调。" />
+<title>态矢量怎样动起来 · 概率幅与波函数的交互演示</title>
+<style>
+:root{
+  --paper:#f7f5f0; --sheet:#fff; --ink:#1f2328; --ink2:#4a5260; --ink3:#68718c;
+  --line:#e6e3dc; --line2:#d9d5cb;
+  --indigo:#4f46e5; --blue:#2563eb; --purple:#7c3aed; --pink:#be185d;
+  --amber:#b45309; --teal:#0f766e; --rose:#be123c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  font-size:16.5px;line-height:1.95;letter-spacing:.012em;-webkit-font-smoothing:antialiased}
+.sheet{max-width:1100px;margin:0 auto;background:var(--sheet);
+  box-shadow:0 1px 3px rgba(31,35,40,.05), 0 18px 50px rgba(31,35,40,.06);
+  border-radius:0 0 20px 20px;padding:0 0 70px}
+.inner{max-width:980px;margin:0 auto;padding:0 26px}
+.cover{background:linear-gradient(150deg,#241f4f 0%,#4f46e5 50%,#0f766e 100%);
+  color:#fff;padding:52px 26px 46px;border-radius:0 0 20px 20px;margin-bottom:26px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-90px;top:-90px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.07)}
+.cover::before{content:"";position:absolute;right:50px;bottom:-150px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.16)}
+.cover .kicker{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin-bottom:16px}
+.cover h1{font-size:32px;line-height:1.42;margin:0 0 12px;font-weight:700}
+.cover .sub{font-size:16px;opacity:.9;line-height:1.85;max-width:680px;margin:0}
+.cover .meta{margin-top:22px;font-size:13px;opacity:.72}
+
+.ctl{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:12px 26px}
+.ctl .row{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.ctl label{font-size:13.5px;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.ctl .seg{display:flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.ctl .seg button{border:0;background:#fff;padding:6px 12px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.ctl .seg button+button{border-left:1px solid var(--line2)}
+.ctl .seg button.on{background:#eef2ff;color:var(--indigo);font-weight:650}
+.ctl input[type=range]{width:132px;accent-color:var(--indigo)}
+.ctl button.act{border:1px solid var(--line2);background:#fff;border-radius:9px;padding:6px 14px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.ctl button.act:hover{border-color:var(--indigo);color:var(--indigo)}
+.ctl select{border:1px solid var(--line2);border-radius:9px;padding:6px 10px;font-size:13.5px;color:var(--ink2);background:#fff}
+.ctl .val{font-variant-numeric:tabular-nums;color:var(--indigo);font-weight:650;min-width:44px;display:inline-block}
+
+h2.sec{font-size:22px;line-height:1.5;margin:34px 0 6px;font-weight:700;display:flex;gap:12px;align-items:baseline}
+h2.sec .no{font-family:Georgia,serif;font-size:28px;color:var(--indigo);opacity:.42;font-weight:400;line-height:1}
+h3{font-size:18px;margin:30px 0 8px;font-weight:650}
+p{margin:0 0 16px}
+strong{font-weight:650}
+code{font-family:"Cascadia Code",Consolas,"SFMono-Regular",monospace;font-size:14.5px;
+  background:#f2f0ea;border:1px solid #e8e5dd;border-radius:5px;padding:1px 6px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0 8px}
+.grid .wide{grid-column:1 / -1}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px 6px}
+.panel h4{margin:2px 0 8px;font-size:14.5px;color:var(--indigo);font-weight:650;letter-spacing:.02em}
+.panel .hint{font-size:13px;color:var(--ink3);line-height:1.7;margin:6px 2px 4px}
+.panel svg{display:block;width:100%;height:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:20px 0}
+th,td{border:1px solid var(--line2);padding:10px 14px;text-align:left;vertical-align:top;line-height:1.7}
+th{background:#fbfaf7;font-weight:650}
+.note{border-left:4px solid;border-radius:10px;padding:13px 17px;margin:22px 0;font-size:15.5px;line-height:1.85}
+.note b{display:block;margin-bottom:4px}
+.note.ins{background:#eef2ff;border-color:var(--indigo)} .note.ins b{color:var(--indigo)}
+.note.key{background:#fff8ec;border-color:var(--amber)} .note.key b{color:var(--amber)}
+.note.adv{background:#f2fbf8;border-color:var(--teal)} .note.adv b{color:var(--teal)}
+footer.end{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink3);line-height:1.9}
+@media (max-width:820px){ .grid{grid-template-columns:1fr} .cover h1{font-size:24px} .inner{padding:0 16px} .ctl{padding:10px 16px} }
+@media print{ .ctl{display:none} .sheet{box-shadow:none} }
+</style>
+</head>
+<body>
+<div class="sheet">
+<header class="cover">
+  <div class="kicker">元相子理论 · 交互演示</div>
+  <h1>态矢量怎样动起来</h1>
+  <p class="sub">希尔伯特空间里态矢量的转动、概率幅各自的相位旋转、波函数在位置空间的模样，三块面板联动，参数可调。</p>
+  <div class="meta">三块联动面板 · 六个可调参数 · 建议阅读 12 分钟</div>
+</header>
+
+<div class="ctl">
+  <div class="row">
+    <label>能级数 <span class="seg" id="nBtns"></span></label>
+    <label>布居预设 <select id="preset">
+      <option value="one">单能级（只有 n=1）</option>
+      <option value="equal" selected>等权叠加</option>
+      <option value="ends">两端能级</option>
+      <option value="packet">相干波包（近似高斯）</option>
+    </select></label>
+    <label>初始相位梯度 Δφ <input type="range" id="phase" min="0" max="628" value="0"><span class="val" id="phaseV">0.00π</span></label>
+    <label>驱动 Ω <input type="range" id="drive" min="0" max="600" value="0"><span class="val" id="driveV">0.0</span></label>
+    <label>时间缩放 <input type="range" id="speed" min="0" max="200" value="100"><span class="val" id="speedV">1.0×</span></label>
+    <button class="act" id="play">暂停</button>
+    <button class="act" id="reset">重置</button>
+    <label><input type="checkbox" id="showRe" checked> Re ψ</label>
+    <label><input type="checkbox" id="showIm" checked> Im ψ</label>
+    <label><input type="checkbox" id="showPhase" checked> 相位带</label>
+  </div>
+</div>
+
+<div class="inner">
+
+<div class="grid">
+  <div class="panel wide">
+    <h4>面板 A｜波函数 ψ(x, t)：位置空间的三种读数</h4>
+    <svg id="waveSvg" viewBox="0 0 980 320" role="img" aria-label="波函数实部、虚部、模方与相位带随时间演化"></svg>
+    <div class="hint">实线 <span style="color:#0f766e">Re ψ</span>，虚线 <span style="color:#7c3aed">Im ψ</span>，橙色填充 <span style="color:#b45309">|ψ|²</span>，下方色带是相位 arg ψ（色相一圈对应 2π）。读数：⟨x⟩ = <span id="xmean" style="color:#4f46e5;font-weight:650">0.500</span>，⟨E⟩ = <span id="emean" style="color:#4f46e5;font-weight:650">0.00</span>。</div>
+  </div>
+
+  <div class="panel">
+    <h4>面板 B｜概率幅 cₙ(t)：各自的箭头在转</h4>
+    <svg id="ampSvg" viewBox="0 0 480 300" role="img" aria-label="各能级概率幅在复平面上的箭头与模方条"></svg>
+    <div class="hint">每个能级一支箭头，模不变、相位按 e^(−iEₙt) 各自旋转；下方条是该能级的份额 |cₙ|²。归一化读数 Σ|cₙ|² = <span id="norm" style="color:#4f46e5;font-weight:650">1.000</span>（幺正演化下恒为 1）。</div>
+  </div>
+
+  <div class="panel">
+    <h4>面板 C｜态矢量：希尔伯特空间里的箭头</h4>
+    <svg id="stateSvg" viewBox="0 0 480 320" role="img" aria-label="二能级时的布洛赫球箭头；多能级时的模方谱与相对相位轮"></svg>
+    <div class="hint" id="stateHint">二能级：态矢量画在布洛赫球上，箭头 = 布洛赫矢量（极角 θ 给布居差，方位角 φ 给相对相位）。</div>
+  </div>
+</div>
+
+<h2 class="sec"><span class="no">1</span>三块面板各看什么</h2>
+<p>三块面板画的是同一个态的三层读数。面板 C 画态矢量本身（在能画的地方画成箭头，在画不出的地方画成它的全部不变量），面板 B 画它的分量（概率幅），面板 A 画这些分量在位置空间拼出来的波函数。</p>
+
+<table>
+  <tr><th>面板</th><th>画的是什么</th><th>对应口径</th></tr>
+  <tr><td>A 波函数</td><td>位置表象下的 ψ(x, t)：实部、虚部、模方、相位</td><td>集体合成读数的约化表象，模方是份额</td></tr>
+  <tr><td>B 概率幅</td><td>各能级分量 cₙ(t) 在复平面上的箭头与模方</td><td>概率幅 = 态矢量在某组基上的分量</td></tr>
+  <tr><td>C 态矢量</td><td>二能级：布洛赫球上的箭头；多能级：模方谱与相对相位轮</td><td>态矢量 = 全部分量打包成的元素，整体相位冗余</td></tr>
+</table>
+
+<div class="note ins"><b>为什么多能级时态矢量画不成一支箭头</b>两个能级时，态空间的几何恰好是球面（布洛赫球），一支箭头就能画完。能级多于两个之后，态空间是复射影空间，维数迅速变大，平面或球面都装不下。能画出来的是它的全部物理内容：一组模方（各分量多长）加一圈相对相位（各分量之间差多少）。整体相位被约掉，那正是"物理态是射线"的意思。</div>
+
+<h2 class="sec"><span class="no">2</span>参数怎样改变结果</h2>
+<p><strong>能级数与布居预设</strong>决定模方谱，也就是"概率摊在哪些能级上"。单能级只剩一个分量，箭头不动（只转整体相位），波函数的模方是一幅静止的驻波。等权叠加给出最明显的拍频：两个能级之间形成一次完整的相位追逐，⟨x⟩ 来回摆动。</p>
+<p><strong>初始相位梯度 Δφ</strong>给相邻能级之间加一个固定的初始相位差，它决定波包在位置空间从哪里出发、朝哪个方向走。相位差为 0 时波包居中并对称展开，相位差给到 π/2 附近时波包整体朝一侧移动。</p>
+<p><strong>驱动 Ω</strong>只对二能级起作用：它在哈密顿量里加一项横向耦合，布洛赫矢量绕着倾斜的轴进动，表现为布居在两能级之间来回倒（拉比型振荡）。Ω = 0 时只剩绕竖直轴的拉莫尔进动，布居差不变，只有相对相位在走。</p>
+<p><strong>时间缩放</strong>只改变观看速度，不改变物理：所有相位按同一个因子放慢或加快。</p>
+
+<div class="note key"><b>这个演示最值得盯住的一处</b>在多能级、无驱动的设置下，面板 B 里每支箭头的长度全程不变（模方守恒），可面板 A 里概率分布却明显地来回移动。概率没有凭空搬运，移动来自相对相位：各分量以不同速率旋转，相对相位在变，干涉项的位置随之改变。份额给出"有多少"，相位给出"在哪里"。</div>
+
+<h2 class="sec"><span class="no">3</span>边界与严格程度</h2>
+<p>这是演示，不是验证。它做三件事：把三个层次的对象并排画出来，把参数与结果的关系摆明，让人能亲眼看到模方守恒与相对相位搬运概率这两件事。</p>
+<p>数值方法为谱方法加定步长演化：能级取一维无限深势井，φₙ(x) = √2 sin(nπx)，Eₙ = n²（ℏ = 1、L = 1 的自然单位），态矢量按 cₙ(t) = cₙ(0) e^(−iEₙt) 演化；二能级带驱动时，2×2 的幺正矩阵用 Rodrigues 公式精确构造，不做近似展开。位置空间的曲线由 320 个采样点给出，⟨x⟩ 与 ⟨E⟩ 在采样点上数值求和。</p>
+<p>本演示不验证：能级结构的物理来源、普朗克尺度、元相子晶格的离散采样；也不改动任何基准文档。若要看晶格侧的采样与截断，走 [[螺旋阶梯几何与时空晶格_图解笔记|旋转楼梯上的世界]]；若要看态矢量与波函数的几何对应，走 [[注记-态矢量与波函数的几何对应：分层结构、振幅与相位的来源分居|态矢量与波函数的几何对应]]。</p>
+
+<footer class="end">
+  <p><strong>配套材料</strong>：<code>可视化/quantum-state-popular-science.html</code>（量子态究竟是什么）、<code>可视化/螺旋阶梯几何与时空晶格_图解笔记.html</code>（旋转楼梯上的世界）、<code>wiki/元相子.md</code>、<code>理论总纲/元相方程.md</code>。</p>
+  <p><strong>关于这份文档</strong>：自包含单文件，无外部依赖，三块面板全部由页面内脚本用 SVG 实时绘制，可离线运行与打印。选 SVG 而非 three.js，是为了离线可用、可打印、每个读数都能逐点核对；需要三维交互时可用 <code>可视化/时空晶格振荡模型_三维可视化.html</code>。</p>
+</footer>
+
+</div>
+</div>
+<script>
+(function(){
+"use strict";
+var NS = "http://www.w3.org/2000/svg";
+function mk(tag, a){ var e = document.createElementNS(NS, tag); for (var k in a) { e.setAttribute(k, a[k]); } return e; }
+function txt(p, x, y, s, c, size, anchor, weight){
+  var t = mk("text", {x:x, y:y, fill: c || "#1f2328", "font-size": (size || 12.5), "text-anchor": (anchor || "middle")});
+  if (weight) { t.setAttribute("font-weight", weight); }
+  t.textContent = s; p.appendChild(t); return t;
+}
+function seg(p, x1, y1, x2, y2, c, w, dash){
+  var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:c, "stroke-width": (w || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("line", a));
+}
+function arrow(p, x1, y1, x2, y2, c, w){
+  w = w || 3;
+  var dx = x2-x1, dy = y2-y1, L = Math.sqrt(dx*dx+dy*dy);
+  if (L < 0.6) { return; }
+  var ux = dx/L, uy = dy/L, head = Math.min(11, L*0.5);
+  var bx = x2-ux*head, by = y2-uy*head;
+  p.appendChild(mk("line", {x1:x1, y1:y1, x2:bx, y2:by, stroke:c, "stroke-width":w, "stroke-linecap":"round"}));
+  var px = -uy, py = ux, h = 4.6;
+  p.appendChild(mk("polygon", {points: x2+","+y2+" "+(bx+px*h)+","+(by+py*h)+" "+(bx-px*h)+","+(by-py*h), fill:c}));
+}
+function rr(p, x, y, w, h, fill, stroke, sw, rx){
+  p.appendChild(mk("rect", {x:x, y:y, width:w, height:h, rx: (rx === undefined ? 8 : rx),
+    fill: fill || "#fff", stroke: stroke || "none", "stroke-width": (sw || 1.2)}));
+}
+function ci(p, cx, cy, r, fill, stroke, sw, dash){
+  var a = {cx:cx, cy:cy, r:r, fill: fill || "none", stroke: stroke || "none", "stroke-width": (sw || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("circle", a));
+}
+function poly(p, pts, stroke, w, dash, fill){
+  var a = {points: pts.join(" "), fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 2)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  p.appendChild(mk("polyline", a));
+}
+function path(p, d, fill, stroke, w, dash, op){
+  var a = {d:d, fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 1.4)};
+  if (dash) { a["stroke-dasharray"] = dash; }
+  if (op !== undefined) { a["fill-opacity"] = op; }
+  p.appendChild(mk("path", a));
+}
+function clear(g){ while (g && g.firstChild) { g.removeChild(g.firstChild); } }
+function svg(id){ var s = document.getElementById(id); if (!s) { return null; } clear(s); var g = mk("g", {}); s.appendChild(g); return g; }
+function root(id){ return document.getElementById(id); }
+
+/* ---------- 复数 ---------- */
+function cmul(a, b){ return [a[0]*b[0]-a[1]*b[1], a[0]*b[1]+a[1]*b[0]]; }
+function cadd(a, b){ return [a[0]+b[0], a[1]+b[1]]; }
+function cscale(a, s){ return [a[0]*s, a[1]*s]; }
+function cabs2(a){ return a[0]*a[0]+a[1]*a[1]; }
+function carg(a){ return Math.atan2(a[1], a[0]); }
+function cphase(a, ph){ var c = Math.cos(ph), s = Math.sin(ph); return [a[0]*c - a[1]*s, a[0]*s + a[1]*c]; }
+function cmulNegI(a){ return [a[1], -a[0]]; }
+
+/* ---------- 状态 ---------- */
+var S = {
+  N: 2, preset: "equal", dphi: 0, drive: 0, speed: 1, playing: true,
+  re: true, im: true, phase: true,
+  t: 0, c: [], c0: [], trace: []
+};
+var COL = ["#2563eb", "#7c3aed", "#be185d", "#b45309", "#0f766e"];
+function En(n){ return n*n; }
+
+function setPreset(){
+  var N = S.N, n, m = [];
+  for (n = 1; n <= N; n++){
+    var v;
+    if (S.preset === "one") { v = (n === 1) ? 1 : 0; }
+    else if (S.preset === "equal") { v = 1/Math.sqrt(N); }
+    else if (S.preset === "ends") { v = (n === 1 || n === N) ? 1/Math.sqrt(2) : 0; }
+    else { var n0 = (N+1)/2, s = Math.max(0.9, N/5); v = Math.exp(-Math.pow(n-n0,2)/(2*s*s)); }
+    m.push(v);
+  }
+  var nrm = 0, i;
+  for (i = 0; i < m.length; i++) { nrm += m[i]*m[i]; }
+  nrm = Math.sqrt(nrm) || 1;
+  S.c0 = m.map(function(x){ return x/nrm; });
+  reset();
+}
+
+function reset(){
+  S.t = 0; S.c = []; S.trace = [];
+  for (var i = 0; i < S.N; i++){
+    var ph = S.dphi * i;
+    S.c.push([S.c0[i]*Math.cos(ph), S.c0[i]*Math.sin(ph)]);
+  }
+  drawAll();
+}
+
+function step(dt){
+  var N = S.N;
+  if (N === 2 && S.drive > 0){
+    var w0 = En(2) - En(1), a = S.drive, w = Math.sqrt(w0*w0 + a*a);
+    var Emid = 0.5*(En(1)+En(2));
+    var th = w*dt/2, ct = Math.cos(th), st = Math.sin(th);
+    var nx = a/w, nz = w0/w;
+    var c1 = S.c[0], c2 = S.c[1];
+    var sx1 = cmulNegI(c2), sx2 = cmulNegI(c1);
+    var sz1 = cmulNegI(c1), sz2 = [-c2[1], c2[0]];
+    var X1 = cadd(cscale(sx1, nx), cscale(sz1, nz));
+    var X2 = cadd(cscale(sx2, nx), cscale(sz2, nz));
+    var r1 = cadd(cscale(c1, ct), cscale(X1, st));
+    var r2 = cadd(cscale(c2, ct), cscale(X2, st));
+    S.c[0] = cphase(r1, -Emid*dt);
+    S.c[1] = cphase(r2, -Emid*dt);
+  } else {
+    for (var n = 0; n < N; n++){ S.c[n] = cphase(S.c[n], -En(n+1)*dt); }
+  }
+  S.t += dt;
+}
+
+/* ---------- 波函数读数 ---------- */
+var NX = 320;
+function psi(x){
+  var re = 0, im = 0;
+  for (var n = 1; n <= S.N; n++){
+    var f = Math.sqrt(2)*Math.sin(n*Math.PI*x);
+    re += S.c[n-1][0]*f; im += S.c[n-1][1]*f;
+  }
+  return [re, im];
+}
+function readouts(){
+  var dx = 1/NX, xm = 0, h = 0, E = 0, i, n;
+  for (i = 0; i <= NX; i++){
+    var x = i*dx, p = psi(x), w = cabs2(p);
+    xm += x*w*dx;
+    if (w > h) { h = w; }
+  }
+  for (n = 0; n < S.N; n++){ E += cabs2(S.c[n])*En(n+1); }
+  return {x: xm, E: E, peak: h};
+}
+function bloch(){
+  var c1 = S.c[0], c2 = S.c[1];
+  var cross = cmul([c1[0], -c1[1]], c2);
+  return {x: 2*cross[0], y: 2*cross[1], z: cabs2(c1) - cabs2(c2)};
+}
+
+/* ---------- 面板 A：波函数 ---------- */
+function drawWave(){
+  var g = svg("waveSvg"); if (!g) return;
+  var X0 = 84, X1 = 948, Y0 = 186, AMP = 104;
+  rr(g, 18, 14, 944, 292, "#fbfaf7", "#eceef4", 1.2, 14);
+  seg(g, X0, Y0, X1, Y0, "#d9d5cb", 1.3);
+  seg(g, X0, 40, X0, 268, "#eceef4", 1.2);
+  var i, pr = [], pi = [], pd = [];
+  for (i = 0; i <= NX; i++){
+    var x = i/NX, pv = psi(x), wv = cabs2(pv);
+    var px = X0 + (X1-X0)*x;
+    pd.push(px.toFixed(1) + "," + (Y0 - Math.min(1.35, wv)*AMP).toFixed(1));
+    pr.push(px.toFixed(1) + "," + (Y0 - Math.max(-1.15, Math.min(1.15, pv[0]))*AMP).toFixed(1));
+    pi.push(px.toFixed(1) + "," + (Y0 - Math.max(-1.15, Math.min(1.15, pv[1]))*AMP).toFixed(1));
+  }
+  path(g, "M " + X0 + "," + Y0 + " L " + pd.join(" L ") + " L " + X1 + "," + Y0 + " Z", "#ea7317", "none", 0, null, 0.20);
+  poly(g, pd, "#b45309", 1.6);
+  if (S.re) { poly(g, pr, "#0f766e", 2.2); }
+  if (S.im) { poly(g, pi, "#7c3aed", 2.0, "6 4"); }
+  txt(g, X0 - 10, Y0 - AMP + 6, "+1", "#9aa1b0", 10.5, "end");
+  txt(g, X0 - 10, Y0 + 4, "0", "#9aa1b0", 10.5, "end");
+  txt(g, X0 - 10, Y0 + AMP + 4, "−1", "#9aa1b0", 10.5, "end");
+  txt(g, X0 - 46, 40, "振幅 / 模方", "#68718c", 11.5, "start");
+  if (S.phase){
+    var y0 = 236, y1 = 272, wc = (X1-X0)/NX;
+    for (i = 0; i < NX; i++){
+      var pm = psi((i+0.5)/NX), ang = carg(pm);
+      var hue = ((ang + Math.PI)/(2*Math.PI))*360;
+      g.appendChild(mk("rect", {x: X0 + i*wc, y: y0, width: Math.max(1.1, wc+0.7), height: y1-y0, fill: "hsl(" + hue.toFixed(0) + ",70%,58%)"}));
+    }
+    rr(g, X0, y0, X1-X0, y1-y0, "none", "#d9d5cb", 1.2, 5);
+    txt(g, X0 - 12, (y0+y1)/2 + 4, "arg ψ", "#68718c", 11.5, "end");
+  }
+  txt(g, X1, 296, "位置 x", "#68718c", 11.5, "end");
+  txt(g, X0 - 46, 296, "能级数 N = " + S.N, "#4f46e5", 11.5, "start", "650");
+}
+
+/* ---------- 面板 B：概率幅 ---------- */
+function drawAmp(){
+  var g = svg("ampSvg"); if (!g) return;
+  var N = S.N, W = 464/N;
+  rr(g, 8, 12, 464, 276, "#fbfaf7", "#eceef4", 1.2, 14);
+  txt(g, 240, 32, "上：复平面相量　下：份额 |cₙ|²", "#4f46e5", 12.5, "middle", "650");
+  for (var n = 0; n < N; n++){
+    var cxr = 8 + W*(n+0.5), cyr = 104, R = Math.min(38, W*0.28);
+    ci(g, cxr, cyr, R, "#fff", "#e6e3dc", 1.2);
+    seg(g, cxr-R-8, cyr, cxr+R+8, cyr, "#f0eee8", 1);
+    seg(g, cxr, cyr-R-8, cxr, cyr+R+8, "#f0eee8", 1);
+    var c = S.c[n];
+    arrow(g, cxr, cyr, cxr + R*c[0], cyr - R*c[1], COL[n], 2.4);
+    txt(g, cxr, cyr - R - 16, "c" + (n+1), COL[n], 13, "middle", "650");
+    var p2 = cabs2(c), by = 252, bh = 84*p2;
+    rr(g, cxr-15, by, 30, 4, "#f0eee8", "none", 0, 3);
+    rr(g, cxr-15, by-bh, 30, bh, COL[n], "none", 0, 3);
+    txt(g, cxr, by + 20, p2.toFixed(3), "#4a5260", 11.5, "middle");
+  }
+  txt(g, 240, 292, "长度 = 模（不变），转向 = 相位（速率 Eₙ）", "#68718c", 11.5, "middle");
+}
+
+/* ---------- 面板 C：态矢量 ---------- */
+function proj(X, Y, Z){
+  var a = 0.62, b = 0.38;
+  var X1 = X*Math.cos(a) - Y*Math.sin(a);
+  var Y1 = X*Math.sin(a) + Y*Math.cos(a);
+  var Z2 = Y1*Math.sin(b) + Z*Math.cos(b);
+  return [X1, Z2];
+}
+function drawState(){
+  var g = svg("stateSvg"); if (!g) return;
+  rr(g, 8, 12, 464, 296, "#fbfaf7", "#eceef4", 1.2, 14);
+  var i, t;
+  if (S.N === 2){
+    var cx = 232, cy = 166, R = 100;
+    txt(g, 240, 34, "布洛赫球：二能级的态矢量", "#4f46e5", 12.5, "middle", "650");
+    ci(g, cx, cy, R, "#fff", "#e6e3dc", 1.3);
+    var eq = [], me = [], p1, p2;
+    for (i = 0; i <= 48; i++){
+      t = 2*Math.PI*i/48;
+      p1 = proj(Math.cos(t), Math.sin(t), 0); eq.push((cx+R*p1[0]).toFixed(1)+","+(cy-R*p1[1]).toFixed(1));
+      p2 = proj(Math.cos(t), 0, Math.sin(t)); me.push((cx+R*p2[0]).toFixed(1)+","+(cy-R*p2[1]).toFixed(1));
+    }
+    poly(g, eq, "#e6e3dc", 1.4);
+    poly(g, me, "#f0eee8", 1.2);
+    function ax(X, Y, Z, col, label){
+      var q = proj(X, Y, Z);
+      seg(g, cx, cy, cx + R*q[0], cy - R*q[1], col, 1.2, "4 4");
+      txt(g, cx + R*q[0]*1.10, cy - R*q[1]*1.10 + 4, label, col, 12, "middle", "650");
+    }
+    ax(1.2, 0, 0, "#2563eb", "x");
+    ax(0, 1.2, 0, "#7c3aed", "y");
+    ax(0, 0, 1.2, "#0f766e", "z");
+    if (S.trace.length > 2){
+      var tp = [];
+      for (i = 0; i < S.trace.length; i++){
+        var q2 = proj(S.trace[i][0], S.trace[i][1], S.trace[i][2]);
+        tp.push((cx+R*q2[0]).toFixed(1)+","+(cy-R*q2[1]).toFixed(1));
+      }
+      poly(g, tp, "#f3b3bd", 1.6);
+    }
+    var bv = bloch();
+    S.trace.push([bv.x, bv.y, bv.z]);
+    if (S.trace.length > 240) { S.trace.shift(); }
+    var qv = proj(bv.x, bv.y, bv.z);
+    arrow(g, cx, cy, cx + R*qv[0], cy - R*qv[1], "#be123c", 3);
+    txt(g, cx + R*qv[0]*1.16, cy - R*qv[1]*1.16 - 6, "|ψ⟩", "#be123c", 12.5, "middle", "650");
+    txt(g, 240, 296, "箭头 = 布洛赫矢量；θ 给布居差，φ 给相对相位", "#68718c", 11.5, "middle");
+  } else {
+    txt(g, 240, 34, "多能级：模方谱与相对相位轮", "#4f46e5", 12.5, "middle", "650");
+    for (i = 0; i < S.N; i++){
+      var p2v = cabs2(S.c[i]), hh = 152*p2v;
+      rr(g, 34 + i*34, 226 - hh, 24, hh, COL[i], "none", 0, 4);
+      txt(g, 46 + i*34, 244, String(i+1), "#4a5260", 11, "middle");
+      txt(g, 46 + i*34, 262, p2v.toFixed(2), "#68718c", 10.5, "middle");
+    }
+    txt(g, 96, 66, "模方谱", "#0f766e", 12, "middle", "650");
+    txt(g, 96, 280, "份额 |cₙ|²", "#68718c", 11, "middle");
+    var cwx = 330, cwy = 156, r2 = 66, pts = [];
+    ci(g, cwx, cwy, r2, "#fff", "#e6e3dc", 1.3);
+    for (i = 0; i < S.N; i++){
+      var ang = carg(S.c[i]);
+      var px = cwx + r2*Math.cos(ang), py = cwy - r2*Math.sin(ang);
+      pts.push(px.toFixed(1)+","+py.toFixed(1));
+      ci(g, px, py, 4.2, COL[i]);
+      txt(g, cwx + (r2+17)*Math.cos(ang), cwy - (r2+17)*Math.sin(ang) + 4, "c" + (i+1), COL[i], 11.5, "middle", "650");
+    }
+    poly(g, pts, "#9aa1b0", 1.4, "4 4");
+    txt(g, cwx, cwy + 4, "arg", "#68718c", 11, "middle");
+    txt(g, cwx, cwy + r2 + 30, "相对相位轮", "#0f766e", 11.5, "middle", "650");
+    txt(g, 240, 296, "多能级态空间画不出，这里给出它的全部物理内容；整体相位冗余", "#68718c", 11, "middle");
+  }
+}
+
+/* ---------- 读数与总绘 ---------- */
+function updateReadouts(){
+  var r = readouts(), n, nrm = 0;
+  for (n = 0; n < S.N; n++){ nrm += cabs2(S.c[n]); }
+  root("xmean").textContent = r.x.toFixed(3);
+  root("emean").textContent = r.E.toFixed(2);
+  root("norm").textContent = nrm.toFixed(3);
+  if (S.N === 2){
+    var b = bloch();
+    var th = Math.acos(Math.max(-1, Math.min(1, b.z)))*180/Math.PI;
+    var ph = ((Math.atan2(b.y, b.x)*180/Math.PI) + 360) % 360;
+    root("stateHint").textContent = "二能级：布洛赫矢量 θ = " + th.toFixed(1) + "°，φ = " + ph.toFixed(1) + "°。θ 给布居差，φ 给相对相位。";
+  } else {
+    root("stateHint").textContent = "多能级：态空间是复射影空间，平面与球面都装不下；这里画的是它的全部物理内容，模方谱加相对相位轮，整体相位是冗余。";
+  }
+}
+function drawAll(){ drawWave(); drawAmp(); drawState(); updateReadouts(); }
+
+/* ---------- 控件 ---------- */
+(function(){
+  var seg = root("nBtns"), N, b, bs;
+  for (N = 2; N <= 5; N++){
+    b = document.createElement("button");
+    b.textContent = String(N);
+    b.setAttribute("data-n", String(N));
+    if (N === S.N) { b.className = "on"; }
+    b.addEventListener("click", function(ev){
+      S.N = parseInt(ev.target.getAttribute("data-n"), 10);
+      bs = seg.querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++){
+        bs[i].className = (parseInt(bs[i].getAttribute("data-n"), 10) === S.N) ? "on" : "";
+      }
+      setPreset();
+    });
+    seg.appendChild(b);
+  }
+  root("preset").addEventListener("change", function(ev){ S.preset = ev.target.value; setPreset(); });
+  root("phase").addEventListener("input", function(ev){ S.dphi = ev.target.value/100; root("phaseV").textContent = (S.dphi/Math.PI).toFixed(2) + "π"; reset(); });
+  root("drive").addEventListener("input", function(ev){ S.drive = ev.target.value/100; root("driveV").textContent = S.drive.toFixed(1); reset(); });
+  root("speed").addEventListener("input", function(ev){ S.speed = ev.target.value/100; root("speedV").textContent = S.speed.toFixed(1) + "×"; });
+  root("play").addEventListener("click", function(ev){ S.playing = !S.playing; ev.target.textContent = S.playing ? "暂停" : "播放"; });
+  root("reset").addEventListener("click", function(){ reset(); });
+  root("showRe").addEventListener("change", function(ev){ S.re = ev.target.checked; drawAll(); });
+  root("showIm").addEventListener("change", function(ev){ S.im = ev.target.checked; drawAll(); });
+  root("showPhase").addEventListener("change", function(ev){ S.phase = ev.target.checked; drawAll(); });
+})();
+
+/* ---------- 主循环 ---------- */
+var lastTs = 0;
+function frame(ts){
+  if (!lastTs) { lastTs = ts; }
+  var dts = Math.min(0.05, (ts - lastTs)/1000);
+  lastTs = ts;
+  if (S.playing){
+    var dt = dts*0.9*S.speed;
+    for (var i = 0; i < 4; i++){ step(dt/4); }
+    drawAll();
+  }
+  requestAnimationFrame(frame);
+}
+setPreset();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
