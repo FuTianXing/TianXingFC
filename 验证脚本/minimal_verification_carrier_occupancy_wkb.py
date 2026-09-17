@@ -2,7 +2,7 @@
 r"""
 minimal_verification_carrier_occupancy_wkb.py
 
-[独立载子占据轮] 经典占据能给出份额的主体，尾巴必须由波性提供
+[独立载子占据轮] 经典占据能给出份额的主体，尾巴必须由波性侧提供
 
 定位
 ----
