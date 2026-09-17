@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="从波函数、希尔伯特空间、概率幅、态叠加、投影、幺正演化，一路追问到 PBR 定理：量子态究竟是什么？一份图文并茂的科普笔记。" />
+<title>量子态究竟是什么 · 从波函数到 PBR 定理的图解笔记</title>
+<style>
+:root{
+  --paper:#f7f5f0; --sheet:#fff; --ink:#1f2328; --ink2:#4a5260; --ink3:#68718c;
+  --line:#e6e3dc; --line2:#d9d5cb;
+  --indigo:#4f46e5; --blue:#2563eb; --purple:#7c3aed; --pink:#be185d;
+  --amber:#b45309; --teal:#0f766e; --rose:#be123c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  font-size:16.5px;line-height:1.95;letter-spacing:.012em;-webkit-font-smoothing:antialiased}
+
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:99;
+  background:linear-gradient(90deg,var(--indigo),var(--teal));transition:width .1s linear}
+
+.sheet{max-width:960px;margin:0 auto;background:var(--sheet);
+  box-shadow:0 1px 3px rgba(31,35,40,.05), 0 18px 50px rgba(31,35,40,.06);
+  border-radius:0 0 20px 20px;padding:0 0 80px}
+.inner{max-width:760px;margin:0 auto;padding:0 26px}
+
+/* ---------- 封面 ---------- */
+.cover{background:linear-gradient(150deg,#2a2b6b 0%,#4f46e5 46%,#0f766e 100%);
+  color:#fff;padding:56px 26px 50px;border-radius:0 0 20px 20px;
+  margin-bottom:44px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-90px;top:-90px;width:340px;height:340px;
+  border-radius:50%;background:rgba(255,255,255,.07)}
+.cover::before{content:"";position:absolute;right:40px;bottom:-140px;width:260px;height:260px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.16)}
+.cover .kicker{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
+  opacity:.8;margin-bottom:18px}
+.cover h1{font-size:33px;line-height:1.42;margin:0 0 14px;font-weight:700;letter-spacing:.01em}
+.cover .sub{font-size:16px;opacity:.9;line-height:1.85;max-width:640px;margin:0}
+.cover .meta{margin-top:26px;font-size:13px;opacity:.72}
+
+/* ---------- 目录 ---------- */
+.toc{background:#fbfaf7;border:1px solid var(--line);border-radius:14px;
+  padding:20px 24px;margin:0 0 40px}
+.toc h2{font-size:14px;letter-spacing:.14em;color:var(--ink3);margin:0 0 12px;font-weight:600}
+.toc ol{margin:0;padding-left:20px;font-size:15px;line-height:2.1;color:var(--ink2)}
+.toc a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent}
+.toc a:hover{color:var(--indigo);border-bottom-color:var(--indigo)}
+
+/* ---------- 正文 ---------- */
+h2.sec{font-size:23px;line-height:1.5;margin:0 0 6px;font-weight:700;
+  display:flex;gap:14px;align-items:baseline;scroll-margin-top:20px}
+h2.sec .no{font-family:Georgia,serif;font-size:30px;color:var(--indigo);
+  opacity:.42;font-weight:400;line-height:1;flex:none}
+h2.sec+p.lead{color:var(--ink2);font-size:16px;margin:0 0 22px}
+h3{font-size:18.5px;margin:38px 0 10px;font-weight:650;line-height:1.6;scroll-margin-top:20px}
+h3 .h{color:var(--indigo);margin-right:8px;font-weight:600}
+p{margin:0 0 17px}
+strong{font-weight:650}
+em{font-style:normal;background:linear-gradient(transparent 62%, #ffe9b8 62%);padding:0 1px}
+code{font-family:"Cascadia Code",Consolas,"SFMono-Regular",monospace;font-size:14.5px;
+  background:#f2f0ea;border:1px solid #e8e5dd;border-radius:5px;padding:1px 6px;white-space:nowrap}
+hr.sp{border:0;height:1px;background:var(--line);margin:46px 0}
+
+.intro p:first-of-type::first-letter{
+  float:left;font-family:Georgia,"Songti SC",serif;font-size:60px;line-height:.86;
+  padding:6px 12px 0 0;color:var(--indigo);font-weight:700}
+
+/* ---------- 图 ---------- */
+figure.fig{margin:36px 0;max-width:920px;margin-left:auto;margin-right:auto}
+figure.fig svg{display:block;width:100%;height:auto;background:#fff;
+  border:1px solid var(--line);border-radius:16px}
+figure.fig figcaption{font-size:13.5px;line-height:1.75;color:var(--ink3);
+  text-align:center;margin-top:11px;padding:0 14px}
+figure.fig figcaption b{color:var(--indigo);font-weight:650}
+figure.fig figcaption em{background:none;color:var(--ink2);font-style:italic}
+
+/* ---------- 卡片 ---------- */
+.note{border-left:4px solid;border-radius:10px;padding:14px 18px;margin:24px 0;font-size:15.5px;line-height:1.85}
+.note b{display:block;margin-bottom:4px}
+.note.key{background:#fff8ec;border-color:var(--amber)} .note.key b{color:var(--amber)}
+.note.warn{background:#fef3f4;border-color:var(--rose)} .note.warn b{color:var(--rose)}
+.note.ins{background:#eef2ff;border-color:var(--indigo)} .note.ins b{color:var(--indigo)}
+.note.adv{background:#f2fbf8;border-color:var(--teal)} .note.adv b{color:var(--teal)}
+
+.pull{margin:34px 0;padding:2px 0 2px 24px;border-left:4px solid var(--indigo);
+  font-size:19px;line-height:1.8;color:#2b3242;font-weight:500}
+.pull span{display:block;font-size:13px;letter-spacing:.1em;color:var(--ink3);
+  font-weight:400;margin-top:10px}
+
+table{width:100%;border-collapse:collapse;font-size:15px;margin:22px 0}
+th,td{border:1px solid var(--line2);padding:10px 14px;text-align:left;vertical-align:top;line-height:1.75}
+th{background:#fbfaf7;font-weight:650}
+td code{white-space:nowrap}
+
+.chain{font-size:15px;color:var(--ink2);line-height:2.2}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0}
+.kv div{border:1px solid var(--line);border-radius:11px;padding:12px 15px;background:#fbfaf7;font-size:14.5px}
+.kv div b{display:block;color:var(--indigo);margin-bottom:3px}
+
+footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
+  font-size:13.5px;color:var(--ink3);line-height:1.9}
+
+@media (max-width:620px){
+  body{font-size:16px;line-height:1.9}
+  .inner{padding:0 17px}
+  .cover{padding:38px 18px 34px}
+  .cover h1{font-size:24px}
+  .cover .sub{font-size:15px}
+  h2.sec{font-size:20px} h2.sec .no{font-size:24px}
+  h3{font-size:17.5px}
+  table{font-size:14px} th,td{padding:8px 10px}
+  .pull{font-size:17px;padding-left:16px}
+  code{white-space:normal;overflow-wrap:anywhere}
+}
+@media print{
+  body{background:#fff;font-size:11.5pt}
+  .progress,.toc{display:none}
+  .sheet{box-shadow:none;max-width:none}
+  figure.fig{break-inside:avoid} h2.sec,h3{break-after:avoid}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<noscript>
+  <div style="max-width:960px;margin:0 auto;padding:14px 26px;background:#fff8ec;border-bottom:1px solid #f0d9ac;color:#8a4b08;font-size:14px;line-height:1.8">
+    <b>提示：</b>本页的 12 幅插图由脚本绘制，需要启用 JavaScript 才能显示。正文文字不受影响，可直接阅读。
+  </div>
+</noscript>
+
+<div class="sheet">
+
+<header class="cover">
+  <div class="kicker">量子基础 · 图解笔记</div>
+  <h1>量子态究竟是什么？</h1>
+  <p class="sub">从波函数、希尔伯特空间、概率幅、态叠加、投影与幺正演化出发，一路追问到 PBR 定理，把量子力学最深的那几个问题摊开来看。</p>
+  <div class="meta">共四部分 · 12 幅图 · 建议阅读 18 分钟</div>
+</header>
+
+<div class="inner">
+
+<nav class="toc">
+  <h2>目 录</h2>
+  <ol>
+    <li><a href="#p1">六个概念，其实是同一套结构的六个面</a></li>
+    <li><a href="#p2">两个必须澄清的问题：波函数能等于态矢量吗？态矢量是实在吗？</a></li>
+    <li><a href="#p3">态矢量的七种身份</a></li>
+    <li><a href="#p4">两条定理，如何压缩了选择空间</a></li>
+  </ol>
+</nav>
+
+<div class="intro">
+<p>量子力学里有一串让人头疼的名词：波函数、希尔伯特空间、概率幅、态叠加、投影、幺正演化。它们看起来像六个彼此独立的知识点，需要分别记忆、分别考。</p>
+<p>其实不是。它们是<strong>同一个数学结构在不同层面上的投影</strong>。把这层结构看穿，六个名词会自然归位成一个整体，就像看懂了一台机器，再去看它的六个零件。</p>
+<p>而顺着这条线继续往下追问，问题会变得越来越不像"物理题"：波函数和态矢量能不能画等号？态矢量到底是不是物理实在？如果不是，那它对应了什么？这些追问最终会走到两条定理面前：Bell 与 PBR。它们做的事情很残酷也很漂亮：告诉我们哪些立场已经被逻辑和实验封死，哪些还开着。</p>
+<p>这份笔记就按这个顺序展开。</p>
+</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第一部分 ==================== -->
+<h2 class="sec" id="p1"><span class="no">1</span>六个概念，其实是同一套结构的六个面</h2>
+<p class="lead">先搭骨架，再填细节。下面六小节，每一节只做一件事：说明这个零件在整个结构里承担什么角色。</p>
+
+<h3><span class="h">1.1</span>希尔伯特空间：一切发生的舞台</h3>
+<p>量子力学的第一条公理是：一个物理系统的状态，由<strong>复希尔伯特空间</strong>中的一个<strong>单位矢量</strong>描述。</p>
+<p>"希尔伯特空间"这四个字，每个限定词都在实际干活：</p>
+<div class="kv">
+  <div><b>线性空间</b>态可以相加、可以被复数乘。这是「态叠加」能存在的<strong>唯一前提</strong>。</div>
+  <div><b>内积</b>定义了长度、正交、夹角。它随后会变成「概率幅」。</div>
+  <div><b>复数域</b>带来「相位」。这是干涉条纹的来源；换成实数域，条纹立刻消失。</div>
+  <div><b>完备性</b>保证无限维下的展开与极限都合法，连续谱（位置、动量）才有意义。</div>
+</div>
+<p>所以它不是背景布景。它同时提供了三样东西：<strong>叠加的自由、概率的度量、演化的容器</strong>。</p>
+
+<figure class="fig">
+  <svg id="f1" viewBox="0 0 880 128" role="img" aria-label="六个概念构成的链条：希尔伯特空间到幺正演化"></svg>
+  <figcaption><b>图 1</b> 六个概念并非并列的知识点，它们构成一条单向的依赖链：舞台 → 对象 → 读法 → 组合 → 事件 → 演化。</figcaption>
+</figure>
+
+<h3><span class="h">1.2</span>态矢量与波函数：本体与坐标</h3>
+<p>抽象层面的态矢量 <code>|ψ⟩</code> 是<strong>与表象无关</strong>的对象，它住在希尔伯特空间里。选定位置本征基 <code>{|x⟩}</code> 之后，态矢量在这组基上的<strong>分量</strong>就是波函数：</p>
+<p style="text-align:center"><code>ψ(x) ≡ ⟨x|ψ⟩</code></p>
+<p>反过来，完备性关系 <code>∫dx|x⟩⟨x| = I</code> 让你能从波函数把矢量拼回去：<code>|ψ⟩ = ∫dx ψ(x)|x⟩</code>。</p>
+<p>所以它们属于同一个对象的两种描述：一个是本体，一个是坐标。</p>
+<p>这里有个几乎所有人都会踩的坑：<code>ψ(x)</code> 一般是<strong>复函数</strong>。教科书上画的那条漂亮的波浪线，通常只是它的实部，或者干脆是个"示意"。真实波函数还有虚部，而决定干涉的，恰恰是那个看不见的部分：<strong>相位</strong>。</p>
+
+<figure class="fig">
+  <svg id="f2" viewBox="0 0 880 300" role="img" aria-label="态矢量投影到位置基得到波函数，右侧为高斯波包的实部、包络与概率密度"></svg>
+  <figcaption><b>图 2</b> 左边是本体，右边是坐标。右侧画的是一个高斯波包：实线为 <em>Re ψ(x)</em>，灰色虚线为包络 ±|ψ(x)|，橙色填充为概率密度 |ψ(x)|²。三者不是一回事。</figcaption>
+</figure>
+
+<h3><span class="h">1.3</span>概率幅：带相位的箭头</h3>
+<p>概率幅就是内积 <code>⟨φ|ψ⟩</code>。它是一个<strong>复数</strong>：既有长度（模），也有方向（相位）。物理上可观测的只有它的模方，这就是玻恩定则：</p>
+<p style="text-align:center"><code>P = |⟨φ|ψ⟩|²</code></p>
+<p>为什么不能一开始就用概率？因为量子力学做的是<strong>「幅相加」</strong>，而不是<strong>「概率相加」</strong>：</p>
+<p style="text-align:center"><code>|ψ₁+ψ₂|² = |ψ₁|² + |ψ₂|² + 2·Re(ψ₁*ψ₂)</code></p>
+<p>最后那一项就是<strong>干涉项</strong>，由相位决定。如果从一开始就用正实数当"概率"，这一项永远是零，双缝条纹、原子能级、化学键统统无法解释。</p>
+
+<figure class="fig">
+  <svg id="f3" viewBox="0 0 880 292" role="img" aria-label="左：复平面上两支同模不同相位的概率幅；右：模与模方的对比"></svg>
+  <figcaption><b>图 3</b> 概率幅是复平面上的箭头。两支幅可以模长完全相同而相位不同：单独测量时概率一样，叠加时的干涉项却正负相反。</figcaption>
+</figure>
+
+<div class="note ins"><b>一个有用的类比</b>概率像长度，概率幅像带方向的箭头。箭头合成要按方向相加，方向相反处互相<strong>抵消</strong>；长度只能直接相加，永远得不到相消。你看到的通常是长度（模方），决定结果的却是方向（相位差）。</div>
+
+<h3><span class="h">1.4</span>态叠加：线性结构的物理宣言</h3>
+<p>若 <code>|ψ₁⟩</code> 与 <code>|ψ₂⟩</code> 都是系统可能的态，那么任意复线性组合 <code>|ψ⟩ = c₁|ψ₁⟩ + c₂|ψ₂⟩</code> 也是可能的态。叠加系数 <code>cᵢ</code> 就是概率幅，<code>|cᵢ|²</code> 是相应结果的概率。</p>
+<p>必须强调一句：<strong>叠加不是"我们不知道是哪一个"</strong>。如果是经典的无知，系统会用对角的密度矩阵描述；而真正的叠加态 <code>ρ = |ψ⟩⟨ψ|</code> 含有<strong>非对角元</strong>，这些非对角元正是"干涉能力"的量化，也是量子性最本质的标志。</p>
+
+<figure class="fig">
+  <svg id="f4" viewBox="0 0 880 348" role="img" aria-label="双缝实验对比：左侧为经典概率相加得到平滑分布，右侧为量子幅相加得到干涉条纹"></svg>
+  <figcaption><b>图 4</b> 同一个双缝实验，两种算法。左：把两条路径的概率直接相加，得到一条平滑的包络。右：把两条路径的概率幅相加再取模方，包络上长出条纹。<em>差别只来自那个干涉项。</em></figcaption>
+</figure>
+
+<h3><span class="h">1.5</span>投影：把概率幅读成事件</h3>
+<p>可观测量写成 <code>A = Σ aᵢPᵢ</code>，其中 <code>Pᵢ</code> 是投影算符，满足 <code>Pᵢ² = Pᵢ = Pᵢ†</code>。测量公理包含两部分。</p>
+<p><strong>概率</strong>：测得 <code>aᵢ</code> 的概率是 <code>pᵢ = ⟨ψ|Pᵢ|ψ⟩</code>，正是"幅分量"的模方。<br>
+<strong>更新（坍缩）</strong>：测完之后，态被"拍"到那个子空间上，<code>|ψ⟩ → Pᵢ|ψ⟩ / √pᵢ</code>。</p>
+<p>投影算符的<strong>幂等性</strong>（<code>P² = P</code>）有一个直接可检验的后果：刚刚测完再测一次，必然得到相同结果。这一条由数学结构自带，无需额外假设。</p>
+
+<figure class="fig">
+  <svg id="f5" viewBox="0 0 880 300" role="img" aria-label="投影测量：态矢量在两条本征轴上的影子，影子长度的平方即命中概率"></svg>
+  <figcaption><b>图 5</b> 把态矢量想成一根斜插的杆子，投影就是它在两条坐标轴上的影子。<em>影子长度的平方 = 命中概率</em>；测量的瞬间，杆子被拍平到其中一条轴上，这就是坍缩。</figcaption>
+</figure>
+
+<div class="note adv"><b>投影只是最干净的特例</b>真实仪器总有噪声，一般用 POVM（正算符值测度）<code>{Eᵢ}</code> 描述，满足 <code>Eᵢ ≥ 0</code>、<code>ΣEᵢ = I</code>，概率为 <code>pᵢ = ⟨ψ|Eᵢ|ψ⟩</code>。投影测量就是 <code>Eᵢ = Pᵢ</code> 这一情形。所以"投影"的本质，其实是<strong>用一族正算符对态做双线性评估</strong>。</div>
+
+<h3><span class="h">1.6</span>幺正演化：保内积的旋转</h3>
+<p>封闭系统的演化由薛定谔方程 <code>iℏ ∂ₜ|ψ⟩ = H|ψ⟩</code> 给出，解是 <code>|ψ(t)⟩ = U(t)|ψ(0)⟩</code>，其中 <code>U = e^(−iHt/ℏ)</code> 是幺正算符。</p>
+<p>幺正性意味着什么？它恰好<strong>保持内积不变</strong>：<code>⟨Uφ|Uψ⟩ = ⟨φ|ψ⟩</code>。由此自动得到一连串守恒。</p>
+<div class="kv">
+  <div><b>长度守恒</b>归一化不变，于是总概率守恒。</div>
+  <div><b>概率幅守恒</b>所有内积不变，干涉图样稳定演化。</div>
+  <div><b>叠加关系守恒</b><code>Σcᵢ|ψᵢ⟩</code> 被整体搬运，不会凭空产生或消灭叠加。</div>
+  <div><b>谱守恒</b>可观测量期望值按确定性规律演化，测量取值集合不变。</div>
+</div>
+
+<figure class="fig">
+  <svg id="f6" viewBox="0 0 880 300" role="img" aria-label="两支态矢量在幺正演化下同步旋转，长度与夹角保持不变"></svg>
+  <figcaption><b>图 6</b> 幺正演化是希尔伯特空间里的一次"刚性旋转"：两支箭头同速转动，长度恒为 1，夹角恒定 60°，也就是 <em>⟨φ|ψ⟩ 从头到尾没变过</em>。</figcaption>
+</figure>
+
+<div class="note adv"><b>Wigner 定理</b>反过来看更漂亮：任何<strong>保持跃迁概率</strong> <code>|⟨φ|ψ⟩|²</code> 不变的对称变换，必然是幺正的（或反幺正的）。所以幺正性由"保持概率幅结构"这一要求逼出，属必然结果，无需外加假设。</div>
+
+<h3><span class="h">1.7</span>一张关系总图</h3>
+<p>把上面六节压缩成一张图，就是下面这样：三条腿从结构层伸出来，在"投影"处汇合，最后由"幺正演化"决定它们如何随时间流动。</p>
+
+<figure class="fig">
+  <svg id="f7" viewBox="0 0 880 522" role="img" aria-label="六大概念的依赖关系图：希尔伯特空间派生三条支路，在投影处汇合，再由幺正演化驱动"></svg>
+  <figcaption><b>图 7</b> 左腿（态矢量 → 波函数）管"态长什么样"；中腿（内积 → 概率幅 → 概率）管"怎么读出数字"；右腿（线性组合 → 叠加系数）管"多个可能性怎么共存"。<em>幺正演化保持全部内积，而投影不可逆；二者的对立就是量子力学最深的问题。</em></figcaption>
+</figure>
+
+<div class="pull">希尔伯特空间给出舞台；态矢量是舞台上的点，波函数是它的坐标；态叠加是线性性的物理化；概率幅是内积的物理化，概率只是它的模方；投影把概率幅读成事件；幺正演化在两次测量之间搬运所有概率幅。<span>第一部分 · 小结</span></div>
+
+<hr class="sp" />
+
+<!-- ==================== 第二部分 ==================== -->
+<h2 class="sec" id="p2"><span class="no">2</span>两个必须澄清的问题</h2>
+<p class="lead">骨架搭好了，接下来是两个几乎人人都会问、但答案比想象中微妙的问题。</p>
+
+<h3><span class="h">2.1</span>波函数和态矢量，能等同吗？</h3>
+<p>短答：<strong>在固定位置表象、且系统没有内部自由度时，二者一一对应，可以互换使用；但严格讲，它们不等同。</strong></p>
+<p>对无自旋单粒子，这个对应确实是双向的：给定 <code>|ψ⟩</code>，<code>ψ(x)=⟨x|ψ⟩</code> 唯一确定；给定一个平方可积的 <code>ψ(x)</code>，<code>|ψ⟩</code> 也唯一确定。换句话说，<code>ℋ ≅ L²(ℝ³)</code> 是一个<strong>同构</strong>，它们在数学结构上完全等价。这就是为什么教科书可以直接对 <code>ψ(x)</code> 写薛定谔方程而从不提抽象空间：在这个特定场景里，这么做完全合法。</p>
+<p>但一旦离开这个场景，等价关系就会散架。下面三个反例，每一个都足够致命。</p>
+
+<figure class="fig">
+  <svg id="f8" viewBox="0 0 880 268" role="img" aria-label="三个反例：自旋需要旋量波函数、纠缠态定义在组态空间、动量本征态不可归一化"></svg>
+  <figcaption><b>图 8</b> 三个让"波函数 = 态矢量"失效的场景：<em>(a)</em> 自旋必须写成多分量旋量；<em>(b)</em> 多粒子波函数住在组态空间而非三维空间；<em>(c)</em> 动量本征态的"波函数"是平面波，根本不可归一化。</figcaption>
+</figure>
+
+<table>
+  <thead><tr><th>差别</th><th>态矢量 <code>|ψ⟩</code></th><th>波函数 <code>ψ(x)</code></th></tr></thead>
+  <tbody>
+    <tr><td>表象依赖</td><td>不依赖任何基</td><td>依赖选了位置基；换到动量表象就是另一个函数</td></tr>
+    <tr><td>存在性</td><td>任何量子系统都有</td><td>只有存在"位置"可观测量时才有。量子比特、腔模 Fock 空间里压根没有波函数</td></tr>
+    <tr><td>内部自由度</td><td>自然容纳（张量积）</td><td>自旋 ½ 要写成旋量 <code>ψ_σ(x)</code>，不再是单个标量函数</td></tr>
+    <tr><td>平方可积性</td><td>动量本征态是合法（广义）态</td><td>它的"波函数"是平面波，不可归一化，不在 <code>L²</code> 里</td></tr>
+    <tr><td>非纯态</td><td>密度矩阵 <code>ρ</code> 是算符</td><td>混态无法用波函数表示</td></tr>
+  </tbody>
+</table>
+
+<div class="note key"><b>一句话判据</b>无自旋单粒子 + 位置表象固定 + 纯态 → <strong>可以把它们当同一个东西</strong>（这也是绝大多数入门、化学、固体物理的场景）。只要有自旋、多个粒子、有限维系统、混态，或者需要换表象 → <strong>不可以</strong>。</div>
+
+<h3><span class="h">2.2</span>态矢量是物理实在吗？</h3>
+<p>这个问题里其实藏着三个不同的问题，混在一起谈就永远谈不清：</p>
+<table>
+  <thead><tr><th>子问题</th><th>答案状态</th></tr></thead>
+  <tbody>
+    <tr><td>① 态矢量是不是一个<strong>数学对象</strong>？</td><td>是。没有争议。</td></tr>
+    <tr><td>② 它描述的<strong>东西</strong>存在于世界中吗？</td><td>高度争议，取决于诠释。</td></tr>
+    <tr><td>③ 它描述的是<strong>三维空间里的波</strong>吗？</td><td><strong>不是</strong>。这一点几乎无争议。</td></tr>
+  </tbody>
+</table>
+
+<p>绝大多数困惑来自把 ① 和 ③ 混为一谈，或者以为 ② 有一个标准答案。</p>
+
+<p><strong>先看无争议的部分。</strong>不管哪个学派，下面五条是所有人都同意的：态矢量是希尔伯特空间的元素，而希尔伯特空间不是三维物理空间；它本身不可直接观测，只能通过制备加测量统计被间接推断；它带冗余，整体相位无物理意义；它的全部可观测内容就是映射 <code>A ↦ Tr(ρA)</code>（Gleason 定理给出这一指派的唯一性，要求维数 ≥ 3）；它是关系性的：对纠缠态，子系统的态必须"从外部看"，并不是它自己的完整状态。</p>
+
+<p>这些性质已经强烈暗示：这东西不像一个经典的"东西"。</p>
+
+<div class="note warn"><b>为什么它不像经典实在</b>
+<strong>参数爆炸</strong>：<em>N</em> 个粒子的态需要指数级多的参数，且不可分解成"每颗粒子的状态"的堆叠。这指向它是一种<strong>关联的编码</strong>，并非叠加起来的实物。<br>
+<strong>定义域是组态空间</strong>：双粒子波函数住在 ℝ⁶，所谓"波"从来没在三维空间里波动过。<br>
+<strong>上下文性</strong>：Kochen–Specker 定理表明，无法给所有可观测量一致地指派预先存在的值（非语境性的经典属性图像被排除；玻姆力学靠语境性绕开这一条）。</div>
+
+<p>但反过来说"它只是我的主观知识"同样站不住。你无法<strong>免费</strong>知道它：要确定一个态的完整信息，需要大量相同制备的副本做层析。它也<strong>不可随意修改</strong>：局部操作既不能克隆、也不能删除一个未知量子态（若它只是一段经典信息，复制原则上没有障碍）。它的结构约束（希尔伯特空间维度、内积、张量积）更是被实验钉死的，比如 CHSH 违背量逼近 Tsirelson 界。</p>
+
+<p>所以它是<strong>客观的</strong>；但客观，不等于"像石头那样存在于空间中"。</p>
+
+<div class="note ins"><b>三层回答</b>
+<strong>操作层（确定）</strong>它对应一族概率指派的紧凑编码：任意可观测量的结果分布。这是它百分之百可靠的身份，无一多余、无一缺失。<br>
+<strong>结构层（较可靠）</strong>它是一个关系性对象：在给定的系统划分与测量语境下，该系统会怎样响应。剥离语境谈"这个态的绝对身份"，本身就不良定义。<br>
+<strong>本体层（未知）</strong>它是否还对应世界中某个独立存在的东西？<strong>没有公认答案</strong>。这是一个真正未解决的基础问题，不是"我们还没算完"那种未解决。</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第三部分 ==================== -->
+<h2 class="sec" id="p3"><span class="no">3</span>态矢量的七种身份</h2>
+<p class="lead">同一个数学对象，被最主流的七种诠释赋予了截然不同的本体论身份。数学上它是清楚的，物理上它的身份至今未被裁决。</p>
+
+<figure class="fig">
+  <svg id="f9" viewBox="0 0 880 528" role="img" aria-label="同一个数学对象在七种诠释下对应的七种本体论身份"></svg>
+  <figcaption><b>图 9</b> 左边那个方框是所有人都同意的部分；右边七个方框，是七种截然不同的回答。<em>它们用的是完全相同的数学。</em></figcaption>
+</figure>
+
+<table>
+  <thead><tr><th>诠释</th><th>态矢量对应什么</th></tr></thead>
+  <tbody>
+    <tr><td>哥本哈根 · 工具主义</td><td>一个计算工具，用来预言测量统计。问「它实在吗」被视为不合法的提问</td></tr>
+    <tr><td>QBism</td><td>单个行动者的信念度。主观，但受经验约束</td></tr>
+    <tr><td>多世界（Everett）</td><td>唯一真实的全部实在；"坍缩"只是观察者分支的错觉</td></tr>
+    <tr><td>玻姆力学</td><td>真实的导引场（活在组态空间中），粒子另有确定位置</td></tr>
+    <tr><td>GRW 客观坍缩</td><td>真实的物理场，会自发随机坍缩</td></tr>
+    <tr><td>关系性 QM（Rovelli）</td><td>永远是"相对于另一个系统"的态，没有绝对态</td></tr>
+    <tr><td>量子信息 / 认识论</td><td>编码关联与可区分性的信息载体</td></tr>
+  </tbody>
+</table>
+
+<p>同一个数学对象，七种截然不同的本体论身份；这本身就说明了一件事：<strong>数学上它是清楚的，物理上它的身份未被裁决。</strong></p>
+
+<p>而这两派立场，可以被归成两个阵营：</p>
+
+<figure class="fig">
+  <svg id="f10" viewBox="0 0 880 300" role="img" aria-label="ψ-ontic 与 ψ-epistemic 两种立场的集合示意：前者对应不相交的底层分布，后者对应有交集的分布"></svg>
+  <figcaption><b>图 10</b> 左：ψ-ontic，不同的量子态对应<em>互不相交</em>的底层状态集合，λ 唯一决定量子态。右：ψ-epistemic，两态对应的分布<em>有交集</em>，同一个 λ* 可以支撑两个不同的量子态。</figcaption>
+</figure>
+
+<hr class="sp" />
+
+<!-- ==================== 第四部分 ==================== -->
+<h2 class="sec" id="p4"><span class="no">4</span>两条定理，如何压缩了选择空间</h2>
+<p class="lead">上面那七种身份看起来自由得很。但两条定理把这个自由度砍掉了一大半：它们是能被证明的排除性结论，超出哲学争论的范围。</p>
+
+<h3><span class="h">4.1</span>Bell 定理：局域性出局</h3>
+<p>Bell 定理说：<strong>任何同时满足"局域性"和"隐变量存在"的理论，都会给出一个不等式，而这个不等式被实验系统性违背。</strong></p>
+<p>它的意义不在于"量子力学是对的"，而在于：如果你想让世界既局域、又在测量之前就带着确定的属性，你做不到。这两个愿望必须舍弃至少一个。</p>
+
+<h3><span class="h">4.2</span>PBR 定理：通俗拆解</h3>
+<p>PBR 定理（2012 年，Pusey–Barrett–Rudolph）走的是另一条路。它不问"能不能局域"，而问：<strong>量子态能不能只是"信息"？</strong></p>
+
+<p>先把两种立场摆清楚。假设每个量子系统内部都藏着一张<strong>底牌</strong> λ（物理学家叫它 ontic state，"本体状态"），量子态 <code>|ψ⟩</code> 只是贴在牌背上的<strong>标签</strong>。那么：</p>
+<p><strong>ψ-ontic</strong>（态是本体）：标签唯一决定底牌。不同标签，底牌必然不同。<br>
+<strong>ψ-epistemic</strong>（态是知识）：标签只是知识。两张标签不同的牌，可能藏着同一张底牌。</p>
+<p>第二个立场听起来很自然，毕竟在经典统计力学里，"温度 300K"确实只是宏观描述，同一个温度对应无数微观状态。<strong>很多人以为量子态也一样。PBR 说：不，不一样。</strong></p>
+
+<figure class="fig">
+  <svg id="f11" viewBox="0 0 880 322" role="img" aria-label="PBR 定理的四步推演：设局、关键测量、共享底牌、矛盾"></svg>
+  <figcaption><b>图 11</b> PBR 的四步推演。前三步都在铺设条件，矛盾在第四步炸开：<em>同一个输入，同一台机器，被要求给出四个互不相同的输出。</em></figcaption>
+</figure>
+
+<p>把它拆成四步来看：</p>
+<p><strong>第一步，设局。</strong>准备两个系统，各自独立地制备成 <code>|ψ₀⟩</code> 或 <code>|ψ₁⟩</code>。这两个态故意选成不垂直的（重叠度 1/√2）。于是共有四种组合。<br>
+<strong>第二步，关键测量。</strong>存在一个联合测量，能无歧义地分辨这四种情形：每种制备都有一个只可能由它触发的读数。技术理由是这四个联合态在四维空间里<strong>线性无关</strong>。<br>
+<strong>第三步，共享底牌。</strong>现在假设 ψ-epistemic 成立，那么"底牌 λ 能同时支撑 <code>|ψ₀⟩</code> 和 <code>|ψ₁⟩</code>"就有一个共同的 λ*。再叠加"两系统独立制备"这个前提，两边的底牌也独立，于是 <code>(λ*, λ*)</code> 这一对底牌，在四种制备下都会出现。<br>
+<strong>第四步，矛盾。</strong>做第一种制备时，底牌是 <code>(λ*, λ*)</code>，测量必须报出"第一种"；做第二种时，底牌还是它，同一个测量却必须报出"第二种"……四种制备，四种答案。同一个输入、同一台机器，被要求给出四个互不相同的输出，<strong>这不可能</strong>。</p>
+
+<p>所以"共享底牌"必须被否掉：<strong>不同的量子态必然对应不同的底层实在。</strong></p>
+
+<div class="note key"><b>承重墙：制备独立性</b>上面推理里有一块砖绝对不能松："两个系统若被独立制备，它们的底牌也相互独立"。如果允许两次制备之间存在隐藏关联（比如共同的过去），<code>(λ*, λ*)</code> 就不再自动出现，论证随之失效。<em>这正是想挽救 ψ-epistemic 的人唯一能走的门</em>，而这条路要付出"精细调节"的代价。</div>
+
+<div class="note warn"><b>它没有排除什么（常被误传）</b>
+它<strong>不等于</strong>"波函数是空间里真实振动的波"。PBR 只说"不同态对应不同底层实在"，没说那实在是什么。<br>
+它也<strong>不排除 QBism</strong>：QBism 根本否认存在独立于观察者的 λ，因此压根不在 PBR 的前提范围内。<br>
+它更<strong>不是</strong>"所有认识论解读都死了"。死的是一大类满足那两个前提的模型，不是全部。</div>
+
+<h3><span class="h">4.3</span>剩下的生存空间</h3>
+<p>把两条定理放在一起看，逃生出口就被压缩得极窄了。</p>
+
+<figure class="fig">
+  <svg id="f12" viewBox="0 0 880 300" role="img" aria-label="Bell 与 PBR 两条定理排除的立场，以及仍然开放的三类解读"></svg>
+  <figcaption><b>图 12</b> Bell 砍掉"局域 + 隐变量"，PBR 砍掉"态只是信息 + 制备独立"。剩下的，只有三类立场。</figcaption>
+</figure>
+
+<div class="pull">如果你相信"每个系统背后藏着一个客观的底层状态，量子态只是关于它的知识"，并且相信"独立制备的系统互不影响"，那么 PBR 就告诉你：这两个信念不能同时为真。量子态必须"是"什么，而不只是"关于"什么。<span>第四部分 · 核心结论</span></div>
+
+<hr class="sp" />
+
+<h3><span class="h">尾声</span>回到最初的那个问题</h3>
+<p>现在可以回答开头那些追问了。</p>
+<p><strong>六个概念是什么关系？</strong>它们是同一套数学结构的六个面。希尔伯特空间提供线性与内积；态矢量是空间中的点，波函数是它的坐标；态叠加是线性性的物理化；概率幅是内积的物理化，概率只是它的模方；投影把概率幅读成事件；幺正演化在两次测量之间以保内积的方式搬运所有概率幅。</p>
+<p><strong>波函数等于态矢量吗？</strong>在固定位置表象、无内部自由度时可以互换；严格讲并不等同：波函数是坐标，态矢量是本体。</p>
+<p><strong>态矢量是物理实在吗？</strong>不是古典意义上的"实物"，但也不是虚构。它百分之百可靠的身份是"一族概率指派的紧凑编码"；再往下走，就进入诠释之争。而这个"没有标准答案"本身是有信息量的：它说明我们的理论在"描述"与"实在"之间，还缺一块。</p>
+<p>至于那块缺的是什么，目前为止还没有人真正知道。</p>
+
+<footer class="end">
+  <p><strong>关于这份文档</strong>：本文由 AutoCoder 根据本轮对话整理，自包含单文件，无外部依赖，可直接离线阅读或打印。文中的数学表述均按标准量子力学公理体系书写；涉及诠释的部分已标明其争议状态，未将未决问题表述为定论。</p>
+</footer>
+
+</div><!-- /inner -->
+</div><!-- /sheet -->
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function mk(tag, a){ var e = document.createElementNS(NS, tag); for (var k in a) { e.setAttribute(k, a[k]); } return e; }
+  function txt(p, x, y, s, c, size, anchor, weight){
+    var t = mk("text", {x:x, y:y, fill: c || "#1f2328",
+      "font-size": (size || 13), "text-anchor": (anchor || "middle")});
+    if (weight) { t.setAttribute("font-weight", weight); }
+    t.textContent = s; p.appendChild(t); return t;
+  }
+  function seg(p, x1, y1, x2, y2, c, w, dash){
+    var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:c, "stroke-width": (w || 1.5)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("line", a));
+  }
+  function arrow(p, x1, y1, x2, y2, c, w){
+    w = w || 3;
+    var dx = x2-x1, dy = y2-y1, L = Math.sqrt(dx*dx+dy*dy);
+    if (L < 0.8) { return; }
+    var ux = dx/L, uy = dy/L, head = Math.min(12, L*0.45);
+    var bx = x2-ux*head, by = y2-uy*head;
+    p.appendChild(mk("line", {x1:x1, y1:y1, x2:bx, y2:by, stroke:c, "stroke-width":w, "stroke-linecap":"round"}));
+    var px = -uy, py = ux, h = 5;
+    p.appendChild(mk("polygon", {points: x2+","+y2+" "+(bx+px*h)+","+(by+py*h)+" "+(bx-px*h)+","+(by-py*h), fill:c}));
+  }
+  function dbl(p, x1, y1, x2, y2, c, w){ arrow(p, x1, y1, x2, y2, c, w); arrow(p, x2, y2, x1, y1, c, w); }
+  function rr(p, x, y, w, h, fill, stroke, sw, rx){
+    p.appendChild(mk("rect", {x:x, y:y, width:w, height:h, rx: (rx === undefined ? 11 : rx),
+      fill: fill || "#fff", stroke: stroke || "#e6e3dc", "stroke-width": (sw || 1.4)}));
+  }
+  function ci(p, cx, cy, r, fill, stroke, sw, dash){
+    var a = {cx:cx, cy:cy, r:r, fill: fill || "none", stroke: stroke || "none", "stroke-width": (sw || 1.4)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("circle", a));
+  }
+  function poly(p, pts, stroke, w, dash, fill){
+    var a = {points: pts.join(" "), fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 2)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("polyline", a));
+  }
+  function wrap(g, x, y, lines, c, size, lh, anchor){
+    for (var i = 0; i < lines.length; i++) { txt(g, x, y + i*lh, lines[i], c, size, anchor); }
+  }
+  function clear(g){ while (g && g.firstChild) { g.removeChild(g.firstChild); } }
+
+  /* ============ 图 1 · 六概念链条 ============ */
+  (function(){
+    var s = document.getElementById("f1"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    var items = [
+      ["希尔伯特空间", "舞台", "#4f46e5"],
+      ["态矢量 / 波函数", "本体与坐标", "#2563eb"],
+      ["概率幅 ⟨φ|ψ⟩", "带相位的复数", "#7c3aed"],
+      ["态叠加", "Σ cᵢ|aᵢ⟩", "#be185d"],
+      ["投影测量", "P² = P", "#b45309"],
+      ["幺正演化", "保持内积", "#0f766e"]
+    ];
+    var W = 124, H = 60, y = 30;
+    for (var i = 0; i < items.length; i++){
+      var x = i * 151;
+      rr(g, x, y, W, H, "#fbfaf7", items[i][2], 1.6);
+      g.appendChild(mk("rect", {x:x, y:y+11, width:4.5, height:H-22, rx:2.2, fill:items[i][2]}));
+      txt(g, x + W/2 + 3, y + 25, items[i][0], items[i][2], 12.5, "middle", "650");
+      txt(g, x + W/2 + 3, y + 44, items[i][1], "#68718c", 11, "middle");
+      if (i < items.length - 1) { arrow(g, x + W + 4, y + H/2, x + 151 - 3, y + H/2, "#b9bcc7", 2); }
+    }
+  })();
+
+  /* ============ 图 2 · 态矢量 → 波函数 ============ */
+  (function(){
+    var s = document.getElementById("f2"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    rr(g, 16, 16, 350, 268, "#fbfaf7");
+    txt(g, 191, 42, "抽象空间 ℋ", "#4f46e5", 13.5, "middle", "650");
+    var ox = 84, oy = 240;
+    arrow(g, ox, oy, ox+150, oy, "#c9ccd6", 1.8);
+    arrow(g, ox, oy, ox, oy-150, "#c9ccd6", 1.8);
+    arrow(g, ox, oy, ox+96, oy-116, "#2563eb", 3.4);
+    txt(g, ox+108, oy-124, "|ψ⟩", "#2563eb", 15, "start", "650");
+    txt(g, 191, 264, "长度 = 1（归一化）", "#68718c", 11.5, "middle");
+
+    rr(g, 434, 16, 430, 268, "#fbfaf7");
+    txt(g, 649, 42, "位置表象：波函数 ψ(x)", "#0f766e", 13.5, "middle", "650");
+    var by = 176, X0 = 452, X1 = 848, xc = 650, sig = 52, amp = 54;
+    arrow(g, 450, by, X1+8, by, "#c9ccd6", 1.8);
+    arrow(g, 450, by, 450, 78, "#c9ccd6", 1.8);
+    txt(g, X1+16, by+5, "x", "#68718c", 12, "start");
+    var eu = [], ed = [], re = [], pr = [];
+    for (var x = X0; x <= X1; x += 2){
+      var e = Math.exp(-((x-xc)*(x-xc))/(2*sig*sig));
+      eu.push(x+","+(by - amp*e));
+      ed.push(x+","+(by + amp*e));
+      re.push(x+","+(by - amp*e*Math.cos((x-xc)/34*2*Math.PI)));
+      pr.push(x+","+(by - amp*e*e));
+    }
+    poly(g, eu, "#c2c6d1", 1.3, "5 5");
+    poly(g, ed, "#c2c6d1", 1.3, "5 5");
+    g.appendChild(mk("path", {d: "M " + X0 + "," + by + " L " + pr.join(" L ") + " L " + X1 + "," + by + " Z",
+      fill:"#ea7317", "fill-opacity":"0.20"}));
+    poly(g, pr, "#ea7317", 2);
+    poly(g, re, "#0f766e", 2.3);
+    txt(g, X1, by-76, "|ψ(x)|²", "#b45309", 12, "end", "650");
+    txt(g, X0+2, by-84, "±|ψ(x)| 包络", "#68718c", 11.5, "start");
+    txt(g, 649, 266, "实线 = Re ψ(x)　虚线 = 包络　橙色 = |ψ(x)|²", "#68718c", 11.5, "middle");
+
+    arrow(g, 372, 148, 428, 148, "#b45309", 2.6);
+    txt(g, 400, 136, "取坐标", "#b45309", 11.5, "middle", "650");
+  })();
+
+  /* ============ 图 3 · 概率幅 ============ */
+  (function(){
+    var s = document.getElementById("f3"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    rr(g, 16, 16, 440, 260, "#fbfaf7");
+    var ox = 150, oy = 236, R = 148;
+    arrow(g, ox, oy, ox+R+52, oy, "#c9ccd6", 1.8);
+    arrow(g, ox, oy, ox, oy-R-46, "#c9ccd6", 1.8);
+    txt(g, ox+R+60, oy+5, "Re", "#68718c", 12, "start");
+    txt(g, ox-16, oy-R-54, "Im", "#68718c", 12, "middle");
+    /* 等模弧：只画 0°→90° 的一段；整圆会越出画框被裁掉 */
+    g.appendChild(mk("path", {d:"M "+(ox+R)+" "+oy+" A "+R+" "+R+" 0 0 0 "+ox+" "+(oy-R),
+      fill:"none", stroke:"#e2e5ee", "stroke-width":1.3, "stroke-dasharray":"5 5"}));
+    txt(g, ox, oy-R-14, "等模弧：|A| 处处相同", "#68718c", 11, "middle");
+
+    var a1 = 0.30, a2 = 1.05;
+    var x1 = ox+R*Math.cos(a1), y1 = oy-R*Math.sin(a1);
+    var x2 = ox+R*Math.cos(a2), y2 = oy-R*Math.sin(a2);
+    seg(g, ox, oy, x1, y1, "#7c3aed", 1.3, "5 5");
+    arrow(g, ox, oy, x1, y1, "#7c3aed", 3.4);
+    txt(g, x1+10, y1+4, "A = ⟨φ|ψ⟩", "#7c3aed", 13.5, "start", "650");
+    arrow(g, ox, oy, x2, y2, "#c4b5fd", 2.6);
+    txt(g, x2+6, y2-12, "同模、换相位", "#7c5fd3", 12, "start");
+    var ar = 54;
+    g.appendChild(mk("path", {d:"M "+(ox+ar*Math.cos(a1))+" "+(oy-ar*Math.sin(a1))+" A "+ar+" "+ar+" 0 0 0 "+
+      (ox+ar*Math.cos(a2))+" "+(oy-ar*Math.sin(a2)), fill:"none", stroke:"#b39ddb", "stroke-width":1.4}));
+    txt(g, ox+ar+30, oy-ar*0.75, "Δφ", "#7c3aed", 12, "start");
+    txt(g, 236, 264, "模决定「多大概率」，相位决定「相加时相长还是相消」", "#68718c", 11.5, "middle");
+
+    rr(g, 486, 16, 378, 260, "#fbfaf7");
+    txt(g, 675, 46, "读出来的只有「模方」", "#4f46e5", 13.5, "middle", "650");
+    var bx = 522, bw = 240;
+    txt(g, bx, 96, "|A|　模", "#4a5260", 12.5, "start");
+    rr(g, bx, 106, bw, 17, "#eceef4", "none", 0, 8.5);
+    rr(g, bx, 106, bw, 17, "#7c3aed", "none", 0, 8.5);
+    txt(g, bx+bw+10, 120, "1.00", "#1f2328", 12.5, "start");
+    txt(g, bx, 164, "P = |A|²　概率", "#4a5260", 12.5, "start");
+    rr(g, bx, 174, bw, 17, "#eceef4", "none", 0, 8.5);
+    rr(g, bx, 174, bw, 17, "#0f766e", "none", 0, 8.5);
+    txt(g, bx+bw+10, 188, "1.00", "#1f2328", 12.5, "start");
+    wrap(g, 675, 226, ["两支幅模长相同、相位不同：", "单独测量时给出完全相同的概率，", "但相位差决定叠加后干涉项的正负。"], "#4a5260", 12, 21, "middle");
+  })();
+
+  /* ============ 图 4 · 幅相加 vs 概率相加 ============ */
+  (function(){
+    var s = document.getElementById("f4"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    function panel(px, title, tcol, quantum, note){
+      rr(g, px, 14, 424, 306, "#fbfaf7");
+      txt(g, px+212, 42, title, tcol, 13.5, "middle", "650");
+      var sy = 70, sh = 224;             // 屏幕纵向范围
+      var yc = sy + sh/2;
+      // 双缝
+      var bx = px + 46;
+      seg(g, bx, sy, bx, yc-34, "#9aa1b0", 4);
+      seg(g, bx, yc-16, bx, yc+16, "#9aa1b0", 4);
+      seg(g, bx, yc+34, bx, sy+sh, "#9aa1b0", 4);
+      txt(g, bx-6, sy-8, "双缝", "#68718c", 11, "middle");
+      // 两条光路
+      seg(g, bx+4, yc-25, bx+96, yc, "#c9ccd6", 1.1, "4 4");
+      seg(g, bx+4, yc+25, bx+96, yc, "#c9ccd6", 1.1, "4 4");
+      // 屏幕
+      var sx = bx + 100;
+      seg(g, sx, sy, sx, sy+sh, "#7b8291", 2.4);
+      txt(g, sx, sy-8, "屏", "#68718c", 11, "middle");
+      // 条纹
+      var maxLen = 250;
+      for (var y = sy+4; y <= sy+sh-4; y += 4){
+        var env = Math.exp(-Math.pow((y-yc)/78, 2));
+        var I = quantum ? env * Math.pow(Math.cos((y-yc)/11*Math.PI), 2) : env;
+        var len = Math.max(0.6, I * maxLen);
+        var col = quantum ? "#0f766e" : "#94a3b8";
+        g.appendChild(mk("rect", {x:sx+2, y:y-1.5, width:len, height:3, fill:col, rx:1.5,
+          "fill-opacity": (0.35 + 0.65*Math.min(1, I)).toFixed(2)}));
+      }
+      txt(g, px+212, 300, note, tcol, 12.5, "middle", "650");
+    }
+    panel(16, "把「概率」相加", "#64748b", false, "经典粒子：没有条纹");
+    panel(440, "把「概率幅」相加", "#0f766e", true, "量子力学：条纹出现");
+    seg(g, 432, 30, 432, 306, "#e6e3dc", 1.5);
+    txt(g, 440, 336, "同一条公式，只差一个干涉项：|A₁+A₂|² = |A₁|² + |A₂|² + 2·Re(A₁*A₂)", "#4a5260", 12.5, "middle", "600");
+  })();
+
+  /* ============ 图 5 · 投影 ============ */
+  (function(){
+    var s = document.getElementById("f5"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    rr(g, 16, 14, 452, 272, "#fbfaf7");
+    var ox = 130, oy = 240, R = 148, th = 54*Math.PI/180;
+    /* 单位弧：只画 0°→90°；整圆会越出画框 */
+    g.appendChild(mk("path", {d:"M "+(ox+R)+" "+oy+" A "+R+" "+R+" 0 0 0 "+ox+" "+(oy-R),
+      fill:"none", stroke:"#e2e5ee", "stroke-width":1.3, "stroke-dasharray":"5 5"}));
+    ci(g, ox, oy, 3.5, "#68718c");
+    arrow(g, ox, oy, ox+R+40, oy, "#c9ccd6", 1.8);
+    arrow(g, ox, oy, ox, oy-R-34, "#c9ccd6", 1.8);
+    txt(g, ox+R+48, oy+5, "|1⟩", "#4a5260", 13.5, "start", "650");
+    txt(g, ox, oy-R-42, "|2⟩", "#4a5260", 13.5, "middle", "650");
+    var vx = ox + R*Math.cos(th), vy = oy - R*Math.sin(th);
+    arrow(g, ox, oy, vx, vy, "#2563eb", 3.5);
+    seg(g, vx, vy, vx, oy, "#2563eb", 1.2, "5 5");
+    seg(g, vx, vy, ox, vy, "#2563eb", 1.2, "5 5");
+    txt(g, vx+12, vy-12, "|ψ⟩", "#2563eb", 15.5, "start", "650");
+    var ar = 56;
+    g.appendChild(mk("path", {d:"M "+(ox+ar)+" "+oy+" A "+ar+" "+ar+" 0 0 0 "+
+      (ox+ar*Math.cos(th))+" "+(oy-ar*Math.sin(th)), fill:"none", stroke:"#9aa1b0", "stroke-width":1.3}));
+    txt(g, ox+ar+16, oy-ar*0.5, "θ", "#68718c", 13, "start");
+    txt(g, 242, 268, "杆长恒为 1；影子的长度平方 = 命中概率", "#68718c", 11.5, "middle");
+
+    var rx = 496;
+    rr(g, rx, 14, 368, 272, "#fbfaf7");
+    txt(g, rx+184, 46, "测量发生的那一刻", "#b45309", 13.5, "middle", "650");
+    var p1 = Math.cos(th)*Math.cos(th), p2 = 1-p1;
+    function bar(y, label, val, col){
+      txt(g, rx+24, y-6, label, "#4a5260", 12, "start");
+      rr(g, rx+24, y, 250, 16, "#eceef4", "none", 0, 8);
+      rr(g, rx+24, y, Math.max(2, 250*val), 16, col, "none", 0, 8);
+      txt(g, rx+284, y+13, val.toFixed(2), "#1f2328", 12, "start");
+    }
+    bar(88, "P(|1⟩) = cos²θ", p1, "#2563eb");
+    bar(140, "P(|2⟩) = sin²θ", p2, "#7c3aed");
+    wrap(g, rx+184, 200, ["测量把态“拍平”到其中一条本征轴上，", "此后立刻重测必然得到相同结果，", "因为投影算符满足 P² = P。"], "#4a5260", 12, 21, "middle");
+  })();
+
+  /* ============ 图 6 · 幺正演化 ============ */
+  (function(){
+    var s = document.getElementById("f6"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    rr(g, 16, 14, 428, 268, "#fbfaf7");
+    var cx = 210, cy = 148, R = 104, a1 = -0.55, d = Math.PI/3;
+    ci(g, cx, cy, R, "none", "#e2e5ee", 1.3, "5 5");
+    ci(g, cx, cy, 3.5, "#68718c");
+    seg(g, cx-R-40, cy, cx+R+40, cy, "#eef0f5", 1.5);
+    seg(g, cx, cy-R-40, cx, cy+R+40, "#eef0f5", 1.5);
+    var x1 = cx + R*Math.cos(a1), y1 = cy - R*Math.sin(a1);
+    var a2 = a1 + d, x2 = cx + R*Math.cos(a2), y2 = cy - R*Math.sin(a2);
+    arrow(g, cx, cy, x1, y1, "#0f766e", 3.5);
+    arrow(g, cx, cy, x2, y2, "#7c3aed", 3);
+    txt(g, x1+13*Math.cos(a1), y1-13*Math.sin(a1)-4, "|ψ⟩", "#0f766e", 14.5, "start", "650");
+    txt(g, x2+13*Math.cos(a2), y2-13*Math.sin(a2)-4, "|φ⟩", "#7c3aed", 14.5, "start", "650");
+    var rr2 = 46;
+    g.appendChild(mk("path", {d:"M "+(cx+rr2*Math.cos(a1))+" "+(cy-rr2*Math.sin(a1))+
+      " A "+rr2+" "+rr2+" 0 0 0 "+(cx+rr2*Math.cos(a2))+" "+(cy-rr2*Math.sin(a2)),
+      fill:"none", stroke:"#b45309", "stroke-width":1.9}));
+    txt(g, cx, 262, "夹角 60°  ⇒  ⟨φ|ψ⟩ 恒定不变", "#b45309", 12.5, "middle", "650");
+
+    var rx = 472;
+    rr(g, rx, 14, 392, 268, "#fbfaf7");
+    txt(g, rx+196, 46, "U = e^(−iHt/ℏ) 保持什么", "#0f766e", 13.5, "middle", "650");
+    var rows = [
+      ["长度守恒", "|ψ| 恒为 1　⇒　总概率守恒", "#0f766e"],
+      ["内积守恒", "⟨Uφ|Uψ⟩ = ⟨φ|ψ⟩　⇒　干涉稳定", "#2563eb"],
+      ["叠加守恒", "Σcᵢ|ψᵢ⟩ 被整体搬运", "#7c3aed"],
+      ["谱守恒", "测量取值集合不变", "#b45309"]
+    ];
+    for (var i = 0; i < rows.length; i++){
+      var y = 74 + i*46;
+      g.appendChild(mk("rect", {x:rx+24, y:y, width:4, height:30, rx:2, fill:rows[i][2]}));
+      txt(g, rx+40, y+14, rows[i][0], rows[i][2], 12.5, "start", "650");
+      txt(g, rx+40, y+30, rows[i][1], "#4a5260", 11.5, "start");
+    }
+    txt(g, rx+196, 268, "它只搬运概率幅、旋转相位，绝不改变任何内积", "#68718c", 11.5, "middle");
+  })();
+
+  /* ============ 图 7 · 关系总图 ============ */
+  (function(){
+    var s = document.getElementById("f7"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    var R1 = {x:262, y:14, w:356, h:44};
+    var R2 = {x:240, y:86, w:400, h:48};
+    var A = {x:24,  y:184, w:250, h:62};
+    var B = {x:315, y:184, w:250, h:62};
+    var C = {x:606, y:184, w:250, h:62};
+    var R4 = {x:240, y:294, w:400, h:58};
+    var R5 = {x:240, y:436, w:400, h:58};
+    function cx(b){ return b.x + b.w/2; }
+    function bt(b){ return b.y + b.h; }
+    arrow(g, cx(R1), bt(R1), cx(R2), R2.y, "#a8adba", 2.2);
+    arrow(g, cx(R2), bt(R2), cx(A), A.y, "#2563eb", 2.2);
+    arrow(g, cx(R2), bt(R2), cx(B), B.y, "#7c3aed", 2.2);
+    arrow(g, cx(R2), bt(R2), cx(C), C.y, "#be185d", 2.2);
+    arrow(g, cx(A), bt(A), R4.x+24, R4.y, "#2563eb", 2.2);
+    arrow(g, cx(B), bt(B), cx(R4),   R4.y, "#7c3aed", 2.2);
+    arrow(g, cx(C), bt(C), R4.x+R4.w-24, R4.y, "#be185d", 2.2);
+    arrow(g, cx(R4)-48, bt(R4), cx(R5)-48, R5.y, "#a8adba", 2.2);
+    dbl(g, cx(R4)+48, bt(R4)+6, cx(R5)+48, R5.y-6, "#be123c", 2.2);
+    txt(g, cx(R4)+66, (bt(R4)+R5.y)/2 + 4, "张力：跳跃 ⇄ 旋转", "#be123c", 12.5, "start", "650");
+
+    rr(g, R1.x, R1.y, R1.w, R1.h, "#f2f1fb", "#c9c6f0");
+    txt(g, cx(R1), R1.y+29, "复数域 + 内积", "#4f46e5", 14.5, "middle", "650");
+    rr(g, R2.x, R2.y, R2.w, R2.h, "#f2f1fb", "#c9c6f0");
+    txt(g, cx(R2), R2.y+30, "希尔伯特空间 ℋ（线性 · 内积 · 完备）", "#4f46e5", 14, "middle", "650");
+    function leg(b, t1, t2, col){
+      rr(g, b.x, b.y, b.w, b.h, "#fbfaf7", "#e0ddd5");
+      txt(g, cx(b), b.y+26, t1, col, 13.5, "middle", "650");
+      txt(g, cx(b), b.y+47, t2, "#4a5260", 12.5, "middle");
+    }
+    leg(A, "态矢量 |ψ⟩", "波函数 ψ(x) = ⟨x|ψ⟩", "#2563eb");
+    leg(B, "概率幅 ⟨φ|ψ⟩", "复数（模 × 相位）", "#7c3aed");
+    leg(C, "态叠加 Σ cᵢ|aᵢ⟩", "叠加系数 cᵢ = 概率幅", "#be185d");
+    rr(g, R4.x, R4.y, R4.w, R4.h, "#fff8ec", "#f0d9ac");
+    txt(g, cx(R4), R4.y+25, "投影机制 Pᵢ（P² = P = P†）", "#b45309", 14, "middle", "650");
+    txt(g, cx(R4), R4.y+46, "概率 p = ⟨ψ|Pᵢ|ψ⟩　+　态坍缩", "#4a5260", 12.5, "middle");
+    rr(g, R5.x, R5.y, R5.w, R5.h, "#f0faf7", "#a7ddd2");
+    txt(g, cx(R5), R5.y+25, "幺正演化 U = e^(−iHt/ℏ)", "#0f766e", 14, "middle", "650");
+    txt(g, cx(R5), R5.y+46, "保内积 ⇒ 保概率幅 ⇒ 保概率", "#4a5260", 12.5, "middle");
+    txt(g, 440, 512, "幺正演化全程保持所有内积不变，这正是它与「投影」对立的根源", "#68718c", 12.5, "middle");
+  })();
+
+  /* ============ 图 8 · 三个反例 ============ */
+  (function(){
+    var s = document.getElementById("f8"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    var CW = 272, CH = 244, CY = 12;
+    var cards = [[8, "a", "自旋：需要旋量", "#2563eb"],
+                 [304, "b", "多粒子：组态空间", "#7c3aed"],
+                 [600, "c", "动量本征态：不可归一", "#0f766e"]];
+    for (var k = 0; k < cards.length; k++){
+      var px = cards[k][0], col = cards[k][3];
+      rr(g, px, CY, CW, CH, "#fbfaf7");
+      ci(g, px+26, CY+24, 12, col, "none");
+      txt(g, px+26, CY+29, cards[k][1], "#fff", 12, "middle", "700");
+      txt(g, px+48, CY+29, cards[k][2], col, 13, "start", "650");
+    }
+    /* (a) 自旋 */
+    var A1 = 144, ox = 56, oy = 172;
+    arrow(g, ox, oy, ox+64, oy, "#c9ccd6", 1.6);
+    arrow(g, ox, oy, ox, oy-64, "#c9ccd6", 1.6);
+    arrow(g, ox, oy, ox+46, oy-48, "#2563eb", 2.8);
+    txt(g, ox+56, oy-56, "|ψ⟩", "#2563eb", 13, "start", "650");
+    g.appendChild(mk("rect", {x:150, y:110, width:92, height:68, rx:8, fill:"#fff", stroke:"#d9d5cb"}));
+    txt(g, 196, 136, "ψ↑(x)", "#4a5260", 11.5, "middle");
+    txt(g, 196, 158, "ψ↓(x)", "#4a5260", 11.5, "middle");
+    txt(g, A1, 214, "ℂ² 中的一个矢量", "#4a5260", 11.5, "middle");
+    txt(g, A1, 234, "写成波函数要两个分量", "#be123c", 11.5, "middle", "650");
+    /* (b) 多粒子 */
+    var B1 = 440;
+    ci(g, B1-40, 154, 13, "#7c3aed", "none");
+    txt(g, B1-40, 159, "1", "#fff", 11, "middle", "700");
+    ci(g, B1+36, 194, 13, "#7c3aed", "none");
+    txt(g, B1+36, 199, "2", "#fff", 11, "middle", "700");
+    txt(g, B1-40, 130, "x₁", "#4a5260", 11.5, "middle");
+    txt(g, B1+36, 220, "x₂", "#4a5260", 11.5, "middle");
+    txt(g, B1, 240, "ψ(x₁,x₂) 住在 ℝ⁶，不是 ℝ³", "#be123c", 11.5, "middle", "650");
+    /* (c) 动量本征态 */
+    var C1 = 736, xx = C1-108, yy = 172, pts = [];
+    for (var i = 0; i <= 216; i += 3){
+      pts.push((xx+i) + "," + (yy - 26*Math.sin(i/16*Math.PI)));
+    }
+    poly(g, pts, "#0f766e", 2.2);
+    seg(g, xx, yy+46, xx+216, yy+46, "#d9d5cb", 1.2);
+    txt(g, C1, 240, "平面波 e^(ipx/ℏ) ∉ L²", "#be123c", 11.5, "middle", "650");
+  })();
+
+  /* ============ 图 9 · 七种身份 ============ */
+  (function(){
+    var s = document.getElementById("f9"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    var items = [
+      ["哥本哈根 · 工具主义", "一个计算工具，用来预言测量统计", "#64748b"],
+      ["QBism", "单个行动者的信念度：主观，但受经验约束", "#7e22ce"],
+      ["多世界（Everett）", "唯一真实的全部实在；坍缩只是分支错觉", "#4f46e5"],
+      ["玻姆力学", "真实的导引场，活在组态空间中", "#2563eb"],
+      ["GRW 客观坍缩", "真实的物理场，会自发随机坍缩", "#0f766e"],
+      ["关系性 QM（Rovelli）", "永远是「相对于另一系统」的态", "#b45309"],
+      ["量子信息 / 认识论", "编码关联与可区分性的信息载体", "#be185d"]
+    ];
+    var BX = 384, BW = 472, BH = 58, ys = [22, 92, 162, 232, 302, 372, 442];
+    var cox = 24, coy = 226, cow = 176, coh = 76;
+    var cx0 = cox + cow, cy0 = coy + coh/2;
+    txt(g, cox + cow/2, 20, "数学对象（无争议）", "#68718c", 12.5, "middle", "650");
+    txt(g, BX + BW/2, 20, "七种本体论身份（有争议）", "#68718c", 12.5, "middle", "650");
+    for (var i = 0; i < items.length; i++){
+      var y = ys[i], my = y + BH/2, col = items[i][2];
+      arrow(g, cx0, cy0, BX, my, col, 2);
+      rr(g, BX, y, BW, BH, "#fbfaf7", col, 1.5);
+      g.appendChild(mk("rect", {x:BX, y:y+11, width:4.5, height:BH-22, rx:2.2, fill:col}));
+      txt(g, BX+20, y+24, items[i][0], col, 13, "start", "650");
+      txt(g, BX+20, y+44, items[i][1], "#4a5260", 11.5, "start");
+    }
+    rr(g, cox, coy, cow, coh, "#f2f1fb", "#c9c6f0");
+    txt(g, cox + cow/2, coy+32, "|ψ⟩ ∈ ℋ", "#4f46e5", 17, "middle", "650");
+    txt(g, cox + cow/2, coy+55, "长度 = 1", "#4a5260", 12, "middle");
+  })();
+
+  /* ============ 图 10 · ψ-ontic vs ψ-epistemic ============ */
+  (function(){
+    var s = document.getElementById("f10"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    // 左：ontic，两个不相交的集合
+    rr(g, 16, 14, 424, 272, "#fbfaf7");
+    txt(g, 228, 44, "ψ-ontic：态是本体", "#4f46e5", 13.5, "middle", "650");
+    ci(g, 148, 160, 62, "#c7d2fe", "#4f46e5", 2);
+    ci(g, 310, 160, 62, "#c7d2fe", "#4f46e5", 2);
+    txt(g, 148, 165, "μ(ψ₀)", "#312e81", 12.5, "middle", "650");
+    txt(g, 310, 165, "μ(ψ₁)", "#312e81", 12.5, "middle", "650");
+    txt(g, 228, 250, "两个分布不相交：λ 唯一决定量子态", "#4a5260", 11.5, "middle");
+    txt(g, 228, 270, "「翻到牌背，就看到了牌面」", "#68718c", 11.5, "middle");
+
+    // 右：epistemic，两个相交的集合
+    rr(g, 456, 14, 408, 272, "#fbfaf7");
+    txt(g, 660, 44, "ψ-epistemic：态只是知识", "#be185d", 13.5, "middle", "650");
+    ci(g, 620, 160, 62, "#fbcfe8", "#be185d", 2, "6 6");
+    ci(g, 700, 160, 62, "#fbcfe8", "#be185d", 2, "6 6");
+    txt(g, 588, 165, "μ(ψ₀)", "#831843", 12.5, "middle", "650");
+    txt(g, 732, 165, "μ(ψ₁)", "#831843", 12.5, "middle", "650");
+    /* 两圆（r=62、圆心距 80）之交的透镜形：用各自的一段弧拼出，而不是两段同向弧 */
+    g.appendChild(mk("path", {d:"M 660 112.6 A 62 62 0 0 1 660 207.4 A 62 62 0 0 1 660 112.6 Z",
+      fill:"#be185d", "fill-opacity":"0.55"}));
+    txt(g, 660, 165, "λ*", "#fff", 13, "middle", "700");
+    txt(g, 660, 250, "两个分布有交集：同一个 λ* 支撑两个态", "#4a5260", 11.5, "middle");
+    txt(g, 660, 270, "「牌背一样，牌面却不同」", "#68718c", 11.5, "middle");
+  })();
+
+  /* ============ 图 11 · PBR 四步 ============ */
+  (function(){
+    var s = document.getElementById("f11"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    var steps = [
+      ["1", "设 局", ["两个系统各自独立", "制备成 |ψ₀⟩ 或 |ψ₁⟩，", "两态故意不垂直。", "共四种组合。"], "#4f46e5"],
+      ["2", "关键测量", ["存在一个联合测量，", "能无歧义地分辨", "四种组合：每种制备", "有一个专属读数。"], "#2563eb"],
+      ["3", "共享底牌", ["若 ψ-epistemic 成立，", "就有一对 (λ*, λ*)", "兼容全部四种", "制备组合。"], "#b45309"],
+      ["4", "矛 盾", ["同一个 (λ*, λ*)", "被要求给出四个", "互不相同的答案。", "→ 假设崩塌。"], "#be123c"]
+    ];
+    for (var i = 0; i < steps.length; i++){
+      var x = i * 227, col = steps[i][3];
+      rr(g, x, 14, 199, 268, "#fbfaf7");
+      g.appendChild(mk("rect", {x:x, y:14, width:199, height:5, rx:2.5, fill:col}));
+      ci(g, x+28, 52, 14, col, "none");
+      txt(g, x+28, 57, steps[i][0], "#fff", 13, "middle", "700");
+      txt(g, x+52, 57, steps[i][1], col, 13.5, "start", "650");
+      for (var j = 0; j < steps[i][2].length; j++){
+        txt(g, x+18, 100 + j*30, steps[i][2][j], "#4a5260", 12, "start");
+      }
+      if (i < 3) { arrow(g, x+203, 148, x+223, 148, "#b9bcc7", 2); }
+    }
+    txt(g, 440, 308, "承重墙：「两个系统若被独立制备，它们的底牌也相互独立」；这条前提一旦松掉，整个论证随之失效。",
+      "#be123c", 12, "middle", "600");
+  })();
+
+  /* ============ 图 12 · 生存空间 ============ */
+  (function(){
+    var s = document.getElementById("f12"); if (!s) return;
+    var g = mk("g", {}); s.appendChild(g);
+    rr(g, 16, 14, 424, 272, "#fef3f4", "#f5c2c7", 1.6);
+    txt(g, 228, 46, "已被定理排除", "#be123c", 14, "middle", "650");
+    var bad = [
+      ["局域性 + 隐变量", "Bell 定理（1964）"],
+      ["态只是信息 + 制备独立", "PBR 定理（2012）"]
+    ];
+    for (var i = 0; i < bad.length; i++){
+      var y = 84 + i*94;
+      rr(g, 40, y, 376, 74, "#fff", "#f5c2c7", 1.3);
+      ci(g, 70, y+37, 13, "#be123c", "none");
+      txt(g, 70, y+42, "✕", "#fff", 13, "middle", "700");
+      txt(g, 96, y+32, bad[i][0], "#7f1d1d", 12.5, "start", "650");
+      txt(g, 96, y+54, bad[i][1], "#68718c", 11.5, "start");
+    }
+
+    rr(g, 456, 14, 408, 272, "#f0faf7", "#a7ddd2", 1.6);
+    txt(g, 660, 46, "仍然开放的立场", "#0f766e", 14, "middle", "650");
+    var good = [
+      ["非局域 ψ-ontic", "玻姆力学 · 多世界"],
+      ["客观坍缩", "GRW 等自发坍缩理论"],
+      ["反实在论 / 关系性", "QBism · 关系性 QM"]
+    ];
+    for (var k = 0; k < good.length; k++){
+      var yy = 72 + k*66;
+      rr(g, 480, yy, 360, 52, "#fff", "#a7ddd2", 1.3);
+      ci(g, 508, yy+26, 12, "#0f766e", "none");
+      txt(g, 508, yy+31, "✓", "#fff", 12, "middle", "700");
+      txt(g, 532, yy+22, good[k][0], "#115e59", 12.5, "start", "650");
+      txt(g, 532, yy+40, good[k][1], "#68718c", 11.5, "start");
+    }
+  })();
+
+  /* ============ 阅读进度条 ============ */
+  (function(){
+    var bar = document.getElementById("prog"); if (!bar) return;
+    var queued = false;
+    function upd(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+      bar.style.width = Math.max(0, Math.min(100, p)) + "%";
+      queued = false;
+    }
+    window.addEventListener("scroll", function(){
+      if (!queued) { queued = true; requestAnimationFrame(upd); }
+    }, {passive: true});
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
