@@ -59,7 +59,7 @@ def trap_profile(K):
     j = np.arange(L, dtype=float)
     d = j - JC
     d = np.where(d > L / 2, d - L, d)
-    return OMEGA0 - 0.5 * K * d ** 2
+    return OMEGA0 + 0.5 * K * d ** 2
 
 
 def lap(A):
