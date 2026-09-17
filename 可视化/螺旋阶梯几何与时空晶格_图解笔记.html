@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="元相子的螺旋阶梯几何与时空晶格：一圈一格、连续旋转与离散跃迁、方向归波与距离归粒，一份图文并茂的科普笔记。" />
+<title>旋转楼梯上的世界 · 元相子的螺旋阶梯几何与时空晶格</title>
+<style>
+:root{
+  --paper:#f7f5f0; --sheet:#fff; --ink:#1f2328; --ink2:#4a5260; --ink3:#68718c;
+  --line:#e6e3dc; --line2:#d9d5cb;
+  --indigo:#4f46e5; --blue:#2563eb; --purple:#7c3aed; --pink:#be185d;
+  --amber:#b45309; --teal:#0f766e; --rose:#be123c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  font-size:16.5px;line-height:1.95;letter-spacing:.012em;-webkit-font-smoothing:antialiased}
+
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:99;
+  background:linear-gradient(90deg,var(--indigo),var(--teal));transition:width .1s linear}
+
+.sheet{max-width:960px;margin:0 auto;background:var(--sheet);
+  box-shadow:0 1px 3px rgba(31,35,40,.05), 0 18px 50px rgba(31,35,40,.06);
+  border-radius:0 0 20px 20px;padding:0 0 80px}
+.inner{max-width:760px;margin:0 auto;padding:0 26px}
+
+.cover{background:linear-gradient(150deg,#1f2a63 0%,#4f46e5 52%,#0f766e 100%);
+  color:#fff;padding:56px 26px 50px;border-radius:0 0 20px 20px;
+  margin-bottom:44px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-90px;top:-90px;width:340px;height:340px;
+  border-radius:50%;background:rgba(255,255,255,.07)}
+.cover::before{content:"";position:absolute;right:40px;bottom:-150px;width:270px;height:270px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.16)}
+.cover .kicker{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
+  opacity:.8;margin-bottom:18px}
+.cover h1{font-size:33px;line-height:1.42;margin:0 0 14px;font-weight:700;letter-spacing:.01em}
+.cover .sub{font-size:16px;opacity:.9;line-height:1.85;max-width:640px;margin:0}
+.cover .meta{margin-top:26px;font-size:13px;opacity:.72}
+
+.toc{background:#fbfaf7;border:1px solid var(--line);border-radius:14px;
+  padding:20px 24px;margin:0 0 40px}
+.toc h2{font-size:14px;letter-spacing:.14em;color:var(--ink3);margin:0 0 12px;font-weight:600}
+.toc ol{margin:0;padding-left:20px;font-size:15px;line-height:2.1;color:var(--ink2)}
+.toc a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent}
+.toc a:hover{color:var(--indigo);border-bottom-color:var(--indigo)}
+
+h2.sec{font-size:23px;line-height:1.5;margin:0 0 6px;font-weight:700;
+  display:flex;gap:14px;align-items:baseline;scroll-margin-top:20px}
+h2.sec .no{font-family:Georgia,serif;font-size:30px;color:var(--indigo);
+  opacity:.42;font-weight:400;line-height:1;flex:none}
+h2.sec+p.lead{color:var(--ink2);font-size:16px;margin:0 0 22px}
+h3{font-size:18.5px;margin:38px 0 10px;font-weight:650;line-height:1.6;scroll-margin-top:20px}
+h3 .h{color:var(--indigo);margin-right:8px;font-weight:600}
+p{margin:0 0 17px}
+strong{font-weight:650}
+em{font-style:normal;background:linear-gradient(transparent 62%, #ffe9b8 62%);padding:0 1px}
+code{font-family:"Cascadia Code",Consolas,"SFMono-Regular",monospace;font-size:14.5px;
+  background:#f2f0ea;border:1px solid #e8e5dd;border-radius:5px;padding:1px 6px;white-space:nowrap}
+hr.sp{border:0;height:1px;background:var(--line);margin:46px 0}
+
+.intro p:first-of-type::first-letter{
+  float:left;font-family:Georgia,"Songti SC",serif;font-size:60px;line-height:.86;
+  padding:6px 12px 0 0;color:var(--indigo);font-weight:700}
+
+figure.fig{margin:36px 0;max-width:920px;margin-left:auto;margin-right:auto}
+figure.fig svg{display:block;width:100%;height:auto;background:#fff;
+  border:1px solid var(--line);border-radius:16px}
+figure.fig figcaption{font-size:13.5px;line-height:1.75;color:var(--ink3);
+  text-align:center;margin-top:11px;padding:0 14px}
+figure.fig figcaption b{color:var(--indigo);font-weight:650}
+figure.fig figcaption em{background:none;color:var(--ink2);font-style:italic}
+
+.note{border-left:4px solid;border-radius:10px;padding:14px 18px;margin:24px 0;font-size:15.5px;line-height:1.85}
+.note b{display:block;margin-bottom:4px}
+.note.key{background:#fff8ec;border-color:var(--amber)} .note.key b{color:var(--amber)}
+.note.warn{background:#fef3f4;border-color:var(--rose)} .note.warn b{color:var(--rose)}
+.note.ins{background:#eef2ff;border-color:var(--indigo)} .note.ins b{color:var(--indigo)}
+.note.adv{background:#f2fbf8;border-color:var(--teal)} .note.adv b{color:var(--teal)}
+
+.pull{margin:34px 0;padding:2px 0 2px 24px;border-left:4px solid var(--indigo);
+  font-size:19px;line-height:1.8;color:#2b3242;font-weight:500}
+.pull span{display:block;font-size:13px;letter-spacing:.1em;color:var(--ink3);
+  font-weight:400;margin-top:10px}
+
+table{width:100%;border-collapse:collapse;font-size:15px;margin:22px 0}
+th,td{border:1px solid var(--line2);padding:10px 14px;text-align:left;vertical-align:top;line-height:1.75}
+th{background:#fbfaf7;font-weight:650}
+td code{white-space:nowrap}
+
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0}
+.kv div{border:1px solid var(--line);border-radius:11px;padding:12px 15px;background:#fbfaf7;font-size:14.5px}
+.kv div b{display:block;color:var(--indigo);margin-bottom:3px}
+
+footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
+  font-size:13.5px;color:var(--ink3);line-height:1.9}
+
+@media (max-width:620px){
+  body{font-size:16px;line-height:1.9}
+  .inner{padding:0 17px}
+  .cover{padding:38px 18px 34px}
+  .cover h1{font-size:24px}
+  .cover .sub{font-size:15px}
+  h2.sec{font-size:20px} h2.sec .no{font-size:24px}
+  h3{font-size:17.5px}
+  table{font-size:14px} th,td{padding:8px 10px}
+  .pull{font-size:17px;padding-left:16px}
+  code{white-space:normal;overflow-wrap:anywhere}
+}
+@media print{
+  body{background:#fff;font-size:11.5pt}
+  .progress,.toc{display:none}
+  .sheet{box-shadow:none;max-width:none}
+  figure.fig{break-inside:avoid} h2.sec,h3{break-after:avoid}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<noscript>
+  <div style="max-width:960px;margin:0 auto;padding:14px 26px;background:#fff8ec;border-bottom:1px solid #f0d9ac;color:#8a4b08;font-size:14px;line-height:1.8">
+    <b>提示：</b>本页的 12 幅插图由脚本绘制，需要启用 JavaScript 才能显示。正文文字不受影响，可直接阅读。
+  </div>
+</noscript>
+
+<div class="sheet">
+
+<header class="cover">
+  <div class="kicker">元相子理论 · 图解笔记</div>
+  <h1>旋转楼梯上的世界</h1>
+  <p class="sub">一颗元相子转一圈，空间长出一格；一圈一圈攒起来，就成了时空。从复平面上的单位圆出发，把螺旋阶梯几何与时空晶格摊开来看。</p>
+  <div class="meta">共五部分 · 12 幅图 · 建议阅读 20 分钟</div>
+</header>
+
+<div class="inner">
+
+<nav class="toc">
+  <h2>目 录</h2>
+  <ol>
+    <li><a href="#p1">一颗元相子：圆、指针、法线</a></li>
+    <li><a href="#p2">螺旋阶梯几何：连续旋转，离散跳格</a></li>
+    <li><a href="#p3">时空晶格：一格一格攒出来的空间</a></li>
+    <li><a href="#p4">时间与光速：一次摆程的三件产物</a></li>
+    <li><a href="#p5">常见误读与边界：哪些是定案，哪些还开着</a></li>
+  </ol>
+</nav>
+
+<div class="intro">
+<p>空间是什么？时间是什么？这两个问题的答案通常被放在物理学的最前面，像是必须接受的前提。</p>
+<p>元相子理论给出的是另一种次序：<strong>时空是长出来的</strong>。长出来的方式很具体：一颗元相子的相位指针在复平面的单位圆上匀速旋转，每转满一整圈，圆心就沿法线方向跳一格，一格等于一个普朗克长度。旋转连续，跳格离散，一圈一格，积累成网。</p>
+<p>于是整套空间观可以压成三个几何事实：半径固定（作用量子就是圆周长）、旋转与跳格分工（连续与离散并存）、方向与距离分居两轴（方向归波，距离归粒）。这份笔记就按这三个事实展开。</p>
+<p>第五部分会把边界写清：哪些结论是定案，哪些还是模型假设，哪些仍挂着待证。读的时候请把那一节一起看。</p>
+</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第一部分 ==================== -->
+<h2 class="sec" id="p1"><span class="no">1</span>一颗元相子：圆、指针、法线</h2>
+<p class="lead">把整个世界压到一颗元相子上，剩下的东西只有三样：一个圆、一根指针、一条法线。</p>
+
+<h3><span class="h">1.1</span>圆与指针</h3>
+<p>元相子的物侧是一个复平面上的单位圆。指针从实轴出发匀速旋转，转一圈回到实轴，这个动作叫<strong>满周闭合</strong>。圆心处的半径不是可调参数，取固定值 <code>ℏ</code>（约化普朗克常数）。</p>
+<p>半径固定带来一个直接结果：圆周长为 <code>2πℏ</code>，这正是作用量子 <code>h</code>。换句话说，普朗克常数的几何载体是这根圆，而不是圆盘的面积。圆的半径若能自由取值，周长就会浮动，作用量子也就不再是常数。</p>
+<p>第二个固定量是节律。指针的角频率为 <code>ω_P</code>，全体元相子同频，格子由此提供统一时钟。圆管方向（相位），半径管量度，频率管节拍，三件事各司其职。</p>
+
+<h3><span class="h">1.2</span>圆心处的法线</h3>
+<p>圆心不是普通的点：它是旋转中唯一不动的点。体系把这条性质写成三定理链。</p>
+<div class="kv">
+  <div><b>定理 3.1 · 旋转轴唯一</b>圆心是旋转中唯一的不动点，具本体论独特地位。</div>
+  <div><b>定理 3.2 · 平移与轴重合</b>跃迁方向由 SO(2) 对称性唯一锁定，与旋转轴重合。</div>
+  <div><b>命题 3.1 · 分工</b>法线负责跃迁的空间几何，满周闭合的标记点负责时间触发。</div>
+</div>
+<p>把这条法线画出来，元相子的侧面像就清楚了：一边转圈，一边沿垂直方向一格一格往上走。图 1 左右两栏分别是俯视与侧视。</p>
+
+<figure class="fig">
+  <svg id="f1" viewBox="0 0 880 400" role="img" aria-label="左：复平面俯视的单位圆与指针；右：侧视的法线轴、圆盘与指针"></svg>
+  <figcaption><b>图 1</b> 同一颗元相子的两种看法。左：复平面俯视图，指针在单位圆上扫角 <em>θ</em>，半径恒为 <code>ℏ</code>。右：侧视图，圆盘沿法线轴逐格上升，每一格就是一次满周闭合。</figcaption>
+</figure>
+
+<h3><span class="h">1.3</span>三类读数</h3>
+<p>元相子的物侧状态由两类量拼成：一个是<strong>相位</strong>（指针在圆上转到哪里，连续取值），一个是<strong>层数</strong>（沿法线走了几格，取整数）。加上位置，得到三类可读的量：相位角、层数、位置。</p>
+<p>这里已经埋下了后面所有分化的种子。相位是紧致的（转一圈回到原位），层数是非紧致的（可以无限累积）。两个量住在同一个几何体里，却给出两把性质不同的尺子。</p>
+
+<figure class="fig">
+  <svg id="f2" viewBox="0 0 880 280" role="img" aria-label="三张卡片：半径、角频率、法线方向各自的职能"></svg>
+  <figcaption><b>图 2</b> 三样东西各有职能，互不替代：半径 <code>ℏ</code> 管圆是否成立与量度是否共同，角频率 <code>ω_P</code> 管节拍，法线管跃迁方向。可变的只有最外面那层读数。</figcaption>
+</figure>
+
+<div class="note ins"><b>一个容易滑过去的地方</b>半径不是"大小"，它是构成条件。属性可变而对象不变；构成条件一变，对象就不再是那个对象。半径可自由取值的设想，换来的是另一种几何对象：同一个圆换尺寸这件事并不发生。</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第二部分 ==================== -->
+<h2 class="sec" id="p2"><span class="no">2</span>螺旋阶梯几何：连续旋转，离散跳格</h2>
+<p class="lead">旋转是连续的，跳格是离散的。同一个几何体里，这两件事同时成立。</p>
+
+<h3><span class="h">2.1</span>旋转楼梯</h3>
+<p>最贴切的类比是旋转楼梯。表盘告诉你转到哪个角度，楼梯高度告诉你总共转了几圈。角度转一圈就回到原处，高度不会回头，只会继续累积。</p>
+<p>楼梯的结构由两件事决定：满周闭合触发一次上升，每次上升恰好一格 <code>l_P</code>。把这条规则写成式子，就是元相方程 (II) 的宏观解：</p>
+<p style="text-align:center"><code>z(t) = z(0) + l_P · ⌊ ω_P t / 2π ⌋</code></p>
+<p>取整符号是关键：在两次满周之间，高度纹丝不动（指针还在转），跨过整数圈的那一刻，高度突然加一格。图 4 把这两个量并排画出来。</p>
+
+<figure class="fig">
+  <svg id="f3" viewBox="0 0 880 360" role="img" aria-label="旋转楼梯：圆柱面上的螺旋线、台阶刻度与满周闭合点"></svg>
+  <figcaption><b>图 3</b> 旋转楼梯。螺旋线是相位指针的轨迹，每绕满一圈，落点上升一格；台阶横线标出层数与格距 <code>l_P</code>。表盘紧致（转一圈回到原点），楼梯高度非紧致（永不回头）。</figcaption>
+</figure>
+
+<h3><span class="h">2.2</span>两把尺子</h3>
+<p>螺旋阶梯几何最有意思的一点，是它同时装着两把尺子。圆是紧致的：角度只能在一圈之内取值，转到头就回到起点。法线轴是非紧致的：层数可以无限往上升，没有上限。</p>
+<p>自由度也因此分居两侧。相位角是连续量，层数是整数量。连续与离散在同一个几何体里共存，谁也不能还原成对方：这正是一条路径（连续旋转）与它留下的计数（离散层数）的关系。</p>
+
+<figure class="fig">
+  <svg id="f4" viewBox="0 0 880 300" role="img" aria-label="双面板：相位角随时间线性增长后折回，层数随时间呈阶梯上升"></svg>
+  <figcaption><b>图 4</b> 左：相位角随时间匀速增长，每到一个整圈回到 0（锯齿）。右：层数同步呈阶梯，只在跨过整圈的那一刻跳一格。两个面板是同一个过程的两种读数。</figcaption>
+</figure>
+
+<h3><span class="h">2.3</span>波是粒的边界</h3>
+<p>元相子的物侧延展体是一个实心圆柱 <code>D² × R</code>：圆盘沿法线扫出来的实心体，豪斯多夫维数为 3，它不承载状态自由度。真正承载状态的是它的边界，也就是空心圆柱面 <code>S¹ × R</code>。</p>
+<p>边界关系 <code>S¹ = ∂D²</code> 给出一句值得记住的话：<strong>波是粒的边界</strong>，相位轨迹是实存体的边界。物侧延展体只提供"体"，状态住在"面"上。</p>
+
+<figure class="fig">
+  <svg id="f5" viewBox="0 0 880 300" role="img" aria-label="左：空心圆柱面与其上的一条螺旋；右：填实的圆柱体，标出边界与内部"></svg>
+  <figcaption><b>图 5</b> 左：状态空间 <code>S¹ × R</code>（空心圆柱面），螺旋线就住在它上面。右：物侧延展体 <code>D² × R</code>（填实圆柱），只提供"体"，内部不承载状态自由度。状态空间是延展体的边界。</figcaption>
+</figure>
+
+<h3><span class="h">2.4</span>双螺旋</h3>
+<p>把心侧也画进来，几何体由一条螺旋变成两条：实轴螺旋承载物侧的结构信息，虚轴螺旋承载心侧，两条螺旋的相位差恒为 <code>π/2</code>。这是心物波粒二象在几何上的样子。</p>
+<p>第二层级是网络：多颗元相子之间的相位差分布，会形成同构的双螺旋网络。个体一条螺旋，世界一张螺旋网。</p>
+
+<figure class="fig">
+  <svg id="f6" viewBox="0 0 880 300" role="img" aria-label="双螺旋：实轴螺旋与虚轴螺旋，相位差四分之一圈"></svg>
+  <figcaption><b>图 6</b> 双螺旋。实轴螺旋（物侧结构信息）与虚轴螺旋（心侧）缠绕在同一条楼梯上，相位差恒为 <code>π/2</code>。把多颗元相子叠起来，就得到同构的双螺旋网络。</figcaption>
+</figure>
+
+<!-- ==================== 第三部分 ==================== -->
+<h2 class="sec" id="p3"><span class="no">3</span>时空晶格：一格一格攒出来的空间</h2>
+<p class="lead">每完成一次满周闭合，空间里就多出一个像素。攒得足够多，就有了格点阵。</p>
+
+<h3><span class="h">3.1</span>像素与距离</h3>
+<p>一次满周闭合生成一个空间像素，尺寸是一格 <code>l_P</code>。像素沿法线堆叠，位置就成了整数计数的结果：格点坐标 <code>x^a = l_P · n^a</code>，其中 <code>n^a</code> 是整数。</p>
+<p>体系把这条分工定名为<strong>距离归粒</strong>：距离由格点的离散计数承载。距离不是连续介质里的长度，它是一个整数乘以一个常量。连续的空间感是宏观平滑化的结果。</p>
+
+<figure class="fig">
+  <svg id="f7" viewBox="0 0 880 380" role="img" aria-label="三维格点阵的等轴投影，三个方向分别着色，并标出一格的长度"></svg>
+  <figcaption><b>图 7</b> 时空晶格的等轴投影。x、y、z 三个方向由三类正交元相子承载，同类平行、异类由耦合锁定。格点之间的间距恒为 <code>l_P</code>，这就是"像素"。</figcaption>
+</figure>
+
+<figure class="fig">
+  <svg id="f8" viewBox="0 0 880 280" role="img" aria-label="像素累积：从零格到七格，层数直接读数成距离"></svg>
+  <figcaption><b>图 8</b> 像素累积。层数每加一，距离加一格 <code>l_P</code>。左边是刚起步的格子，右边是攒了七格之后的格子；层数与距离在这里是同一个读数。</figcaption>
+</figure>
+
+<h3><span class="h">3.2</span>晶格是刚性的</h3>
+<p>网格不可伸缩：格距 <code>l_P</code> 与摆程 <code>t_P</code> 是绝对常数，处处恒定，永不改变。这一条在 2026 年 9 月由作者确认，理由分两层：刚性格点没有形变自由度，格距改变没有实现通道；任何需要背景格距改变才能成立的机制一律不成立。</p>
+<p>那些看起来像"空间被改变"的现象，都写在波性侧的记录与响应上。引力弯曲是法线场的静倾角记录，尺缩是运动束缚态内部结构尺度的变化（格数随观测者变，格距不变），膨胀是格点数量的增长。网格本身不动。</p>
+
+<figure class="fig">
+  <svg id="f9" viewBox="0 0 880 300" role="img" aria-label="左：刚性网格不变，弯曲写在记录层；右：被划掉的错误画法，网格被压弯"></svg>
+  <figcaption><b>图 9</b> 弯曲住在哪一层。左：网格保持刚性，曲率写在网格上方的记录层里。右：把弯曲画成网格自身变形，这种读法已经退役。</figcaption>
+</figure>
+
+<div class="note warn"><b>三处常见误读</b>
+一是把跃迁读成"某个东西在空间里移动"：空间正是由跃迁生成的，没有先于跃迁存在的背景空间。
+二是把晶格读成"为了计算方便而做的离散化"：离散是客观结构，来自单位圆相位旋转的必然几何特性。
+三是把相位读成可观测的绝对量：可观测的只有相位差，波矢由相邻元相子的实轴方向差定义。</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第四部分 ==================== -->
+<h2 class="sec" id="p4"><span class="no">4</span>时间与光速：一次摆程的三件产物</h2>
+<p class="lead">摆程是节拍，计数是时间。一次摆程，同时给出空间一格、时间一拍与光速。</p>
+
+<h3><span class="h">4.1</span>摆程与折返</h3>
+<p>单颗元相子本可以一直沿法线飞下去。让这条路变成往返的是一条几何约束：邻居的圆心不可重合。于是自由直飞被切成等长往返，每一次往返叫一个<strong>摆程</strong>，历时 <code>t_P</code>。</p>
+<p>摆程计数从物理实轴出发、扫过 <code>2π</code>、回到实轴，去程回程都不倒退。物理时间因此是单调递增的计数：<code>t = N · t_P</code>。时间箭头的本体层来源就在这里，与热力学箭头是两回事。</p>
+
+<figure class="fig">
+  <svg id="f10" viewBox="0 0 880 320" role="img" aria-label="一维格点链上的束缚振荡：往返箭头与折返点，标注一个摆程的时长"></svg>
+  <figcaption><b>图 10</b> 束缚振荡。元相子在两个相邻格点之间往返，折返点是几何约束的结果。一个摆程扫过 <code>2π</code>，历时 <code>t_P</code>；时间是这条往返链上的计数，不是背景里流淌的河水。</figcaption>
+</figure>
+
+<h3><span class="h">4.2</span>一次摆程的三件产物</h3>
+<p>一个摆程同时给出三样东西：空间前进一格 <code>l_P</code>，时间前进一拍 <code>t_P</code>，以及它们之比：光速 <code>c = l_P / t_P</code>。</p>
+<p>光速在体系内有三条独立来源，互为印证：元相方程 (II) 的宏观解给出 <code>Z = cT</code>；接力几何给出每棒一格一拍的传播速度；色散的低能极限给出 <code>ω = ck</code>。三条都不依赖介质弹性参数，光速因此是相位 <code>2π</code> 与空间 <code>l_P</code> 之间的换算常数。</p>
+
+<figure class="fig">
+  <svg id="f11" viewBox="0 0 880 300" role="img" aria-label="三张卡片：一次摆程给出空间一格、时间一拍与光速"></svg>
+  <figcaption><b>图 11</b> 一次摆程的三件产物。它们出自同一个动作，所以彼此锁定：改变了传播强度，速度也不变；强光弱光、单光子同速。</figcaption>
+</figure>
+
+<h3><span class="h">4.3</span>接力与采样</h3>
+<p>采样不需要记录员。元相子按摆程节拍跃迁，撞上邻居的瞬间，邻居抄下它的实轴指向继续向前，链式传播以一步一摆程、一格一格的速度搬家，这个速度就是光速。搬走的是状态，格点之间的实轴指向差原样保留，这正是波矢的形状。</p>
+<p>采样率因此就是晶格的碰撞率：每摆程一次。按采样定理，分辨一个振荡至少要两次采样（去一次、回一次），可分辨频率的上界是普朗克频率的一半。紫外截断藏在普朗克采样网格里，与光速出自同一处。</p>
+
+<div class="note adv"><b>时钟层为什么不可观测</b>普朗克旋转 <code>ω_P</code> 均匀而绝对，但它落在整体 <code>U(1)</code> 之下，不可直接观测。可观测的是差：实轴取向差给出信息与方向。固有时是沿世界线数出的摆程总数，因此必为 <code>t_P</code> 的整数倍。步长不变，步数可变；时间膨胀是步数之比，不是步长被拉长。</div>
+
+<hr class="sp" />
+
+<!-- ==================== 第五部分 ==================== -->
+<h2 class="sec" id="p5"><span class="no">5</span>常见误读与边界：哪些是定案，哪些还开着</h2>
+<p class="lead">几何讲完了，剩下的事是把话说准：这份笔记里哪些句子站得住，站得有多稳。</p>
+
+<h3><span class="h">5.1</span>三句话记住整套几何</h3>
+<div class="kv">
+  <div><b>一圈一格</b>连续旋转触发离散跃迁，圆是紧致的，楼梯是非紧致的。</div>
+  <div><b>两轴分工</b>方向归波（实轴方向差给出波矢），距离归粒（层数给出距离）。</div>
+  <div><b>波是边界</b>状态住在边界面上，实心体只提供"体"。</div>
+</div>
+
+<h3><span class="h">5.2</span>严格程度分档</h3>
+<p>下面是这套几何的逐条档位。定案指体系内已确认；模型假设级指构造成立但机制未闭合；纲领级指方向明确、推导未完成；待证指命题已提出、证明未做。</p>
+
+<table>
+  <tr><th>结论</th><th>一句话</th><th>档位</th></tr>
+  <tr><td>半径固定</td><td>半径 <code>ℏ</code> 是构成条件，作用量子即圆周长</td><td>定案</td></tr>
+  <tr><td>一圈一格</td><td>满周闭合触发法线跃迁一格 <code>l_P</code></td><td>定案（元相方程 II）</td></tr>
+  <tr><td>距离归粒</td><td>距离由格点计数承载</td><td>定案</td></tr>
+  <tr><td>方向归波</td><td>波矢由相邻元相子的实轴方向差定义</td><td>定案</td></tr>
+  <tr><td>晶格刚性</td><td>格距与摆程是绝对常数，弯曲写在记录层</td><td>定案（2026-09-11 作者确认）</td></tr>
+  <tr><td>光速三条来源</td><td>宏观解、接力几何、色散极限互为印证</td><td>定案（几何恒等式级）</td></tr>
+  <tr><td>束缚振荡</td><td>往返给出摆程计数与时间颗粒性</td><td>模型假设级</td></tr>
+  <tr><td>三维性严格证明</td><td>三个正交方向的几何必然性</td><td>待证（P10）</td></tr>
+  <tr><td>存在依赖波性侧</td><td>晶格的存在方式与波性侧的关联</td><td>纲领级</td></tr>
+  <tr><td>心侧的形式化</td><td>天行力不可数学形式化（体系自定）</td><td>体系自定边界</td></tr>
+</table>
+
+<figure class="fig">
+  <svg id="f12" viewBox="0 0 880 330" role="img" aria-label="三档分布：定案、模型假设级、纲领与待证"></svg>
+  <figcaption><b>图 12</b> 读完这张图再回头读正文。左栏是已确认的几何骨架，中栏是构造成立但机制未闭合的部分，右栏是方向明确、推导未完成的部分；三者不能混着引用。</figcaption>
+</figure>
+
+<div class="pull">一圈一格，方向归波、距离归粒，时间就是数摆程。整个时空的生成机制，压缩之后只剩这一动作。
+<span>第五部分 · 小结</span></div>
+
+<h3><span class="h">尾声</span>回到开头那两个问题</h3>
+<p><strong>空间是什么？</strong>是元相子满周跃迁累积出的格点阵。它没有背景，也没有弹性；改变的是记录，不是网格。</p>
+<p><strong>时间是什么？</strong>是沿世界线数出的摆程总数，颗粒度为一拍 <code>t_P</code>。它不流淌，它被计数。</p>
+<p>两个答案出自同一个几何体：<code>S¹ × R</code>。表盘给方向，楼梯给距离；指针转一圈，世界厚一格。这就是螺旋阶梯几何想说的全部。</p>
+
+<footer class="end">
+  <p><strong>配套材料</strong>：词条 <code>wiki/螺旋阶梯几何.md</code>、<code>wiki/时空晶格.md</code>、<code>wiki/元相子.md</code>、<code>wiki/法线跃迁.md</code>；基准 <code>理论总纲/元相子理论的时空观：体系对时空的完整认识.md</code>、<code>理论总纲/元相方程.md</code>、<code>理论总纲/螺旋阶梯几何.md</code>；姊妹篇 <code>可视化/量子态究竟是什么</code>（量子态图解笔记）。</p>
+  <p><strong>想要动手转一格</strong>：<code>可视化/时空晶格振荡模型_三维可视化.html</code> 与 <code>可视化/轨迹切线即光速方向_三维可视化.html</code> 是用 three.js 做的交互版，可单步一个摆程、查看每颗元相子的实时读数。</p>
+  <p><strong>关于这份文档</strong>：本文为科普图解笔记，自包含单文件，12 幅插图由页面内脚本用 SVG 绘制，无外部依赖，可离线阅读或打印。选 SVG 而非三维渲染，是为了离线可用、可打印、便于逐图核对；需要交互三维时请用上面两份可视化。正文所有结论按第 5 节的档位标注，未将模型假设与纲领写成定案。</p>
+</footer>
+
+</div><!-- /inner -->
+</div><!-- /sheet -->
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function mk(tag, a){ var e = document.createElementNS(NS, tag); for (var k in a) { e.setAttribute(k, a[k]); } return e; }
+  function txt(p, x, y, s, c, size, anchor, weight){
+    var t = mk("text", {x:x, y:y, fill: c || "#1f2328",
+      "font-size": (size || 13), "text-anchor": (anchor || "middle")});
+    if (weight) { t.setAttribute("font-weight", weight); }
+    t.textContent = s; p.appendChild(t); return t;
+  }
+  function seg(p, x1, y1, x2, y2, c, w, dash){
+    var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:c, "stroke-width": (w || 1.5)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("line", a));
+  }
+  function arrow(p, x1, y1, x2, y2, c, w){
+    w = w || 3;
+    var dx = x2-x1, dy = y2-y1, L = Math.sqrt(dx*dx+dy*dy);
+    if (L < 0.8) { return; }
+    var ux = dx/L, uy = dy/L, head = Math.min(12, L*0.45);
+    var bx = x2-ux*head, by = y2-uy*head;
+    p.appendChild(mk("line", {x1:x1, y1:y1, x2:bx, y2:by, stroke:c, "stroke-width":w, "stroke-linecap":"round"}));
+    var px = -uy, py = ux, h = 5;
+    p.appendChild(mk("polygon", {points: x2+","+y2+" "+(bx+px*h)+","+(by+py*h)+" "+(bx-px*h)+","+(by-py*h), fill:c}));
+  }
+  function dbl(p, x1, y1, x2, y2, c, w){ arrow(p, x1, y1, x2, y2, c, w); arrow(p, x2, y2, x1, y1, c, w); }
+  function rr(p, x, y, w, h, fill, stroke, sw, rx){
+    p.appendChild(mk("rect", {x:x, y:y, width:w, height:h, rx: (rx === undefined ? 11 : rx),
+      fill: fill || "#fff", stroke: stroke || "#e6e3dc", "stroke-width": (sw || 1.4)}));
+  }
+  function ci(p, cx, cy, r, fill, stroke, sw, dash){
+    var a = {cx:cx, cy:cy, r:r, fill: fill || "none", stroke: stroke || "none", "stroke-width": (sw || 1.4)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("circle", a));
+  }
+  function poly(p, pts, stroke, w, dash, fill){
+    var a = {points: pts.join(" "), fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 2)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    p.appendChild(mk("polyline", a));
+  }
+  function path(p, d, fill, stroke, w, dash, opacity){
+    var a = {d:d, fill: fill || "none", stroke: stroke || "none", "stroke-width": (w || 1.4)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    if (opacity !== undefined) { a["fill-opacity"] = opacity; }
+    p.appendChild(mk("path", a));
+  }
+  function disk(p, cx, cy, rx, ry, fill, stroke, sw, dash){
+    path(p, "M "+(cx-rx)+" "+cy+" A "+rx+" "+ry+" 0 1 0 "+(cx+rx)+" "+cy+" A "+rx+" "+ry+" 0 1 0 "+(cx-rx)+" "+cy+" Z",
+      fill || "none", stroke || "none", sw, dash);
+  }
+  function wrap(g, x, y, lines, c, size, lh, anchor){
+    for (var i = 0; i < lines.length; i++) { txt(g, x, y + i*lh, lines[i], c, size, anchor); }
+  }
+  function svg(id){ var s = document.getElementById(id); if (!s) { return null; } var g = mk("g", {}); s.appendChild(g); return g; }
+
+  /* ============ 图 1 · 俯视与侧视 ============ */
+  (function(){
+    var g = svg("f1"); if (!g) return;
+    rr(g, 16, 14, 420, 372, "#fbfaf7");
+    txt(g, 226, 42, "俯视：复平面", "#4f46e5", 13.5, "middle", "650");
+    var ox = 150, oy = 264, R = 110, th = 55*Math.PI/180;
+    arrow(g, ox, oy, ox+R+54, oy, "#c9ccd6", 1.8);
+    arrow(g, ox, oy, ox, oy-R-44, "#c9ccd6", 1.8);
+    txt(g, ox+R+62, oy+5, "实轴", "#68718c", 12, "start");
+    txt(g, ox-18, oy-R-52, "虚轴", "#68718c", 12, "middle");
+    ci(g, ox, oy, R, "none", "#4f46e5", 1.6);
+    var vx = ox + R*Math.cos(th), vy = oy - R*Math.sin(th);
+    arrow(g, ox, oy, vx, vy, "#2563eb", 3.4);
+    txt(g, vx+14, vy-10, "指针", "#2563eb", 14, "start", "650");
+    txt(g, (ox+vx)/2 - 42, (oy+vy)/2 - 6, "半径 ℏ", "#4a5260", 12, "middle", "650");
+    var ar = 54;
+    path(g, "M "+(ox+ar)+" "+oy+" A "+ar+" "+ar+" 0 0 0 "+(ox+ar*Math.cos(th))+" "+(oy-ar*Math.sin(th)), "none", "#9aa1b0", 1.3);
+    txt(g, ox+ar+16, oy-ar*0.45, "θ", "#68718c", 13, "start");
+    txt(g, 226, 370, "转一圈回到实轴：满周闭合", "#68718c", 11.5, "middle");
+
+    rr(g, 456, 14, 408, 372, "#fbfaf7");
+    txt(g, 660, 42, "侧视：法线轴", "#0f766e", 13.5, "middle", "650");
+    var cx = 660, cy = 306;
+    arrow(g, cx, cy, cx, 62, "#0f766e", 2.6);
+    txt(g, cx+12, 74, "法线（跃迁方向）", "#0f766e", 12.5, "start", "650");
+    disk(g, cx, cy-156, 84, 20, "none", "#c9ccd6", 1.3, "6 5");
+    txt(g, cx+96, cy-156, "上一层", "#68718c", 11.5, "start");
+    disk(g, cx, cy, 84, 20, "#eef2ff", "#4f46e5", 1.6);
+    arrow(g, cx, cy, cx+70, cy-8, "#2563eb", 3.2);
+    txt(g, cx-96, cy+4, "圆盘", "#4f46e5", 12.5, "end", "650");
+    dbl(g, cx-116, cy, cx-116, cy-156, "#b45309", 1.8);
+    txt(g, cx-128, cy-74, "l_P", "#b45309", 13, "end", "650");
+    txt(g, 660, 370, "每次满周闭合，圆盘上升一格", "#68718c", 11.5, "middle");
+  })();
+
+  /* ============ 图 2 · 三样东西的职能 ============ */
+  (function(){
+    var g = svg("f2"); if (!g) return;
+    var cards = [
+      [16, "#4f46e5", "半径 ℏ", ["构成：没有半径，圆不成立", "标定：圆周长 2πℏ = h", "失效形态：圆消失，或量度不共同"]],
+      [304, "#0f766e", "角频率 ω_P", ["节律：全体元相子同频", "功能：格子提供统一时钟", "落在整体 U(1) 下，不可直接观测"]],
+      [592, "#b45309", "法线方向", ["定理 3.1：旋转轴唯一", "定理 3.2：平移与轴重合", "功能：空间逐格生成"]]
+    ];
+    for (var i = 0; i < cards.length; i++){
+      var x = cards[i][0], col = cards[i][1];
+      rr(g, x, 26, 272, 226, "#fbfaf7", col, 1.5);
+      g.appendChild(mk("rect", {x:x, y:26, width:272, height:5, rx:2.5, fill:col}));
+      txt(g, x+20, 62, cards[i][2], col, 16, "start", "700");
+      for (var j = 0; j < cards[i][3].length; j++){
+        txt(g, x+20, 100 + j*36, cards[i][3][j], "#4a5260", 12.5, "start");
+      }
+    }
+  })();
+
+  /* ============ 图 3 · 旋转楼梯 ============ */
+  (function(){
+    var g = svg("f3"); if (!g) return;
+    rr(g, 16, 14, 560, 332, "#fbfaf7");
+    txt(g, 296, 42, "螺旋线 = 相位指针的轨迹", "#4f46e5", 13.5, "middle", "650");
+    var cx = 290, baseY = 300, R = 104, ry = 24, turnH = 52, turns = 4;
+    seg(g, cx-R, baseY-turnH*turns, cx-R, baseY, "#c9ccd6", 1.6);
+    seg(g, cx+R, baseY-turnH*turns, cx+R, baseY, "#c9ccd6", 1.6);
+    disk(g, cx, baseY, R, ry, "#f4f6fb", "#c9ccd6", 1.4);
+    disk(g, cx, baseY-turnH*turns, R, ry, "none", "#c9ccd6", 1.2, "6 5");
+    var pts = [];
+    for (var t = 0; t <= turns*2*Math.PI + 0.01; t += 0.07){
+      var x = cx + R*Math.cos(t);
+      var y = baseY - (t/(2*Math.PI))*turnH + ry*Math.sin(t);
+      pts.push(x.toFixed(1)+","+y.toFixed(1));
+    }
+    poly(g, pts, "#4f46e5", 2.4);
+    for (var k = 0; k <= turns; k++){
+      var yt = baseY - k*turnH;
+      seg(g, cx+R, yt, cx+R+26, yt, "#b45309", 1.6);
+      txt(g, cx+R+34, yt+4, String(k), "#b45309", 12, "start", "650");
+      ci(g, cx+R, yt, 3.6, "#b45309");
+    }
+    dbl(g, cx-R-34, baseY, cx-R-34, baseY-turnH, "#0f766e", 1.8);
+    txt(g, cx-R-42, baseY-turnH/2+4, "l_P", "#0f766e", 13, "end", "650");
+    txt(g, cx-R-42, baseY-turnH*turns-8, "层数", "#b45309", 12.5, "end", "650");
+    txt(g, 296, 330, "每绕满一圈，落点上升一格", "#68718c", 11.5, "middle");
+
+    rr(g, 592, 14, 272, 332, "#fbfaf7");
+    txt(g, 728, 44, "两把尺子", "#0f766e", 13.5, "middle", "650");
+    ci(g, 700, 106, 40, "none", "#4f46e5", 1.6);
+    arrow(g, 700, 106, 700+34*Math.cos(-0.9), 106-34*Math.sin(-0.9)+0, "#2563eb", 2.6);
+    txt(g, 700, 168, "圆：紧致", "#4f46e5", 12.5, "middle", "650");
+    txt(g, 700, 188, "转一圈回到原处", "#4a5260", 11.5, "middle");
+    seg(g, 700, 214, 700, 306, "#0f766e", 2);
+    for (var m = 0; m <= 4; m++){ seg(g, 694, 306-m*23, 706, 306-m*23, "#0f766e", 1.6); }
+    arrow(g, 700, 250, 700, 216, "#0f766e", 2);
+    txt(g, 700, 330, "高度：非紧致，永不回头", "#0f766e", 11.5, "middle");
+  })();
+
+  /* ============ 图 4 · 相位与层数 ============ */
+  (function(){
+    var g = svg("f4"); if (!g) return;
+    rr(g, 16, 14, 420, 272, "#fbfaf7");
+    txt(g, 226, 44, "相位角：连续增长，整圈归零", "#4f46e5", 13, "middle", "650");
+    var x0 = 56, yb = 240, yt = 120, per = 90;
+    arrow(g, x0-14, yb, x0+336, yb, "#c9ccd6", 1.6);
+    arrow(g, x0-14, yb, x0-14, yt-24, "#c9ccd6", 1.6);
+    txt(g, x0+342, yb+5, "t", "#68718c", 12, "start");
+    txt(g, x0-20, yt-30, "θ", "#68718c", 12, "middle");
+    for (var k = 0; k < 3; k++){
+      var a = x0 + k*per, b = a + per;
+      seg(g, a, yb, b, yt, "#4f46e5", 2.2);
+      seg(g, b, yt, b, yb, "#c9ccd6", 1.2, "4 4");
+    }
+    txt(g, x0+per/2, yb+30, "t_P", "#68718c", 12, "middle");
+    txt(g, x0, yt-8, "2π", "#4a5260", 12, "middle", "650");
+    txt(g, 226, 272, "每转满一圈，读数回到 0 再重来", "#68718c", 11.5, "middle");
+
+    rr(g, 456, 14, 408, 272, "#fbfaf7");
+    txt(g, 660, 44, "层数：只在整圈处跳一格", "#0f766e", 13, "middle", "650");
+    var bx = 496, byb = 240, bper = 90, lev = 44;
+    arrow(g, bx-14, byb, bx+324, byb, "#c9ccd6", 1.6);
+    arrow(g, bx-14, byb, bx-14, 108, "#c9ccd6", 1.6);
+    txt(g, bx+330, byb+5, "t", "#68718c", 12, "start");
+    txt(g, bx-20, 112, "z", "#68718c", 12, "middle");
+    var spts = [];
+    spts.push(bx+","+byb);
+    for (var m = 0; m < 3; m++){
+      var xa = bx + m*bper, xb2 = xa + bper;
+      spts.push(xb2+","+byb);
+      spts.push(xb2+","+(byb-lev*(m+1)));
+      spts.push((xb2+bper)+","+(byb-lev*(m+1)));
+    }
+    poly(g, spts, "#0f766e", 2.4);
+    for (var mm = 1; mm <= 3; mm++){ seg(g, bx, byb-lev*mm, bx+3*bper, byb-lev*mm, "#eef0f5", 1); }
+    dbl(g, bx+3*bper+18, byb, bx+3*bper+18, byb-lev, "#b45309", 1.6);
+    txt(g, bx+3*bper+26, byb-lev/2+4, "l_P", "#b45309", 12.5, "start", "650");
+    txt(g, 660, 272, "跨过整数圈的那一刻，高度加一格", "#68718c", 11.5, "middle");
+  })();
+
+  /* ============ 图 5 · 边界关系 ============ */
+  (function(){
+    var g = svg("f5"); if (!g) return;
+    function cyl(cx, topY, botY, rx, ry, fill, op, stroke){
+      path(g, "M "+(cx-rx)+" "+topY+" L "+(cx-rx)+" "+botY+" A "+rx+" "+ry+" 0 0 0 "+(cx+rx)+" "+botY+" L "+(cx+rx)+" "+topY+" A "+rx+" "+ry+" 0 0 1 "+(cx-rx)+" "+topY+" Z",
+        fill, stroke, 1.5, null, op);
+    }
+    rr(g, 16, 14, 420, 272, "#fbfaf7");
+    txt(g, 226, 44, "状态空间：空心圆柱面", "#4f46e5", 13, "middle", "650");
+    cyl(226, 96, 246, 92, 22, "#eef2ff", 0.7, "#4f46e5");
+    disk(g, 226, 96, 92, 22, "none", "#4f46e5", 1.5);
+    var pts = [];
+    for (var t = 0; t <= 2*2*Math.PI + 0.01; t += 0.07){
+      pts.push((226 + 92*Math.cos(t)).toFixed(1)+","+(246 - (t/(2*Math.PI))*66 + 22*Math.sin(t)).toFixed(1));
+    }
+    poly(g, pts, "#2563eb", 2.2);
+    txt(g, 226, 282, "S¹ × R：状态住在这个面上", "#4a5260", 11.5, "middle");
+
+    rr(g, 592, 14, 272, 272, "#fbfaf7");
+    txt(g, 728, 44, "延展体：填实圆柱", "#0f766e", 13, "middle", "650");
+    cyl(728, 96, 246, 86, 21, "#f2fbf8", 1, "#0f766e");
+    disk(g, 728, 96, 86, 21, "#e8f6f2", "#0f766e", 1.5);
+    txt(g, 728, 176, "内部不承载", "#4a5260", 12, "middle");
+    txt(g, 728, 198, "状态自由度", "#4a5260", 12, "middle");
+    txt(g, 728, 282, "D² × R：只提供「体」", "#4a5260", 11.5, "middle");
+
+    arrow(g, 442, 172, 586, 172, "#b45309", 2.4);
+    txt(g, 514, 158, "边界 = 状态空间", "#b45309", 12, "middle", "650");
+  })();
+
+  /* ============ 图 6 · 双螺旋 ============ */
+  (function(){
+    var g = svg("f6"); if (!g) return;
+    rr(g, 16, 14, 520, 272, "#fbfaf7");
+    txt(g, 276, 44, "两条螺旋缠在同一条楼梯上", "#4f46e5", 13, "middle", "650");
+    var cx = 276, topY = 86, botY = 250, rx = 96, ry = 22, turnH = 52, turns = 3;
+    seg(g, cx-rx, botY-turnH*turns, cx-rx, botY, "#c9ccd6", 1.4);
+    seg(g, cx+rx, botY-turnH*turns, cx+rx, botY, "#c9ccd6", 1.4);
+    disk(g, cx, botY, rx, ry, "#faf9fd", "#c9ccd6", 1.3);
+    var A = [], B = [];
+    for (var t = 0; t <= turns*2*Math.PI + 0.01; t += 0.07){
+      A.push((cx + rx*Math.cos(t)).toFixed(1)+","+(botY - (t/(2*Math.PI))*turnH + ry*Math.sin(t)).toFixed(1));
+      B.push((cx + rx*Math.cos(t + Math.PI/2)).toFixed(1)+","+(botY - (t/(2*Math.PI))*turnH + ry*Math.sin(t + Math.PI/2)).toFixed(1));
+    }
+    poly(g, A, "#4f46e5", 2.4);
+    poly(g, B, "#0f766e", 2.4);
+    var t0 = Math.PI/2, xA = cx + rx*Math.cos(t0), yA = botY - (t0/(2*Math.PI))*turnH + ry*Math.sin(t0);
+    var xB = cx + rx, yB = botY;
+    seg(g, xA, yA, xB, yB, "#b45309", 1.4, "5 4");
+    txt(g, (xA+xB)/2, (yA+yB)/2 - 20, "π/2", "#b45309", 12.5, "middle", "650");
+    txt(g, cx-rx-8, botY-turnH*3 - 18, "实轴螺旋", "#4f46e5", 12.5, "middle", "650");
+    txt(g, cx+rx+8, botY-turnH*3 + 4, "虚轴螺旋", "#0f766e", 12.5, "middle", "650");
+    txt(g, 276, 278, "两条螺旋相位差恒为 π/2：心物波粒二象的几何形态", "#4a5260", 11.5, "middle");
+
+    rr(g, 560, 14, 304, 272, "#fbfaf7");
+    txt(g, 712, 46, "第二层级：网络", "#be185d", 13, "middle", "650");
+    wrap(g, 712, 92, ["个体是一条双螺旋：", "实轴螺旋 + 虚轴螺旋。", "", "多颗元相子之间，相位差", "分布同样呈双螺旋结构，", "个体与世界因此同构。", "", "实轴螺旋承载物侧结构信息；", "心侧不可几何化，是体系自定的边界。"], "#4a5260", 12, 22, "middle");
+  })();
+
+  /* ============ 图 7 · 时空晶格 ============ */
+  (function(){
+    var g = svg("f7"); if (!g) return;
+    rr(g, 16, 14, 580, 352, "#fbfaf7");
+    txt(g, 306, 44, "格点阵：一格 l_P，三个方向", "#4f46e5", 13, "middle", "650");
+    var ox = 286, oy = 296, ex = 56, ey = 28, ez = 44;
+    function P(i, j, k){ return [ox + (i-j)*ex, oy - (i+j)*ey - k*ez]; }
+    function line(a, b, c, w, dash){ seg(g, a[0], a[1], b[0], b[1], c, w, dash); }
+    var i2, j2, k2;
+    for (i2 = 0; i2 < 3; i2++) for (k2 = 0; k2 < 3; k2++){
+      var hi = (i2 === 0 && k2 === 0);
+      line(P(0, i2, k2), P(1, i2, k2), hi ? "#2563eb" : "#dcdae2", hi ? 2.4 : 1.2);
+      line(P(1, i2, k2), P(2, i2, k2), hi ? "#2563eb" : "#dcdae2", hi ? 2.4 : 1.2);
+    }
+    for (j2 = 0; j2 < 3; j2++) for (k2 = 0; k2 < 3; k2++){
+      var hj = (j2 === 0 && k2 === 0);
+      line(P(j2, 0, k2), P(j2, 1, k2), hj ? "#7c3aed" : "#dcdae2", hj ? 2.4 : 1.2);
+      line(P(j2, 1, k2), P(j2, 2, k2), hj ? "#7c3aed" : "#dcdae2", hj ? 2.4 : 1.2);
+    }
+    for (i2 = 0; i2 < 3; i2++) for (j2 = 0; j2 < 3; j2++){
+      var hz = (i2 === 0 && j2 === 0);
+      line(P(i2, j2, 0), P(i2, j2, 1), hz ? "#0f766e" : "#dcdae2", hz ? 2.4 : 1.2);
+      line(P(i2, j2, 1), P(i2, j2, 2), hz ? "#0f766e" : "#dcdae2", hz ? 2.4 : 1.2);
+    }
+    for (i2 = 0; i2 < 3; i2++) for (j2 = 0; j2 < 3; j2++) for (k2 = 0; k2 < 3; k2++){
+      var p0 = P(i2, j2, k2);
+      var col = (k2 === 0 && (i2 === 0 || j2 === 0)) ? ((i2 === 0 && j2 === 0) ? "#4a5260" : (i2 === 0 ? "#2563eb" : "#7c3aed")) : "#9aa1b0";
+      ci(g, p0[0], p0[1], 3.4, col);
+    }
+    var px = P(2.35, 0, 0), py = P(0, 2.35, 0), pz = P(0, 0, 2.25);
+    txt(g, px[0], px[1]+5, "x", "#2563eb", 15, "middle", "700");
+    txt(g, py[0], py[1]+5, "y", "#7c3aed", 15, "middle", "700");
+    txt(g, pz[0], pz[1]-4, "z", "#0f766e", 15, "middle", "700");
+    var a0 = P(0,0,0), a1 = P(1,0,0);
+    dbl(g, a0[0], a0[1]+18, a1[0], a1[1]+18, "#b45309", 1.6);
+    txt(g, (a0[0]+a1[0])/2, a0[1]+34, "l_P", "#b45309", 12.5, "middle", "650");
+    txt(g, 306, 348, "三个方向由三类正交元相子承载；同类平行，异类由耦合锁定", "#68718c", 11.5, "middle");
+
+    rr(g, 620, 14, 244, 352, "#fbfaf7");
+    txt(g, 742, 46, "三个方向", "#0f766e", 13, "middle", "650");
+    wrap(g, 742, 96, ["x、y、z 三类元相子两两正交，", "同类平行排列，异类之间由", "耦合 κ_φ 锁定。", "", "格点坐标：", "x^a = l_P · n^a", "（n^a 为整数）。", "", "距离由计数承载：", "这就是「距离归粒」。", "", "三个方向的严格几何必然性", "（维度定理）仍待证明，见 P10。"], "#4a5260", 12, 21, "middle");
+  })();
+
+  /* ============ 图 8 · 像素累积 ============ */
+  (function(){
+    var g = svg("f8"); if (!g) return;
+    rr(g, 16, 14, 580, 252, "#fbfaf7");
+    txt(g, 306, 44, "层数每加一，距离加一格", "#0f766e", 13, "middle", "650");
+    var x = 100, side = 46, base = 200;
+    for (var k = 0; k < 8; k++){
+      var col = (k === 7) ? "#0f766e" : "#eef2ff";
+      rr(g, x + k*side, base - side, side, side, col, (k === 7) ? "#0f766e" : "#c9ccd6", 1.4, 6);
+      txt(g, x + k*side + side/2, base + 20, String(k), "#68718c", 11.5, "middle");
+    }
+    txt(g, x + 8*side - side/2, base - side - 14, "7 l_P", "#0f766e", 12, "middle", "650");
+    seg(g, x, base + 40, x + 8*side, base + 40, "#b45309", 1.6);
+    for (var m = 0; m <= 8; m++){ seg(g, x + m*side, base + 35, x + m*side, base + 45, "#b45309", 1.4); }
+    txt(g, x + 4*side, base + 68, "距离 = n · l_P", "#b45309", 12, "middle", "650");
+    txt(g, 306, 246, "左边是刚起步的格子，右边是攒了七格的格子", "#68718c", 11.5, "middle");
+
+    rr(g, 620, 14, 244, 252, "#fbfaf7");
+    txt(g, 742, 46, "为什么叫「像素」", "#4f46e5", 13, "middle", "650");
+    wrap(g, 742, 96, ["每次满周闭合，空间里", "多出一个格子。", "", "格子不是被画在某个", "背景上的坐标，它就是", "空间这一段本身。", "", "连续的空间感来自", "宏观平滑化；格距不变。"], "#4a5260", 12, 21, "middle");
+  })();
+
+  /* ============ 图 9 · 弯曲住在哪一层 ============ */
+  (function(){
+    var g = svg("f9"); if (!g) return;
+    rr(g, 16, 14, 420, 272, "#fbfaf7");
+    txt(g, 226, 44, "网格不动，记录层弯曲", "#0f766e", 13, "middle", "650");
+    var i2, j2;
+    for (i2 = 0; i2 <= 7; i2++){ seg(g, 66 + i2*46, 130, 66 + i2*46, 250, "#e6e3dc", 1.3); }
+    for (j2 = 0; j2 <= 3; j2++){ seg(g, 66, 250 - j2*40, 388, 250 - j2*40, "#e6e3dc", 1.3); }
+    var wv = [];
+    for (var wx = 66; wx <= 388; wx += 4){ wv.push(wx + "," + (86 - 18*Math.sin((wx-66)/46)).toFixed(1)); }
+    poly(g, wv, "#b45309", 2.2);
+    txt(g, 226, 62, "波性侧记录：曲率写在这条线上", "#b45309", 11.5, "middle", "650");
+    txt(g, 226, 272, "格距 l_P 与摆程 t_P 都是绝对常数", "#68718c", 11.5, "middle");
+
+    rr(g, 456, 14, 408, 272, "#fef3f4");
+    txt(g, 660, 44, "已经退役的读法", "#be123c", 13, "middle", "650");
+    for (i2 = 0; i2 <= 6; i2++){
+      var wv2 = [];
+      for (var wy = 250; wy >= 130; wy -= 4){
+        wv2.push((500 + i2*56 + 12*Math.sin((250-wy)/34)).toFixed(1) + "," + wy);
+      }
+      poly(g, wv2, "#f0b3bb", 1.5);
+    }
+    for (j2 = 0; j2 <= 3; j2++){ seg(g, 500, 250 - j2*40, 836, 250 - j2*40, "#f0b3bb", 1.5); }
+    seg(g, 560, 116, 776, 262, "#be123c", 4);
+    seg(g, 776, 116, 560, 262, "#be123c", 4);
+    txt(g, 660, 272, "「像素被压弯」「格点被拉伸」", "#be123c", 11.5, "middle", "650");
+  })();
+
+  /* ============ 图 10 · 束缚振荡 ============ */
+  (function(){
+    var g = svg("f10"); if (!g) return;
+    rr(g, 16, 14, 848, 292, "#fbfaf7");
+    txt(g, 440, 46, "一维格点链上的往返", "#4f46e5", 13.5, "middle", "650");
+    var y = 214, x0 = 96, step = 56;
+    seg(g, x0 - 40, y, x0 + 13*step, y, "#e6e3dc", 1.4);
+    for (var k = 0; k < 13; k++){
+      var px = x0 + k*step;
+      ci(g, px, y, 6, "#fff", "#4a5260", 1.6);
+      if (k % 2 === 0) { txt(g, px, y + 28, String(k), "#68718c", 11, "middle"); }
+    }
+    var xa = x0 + 4*step, xb = x0 + 5*step;
+    ci(g, xa, y, 8, "#2563eb");
+    ci(g, xb, y, 8, "#2563eb");
+    dbl(g, xa, y - 62, xb, y - 62, "#2563eb", 2.4);
+    txt(g, (xa+xb)/2, y - 76, "一个摆程 t_P", "#2563eb", 12.5, "middle", "650");
+    path(g, "M "+xa+" "+(y-40)+" A "+((xb-xa)/2)+" 26 0 0 1 "+xb+" "+(y-40), "none", "#9aa1b0", 1.4, "5 4");
+    seg(g, xb, y - 106, xb, y + 34, "#b45309", 1.6, "6 5");
+    txt(g, xb + 12, y + 2, "折返点：邻居圆心不可重合", "#b45309", 12, "start", "650");
+    txt(g, 440, 282, "去程回程都不倒退，摆程计数因此单调：t = N · t_P", "#4a5260", 11.5, "middle");
+  })();
+
+  /* ============ 图 11 · 一次摆程的三件产物 ============ */
+  (function(){
+    var g = svg("f11"); if (!g) return;
+    var cards = [
+      [16, "#2563eb", "空间一格 l_P", 1],
+      [304, "#0f766e", "时间一拍 t_P", 2],
+      [592, "#b45309", "光速 c = l_P / t_P", 3]
+    ];
+    var lines = [
+      ["满周闭合触发法线跃迁", "每一次跃迁生成一个像素"],
+      ["指针扫过 2π 历时 t_P", "固有时必为 t_P 的整数倍"],
+      ["三条来源互为印证", "与介质弹性参数无关"]
+    ];
+    for (var i = 0; i < 3; i++){
+      var x = cards[i][0], col = cards[i][1];
+      rr(g, x, 24, 272, 252, "#fbfaf7", col, 1.5);
+      g.appendChild(mk("rect", {x:x, y:24, width:272, height:5, rx:2.5, fill:col}));
+      txt(g, x+20, 62, cards[i][2], col, 15, "start", "700");
+      if (i === 0){ dbl(g, x+30, 116, x+242, 116, col, 1.8); txt(g, x+136, 108, "l_P", col, 12.5, "middle", "650"); }
+      if (i === 1){ seg(g, x+30, 116, x+242, 116, col, 1.8); seg(g, x+30, 104, x+30, 128, col, 1.8); seg(g, x+242, 104, x+242, 128, col, 1.8); txt(g, x+136, 108, "t_P", col, 12.5, "middle", "650"); }
+      if (i === 2){ txt(g, x+136, 122, "l_P ÷ t_P", col, 16, "middle", "700"); }
+      for (var j = 0; j < 2; j++){ txt(g, x+20, 172 + j*30, lines[i][j], "#4a5260", 12.5, "start"); }
+      txt(g, x+20, 250, ["空间侧读数", "时间侧读数", "两侧之比"][i], "#68718c", 11.5, "start");
+    }
+  })();
+
+  /* ============ 图 12 · 三档分布 ============ */
+  (function(){
+    var g = svg("f12"); if (!g) return;
+    var cols = [
+      [16, "#0f766e", "定案", ["半径固定，作用量子即圆周长", "一圈一格（元相方程 II）", "距离归粒；方向归波", "晶格刚性（2026-09-11 确认）", "光速三条来源互为印证"]],
+      [304, "#b45309", "模型假设级", ["束缚振荡与折返机制", "摆程计数的动力学细节", "采样接力作为光速的机制图像"]],
+      [592, "#be123c", "纲领与待证", ["三维性的严格证明（P10）", "存在依赖波性侧的关联", "心侧形式化（体系自定边界）"]]
+    ];
+    for (var i = 0; i < 3; i++){
+      var x = cols[i][0], col = cols[i][1];
+      rr(g, x, 24, 272, 282, "#fbfaf7", col, 1.5);
+      g.appendChild(mk("rect", {x:x, y:24, width:272, height:5, rx:2.5, fill:col}));
+      txt(g, x+20, 62, cols[i][2], col, 15, "start", "700");
+      for (var j = 0; j < cols[i][3].length; j++){
+        txt(g, x+20, 100 + j*38, "· " + cols[i][3][j], "#4a5260", 12, "start");
+      }
+    }
+  })();
+
+  /* ============ 阅读进度条 ============ */
+  (function(){
+    var bar = document.getElementById("prog"); if (!bar) return;
+    var queued = false;
+    function upd(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+      bar.style.width = Math.max(0, Math.min(100, p)) + "%";
+      queued = false;
+    }
+    window.addEventListener("scroll", function(){
+      if (!queued) { queued = true; requestAnimationFrame(upd); }
+    }, {passive: true});
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>
