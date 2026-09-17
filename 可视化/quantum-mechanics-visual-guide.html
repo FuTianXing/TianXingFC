@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="量子力学六大核心概念的可交互可视化：希尔伯特空间、态矢量与波函数、概率幅、态叠加与干涉、投影测量、幺正演化，以及态矢量的七种本体论身份。" />
+<title>量子力学核心概念可视化 · 波函数 · 希尔伯特空间 · 概率幅 · 叠加 · 投影 · 幺正演化</title>
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --ink:#1b2233; --muted:#606a83; --line:#e2e6f0;
+  --indigo:#4f46e5; --blue:#2563eb; --purple:#7c3aed; --orange:#ea7317;
+  --teal:#0d9488; --red:#dc2626;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  line-height:1.8;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:26px 18px 90px}
+
+.hero{background:linear-gradient(135deg,#312e81,#4f46e5 45%,#0f766e);
+  color:#fff;border-radius:18px;padding:30px 30px 26px;box-shadow:0 12px 34px rgba(49,46,129,.25)}
+.hero h1{margin:0 0 10px;font-size:25px;letter-spacing:.4px;line-height:1.4}
+.hero p{margin:0;opacity:.93;font-size:15px}
+.hero .chain{margin-top:18px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;font-size:13px}
+.hero .chain span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+  padding:4px 11px;border-radius:999px;white-space:nowrap}
+.hero .chain b{opacity:.75;font-weight:400}
+
+.legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:16px 0 0;
+  padding:12px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13.5px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.nav{position:sticky;top:0;z-index:20;margin-top:14px;padding:8px 2px;
+  background:rgba(245,246,251,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;font-size:13px;color:var(--muted);text-decoration:none;
+  padding:6px 11px;border-radius:8px;white-space:nowrap;line-height:1.5}
+.nav a:hover{background:#e8ecf8;color:var(--indigo)}
+
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:22px 24px 26px;margin-top:20px;box-shadow:0 2px 12px rgba(27,34,51,.045);scroll-margin-top:70px}
+h2{font-size:20px;margin:0 0 8px;display:flex;align-items:center;gap:11px;line-height:1.5}
+h2 .num{display:inline-flex;width:30px;height:30px;border-radius:9px;align-items:center;
+  justify-content:center;font-size:14px;color:#fff;background:var(--indigo);flex:none}
+.lead{color:var(--muted);margin:0 0 14px;font-size:15px}
+.analogy{background:#f0f4ff;border-left:4px solid var(--blue);border-radius:8px;
+  padding:12px 16px;margin:16px 0 0;font-size:14.5px}
+.analogy b{color:var(--blue)}
+.key{background:#fff7ed;border-left:4px solid var(--orange);border-radius:8px;
+  padding:12px 16px;margin:16px 0 0;font-size:14.5px}
+.key b{color:var(--orange)}
+.warn{background:#fef2f2;border-left:4px solid var(--red);border-radius:8px;
+  padding:12px 16px;margin:16px 0 0;font-size:14.5px}
+.warn b{color:var(--red)}
+.adv{background:#f5f3ff;border-left:4px solid var(--purple);border-radius:8px;
+  padding:12px 16px;margin:16px 0 0;font-size:14.5px}
+.adv b{color:var(--purple)}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
+th,td{border:1px solid var(--line);padding:9px 13px;text-align:left;vertical-align:top}
+th{background:#f2f4fb;font-weight:600}
+code{background:#eef1f8;padding:1px 6px;border-radius:5px;font-size:13.5px;
+  font-family:"Cascadia Code",Consolas,monospace}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px}
+.mini{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:#fbfcff;font-size:14px}
+.mini b{display:block;color:var(--indigo);margin-bottom:2px;font-size:14.5px}
+.ctrl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;font-size:14px}
+.ctrl input[type=range]{flex:1 1 220px;accent-color:var(--purple);min-width:150px;
+  height:32px;cursor:pointer}
+.ctrl input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--purple)}
+button{background:var(--indigo);color:#fff;border:0;border-radius:9px;padding:8px 18px;
+  font-size:14px;cursor:pointer;font-family:inherit;transition:filter .15s}
+button.ghost{background:#eef1f8;color:var(--ink)}
+button:hover{filter:brightness(1.08)}
+.bars{margin-top:14px;font-size:14px}
+.brow{display:flex;align-items:center;gap:10px;margin:6px 0}
+.brow .lbl{width:172px;color:var(--muted);flex:none}
+.brow .track{flex:1;height:14px;background:#eef1f8;border-radius:7px;position:relative;overflow:hidden;min-width:80px}
+.brow .fill{height:100%;border-radius:7px;transition:width .18s;width:0}
+.brow .val{width:76px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
+.hint{font-size:12.5px;color:#68718c;margin-top:6px}
+.readout{font-size:14px;color:var(--muted);margin-top:10px;min-height:22px}
+.readout b{color:var(--ink)}
+svg{display:block;max-width:100%;height:auto;margin:6px auto 0}
+.two{display:flex;gap:18px;flex-wrap:wrap}
+.two>div{flex:1 1 320px;min-width:280px}
+footer{margin-top:34px;text-align:center;color:var(--muted);font-size:13px}
+
+/* 键盘可达性 */
+a:focus-visible,button:focus-visible,input:focus-visible,label:focus-visible{
+  outline:3px solid var(--indigo);outline-offset:2px;border-radius:6px}
+
+/* 窄屏：把条形图的标签换到上行，避免固定宽度撑爆布局 */
+@media (max-width:560px){
+  .brow{flex-wrap:wrap;gap:5px}
+  .brow .lbl{width:100%;flex:1 1 100%;line-height:1.5}
+  .brow .track{flex:1 1 auto;min-width:0}
+  .brow .val{width:58px}
+  .wrap{padding:18px 13px 70px}
+  section.card{padding:18px 15px 20px}
+  .hero{padding:22px 18px 20px}
+  .hero h1{font-size:21px}
+}
+
+/* 打印 */
+@media print{
+  body{background:#fff}
+  .nav,.legend{display:none}
+  section.card{break-inside:avoid;box-shadow:none;border-color:#c9cfdd}
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{color:inherit;text-decoration:none}
+  footer{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>量子力学六大核心概念 · 可视化图鉴</h1>
+  <p>波函数（态矢量）· 希尔伯特空间 · 概率幅 · 投影机制 · 态叠加原理 · 幺正演化 —— 它们其实是同一套数学结构的六个面。</p>
+  <div class="chain">
+    <span>希尔伯特空间（舞台）</span><b>→</b>
+    <span>态矢量 / 波函数</span><b>→</b>
+    <span>概率幅 = 内积</span><b>→</b>
+    <span>态叠加</span><b>→</b>
+    <span>投影 = 读成事件</span><b>→</b>
+    <span>幺正演化 = 搬运概率幅</span>
+  </div>
+</header>
+
+<div class="legend">
+  <span><i style="background:#4f46e5"></i>结构与公理</span>
+  <span><i style="background:#2563eb"></i>态矢量 / 波函数</span>
+  <span><i style="background:#7c3aed"></i>概率幅</span>
+  <span><i style="background:#ea7317"></i>投影与测量</span>
+  <span><i style="background:#0d9488"></i>幺正演化</span>
+  <span><i style="background:#dc2626"></i>张力与争议</span>
+  <span style="color:#5f6a85">带 🖱 的章节可交互</span>
+</div>
+
+<nav class="nav" aria-label="章节导航">
+  <a href="#s1">1 希尔伯特空间</a>
+  <a href="#s2">2 态矢量与波函数</a>
+  <a href="#s3">3 概率幅</a>
+  <a href="#s4">🖱4 叠加与干涉</a>
+  <a href="#s5">🖱5 投影测量</a>
+  <a href="#s6">🖱6 幺正演化</a>
+  <a href="#s7">7 核心张力</a>
+  <a href="#s8">8 关系总图</a>
+  <a href="#s9">9 七种身份</a>
+  <a href="#s10">10 速记表</a>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section class="card" id="s1">
+  <h2><span class="num">1</span>希尔伯特空间：一切发生的"舞台"</h2>
+  <p class="lead">它同时提供了三样东西：<b>叠加的自由</b>（线性空间）、<b>概率的度量</b>（内积）、<b>演化的容器</b>（完备 + 复数）。</p>
+  <svg id="s1svg" viewBox="0 0 700 356" role="img"
+       aria-label="希尔伯特空间示意：单位球面上的一支态矢量与其在两条基轴上的分量"></svg>
+  <div class="grid3">
+    <div class="mini"><b>线性</b>态可以相加、可以被复数乘 —— 这是"叠加"能存在的唯一前提。</div>
+    <div class="mini"><b>内积</b>定义了长度、正交、夹角 —— 它会变成"概率幅"。</div>
+    <div class="mini"><b>复数域</b>带来"相位" —— 干涉条纹的来源。换成实数域干涉就没了。</div>
+    <div class="mini"><b>完备性</b>保证无限维下展开与极限都合法 —— 连续谱（位置、动量）才有意义。</div>
+  </div>
+  <div class="analogy"><b>打个比方：</b>希尔伯特空间就像一张无限大的地图。地图规定了「哪些点算合法位置」（态）、「怎么量两点距离」（内积）、以及「两条路线能不能首尾相接」（叠加）。</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="card" id="s2">
+  <h2><span class="num">2</span>态矢量与波函数：同一个态的两种"衣服"</h2>
+  <p class="lead"><code>|ψ⟩</code> 是抽象矢量；<code>ψ(x) = ⟨x|ψ⟩</code> 只是它在位置基下的一组坐标（一般<b>是复数</b>）。</p>
+  <svg id="s2svg" viewBox="0 0 700 340" role="img"
+       aria-label="态矢量投影到位置基得到波函数；右侧为高斯波包的实部、包络与概率密度"></svg>
+  <div class="grid3">
+    <div class="mini"><b>态矢量 |ψ⟩</b>与表象无关的物理对象，住在抽象空间里，长度恒为 1。</div>
+    <div class="mini"><b>波函数 ψ(x)</b>态矢量在位置基下的分量，一般是复函数，不能直接画成一条实曲线。</div>
+    <div class="mini"><b>归一化</b><code>⟨ψ|ψ⟩ = ∫|ψ(x)|²dx = 1</code>：把矢量限制在单位球面上，这就是概率诠释的几何写法。</div>
+    <div class="mini"><b>多表象等价</b><code>ψ(x)</code> 与 <code>φ(p)</code> 之间是傅里叶变换 —— 同一支箭换了个坐标系而已。</div>
+  </div>
+  <div class="key"><b>关键：</b>波函数不是"物质波"，它只是态矢量的一件衣服。所以"波函数坍缩"这个说法才让人困惑 —— 坍缩的其实不是波，是态矢量本身。</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="card" id="s3">
+  <h2><span class="num">3</span>概率幅：不是概率，而是"带相位的箭头"</h2>
+  <p class="lead">概率幅就是内积 <code>⟨φ|ψ⟩</code>，是一个<b>复数</b>：既有长度（模），也有方向（相位）。</p>
+  <svg id="s3svg" viewBox="0 0 700 336" role="img"
+       aria-label="左：复平面上两支同模不同相位的概率幅；右：模与模方的对比柱"></svg>
+  <div class="two">
+    <div class="analogy"><b>打个比方：</b>概率是"水面的高度"，概率幅是"水下的波浪"。你只看得到高度（模方），但波浪之间的<b>相位差</b>决定了它们会互相<b>加强还是抵消</b>。</div>
+    <div class="key"><b>为什么不能直接用概率？</b>因为量子力学做的是「幅相加」，不是「概率相加」：<br>
+      <code>|ψ₁+ψ₂|² = |ψ₁|² + |ψ₂|² + 2·Re(ψ₁*ψ₂)</code><br>
+      最后一项就是 <b>干涉项</b>，由相位决定。用正实数就没有它，双缝条纹将无法解释。</div>
+  </div>
+  <div class="adv"><b>进阶（Gleason 定理）：</b>在维数 ≥ 3 的希尔伯特空间上，任何与叠加结构一致的概率赋值，<b>必然</b>具有 <code>p = Tr(ρP)</code> 的形式。也就是说，概率幅框架不是人为选择，而是被"叠加 + 概率"这两条要求逼出来的唯一解。</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="card" id="s4">
+  <h2><span class="num">🖱 4</span>态叠加与干涉（可交互）</h2>
+  <p class="lead">叠加系数 <code>cᵢ</code> 就是概率幅，<code>|cᵢ|²</code> 是相应结果的概率。拖动滑块改变两条路径的<b>相位差 φ</b>，看总强度如何被干涉项改写。</p>
+  <svg id="s4svg" viewBox="0 0 700 402" role="img"
+       aria-label="总强度随相位差变化的曲线：实线为含干涉的 I(φ)，灰虚线为无干涉时的恒定值 2"></svg>
+  <div class="ctrl">
+    <label for="phi">相位差 φ：</label>
+    <input id="phi" type="range" min="0" max="360" value="0" step="1" />
+    <span id="phiv" style="width:64px;font-variant-numeric:tabular-nums">0°</span>
+    <label style="display:flex;gap:6px;align-items:center;cursor:pointer">
+      <input id="classic" type="checkbox" /> 关闭干涉（经典叠加）
+    </label>
+  </div>
+  <div class="bars">
+    <div class="brow"><span class="lbl">通道 1 贡献 |A₁|²</span><span class="track"><span class="fill" id="b1" style="background:#2563eb"></span></span><span class="val" id="v1">1.00</span></div>
+    <div class="brow"><span class="lbl">通道 2 贡献 |A₂|²</span><span class="track"><span class="fill" id="b2" style="background:#7c3aed"></span></span><span class="val" id="v2">1.00</span></div>
+    <div class="brow"><span class="lbl">干涉项 2|A₁A₂|cosφ</span><span class="track"><span class="fill" id="b3" style="background:#ea7317"></span></span><span class="val" id="v3">2.00</span></div>
+    <div class="brow"><span class="lbl"><b>总强度 I</b></span><span class="track"><span class="fill" id="b4" style="background:#0d9488"></span></span><span class="val" id="v4">4.00</span></div>
+  </div>
+  <div class="hint">条形图横轴统一以「满量程 I = 4」为 100%，因此 |A₁|²=1 只占 25% 宽。干涉项可为负，取绝对值显示宽度。</div>
+  <div class="readout" id="s4read" aria-live="polite"></div>
+  <div class="analogy"><b>打个比方：</b>两个水波在同一处汇合。同相时波峰叠波峰 → 更高（相长干涉）；反相时波峰顶波谷 → 抵消（相消干涉）。<b>粒子不会这样，波才会</b> —— 这就是"叠加"和"我们不知道是哪一个"的本质差别。</div>
+  <div class="adv"><b>进阶（为什么"不知道是哪一个"不一样）：</b>若是经典无知，系统用<b>对角</b>密度矩阵描述；而真正的叠加态 <code>ρ = |ψ⟩⟨ψ|</code> 含<b>非对角元</b>，这些非对角元正是干涉能力的量化，也是"量子性"最本质的标志。</div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="card" id="s5">
+  <h2><span class="num">🖱 5</span>投影机制：把概率幅"读成"事件的唯一关口（可交互）</h2>
+  <p class="lead">可观测量写成 <code>A = Σ aᵢPᵢ</code>，<code>Pᵢ</code> 是投影算符。测得 <code>aᵢ</code> 的概率是 <code>⟨ψ|Pᵢ|ψ⟩</code>；测完之后，态被"拍"到那个方向上。</p>
+  <svg id="s5svg" viewBox="0 0 620 440" role="img"
+       aria-label="二维本征基下态矢量的投影：阴影长度平方即为该结果的概率"></svg>
+  <p class="hint" style="text-align:center;margin-top:4px">测量前：叠加态 |ψ⟩ = cosθ·|1⟩ + sinθ·|2⟩</p>
+  <div class="ctrl">
+    <label for="theta">态矢量方向 θ（自 |1⟩ 轴量起）：</label>
+    <input id="theta" type="range" min="0" max="90" value="54" step="1" />
+    <span id="thetav" style="width:52px;font-variant-numeric:tabular-nums">54°</span>
+    <button id="mbtn">测量！</button>
+    <button id="rbtn" class="ghost">重置</button>
+  </div>
+  <div class="bars">
+    <div class="brow"><span class="lbl">P(|1⟩) = |⟨1|ψ⟩|² = cos²θ</span><span class="track"><span class="fill" id="c1" style="background:#2563eb"></span></span><span class="val" id="cv1">0.35</span></div>
+    <div class="brow"><span class="lbl">P(|2⟩) = |⟨2|ψ⟩|² = sin²θ</span><span class="track"><span class="fill" id="c2" style="background:#7c3aed"></span></span><span class="val" id="cv2">0.65</span></div>
+  </div>
+  <div class="readout" id="s5read" aria-live="polite">拖动滑块改变态的方向，然后点「测量！」看它如何被投影到某一条本征轴上。</div>
+  <div class="analogy"><b>打个比方：</b>把态矢量想成一根斜插的杆子，投影就是它在两条坐标轴上的<b>影子</b>。影子长度的平方 = 命中概率。测量的瞬间，杆子被"拍平"到其中一条轴上 —— 这就是<b>坍缩</b>。投影算符满足 <code>P² = P</code>：拍一次和拍两次结果一样，所以"刚测完再测必然同结果"。</div>
+  <div class="adv"><b>进阶（投影只是特例）：</b>真实仪器总有噪声，一般用 <b>POVM</b> <code>{Eᵢ}</code>，满足 <code>Eᵢ ≥ 0</code> 且 <code>ΣEᵢ = I</code>，概率为 <code>pᵢ = ⟨ψ|Eᵢ|ψ⟩</code>。投影测量就是 <code>Eᵢ = Pᵢ</code> 这一最干净的特例 —— 所以"投影"的本质是"用一族正算符对态做双线性评估"。</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="card" id="s6">
+  <h2><span class="num">🖱 6</span>幺正演化：让所有概率幅"整体旋转"（动画）</h2>
+  <p class="lead">封闭系统的演化是 <code>|ψ(t)⟩ = U(t)|ψ(0)⟩</code>，<code>U = e^(−iHt/ℏ)</code> 是幺正算符。它保持一切内积不变。</p>
+  <svg id="s6svg" viewBox="0 0 620 448" role="img"
+       aria-label="两支态矢量同步旋转的动画，长度与夹角保持不变"></svg>
+  <p class="hint" style="text-align:center;margin-top:4px">U = e^(−iHt/ℏ)：长度与夹角都被锁死；两支箭头始终同速旋转</p>
+  <div class="ctrl">
+    <button id="pbtn">暂停</button>
+    <span class="readout" id="s6read" style="margin:0"></span>
+  </div>
+  <div class="grid3">
+    <div class="mini"><b>长度守恒</b>归一化不变 → 总概率守恒。</div>
+    <div class="mini"><b>内积守恒</b><code>⟨Uφ|Uψ⟩ = ⟨φ|ψ⟩</code> → 概率幅不变 → 干涉图样稳定演化。</div>
+    <div class="mini"><b>叠加关系守恒</b><code>Σcᵢ|ψᵢ⟩</code> 被整体搬运，不会凭空产生或消灭叠加。</div>
+    <div class="mini"><b>谱守恒</b>可观测量期望值按确定性规律演化，测量结果的取值集合不变。</div>
+  </div>
+  <div class="key"><b>一句话：</b>幺正演化是希尔伯特空间里的一次"刚性旋转"。它只搬运概率幅、旋转相位，绝不改变任何内积。</div>
+  <div class="adv"><b>进阶（Wigner 定理）：</b>任何保持跃迁概率 <code>|⟨φ|ψ⟩|²</code> 不变的对称变换，<b>必然</b>是幺正的（或反幺正的）。所以幺正性不是外加假设，而是"保持概率幅结构"这一要求的必然结果。</div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="card" id="s7">
+  <h2><span class="num">7</span>核心张力：旋转 vs 跳跃</h2>
+  <p class="lead">第 5 节和第 6 节住在同一套数学里，性质却完全相反。这个对立就是量子力学最深的问题。</p>
+  <table>
+    <thead><tr><th>对比项</th><th>幺正演化 U</th><th>投影测量 P</th></tr></thead>
+    <tbody>
+      <tr><td>算符性质</td><td>幺正：<code>U†U = UU† = I</code></td><td>投影：<code>P² = P = P†</code></td></tr>
+      <tr><td>可逆性</td><td>可逆</td><td>不可逆</td></tr>
+      <tr><td>对态的作用</td><td>线性</td><td>非线性（还要除以 <code>√p</code>）</td></tr>
+      <tr><td>信息</td><td>保留（保内积、保信息）</td><td>丢失（去相位、去分支）</td></tr>
+      <tr><td>谱 / 特征值</td><td>不变（只换基）</td><td>被筛选为单一本征值</td></tr>
+      <tr><td>适用场景</td><td>两次测量之间（封闭系统）</td><td>测量发生时</td></tr>
+      <tr><td>图像</td><td>光滑旋转</td><td>瞬间跳变</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>为什么这是"问题"：</b>如果把测量仪器也纳入系统一起算，整体仍应该幺正演化 —— 那"坍缩"到底从哪来？<br><br>
+  <b>退相干</b>给出主流的部分回答：环境让干涉项（密度矩阵非对角元）指数级衰减，<code>ρ → Σ pᵢ|i⟩⟨i|</code>，于是叠加在<b>有效意义上</b>退化成经典混合。<br>
+  但必须说清楚：退相干解释了"为什么看不见干涉"和分支概率，<b>并没有严格解决单次结果的唯一性</b>。这一点不能含糊。</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="card" id="s8">
+  <h2><span class="num">8</span>六者关系总图</h2>
+  <p class="lead">从上往下读：结构 → 对象 → 读法 → 事件 → 演化。箭头的颜色与目标方框一致。</p>
+  <svg id="s8svg" viewBox="0 0 760 588" role="img"
+       aria-label="六大概念依赖关系图：希尔伯特空间派生三条腿，在投影处汇合，再由幺正演化驱动"></svg>
+  <div class="key"><b>三条腿：</b>左腿（态矢量 → 波函数）负责"<b>态长什么样</b>"；中腿（内积 → 概率幅 → 概率）负责"<b>怎么读出数字</b>"；右腿（线性组合 → 叠加系数）负责"<b>多个可能性怎么共存</b>"。三条腿在"投影"处汇合，最终由"幺正演化"决定它们如何随时间流动。</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="card" id="s9">
+  <h2><span class="num">9</span>态矢量的七种身份：它到底"是"什么？</h2>
+  <p class="lead">同一个数学对象 <code>|ψ⟩ ∈ ℋ</code>，被主流诠释赋予了截然不同的本体论身份。<b>数学上它是清楚的，物理上它的身份尚未被裁决。</b></p>
+  <svg id="s9svg" viewBox="0 0 760 560" role="img"
+       aria-label="同一个数学对象在七种诠释下对应的七种本体论身份"></svg>
+
+  <div class="grid3" style="margin-top:18px">
+    <div class="mini"><b>① 操作层（确定）</b>一族概率指派的紧凑编码：任意可观测量的结果分布。这是它百分之百可靠的身份。</div>
+    <div class="mini"><b>② 结构层（较可靠）</b>关系性对象：在给定的系统划分与测量语境下，该系统会怎样响应。</div>
+    <div class="mini"><b>③ 本体层（未知）</b>是否对应世界中某个独立存在的东西 —— 真正的未解决问题。</div>
+  </div>
+
+  <div class="two" style="margin-top:16px">
+    <div class="mini"><b style="color:#4f46e5">ψ-ontic 阵营</b>态矢量描述世界真实的存在方式。<br>代表：多世界 · 玻姆力学 · GRW 客观坍缩</div>
+    <div class="mini"><b style="color:#be185d">ψ-epistemic 阵营</b>态矢量只编码观察者关于系统的信息。<br>代表：QBism · 部分哥本哈根解读</div>
+  </div>
+
+  <div class="warn"><b>两条定理堵死了两边的"舒适区"：</b><br>
+  · <b>PBR 定理（2012）</b>：在"实在论 λ-模型 + 制备独立性"前提下，两个不同量子态必须对应<b>互不相交</b>的底层本体集合 —— 朴素的"态只是对同一实在的无知程度"这一图像被排除。<br>
+  · <b>Bell 定理</b>：排除局域隐变量 —— "态是局域实在的经典知识"这条路也走不通。</div>
+
+  <div class="adv"><b>五个无争议的事实（所有学派都同意）：</b>
+    <ol style="margin:8px 0 0;padding-left:22px">
+      <li>它是希尔伯特空间中的元素，而希尔伯特空间不是三维物理空间（可以是有限维，如量子比特）。</li>
+      <li>它本身不可直接观测，只能通过制备 + 测量统计被间接推断。</li>
+      <li>它带冗余：整体相位无物理意义；只有概率指派承载物理内容。</li>
+      <li>它的全部可观测内容就是映射 <code>A ↦ Tr(ρA)</code>（Gleason 定理）。</li>
+      <li>它是关系性的：对纠缠态，子系统的态必须"从外部看"，并不是它自己的完整状态。</li>
+    </ol>
+  </div>
+
+  <div class="key"><b>为什么它不像经典实在：</b>不可克隆定理（若是经典场，复制它本无障碍） · 参数随粒子数指数爆炸（更像"关联的记账"而非"叠加的实物"） · 定义域是组态空间而非三维空间（双粒子就是 ℝ⁶） · 上下文性（Kochen–Specker：无法一致地指派预先存在的值）。</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="card" id="s10">
+  <h2><span class="num">10</span>一页速记表</h2>
+  <table>
+    <thead><tr><th>概念</th><th>数学身份</th><th>白话</th><th>和谁绑定</th></tr></thead>
+    <tbody>
+      <tr><td>希尔伯特空间</td><td><code>复内积空间 ℋ</code></td><td>舞台：线性 + 内积 + 复数</td><td>其余全部</td></tr>
+      <tr><td>态矢量 / 波函数</td><td><code>|ψ⟩</code> / <code>ψ(x)=⟨x|ψ⟩</code></td><td>演员 / 演员的"影子"</td><td>希尔伯特空间</td></tr>
+      <tr><td>概率幅</td><td><code>⟨φ|ψ⟩</code>（复数）</td><td>带相位的箭头</td><td>内积</td></tr>
+      <tr><td>概率</td><td><code>|⟨φ|ψ⟩|²</code></td><td>概率幅的模方（玻恩定则）</td><td>概率幅</td></tr>
+      <tr><td>态叠加</td><td><code>Σ cᵢ|aᵢ⟩</code></td><td>可能性相加（幅相加，不是概率相加）</td><td>线性 + 复数</td></tr>
+      <tr><td>投影</td><td><code>Pᵢ</code>，<code>P²=P=P†</code></td><td>把幅读成事件，并把态拍平</td><td>可观测量、概率幅</td></tr>
+      <tr><td>幺正演化</td><td><code>U=e^(−iHt/ℏ)</code></td><td>保内积的刚性旋转</td><td>薛定谔方程、概率幅</td></tr>
+    </tbody>
+  </table>
+  <div class="key" style="margin-top:18px"><b>一句话总结：</b>希尔伯特空间给出线性与内积的舞台；态矢量是舞台上的点，波函数是它的坐标；态叠加是线性性的物理化；概率幅是内积的物理化，概率只是它的模方；投影把概率幅读成事件并定义测量后的态；幺正演化在两次测量之间以保内积的方式搬运所有概率幅。<b>投影的跳跃不可逆、演化的旋转可逆 —— 二者的张力正是量子力学最深的问题所在。</b></div>
+</section>
+
+<footer>AutoCoder · 量子力学核心概念可视化 · 自包含单文件，无外部依赖</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function mk(tag, attrs){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) { e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+  function seg(parent, x1, y1, x2, y2, color, w, dash){
+    var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:color, "stroke-width": (w||1.5)};
+    if (dash) { a["stroke-dasharray"] = dash; }
+    parent.appendChild(mk("line", a));
+  }
+  function arrow(parent, x1, y1, x2, y2, color, w){
+    w = w || 3;
+    var dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy);
+    if (len < 0.8) { return; }
+    var ux = dx/len, uy = dy/len;
+    var head = Math.min(13, len*0.45);
+    var bx = x2-ux*head, by = y2-uy*head;
+    parent.appendChild(mk("line", {x1:x1, y1:y1, x2:bx, y2:by, stroke:color,
+      "stroke-width":w, "stroke-linecap":"round"}));
+    var px = -uy, py = ux, h = 5.5;
+    parent.appendChild(mk("polygon", {
+      points: x2+","+y2+" "+(bx+px*h)+","+(by+py*h)+" "+(bx-px*h)+","+(by-py*h),
+      fill: color
+    }));
+  }
+  function dblArrow(parent, x1, y1, x2, y2, color, w){
+    arrow(parent, x1, y1, x2, y2, color, w);
+    arrow(parent, x2, y2, x1, y1, color, w);
+  }
+  /* SVG 文字专用色：把对比度不足的原色映射到 WCAG AA 版本的深色。
+     只作用于文本，不影响箭头 / 曲线 / 填充等图形元素。 */
+  var INK = {
+    "#8790a8": "#646e88", "#aab2c6": "#646e88", "#8d98b2": "#646e88", "#7f8aa8": "#646e88",
+    "#a78bfa": "#7c5fd3", "#8b5cf6": "#7c3aed", "#ea7317": "#b45309",
+    "#0d9488": "#0f766e", "#a855f7": "#7e22ce", "#db2777": "#be185d"
+  };
+  function txt(parent, x, y, s, color, size, anchor, weight){
+    var col = INK[color] || color || "#1b2233";
+    var t = mk("text", {x:x, y:y, fill: col,
+      "font-size": (size || 13), "text-anchor": (anchor || "middle")});
+    if (weight) { t.setAttribute("font-weight", weight); }
+    t.textContent = s;
+    parent.appendChild(t);
+    return t;
+  }
+  function box(parent, x, y, w, h, fill, stroke){
+    parent.appendChild(mk("rect", {x:x, y:y, width:w, height:h, rx:11,
+      fill: fill || "#fbfcff", stroke: stroke || "#dfe3ee", "stroke-width":1.4}));
+  }
+  function clear(g){ while (g && g.firstChild) { g.removeChild(g.firstChild); } }
+
+  /* ---------- 1. Hilbert space ---------- */
+  (function(){
+    var svg = document.getElementById("s1svg");
+    if (!svg) { return; }
+    var defs = mk("defs", {}), grad = mk("linearGradient", {id:"gd1", x1:"0", y1:"0", x2:"1", y2:"1"});
+    grad.appendChild(mk("stop", {offset:"0", "stop-color":"#eef1ff"}));
+    grad.appendChild(mk("stop", {offset:"1", "stop-color":"#e6fbf7"}));
+    defs.appendChild(grad); svg.appendChild(defs);
+    svg.appendChild(mk("rect", {x:30, y:20, width:640, height:288, rx:14,
+      fill:"url(#gd1)", stroke:"#dfe3ee"}));
+    var g = mk("g", {}); svg.appendChild(g);
+
+    var ox = 100, oy = 268, R = 150;
+    for (var i = 1; i <= 6; i++){ seg(g, 30+i*106, 20, 30+i*106, 308, "#ffffff", 1); }
+    for (var j = 1; j <= 3; j++){ seg(g, 30, 20+j*72, 670, 20+j*72, "#ffffff", 1); }
+
+    arrow(g, ox, oy, ox+R+66, oy, "#9aa4bd", 2);
+    arrow(g, ox, oy, ox, oy-R-46, "#9aa4bd", 2);
+    txt(g, ox+R+74, oy+5, "|a₁⟩", "#5b6478", 14, "start");
+    txt(g, ox-12, oy-R-54, "|a₂⟩", "#5b6478", 14, "middle");
+    g.appendChild(mk("circle", {cx:ox, cy:oy, r:R, fill:"none",
+      stroke:"#c3c9de", "stroke-dasharray":"6 6"}));
+    txt(g, ox+R+22, oy-R-30, "单位球面：⟨ψ|ψ⟩ = 1", "#8790a8", 12.5, "start");
+
+    var th = Math.PI*0.30;
+    var vx = ox+R*Math.cos(th), vy = oy-R*Math.sin(th);
+    seg(g, ox, oy, vx, vy, "#2563eb", 1.4, "5 5");
+    arrow(g, ox, oy, vx, vy, "#2563eb", 3.5);
+    seg(g, vx, vy, vx, oy, "#2563eb", 1.4, "5 5");
+    seg(g, vx, vy, ox, vy, "#2563eb", 1.4, "5 5");
+    txt(g, vx+14, vy-12, "|ψ⟩", "#2563eb", 16, "start", "600");
+    txt(g, vx+30, vy+16, "长度 = 1", "#7f8aa8", 12, "start");
+    var arcR = 52;
+    g.appendChild(mk("path", {d:"M "+(ox+arcR)+" "+oy+" A "+arcR+" "+arcR+" 0 0 0 "+
+      (ox+arcR*Math.cos(th))+" "+(oy-arcR*Math.sin(th)),
+      fill:"none", stroke:"#93a2c8", "stroke-width":1.3}));
+    txt(g, ox+arcR+16, oy-arcR*0.52, "方向 = 态", "#8790a8", 12, "start");
+
+    txt(g, 350, 340, "所有可能的态 = 空间中的单位矢量：方向代表态，长度恒为 1",
+      "#5b6478", 13.5, "middle");
+  })();
+
+  /* ---------- 2. state vector vs wave function ---------- */
+  (function(){
+    var svg = document.getElementById("s2svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+    box(g, 24, 24, 260, 276, "#fbfcff");
+    txt(g, 154, 50, "抽象空间 ℋ", "#4f46e5", 14, "middle", "600");
+    var ox = 78, oy = 246;
+    arrow(g, ox, oy, ox+124, oy, "#c8cfe2", 2);
+    arrow(g, ox, oy, ox, oy-124, "#c8cfe2", 2);
+    arrow(g, ox, oy, ox+76, oy-92, "#2563eb", 3.5);
+    txt(g, ox+86, oy-100, "|ψ⟩", "#2563eb", 15, "start", "600");
+    txt(g, 154, 272, "长度 = 1（归一化）", "#8790a8", 12, "middle");
+
+    box(g, 316, 24, 360, 276, "#fbfcff");
+    txt(g, 496, 50, "位置表象：波函数 ψ(x)", "#0d9488", 14, "middle", "600");
+
+    var bx = 350, by = 196, X0 = 348, X1 = 648, xc = 498, sig = 46, amp = 56, per = 74;
+    arrow(g, bx, by, X1+14, by, "#c8cfe2", 2);
+    arrow(g, bx, by, bx, 96, "#c8cfe2", 2);
+    txt(g, X1+22, by+5, "x", "#8790a8", 13, "start");
+
+    var envUp = [], envDn = [], re = [], prob = [];
+    for (var x = X0; x <= X1; x += 2){
+      var e = Math.exp(-((x-xc)*(x-xc))/(2*sig*sig));
+      var yy = by - amp*e*Math.cos((x-xc)/per*2*Math.PI);
+      envUp.push(x+","+(by - amp*e));
+      envDn.push(x+","+(by + amp*e));
+      re.push(x+","+yy);
+      prob.push(x+","+(by - amp*e*e*1.25));
+    }
+    g.appendChild(mk("polyline", {points: envUp.join(" "), fill:"none",
+      stroke:"#b8c2d6", "stroke-width":1.4, "stroke-dasharray":"5 5"}));
+    g.appendChild(mk("polyline", {points: envDn.join(" "), fill:"none",
+      stroke:"#b8c2d6", "stroke-width":1.4, "stroke-dasharray":"5 5"}));
+    var area = "M " + X0 + "," + by + " L " + prob.join(" L ") + " L " + X1 + "," + by + " Z";
+    g.appendChild(mk("path", {d: area, fill:"#ea7317", "fill-opacity":"0.20"}));
+    g.appendChild(mk("polyline", {points: prob.join(" "), fill:"none",
+      stroke:"#ea7317", "stroke-width":2.2}));
+    g.appendChild(mk("polyline", {points: re.join(" "), fill:"none",
+      stroke:"#0d9488", "stroke-width":2.4}));
+    txt(g, X1, by-72, "|ψ(x)|²", "#ea7317", 12.5, "end", "600");
+    txt(g, X0+4, by-84, "±|ψ(x)| 包络", "#8d98b2", 12, "start");
+    txt(g, 496, 286, "实线 = Re ψ(x)（示意）  虚线 = 包络  橙色 = |ψ(x)|²（概率密度）",
+      "#5b6478", 12.5, "middle");
+
+    arrow(g, 288, 150, 314, 150, "#ea7317", 3);
+    txt(g, 301, 138, "取坐标", "#ea7317", 12, "middle");
+    txt(g, 350, 328, "抽象矢量是「本体」，波函数只是它在某个基下的「分量」", "#5b6478", 13.5, "middle");
+  })();
+
+  /* ---------- 3. probability amplitude ---------- */
+  (function(){
+    var svg = document.getElementById("s3svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+    box(g, 24, 22, 386, 284, "#fbfcff");
+    var ox = 132, oy = 252, R = 148;
+    arrow(g, ox, oy, ox+R+44, oy, "#c8cfe2", 2);
+    arrow(g, ox, oy, ox, oy-R-30, "#c8cfe2", 2);
+    txt(g, ox+R+52, oy+5, "Re", "#8790a8", 13, "start");
+    txt(g, ox-16, oy-R-38, "Im", "#8790a8", 13, "middle");
+    g.appendChild(mk("circle", {cx:ox, cy:oy, r:R, fill:"none",
+      stroke:"#e5e9f4", "stroke-dasharray":"5 5"}));
+
+    var a1 = Math.PI*0.25;
+    var x1 = ox+R*Math.cos(a1), y1 = oy-R*Math.sin(a1);
+    seg(g, ox, oy, x1, y1, "#7c3aed", 1.4, "5 5");
+    arrow(g, ox, oy, x1, y1, "#7c3aed", 3.5);
+    txt(g, x1+10, y1-12, "A = ⟨φ|ψ⟩", "#7c3aed", 14, "start", "600");
+    var arcR = 50;
+    g.appendChild(mk("path", {d:"M "+(ox+arcR)+" "+oy+" A "+arcR+" "+arcR+" 0 0 0 "+
+      (ox+arcR*Math.cos(a1))+" "+(oy-arcR*Math.sin(a1)),
+      fill:"none", stroke:"#b39ddb", "stroke-width":1.4}));
+    txt(g, ox+arcR+18, oy-arcR*0.58, "相位 φ", "#8b5cf6", 12.5, "start");
+
+    var a2 = Math.PI*0.72;
+    var x2 = ox+R*Math.cos(a2), y2 = oy-R*Math.sin(a2);
+    arrow(g, ox, oy, x2, y2, "#c4b5fd", 2.6);
+    txt(g, x2+12, y2-12, "同模、换相位", "#a78bfa", 12.5, "start");
+    txt(g, 217, 294, "模决定「多大概率」，相位决定「相加时相长还是相消」", "#8790a8", 12, "middle");
+
+    box(g, 436, 22, 240, 284, "#fbfcff");
+    txt(g, 556, 54, "读出的是「模方」", "#4f46e5", 14.5, "middle", "600");
+    var barW = 150, bx = 476;
+    txt(g, bx, 104, "|A|（模）", "#5b6478", 12.5, "start");
+    g.appendChild(mk("rect", {x:bx, y:114, width:barW, height:18, rx:9, fill:"#eef1f8"}));
+    g.appendChild(mk("rect", {x:bx, y:114, width:barW, height:18, rx:9, fill:"#7c3aed"}));
+    txt(g, bx+barW+8, 129, "1.00", "#1b2233", 12.5, "start");
+    txt(g, bx, 174, "P = |A|²（概率）", "#5b6478", 12.5, "start");
+    g.appendChild(mk("rect", {x:bx, y:184, width:barW, height:18, rx:9, fill:"#eef1f8"}));
+    g.appendChild(mk("rect", {x:bx, y:184, width:barW, height:18, rx:9, fill:"#0d9488"}));
+    txt(g, bx+barW+8, 199, "1.00", "#1b2233", 12.5, "start");
+    txt(g, 556, 240, "两支幅模相同、相位不同：", "#5b6478", 12.5, "middle");
+    txt(g, 556, 262, "在正交基下各自单独出现的概率都是 1/2，", "#5b6478", 12.5, "middle");
+    txt(g, 556, 284, "但相位差决定叠加后的干涉项正负。", "#ea7317", 12.5, "middle", "600");
+
+    txt(g, 350, 330, "概率幅是复数箭头，不是概率：概率只是它的模方（玻恩定则）",
+      "#5b6478", 13.5, "middle");
+  })();
+
+  /* ---------- 4. interference ---------- */
+  (function(){
+    var svg = document.getElementById("s4svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+    var X0 = 92, X1 = 660, Y0 = 330, TOP = 74;
+    seg(g, X0, Y0, X1, Y0, "#9aa4bd", 1.5);
+    seg(g, X0, Y0, X0, TOP-12, "#9aa4bd", 1.5);
+    txt(g, X1+10, Y0+5, "φ", "#8790a8", 13, "start");
+    txt(g, X0-18, TOP-24, "I", "#8790a8", 13, "middle");
+    for (var k = 1; k <= 4; k++){
+      var gy = Y0 - (k/4)*(Y0-TOP);
+      seg(g, X0, gy, X1, gy, "#eef1f8", 1);
+      txt(g, X0-16, gy+5, String(k), "#aab2c6", 12, "middle");
+    }
+    for (var q = 0; q <= 6; q++){
+      var gx = X0 + (q/6)*(X1-X0);
+      seg(g, gx, Y0, gx, TOP-12, "#f4f6fc", 1);
+      txt(g, gx, Y0+24, (q*60)+"°", "#aab2c6", 11.5, "middle");
+    }
+    var base = [], withI = [];
+    for (var i = 0; i <= 360; i++){
+      var ph = i*Math.PI/180;
+      var px = X0 + (i/360)*(X1-X0);
+      base.push(px+","+(Y0 - (2/4)*(Y0-TOP)));
+      withI.push(px+","+(Y0 - ((2+2*Math.cos(ph))/4)*(Y0-TOP)));
+    }
+    g.appendChild(mk("polyline", {points: base.join(" "), fill:"none",
+      stroke:"#cbd3e6", "stroke-width":2, "stroke-dasharray":"6 6"}));
+    g.appendChild(mk("polyline", {points: withI.join(" "), fill:"none",
+      stroke:"#0d9488", "stroke-width":3}));
+
+    var dot = mk("circle", {cx:X0, cy:Y0, r:7, fill:"#ea7317", stroke:"#fff", "stroke-width":2});
+    g.appendChild(dot);
+    var vline = mk("line", {x1:X0, y1:Y0, x2:X0, y2:Y0, stroke:"#ea7317",
+      "stroke-width":1.4, "stroke-dasharray":"4 4"});
+    g.appendChild(vline);
+    var lbl = txt(g, X1, TOP-18, "", "#ea7317", 13.5, "end", "600");
+
+    txt(g, 375, 382, "总强度 I(φ) = |A₁|² + |A₂|² + 2|A₁A₂|cos φ", "#1b2233", 14, "middle", "600");
+
+    var phiEl = document.getElementById("phi");
+    var phivEl = document.getElementById("phiv");
+    var clsEl = document.getElementById("classic");
+    var readEl = document.getElementById("s4read");
+
+    function setBar(id, vid, val){
+      var safe = Math.abs(val) < 1e-9 ? 0 : val;
+      var w = Math.max(0, Math.min(1, Math.abs(safe)/4))*100;
+      document.getElementById(id).style.width = w + "%";
+      document.getElementById(vid).textContent = safe.toFixed(2);
+    }
+    function render(){
+      var deg = parseFloat(phiEl.value);
+      var ph = deg*Math.PI/180;
+      var I = clsEl.checked ? 2 : 2 + 2*Math.cos(ph);
+      phivEl.textContent = deg + "°";
+      var px = X0 + (deg/360)*(X1-X0);
+      var py = Y0 - (I/4)*(Y0-TOP);
+      dot.setAttribute("cx", px); dot.setAttribute("cy", py);
+      vline.setAttribute("x1", px); vline.setAttribute("x2", px);
+      vline.setAttribute("y1", py); vline.setAttribute("y2", Y0);
+      lbl.textContent = "I = " + I.toFixed(2);
+      var cx = clsEl.checked ? 0 : 2*Math.cos(ph);
+      if (Math.abs(cx) < 1e-9) { cx = 0; }
+      setBar("b1", "v1", 1);
+      setBar("b2", "v2", 1);
+      setBar("b3", "v3", cx);
+      setBar("b4", "v4", I);
+
+      var msg;
+      if (clsEl.checked){
+        msg = "已关闭干涉：总强度恒为 <b>2.00</b> —— 这正是「经典粒子各走一条路、概率相加」的结果。";
+      } else if (deg < 3 || deg > 357){
+        msg = "φ ≈ 0°：干涉项 = <b>+2</b>，总强度 = <b>4.00</b>（完全相长干涉）。";
+      } else if (Math.abs(deg-180) < 4){
+        msg = "φ ≈ 180°：干涉项 = <b>−2</b>，总强度 = <b>0.00</b>（完全相消干涉，暗纹）。";
+      } else {
+        msg = "干涉项 = <b>" + cx.toFixed(2) + "</b>，总强度 = <b>" + I.toFixed(2) + "</b>。相位每转一圈，亮暗就循环一次。";
+      }
+      readEl.innerHTML = msg + " <span style='color:#96a0b8'>（灰虚线 = 无干涉时的恒定强度 2.00）</span>";
+    }
+    phiEl.addEventListener("input", render);
+    clsEl.addEventListener("change", render);
+    render();
+  })();
+
+  /* ---------- 5. projection measurement ---------- */
+  (function(){
+    var svg = document.getElementById("s5svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+    var ox = 310, oy = 244, R = 150;
+    var thEl = document.getElementById("theta");
+    var thvEl = document.getElementById("thetav");
+    var read = document.getElementById("s5read");
+    var phi = 54*Math.PI/180, log = [];
+
+    function setBar(id, vid, val){
+      document.getElementById(id).style.width = (val*100).toFixed(1) + "%";
+      document.getElementById(vid).textContent = val.toFixed(2);
+    }
+    function render(){
+      clear(g);
+      g.appendChild(mk("rect", {x:6, y:6, width:608, height:424, rx:14,
+        fill:"#fbfcff", stroke:"#e6eaf5"}));
+      g.appendChild(mk("circle", {cx:ox, cy:oy, r:R, fill:"none",
+        stroke:"#e5e9f4", "stroke-dasharray":"5 5"}));
+      g.appendChild(mk("circle", {cx:ox, cy:oy, r:4, fill:"#8790a8"}));
+      arrow(g, ox, oy, ox+R+52, oy, "#c8cfe2", 2.2);
+      arrow(g, ox, oy, ox, oy-R-52, "#c8cfe2", 2.2);
+      txt(g, ox+R+60, oy+6, "|1⟩", "#8790a8", 15, "start", "600");
+      txt(g, ox, oy-R-64, "|2⟩", "#8790a8", 15, "middle", "600");
+
+      var vx = ox + R*Math.cos(phi), vy = oy - R*Math.sin(phi);
+      seg(g, ox, oy, vx, vy, "#2563eb", 1.4, "5 5");
+      arrow(g, ox, oy, vx, vy, "#2563eb", 3.6);
+      seg(g, vx, vy, vx, oy, "#2563eb", 1.3, "5 5");
+      seg(g, vx, vy, ox, vy, "#2563eb", 1.3, "5 5");
+      txt(g, vx+12, vy-12, "|ψ⟩", "#2563eb", 16, "start", "600");
+
+      var p1 = Math.cos(phi)*Math.cos(phi);
+      var p2 = 1 - p1;
+      var arcR = 58;
+      g.appendChild(mk("path", {d:"M "+(ox+arcR)+" "+oy+" A "+arcR+" "+arcR+" 0 0 0 "+
+        (ox+arcR*Math.cos(phi))+" "+(oy-arcR*Math.sin(phi)),
+        fill:"none", stroke:"#93a2c8", "stroke-width":1.4}));
+      txt(g, ox+arcR+18, oy-arcR*0.5, "θ", "#8790a8", 14, "start");
+
+      txt(g, 310, 418, "阴影长度平方 = 命中概率；杆长恒为 1", "#5b6478", 13, "middle");
+      txt(g, 12, 30, log.length > 1 ? log[log.length-2] : "", "#aab2c6", 12.5, "start");
+      txt(g, 614, 30, log.length ? log[log.length-1] : "", "#0d9488", 12.5, "end", "600");
+
+      thvEl.textContent = Math.round(phi*180/Math.PI) + "°";
+      thEl.value = String(Math.round(phi*180/Math.PI));
+      setBar("c1", "cv1", p1);
+      setBar("c2", "cv2", p2);
+    }
+    function measure(){
+      var p1 = Math.cos(phi)*Math.cos(phi);
+      var outcome = (Math.random() < p1) ? 0 : Math.PI/2;
+      var name = (outcome === 0) ? "|1⟩" : "|2⟩";
+      var prob = (outcome === 0) ? p1 : 1-p1;
+      phi = outcome;
+      log.push("测得 " + name);
+      render();
+      read.innerHTML = "本次结果：<b>" + name + "</b>（该结果的理论概率 " + prob.toFixed(2) +
+        "）。态已坍缩到该本征轴上 —— 现在再点「测量！」<b>必然</b>得到同一结果，因为 <code>P² = P</code>。";
+    }
+    thEl.addEventListener("input", function(){
+      phi = parseFloat(thEl.value)*Math.PI/180;
+      log = [];
+      render();
+      read.textContent = "拖动滑块改变态的方向，然后点「测量！」看它如何被投影到某一条本征轴上。";
+    });
+    document.getElementById("mbtn").addEventListener("click", measure);
+    document.getElementById("rbtn").addEventListener("click", function(){
+      phi = 54*Math.PI/180; log = []; render();
+      read.textContent = "已重置。拖动滑块改变态的方向，然后点「测量！」。";
+    });
+    render();
+  })();
+
+  /* ---------- 6. unitary evolution ---------- */
+  (function(){
+    var svg = document.getElementById("s6svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+    var cx = 310, cy = 214, R = 152;
+    var read = document.getElementById("s6read");
+    var pbtn = document.getElementById("pbtn");
+    var delta = Math.PI/3;
+    var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var playing = !reduce, visible = true, angle = 0.35, last = null;
+
+    function render(){
+      clear(g);
+      g.appendChild(mk("rect", {x:6, y:6, width:608, height:436, rx:14,
+        fill:"#fbfcff", stroke:"#e6eaf5"}));
+      g.appendChild(mk("circle", {cx:cx, cy:cy, r:R, fill:"none",
+        stroke:"#e5e9f4", "stroke-dasharray":"5 5"}));
+      seg(g, cx-R-54, cy, cx+R+54, cy, "#eef1f8", 1.5);
+      seg(g, cx, cy-R-54, cx, cy+R+16, "#eef1f8", 1.5);
+      g.appendChild(mk("circle", {cx:cx, cy:cy, r:4, fill:"#8790a8"}));
+
+      var a1 = angle, a2 = angle + delta;
+      var x1 = cx + R*Math.cos(a1), y1 = cy - R*Math.sin(a1);
+      var x2 = cx + R*Math.cos(a2), y2 = cy - R*Math.sin(a2);
+      arrow(g, cx, cy, x1, y1, "#0d9488", 3.6);
+      arrow(g, cx, cy, x2, y2, "#7c3aed", 3);
+      txt(g, x1+14*Math.cos(a1), y1-14*Math.sin(a1)-4, "|ψ⟩", "#0d9488", 15, "start", "600");
+      txt(g, x2+14*Math.cos(a2), y2-14*Math.sin(a2)-4, "|φ⟩", "#7c3aed", 15, "start", "600");
+
+      var rr = 64;
+      g.appendChild(mk("path", {d:"M "+(cx+rr*Math.cos(a1))+" "+(cy-rr*Math.sin(a1))+
+        " A "+rr+" "+rr+" 0 0 0 "+(cx+rr*Math.cos(a2))+" "+(cy-rr*Math.sin(a2)),
+        fill:"none", stroke:"#ea7317", "stroke-width":2}));
+      txt(g, cx, 402, "夹角恒为 " + (delta*180/Math.PI).toFixed(1) + "°  ⇒  ⟨φ|ψ⟩ 保持不变",
+        "#ea7317", 13, "middle", "600");
+      txt(g, 12, 428, "|ψ| = 1.000    |φ| = 1.000    |⟨φ|ψ⟩| = " +
+        Math.abs(Math.cos(delta)).toFixed(3) + "（恒定）", "#5b6478", 12.5, "start");
+
+      var norm = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+      read.textContent = "演化中：U 的旋转角 = " + (norm*180/Math.PI).toFixed(0) +
+        "°（循环）  ·  两支箭头始终同速旋转";
+    }
+    function loop(ts){
+      if (last === null) { last = ts; }
+      var dt = (ts - last)/1000; last = ts;
+      if (dt > 0.05) { dt = 0.05; }
+      /* 只有「正在播放」且「在视口内」时才推进并重绘，屏幕外不再消耗帧 */
+      if (playing && visible) { angle += dt*0.55; render(); }
+      requestAnimationFrame(loop);
+    }
+    pbtn.addEventListener("click", function(){
+      playing = !playing;
+      pbtn.textContent = playing ? "暂停" : "继续";
+      if (!playing) { render(); }
+    });
+    if ("IntersectionObserver" in window){
+      new IntersectionObserver(function(es){ visible = es[0].isIntersecting; },
+        {threshold: 0}).observe(svg);
+    }
+    pbtn.textContent = playing ? "暂停" : "播放";
+    render();
+    requestAnimationFrame(loop);
+  })();
+
+  /* ---------- 8. relation graph ---------- */
+  (function(){
+    var svg = document.getElementById("s8svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+
+    var R1 = {x:250, y:18,  w:260, h:46};
+    var R2 = {x:230, y:94,  w:300, h:50};
+    var A  = {x:20,  y:196, w:210, h:64};
+    var B  = {x:275, y:196, w:210, h:64};
+    var C  = {x:530, y:196, w:210, h:64};
+    var R4 = {x:230, y:312, w:300, h:60};
+    var R5 = {x:230, y:468, w:300, h:60};
+
+    function cxs(b){ return b.x + b.w/2; }
+    function top(b){ return b.y; }
+    function bot(b){ return b.y + b.h; }
+
+    var COL_A = "#2563eb", COL_B = "#7c3aed", COL_C = "#ea7317";
+
+    arrow(g, cxs(R1), bot(R1), cxs(R2), top(R2), "#a8b1c9", 2.4);
+
+    arrow(g, cxs(R2), bot(R2), cxs(A), top(A), COL_A, 2.4);
+    arrow(g, cxs(R2), bot(R2), cxs(B), top(B), COL_B, 2.4);
+    arrow(g, cxs(R2), bot(R2), cxs(C), top(C), COL_C, 2.4);
+
+    arrow(g, cxs(A), bot(A), R4.x + 22, top(R4), COL_A, 2.4);
+    arrow(g, cxs(B), bot(B), cxs(R4),    top(R4), COL_B, 2.4);
+    arrow(g, cxs(C), bot(C), R4.x + R4.w - 22, top(R4), COL_C, 2.4);
+
+    arrow(g, cxs(R4)-46, bot(R4), cxs(R5)-46, top(R5), "#a8b1c9", 2.4);
+    dblArrow(g, cxs(R4)+46, bot(R4)+4, cxs(R5)+46, top(R5)-4, "#dc2626", 2.4);
+    txt(g, cxs(R4)+62, (bot(R4)+top(R5))/2 + 4, "张力：跳跃 ⇄ 旋转", "#dc2626", 13, "start", "600");
+
+    box(g, R1.x, R1.y, R1.w, R1.h, "#eef1ff", "#c7cdf0");
+    txt(g, cxs(R1), R1.y+30, "复数域 + 内积", "#4f46e5", 15, "middle", "600");
+
+    box(g, R2.x, R2.y, R2.w, R2.h, "#eef1ff", "#c7cdf0");
+    txt(g, cxs(R2), R2.y+31, "希尔伯特空间 ℋ（线性 · 内积 · 完备）", "#4f46e5", 14.5, "middle", "600");
+
+    box(g, A.x, A.y, A.w, A.h, "#fbfdff", "#dfe3ee");
+    txt(g, cxs(A), A.y+26, "态矢量 |ψ⟩", COL_A, 14.5, "middle", "600");
+    txt(g, cxs(A), A.y+48, "波函数 ψ(x) = ⟨x|ψ⟩", "#5b6478", 13, "middle");
+
+    box(g, B.x, B.y, B.w, B.h, "#fbfdff", "#dfe3ee");
+    txt(g, cxs(B), B.y+26, "概率幅 ⟨φ|ψ⟩", COL_B, 14.5, "middle", "600");
+    txt(g, cxs(B), B.y+48, "复数（模 × 相位）", "#5b6478", 13, "middle");
+
+    box(g, C.x, C.y, C.w, C.h, "#fbfdff", "#dfe3ee");
+    txt(g, cxs(C), C.y+26, "态叠加 Σ cᵢ|aᵢ⟩", COL_C, 14.5, "middle", "600");
+    txt(g, cxs(C), C.y+48, "叠加系数 cᵢ = 概率幅", "#5b6478", 13, "middle");
+
+    box(g, R4.x, R4.y, R4.w, R4.h, "#fff7ed", "#fbd7a5");
+    txt(g, cxs(R4), R4.y+26, "投影机制 Pᵢ（P² = P = P†）", COL_C, 14.5, "middle", "600");
+    txt(g, cxs(R4), R4.y+48, "概率 p = ⟨ψ|Pᵢ|ψ⟩ + 态坍缩", "#5b6478", 13, "middle");
+
+    box(g, R5.x, R5.y, R5.w, R5.h, "#ecfdf5", "#a7e8d6");
+    txt(g, cxs(R5), R5.y+26, "幺正演化 U = e^(−iHt/ℏ)", "#0d9488", 14.5, "middle", "600");
+    txt(g, cxs(R5), R5.y+48, "保内积 ⇒ 保概率幅 ⇒ 保概率", "#5b6478", 13, "middle");
+
+    txt(g, 380, 568, "注：幺正演化全程保持所有内积（概率幅）不变 —— 这正是它与「投影」对立的根源",
+      "#8790a8", 13, "middle");
+  })();
+
+  /* ---------- 9. seven identities of the state vector ---------- */
+  (function(){
+    var svg = document.getElementById("s9svg");
+    if (!svg) { return; }
+    var g = mk("g", {}); svg.appendChild(g);
+
+    var items = [
+      ["哥本哈根 · 工具主义", "一个计算工具：用来预言测量统计", "#64748b"],
+      ["QBism", "单个行动者的信念度：主观，但受经验约束", "#a855f7"],
+      ["多世界（Everett）", "唯一真实的全部实在；坍缩只是分支错觉", "#4f46e5"],
+      ["玻姆力学", "真实的导引场（活在组态空间中）", "#2563eb"],
+      ["GRW 客观坍缩", "真实的物理场，会自发随机坍缩", "#0d9488"],
+      ["关系性 QM（Rovelli）", "永远是「相对于另一系统」的态", "#ea7317"],
+      ["量子信息 / 认识论", "编码关联与可区分性的信息载体", "#db2777"]
+    ];
+    var BX = 384, BW = 356, BH = 62;
+    var ys = [40, 112, 184, 256, 328, 400, 472];
+    var cox = 24, coy = 248, cow = 160, coh = 72;
+    var cx0 = cox + cow, cy0 = coy + coh/2;
+
+    txt(g, cox + cow/2, 24, "数学对象（无争议）", "#8790a8", 13, "middle", "600");
+    txt(g, BX + BW/2, 24, "七种本体论身份（争议）", "#8790a8", 13, "middle", "600");
+
+    for (var i = 0; i < items.length; i++){
+      var y = ys[i], my = y + BH/2, col = items[i][2];
+      arrow(g, cx0, cy0, BX, my, col, 2.2);
+      box(g, BX, y, BW, BH, "#fbfdff", col);
+      g.appendChild(mk("rect", {x:BX, y:y+12, width:5, height:BH-24, rx:2.5, fill:col}));
+      txt(g, BX+20, y+26, items[i][0], col, 14, "start", "600");
+      txt(g, BX+20, y+48, items[i][1], "#5b6478", 11.5, "start");
+    }
+
+    box(g, cox, coy, cow, coh, "#eef1ff", "#c7cdf0");
+    txt(g, cox + cow/2, coy+30, "|ψ⟩ ∈ ℋ", "#4f46e5", 17, "middle", "600");
+    txt(g, cox + cow/2, coy+52, "长度 = 1", "#5b6478", 12, "middle");
+  })();
+})();
+</script>
+</body>
+</html>
