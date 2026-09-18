@@ -47,6 +47,10 @@
 
 <svg id="bend" viewBox="0 0 900 190" preserveAspectRatio="xMidYMid meet"></svg>
 
+<h2 style="font-size:17px;margin:26px 0 4px;">三锚对照</h2>
+<p class="legend">导出值 lambda = 1 与三条独立锚的对照：光偏折给观测区间，真空条件给条件式，同源同格林函数给结构恒等。</p>
+<svg id="anchors" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet"></svg>
+
 <p class="note">
   说明：这是把《钟与尺》一文的机制做成可以动手的示意。稳态解与读数沿同一条稳态方程给出：段读数在源外恰好等于两端记录的中间值，因此钟读数与尺读数同点成比例，比值恒为一（机器精度）。键能反馈把剖面压矮，但比值不动，这正是文中那句结构恒等；它说明两把尺子是同一根尺子的两个刻度，不含关于总刻度的动力学预言。交错扰动一栏演示只有尺能读到的数据：它在格点上完全看不见，在段上看得见。
 </p>
@@ -255,10 +259,60 @@
     return d;
   }
 
+  function renderAnchors() {
+    var a = $("anchors");
+    while (a.firstChild) a.removeChild(a.firstChild);
+    function add(tag, attrs, text) {
+      var el = svgNode(tag, attrs);
+      if (text !== undefined) el.textContent = text;
+      a.appendChild(el);
+      return el;
+    }
+    function cap(x, str) { add("text", { x: x, y: 228, "font-size": 11, fill: "#555" }, str); }
+
+    add("text", { x: 30, y: 26, "font-size": 13, fill: "#14508c" }, "① 光偏折（观测区间）");
+    var x0 = 30, x1 = 290, ym = 110;
+    var lam0 = 0.999975, lam1 = 1.000025;
+    var XL = function (l) { return x0 + (x1 - x0) * (l - lam0) / (lam1 - lam0); };
+    add("line", { x1: x0, y1: ym + 30, x2: x1, y2: ym + 30, stroke: "#bbbbbb", "stroke-width": 1 });
+    add("rect", { x: XL(0.99999), y: ym - 10, width: XL(1.00001) - XL(0.99999), height: 80, fill: "#e3ecf9" });
+    add("text", { x: XL(1), y: ym - 20, "font-size": 11, fill: "#14508c", "text-anchor": "middle" }, "观测带 1e-5 量级");
+    add("line", { x1: XL(1), y1: ym - 14, x2: XL(1), y2: ym + 70, stroke: "#b3261e", "stroke-width": 2 });
+    add("text", { x: XL(1), y: ym + 86, "font-size": 12, fill: "#b3261e", "text-anchor": "middle" }, "导出值 1");
+    cap(30, "光偏折：导出值落在观测带内");
+
+    add("text", { x: 330, y: 26, "font-size": 13, fill: "#14508c" }, "② 真空条件（条件式）");
+    var baseY = 150, topY = 46, sc = (baseY - topY) / 90;
+    add("line", { x1: 330, y1: baseY, x2: 580, y2: baseY, stroke: "#bbbbbb", "stroke-width": 1 });
+    add("rect", { x: 356, y: baseY - 83 * sc, width: 44, height: 83 * sc, fill: "#9aa4ae" });
+    add("rect", { x: 486, y: baseY - 1.4, width: 44, height: 1.4, fill: "#14508c" });
+    add("text", { x: 378, y: baseY - 83 * sc - 8, "font-size": 11, fill: "#555555", "text-anchor": "middle" }, "λ = 0：83 倍");
+    add("text", { x: 508, y: baseY - 12, "font-size": 11, fill: "#14508c", "text-anchor": "middle" }, "λ = 1：底噪");
+    cap(330, "源外里奇残差：λ = 1 落到底噪（前提是场方程成立）");
+
+    add("text", { x: 630, y: 26, "font-size": 13, fill: "#14508c" }, "③ 同源同格林函数（结构恒等）");
+    var gx0 = 640, gx1 = 870, gy = 176, gh = 110;
+    var pt = [];
+    for (var t = 0; t <= 40; t++) {
+      var xx = gx0 + (gx1 - gx0) * t / 40;
+      pt.push(xx + "," + (gy - gh * Math.sin(Math.PI * t / 40)));
+    }
+    add("polyline", { points: pt.join(" "), fill: "none", stroke: "#1f77b4", "stroke-width": 1.6 });
+    for (var t2 = 2; t2 < 40; t2 += 4) {
+      var xx2 = gx0 + (gx1 - gx0) * t2 / 40;
+      add("circle", { cx: xx2, cy: gy - gh * Math.sin(Math.PI * t2 / 40), r: 3, fill: "#ff7f0e" });
+      add("rect", { x: xx2 - 2.6, y: gy - gh * Math.sin(Math.PI * (t2 + 2) / 40) - 2.6, width: 5.2, height: 5.2, fill: "none", stroke: "#2ca02c", "stroke-width": 1.1 });
+    }
+    cap(630, "两支读数落在同一条曲线上，同点比值恒为一（机器精度）");
+
+    add("text", { x: 30, y: 248, "font-size": 10, fill: "#888888" }, "注：① 的绝对归一化含一个与 λ 无关的系统因子 1.365（来源未定，登记在案）；② 以真空场方程成立为输入。");
+  }
+
   ["mode", "probe", "eta", "c"].forEach(function (id) {
     $(id).addEventListener("input", render);
     $(id).addEventListener("change", render);
   });
+  renderAnchors();
   render();
 })();
 </script>
