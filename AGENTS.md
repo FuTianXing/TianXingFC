@@ -94,6 +94,8 @@
 - 大文件分段读（`grep -n '^#'` 看骨架、`sed -n '起,止p'` 取段、`tail -n` 取尾），`read_file` 用小窗口分页（`limit` 50-100、`offset` 推进）；单行超 2000 字符会被 `read_file` 截断（标 `[truncated]`），分段读规避不了，取完整长行用 `sed -n 'Np'` 或 Python。
 - 终端中文乱码源于字节截断：`cut -cN`、`head -cN` 按**字节**计数，中文被切在字符中间会让流尾残缺，宿主改用 GBK **重解整个缓冲区**，症状是整段中文同时乱码而 ASCII 完好（断口用 `| tail -c 6 | od -c` 确认）。禁用二者处理中文，改用 `sed -n 'Np'`、`head -n`、Python 字符切片或 Read/Grep 工具。乱码文本不得转写，中文标题与术语一律用 Grep/Read 工具重取核对。
 - 工具默认行为与预期不符时用开关解决：`Select-String` 读 UTF-8 无 BOM 文件须加 `-Encoding UTF8`，否则漏匹配；`git status` 的非 ASCII 路径八进制转义（`\345\217\262...`）非乱码，加 `-c core.quotepath=false` 显示中文。
+- 命令通道会先展开一次字面量（2026-09-18 立）：`exec_command` 的命令文本在到达 shell 之前已被 PowerShell 语义处理，`$m`、`$g`、`$Q` 一类单字母变量被展开成空串、反引号被当转义符吃掉，用引号包住 heredoc 定界符也挡不住，结果是落盘内容静默缺字。凡含 `$` 或反引号的文本一律走 `node_repl` 的 `fs.writeFileSync(path, s, "utf8")`（已实测 `$g^{(2)}$` 与反引号可原样往返），或先落盘占位串再以脚本替换；落盘后复检 `$` 与反引号的计数是否与预期相符。
+- 运行与清理的通道选择（2026-09-18 立）：Python 脚本用 PowerShell 通道的 `python`（bash 通道 PATH 里没有 python，绝对路径 `/d/Program Files/...` 亦不可达）；删除临时文件时 `Remove-Item` 会被策略拒绝，改用 `node_repl` 的 `fs.unlinkSync`，删除前先用 `fs.existsSync` 与工作区路径前缀确认目标留在 `_tools/` 内。
 
 ## 执行效率规范（常驻，默认执行无需提示）
 
