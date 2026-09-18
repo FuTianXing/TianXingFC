@@ -19,16 +19,16 @@
 
 | 脚本 | 引用方 |
 |---|---|
-| `scar_probe_single.py`、`scar_probe_lift.py` | `验证脚本/注记-纠缠侧承载：绕数 = 非定域关系通量的量子保护探路.md`；`绕数承载层：电荷保护的波性侧归宿与粒子复合结构.md` |
 | `scar_probe_topo.py`、`scar_probe_topo_q.py` | `验证脚本/README.md` 第 13 条；同上注记 |
-| `merge_t4_u1.py`、`merge_t4_u1_q.py`、`z2_l3_check.py`、`t5_quantum_width.py` | 同上注记；`论电荷的本质：从绕数到基态空间投影量子数的完整机制.md` |
-| `composite_kink_width.py`、`elastic_identity_test.py` | `验证脚本/注记-复合模型：粒子 = 均匀缠绕背景上的 FK kink 位错与宽度参数区.md` |
+| `elastic_identity_test.py` | `验证脚本/注记-复合模型：粒子 = 均匀缠绕背景上的 FK kink 位错与宽度参数区.md` |
 | `explore_Pbar_doga.py`、`explore_Pbar_doga2.py`、`explore_Pbar_doga3.py` | `内部草稿/从混沌到兴盛：大爆炸作为天行力校准的相变.md`（P4-26 证据脚注）；`注记-温度定义：相位无序度的能量化标度.md`；`温度攻坚成果总览.md`；`开放问题总览` |
 | `explore_complementary_temperature.py`、`explore_complementary_temperature2.py`、`explore_complementary_temperature3.py`、`explore_endpoint_budget.py` | `注记-温度定义的波粒互补扩展：双侧激发度与等相干平衡.md`；`温度攻坚成果总览.md`；`评审报告/评审-温度定义的波粒互补扩展：双侧激发度与等相干平衡`；`开放问题总览` |
 | `quantum_bridge_a_s1.py` | `总结报告-引力机制整改与张量桥分段ab攻坚：2026-09-10.md`；`注记-张量桥分段a S1探测结果：纯规范陷阱重现与判据修正.md`；`注记-张量桥分段a攻坚计划：SO(3)标架3+1定量装配与史瓦西判据.md` |
 | `review_preflight.py` | `评审报告/温度的波粒互补定义-评审报告-2026-09-08.md` |
 | `gen_spiral_ladder_explain.py` | 生成 `可视化/螺旋阶梯几何_信息图.html`，改动该信息图时需复用 |
 | `_backup_微观根基_pre_revise3.md` | `评审报告/修改报告-爱因斯坦场方程的微观根基-2026-09-10-第三轮.md`。该快照与当前文件及 git 全部历史提交均不等价，是第三轮修订前状态的唯一副本 |
+
+**2026-09-16 已清理**（提交 `20436aa`）：`scar_probe_single.py`、`scar_probe_lift.py`、`merge_t4_u1.py`、`merge_t4_u1_q.py`、`z2_l3_check.py`、`t5_quantum_width.py`、`composite_kink_width.py` 七只按引用溯源清除（均曾入库，可从历史提交找回）；相关注记已改指常驻脚本：状态图与宽度扫描升为 `验证脚本/minimal_verification_state_graph.py` 与 `minimal_verification_composite_width.py`，T4、T5 由 `sector_dynamics` 接续，量子层 $Z_N$ 部分由 `zn_sectors` 接续。
 
 ## 功能可复用但暂无文档引用
 
@@ -48,3 +48,4 @@
 ## 历史清理
 
 2026-09-11 清理 112 个零引用文件：62 个根级脚本（图片生成 API 调试族 19、2026-09-09 批量修订族 29、定名与登记族 13、其他 1）与 `_tmp/` 下 50 个运行产物。全部移入 `_tools/_trash_20260911/`（112 个文件，10.5 MB，已在 `.gitignore` 排除），未执行删除。62 个脚本均在 git 索引中，可从历史提交找回；`_tmp/` 内容从未入库。备份保留至作者确认后可删。
+2026-09-18 清空 `_tools/_trash_20260911/`（作者指令：清理）：112 个文件、10.46 MB 已删除；其中 62 个根级脚本在 git 索引中，可从历史提交找回，`_tmp/` 下 50 个运行产物（stdout 日志与迭代截图）从未入库。`_tools/_tmp/` 维持为空（既定暂存位）。
