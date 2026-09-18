@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>钟与尺：引力的两个读数（可交互）</title>
+<style>
+  body { font-family: "Microsoft YaHei", "SimHei", system-ui, sans-serif; max-width: 980px; margin: 24px auto; padding: 0 16px; color: #222; line-height: 1.7; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #555; margin: 0 0 18px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; background: #f7f8fa; border: 1px solid #e3e6ea; border-radius: 8px; padding: 12px 16px; }
+  .controls label { font-size: 14px; }
+  svg { display: block; width: 100%; height: auto; margin: 14px 0 6px; background: #fff; }
+  .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 10px 0 6px; }
+  .card { border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px 14px; background: #fbfbfc; }
+  .card b { display: block; font-size: 12px; color: #666; font-weight: 600; margin-bottom: 4px; }
+  .val { font-size: 18px; color: #14508c; font-variant-numeric: tabular-nums; }
+  .legend { font-size: 13px; color: #444; }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 6px; margin: 0 4px 0 12px; vertical-align: -1px; }
+  .note { font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 10px; }
+</style>
+</head>
+<body>
+<h1>钟与尺：引力的两个读数（可交互）</h1>
+<p class="sub">这是科普《钟与尺：引力的两个读数》的可交互版。一条一维链上：格点记录 theta 供钟读，段（相邻格点之间的连接）带自己的读数 u 供尺读。拖动滑杆，看两支读数怎样被同一条稳态方程锁在一起。</p>
+
+<div class="controls">
+  <label>构造：
+    <select id="mode">
+      <option value="old">旧构造（每站一个数）</option>
+      <option value="new" selected>新构造（每段一个数）</option>
+    </select>
+  </label>
+  <label>探测点：<input id="probe" type="range" min="2" max="57" value="44"><span id="probeVal"></span></label>
+  <label>交错扰动 eta：<input id="eta" type="range" min="0" max="50" value="0"><span id="etaVal"></span></label>
+  <label>键能反馈 c：<input id="c" type="range" min="0" max="15" value="0"><span id="cVal"></span></label>
+</div>
+
+<svg id="chain" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet"></svg>
+<p class="legend">
+  <span class="sw" style="background:#1f77b4"></span>格点记录 theta（钟读它）
+  <span class="sw" style="background:#ff7f0e"></span>段读数 u（尺读它）
+  <span class="sw" style="background:#9467bd"></span>源所在段
+</p>
+
+<div class="readout" id="readout"></div>
+
+<svg id="bend" viewBox="0 0 900 190" preserveAspectRatio="xMidYMid meet"></svg>
+
+<p class="note">
+  说明：这是把《钟与尺》一文的机制做成可以动手的示意。稳态解与读数沿同一条稳态方程给出：段读数在源外恰好等于两端记录的中间值，因此钟读数与尺读数同点成比例，比值恒为一（机器精度）。键能反馈把剖面压矮，但比值不动，这正是文中那句结构恒等；它说明两把尺子是同一根尺子的两个刻度，不含关于总刻度的动力学预言。交错扰动一栏演示只有尺能读到的数据：它在格点上完全看不见，在段上看得见。
+</p>
+
+<script>
+(function () {
+  "use strict";
+
+  var NS = 61, NL = 60, E0 = 30, S = 0.5;
+  var P0 = S / (1 - 0.5 * ((E0 - 1) / E0 + (NL - 2 - E0) / (NL - 1 - E0)));
+
+  function tentU() {
+    var u = new Float64Array(NL);
+    for (var e = 0; e < NL; e++) {
+      u[e] = (e <= E0) ? P0 * e / E0 : P0 * (NL - 1 - e) / (NL - 1 - E0);
+    }
+    return u;
+  }
+
+  function composite(u) {
+    var th = new Float64Array(NL + 1);
+    for (var i = 1; i < NL; i++) th[i] = 0.5 * (u[i - 1] + u[i]);
+    return th;
+  }
+
+  function solveTheta(kap) {
+    var n = NL - 1;
+    var a = new Float64Array(n), b = new Float64Array(n), c = new Float64Array(n), d = new Float64Array(n);
+    for (var k = 0; k < n; k++) {
+      var i = k + 1;
+      a[k] = -0.5; b[k] = 1.0; c[k] = -0.5;
+      var f = 0;
+      if (i - 1 === E0) f += S / kap[E0];
+      if (i === E0) f += S / kap[E0];
+      d[k] = f;
+    }
+    var c2 = new Float64Array(n), d2 = new Float64Array(n);
+    c2[0] = c[0] / b[0]; d2[0] = d[0] / b[0];
+    for (var k2 = 1; k2 < n; k2++) {
+      var m = b[k2] - a[k2] * c2[k2 - 1];
+      c2[k2] = c[k2] / m;
+      d2[k2] = (d[k2] - a[k2] * d2[k2 - 1]) / m;
+    }
+    var x = new Float64Array(n);
+    x[n - 1] = d2[n - 1];
+    for (var k3 = n - 2; k3 >= 0; k3--) x[k3] = d2[k3] - c2[k3] * x[k3 + 1];
+    var th = new Float64Array(NL + 1);
+    for (var k4 = 0; k4 < n; k4++) th[k4 + 1] = x[k4];
+    return th;
+  }
+
+  function steady(c) {
+    if (c <= 0) {
+      var u0 = tentU();
+      return { u: u0, th: composite(u0) };
+    }
+    var u = tentU();
+    for (var it = 0; it < 80; it++) {
+      var kap = new Float64Array(NL);
+      for (var e = 0; e < NL; e++) kap[e] = 1 + c * u[e];
+      var th = solveTheta(kap);
+      var un = new Float64Array(NL);
+      for (var e2 = 1; e2 < NL - 1; e2++) {
+        un[e2] = 0.5 * (th[e2] + th[e2 + 1]) + (e2 === E0 ? S / kap[E0] : 0);
+      }
+      var dmax = 0;
+      for (var e3 = 0; e3 < NL; e3++) dmax = Math.max(dmax, Math.abs(un[e3] - u[e3]));
+      u = un;
+      if (dmax < 1e-13) break;
+    }
+    return { u: u, th: composite(u) };
+  }
+
+  function fmt(v, d) { return (Math.abs(v) < 5e-13 ? 0 : v).toFixed(d); }
+
+  var $ = function (id) { return document.getElementById(id); };
+  function svgNode(tag, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  function render() {
+    var mode = $("mode").value;
+    var p = parseInt($("probe").value, 10);
+    var eta = parseInt($("eta").value, 10) / 1000;
+    var c = parseInt($("c").value, 10) / 100;
+    $("probeVal").textContent = " " + p;
+    $("etaVal").textContent = " " + (eta === 0 ? "0" : eta.toFixed(3));
+    $("cVal").textContent = " " + (c === 0 ? "0" : c.toFixed(2));
+
+    var st = steady(c);
+    var u = st.u, th = st.th;
+    var u2 = new Float64Array(NL), th2;
+    for (var e = 0; e < NL; e++) u2[e] = u[e] + eta * (e % 2 === 0 ? 1 : -1);
+    th2 = composite(u2);
+
+    var dth = 0, du = 0;
+    for (var i = 1; i < NL; i++) dth = Math.max(dth, Math.abs(th2[i] - th[i]));
+    for (var e4 = 0; e4 < NL; e4++) du = Math.max(du, Math.abs(u2[e4] - u[e4]));
+
+    var g = $("chain");
+    while (g.firstChild) g.removeChild(g.firstChild);
+    var x0 = 40, x1 = 860, yTop = 60, yBot = 250;
+    var maxV = P0 * 1.08;
+    var X = function (e) { return x0 + (x1 - x0) * (e + 0.5) / NL; };
+    var SITE = function (i) { return x0 + (x1 - x0) * i / NL; };
+    var Y = function (v) { return yBot - (yBot - yTop) * Math.max(v, 0) / maxV; };
+
+    g.appendChild(svgNode("line", { x1: x0, y1: yBot, x2: x1, y2: yBot, stroke: "#dddddd", "stroke-width": 1 }));
+    var ttl = svgNode("text", { x: (x0 + x1) / 2, y: 22, "text-anchor": "middle", "font-size": 13, fill: "#666" });
+    ttl.textContent = "记录剖面（蓝点为格点记录，橙线为段读数；横轴为格点位置）";
+    g.appendChild(ttl);
+
+    var base = svgNode("polyline", { fill: "none", stroke: "#1f77b4", "stroke-width": 1.2, opacity: 0.55 });
+    var pts = [];
+    for (var i2 = 0; i2 <= NL; i2++) pts.push(SITE(i2) + "," + Y(th[i2]));
+    base.setAttribute("points", pts.join(" "));
+    g.appendChild(base);
+
+    if (mode === "new") {
+      for (var e5 = 0; e5 < NL; e5++) {
+        var yy = Y(u2[e5]);
+        g.appendChild(svgNode("line", {
+          x1: SITE(e5), y1: yy, x2: SITE(e5 + 1), y2: yy,
+          stroke: (e5 === E0) ? "#9467bd" : "#ff7f0e",
+          "stroke-width": (e5 === E0) ? 5 : 3, "stroke-linecap": "round"
+        }));
+        g.appendChild(svgNode("line", { x1: X(e5), y1: yy - 7, x2: X(e5) + 10, y2: yy - 7, stroke: "#ff7f0e", "stroke-width": 1 }));
+      }
+    } else {
+      for (var e6 = 0; e6 < NL; e6++) {
+        var yy2 = Y(u[e6]);
+        g.appendChild(svgNode("circle", {
+          cx: X(e6), cy: yy2 - 16, r: 2.5,
+          fill: (e6 === E0) ? "#9467bd" : "#ff7f0e", opacity: 0.85
+        }));
+      }
+      var qq = svgNode("text", { x: X(E0), y: Y(u[E0]) - 30, "text-anchor": "middle", "font-size": 16, fill: "#b3261e" });
+      qq.textContent = "？";
+      g.appendChild(qq);
+    }
+
+    for (var i3 = 1; i3 < NL; i3++) {
+      g.appendChild(svgNode("circle", { cx: SITE(i3), cy: Y(th[i3]), r: 3.2, fill: "#1f77b4" }));
+    }
+    g.appendChild(svgNode("line", { x1: X(p), y1: yTop - 14, x2: X(p), y2: yBot + 6, stroke: "#b3261e", "stroke-width": 1, "stroke-dasharray": "4 3" }));
+    var ptxt = svgNode("text", { x: X(p), y: yTop - 20, "text-anchor": "middle", "font-size": 12, fill: "#b3261e" });
+    ptxt.textContent = "探测点";
+    g.appendChild(ptxt);
+
+    var thMid = 0.5 * (th[p] + th[p + 1]);
+    var ratio = thMid > 1e-9 ? u[p] / thMid : NaN;
+    var cards = [];
+    cards.push(card("钟（格点记录）", "theta = " + fmt(th[p], 3), "h00 = 2 theta = " + fmt(2 * th[p], 3)));
+    if (mode === "new") {
+      cards.push(card("尺（段读数）", "u = " + fmt(u[p], 3), "长度因子 = 1 + u = " + fmt(1 + u[p], 3)));
+      cards.push(card("同点比值 lambda", fmt(ratio, 12), "u 除以两端记录的中间值"));
+    } else {
+      cards.push(card("尺（段读数）", "无独立读数", "旧构造里段不携带自己的数"));
+      cards.push(card("同点比值 lambda", "无", "只有钟可读，空间侧为空缺"));
+    }
+    cards.push(card("交错扰动响应", "格点 |d theta| = " + fmt(dth, 1), "段 |d u| = " + du.toFixed(3) + (eta > 0 ? "（可见）" : "")));
+    var thMax = 0;
+    for (var i5 = 0; i5 <= NL; i5++) thMax = Math.max(thMax, th[i5]);
+    cards.push(card("反馈强度与剖面峰值", "c = " + c.toFixed(2), "峰值 theta_max = " + fmt(thMax, 3) + "（c = 0 时 " + P0.toFixed(3) + "）"));
+    var box = $("readout");
+    while (box.firstChild) box.removeChild(box.firstChild);
+    for (var k5 = 0; k5 < cards.length; k5++) box.appendChild(cards[k5]);
+
+    var b = $("bend");
+    while (b.firstChild) b.removeChild(b.firstChild);
+    var bx = 450, by = 175;
+    b.appendChild(svgNode("circle", { cx: bx, cy: by, r: 15, fill: "#444" }));
+    var mt = svgNode("text", { x: bx, y: by + 5, "text-anchor": "middle", "font-size": 11, fill: "#fff" });
+    mt.textContent = "m";
+    b.appendChild(mt);
+    var lam = (mode === "new") ? 1 : 0;
+    var bend = (1 + lam) / 2;
+    var pts1 = [];
+    for (var t = 0; t <= 60; t++) {
+      var xx = 60 + (780 * t / 60);
+      var dev = 46 * bend * (1 - Math.exp(-Math.pow((xx - bx) / 170, 2)));
+      var yy3 = 50 + dev;
+      pts1.push(xx + "," + yy3);
+    }
+    b.appendChild(svgNode("polyline", { points: pts1.join(" "), fill: "none", stroke: (lam === 1 ? "#14508c" : "#999999"), "stroke-width": 2.6 }));
+    var bt = svgNode("text", { x: 60, y: 24, "font-size": 13, fill: "#666" });
+    bt.textContent = "光偏折：钟那一半（灰）与空间那一半。当前构造给 " + (lam === 1 ? "全值（钟加尺，实测比值 1.999）" : "半值（只有钟）") + "。";
+    b.appendChild(bt);
+  }
+
+  function card(title, value, sub) {
+    var d = document.createElement("div");
+    d.className = "card";
+    var bt = document.createElement("b");
+    bt.textContent = title;
+    var vv = document.createElement("div");
+    vv.className = "val";
+    vv.textContent = value;
+    var ss = document.createElement("div");
+    ss.style.fontSize = "12px";
+    ss.style.color = "#666";
+    ss.textContent = sub;
+    d.appendChild(bt); d.appendChild(vv); d.appendChild(ss);
+    return d;
+  }
+
+  ["mode", "probe", "eta", "c"].forEach(function (id) {
+    $(id).addEventListener("input", render);
+    $(id).addEventListener("change", render);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
