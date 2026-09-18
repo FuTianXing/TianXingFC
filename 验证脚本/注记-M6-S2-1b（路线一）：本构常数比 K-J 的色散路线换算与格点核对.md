@@ -29,7 +29,9 @@ S2-1b4 换算恒等式：$K/J = 3\kappa_\phi/K_0 = 6\pi\kappa_\phi t_P$（代数
 
 ## 二、系数定义的出处
 
-色散论文（单位制 $c = l_P = t_P = 1$）从公理 4 哈密顿出发：动能系数 $\hbar\bar t_P/2$（$\bar t_P = t_P/2\pi = 1/\omega_P$），同类键耦合 $K_{ij} = K_0f(\Delta n)$，$K_0 = \bar t_Pc^2/l_P^2 = 1/(2\pi t_P)$，且 $\omega_PK_0 = 1/t_P^2$；线性化给出 $\omega^2 = 2\omega_PK_0\sum_a(1-\cos k_al_P) = (4/t_P^2)\sum_a\sin^2(k_al_P/2)$，带宽 $\omega_{\max} = 2\sqrt{3}/t_P$。
+色散论文（单位制 $c = l_P = t_P = 1$）从公理 4 哈密顿出发：动能系数 $\hbar\bar t_P/2$（$\bar t_P = t_P/2\pi = 1/\omega_P$），同类键耦合 $K_{ij} = K_0f(\Delta n)$，$K_0 = \bar t_Pc^2/l_P^2 = 1/(2\pi t_P)$，且 $\omega_PK_0 = 1/t_P^2$。
+
+线性化给出 $\omega^2 = 2\omega_PK_0\sum_a(1-\cos k_al_P) = (4/t_P^2)\sum_a\sin^2(k_al_P/2)$，带宽 $\omega_{\max} = 2\sqrt{3}/t_P$。
 
 异类耦合 $H_{\text{het}} = -\hbar\kappa_\phi\sum_p\sum_{a<b}\cos(\theta_p^a-\theta_p^b)$ 在正交基 $(\Phi, \delta_1, \delta_2)$ 下给 $\delta$ 模式能隙 $\omega_0 = \sqrt{3\omega_P\kappa_\phi}$。
 
