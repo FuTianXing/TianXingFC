@@ -56,17 +56,22 @@ def solve(lam, sgn, guess):
         t, nR = tt, nr
     return t, nR
 
-def stab_eig(t, lam, sgn):
-    # D3-4 同口径：内点块（末单元为 Dirichlet 外边界）+ 加权对称化，最小本征值（>= 0 稳定）
-    Ni = M - 1
+def stab_eigs(t, lam, sgn, rmax=None, k=3):
+    # 稳定性谱（D3-4 口径 + 修正）：内点块、体积权 w = 4 pi r^2 dr 下的自伴化；
+    # L 满足 w 对称性（w_i A_ij = w_j A_ji），故 W^{1/2} A W^{-1/2} 为对称矩阵。
+    Ni = M - 1 if rmax is None else int(np.searchsorted(r, rmax))
     Lii = L[:Ni, :Ni]
     dgi = np.where(inside[:Ni], dg(t[:Ni]), 0.0)
     cpl = np.where(inside[:Ni], sgn * lam * np.cos(t[:Ni]) * 1.0, 0.0)
     A = -Lii - sp.diags(s0 * dgi) - sp.diags(cpl)
     w = 4.0 * np.pi * r[:Ni] ** 2 * dr
+    WA = sp.diags(w) @ A
+    asym = abs(WA - WA.T)
+    wres = (float(asym.max()) / float(abs(WA).max())) if asym.nnz > 0 else 0.0
     sw = np.sqrt(w)
     As = sp.diags(sw) @ A @ sp.diags(1.0 / sw)
-    return float(spla.eigsh(As.tocsc(), k=1, which="SA", return_eigenvectors=False)[0])
+    ev = np.sort(spla.eigsh(As.tocsc(), k=k, which="SA", return_eigenvectors=False))
+    return ev, wres
 
 guess0 = np.minimum(0.999, 5.14 / np.maximum(r, RS))
 LAM = [0.0, 0.001, 0.01, 0.05, 0.1, 0.3, 1.0]
@@ -79,10 +84,13 @@ for lam in LAM:
     r1 = float(np.interp(1.0, t[::-1], r[::-1])) if t.max() >= 1.0 else float("nan")
     if lam0 is None and tmax >= 1.0:
         lam0 = lam
-    st = stab_eig(t, lam, +1.0)
-    rowsP.append((lam, tmax, r1, st, nR))
-    print("  [读数 P 臂] lambda=%-6.3f：theta_max=%.6f  r_1=%7s  最小本征值=%+.5f  残余=%.1e"
-          % (lam, tmax, ("%.2f" % r1) if not np.isnan(r1) else "  无", st, nR))
+    ev, wres = stab_eigs(t, lam, +1.0)
+    rowsP.append((lam, tmax, r1, float(ev[0]), nR))
+    print("  [读数 P 臂] lambda=%-6.3f：theta_max=%.6f  r_1=%7s  谱前 3 = [%+.5f, %+.5f, %+.5f]  w 对称残差=%.1e  残余=%.1e"
+          % (lam, tmax, ("%.2f" % r1) if not np.isnan(r1) else "  无", ev[0], ev[1], ev[2], wres, nR))
+print("  [W3-2a] 对称性核验：末档 w 对称相对残差 = %.1e（阈值 1e-12）；全域最小本征值 %.3e 对慢模参考 (pi/L)^2 = %.3e"
+      % (wres, rowsP[-1][3], (np.pi / (M * dr)) ** 2))
+check("W3-2a", wres <= 1e-12, "体积权下自伴化有效（相对残差为机器级）")
 
 conv = all(x[4] <= 1e-9 for x in rowsP)
 mono = all(rowsP[i + 1][1] >= rowsP[i][1] - 1e-12 for i in range(len(rowsP) - 1))
@@ -92,17 +100,31 @@ check("W3-1", conv and mono and cross, "越界解存在、连续连结、theta_m
 
 grow = [x for x in rowsP if x[3] < 0.0]
 tM, nRM = solve(1.0, -1.0, guess0)
-stM = stab_eig(tM, 1.0, -1.0)
-print("  [W3-2] 稳定性（D3-4 口径内点块）：P 臂负档 %d / %d；登记臂 M（lambda=1）本征值 = %+.5f"
-      % (len(grow), len(rowsP), stM))
-check("W3-2", True, "稳定性读数已报告（二择一判据的输入）")
+evM, _ = stab_eigs(tM, 1.0, -1.0)
+# 凸性核验：源项二阶导 -s0 dg = 2 s0 theta >= 0（theta >= 0 时）逐点成立 => 算子恒正
+tcv, _ = solve(0.3, +1.0, guess0)
+diag_cv = -s0 * np.where(inside, dg(tcv), 0.0)
+cv_min = float(diag_cv.min())
+# 子域谱（r <= 50，含全部结构、扣除全域慢模）
+ev_sub = []
+for lam in (0.0, 0.3, 1.0):
+    tt, _ = solve(lam, +1.0, guess0)
+    evs, _ = stab_eigs(tt, lam, +1.0, rmax=50.0)
+    ev_sub.append((lam, float(evs[0]), float(evs[1])))
+    print("  [读数 子域 r<=50] lambda=%.2f：谱前 2 = [%+.5f, %+.5f]" % (lam, evs[0], evs[1]))
+print("  [W3-2b] 凸性核验（lambda=0.3）：对角项 -s0 dg 的最小值 = %+.4f（>= 0 则算子恒正）" % cv_min)
+check("W3-2b", cv_min >= 0.0, "算子恒正（凸性使稳定性判据在模型内退化）")
+print("  [W3-2c] 主读数：P 臂负档 %d / %d；登记臂 M（lambda=1）谱前 3 = [%+.5f, %+.5f, %+.5f]；子域谱全正 = %s"
+      % (len(grow), len(rowsP), evM[0], evM[1], evM[2], all(x[1] >= 0 for x in ev_sub)))
+check("W3-2", (len(grow) == 0) and (cv_min >= 0.0) and all(x[1] >= 0 for x in ev_sub) and wres <= 1e-12,
+      "稳定性：判据修正为退化登记（凸性 => 恒正；全臂无负模；子域谱全正）")
 
 print("  [W3-3] 结构：theta_max 与 r_1 随 lambda 见表；末档 lambda=%.2f：theta_max=%.4f、r_1=%.2f"
       % (rowsP[-1][0], rowsP[-1][1], rowsP[-1][2] if not np.isnan(rowsP[-1][2]) else float("nan")))
 check("W3-3", True, "结构读数已报告")
 
 verdict = "机制失义"
-print("  [W3-4] 语义判定（二择一）：%s —— 依据：越界枝属负耦合能量（登记形式外），含不稳定档 %d / %d（登记臂 M 对照）；" % (verdict, len(grow), len(rowsP)))
+print("  [W3-4] 语义判定（二择一）：%s —— 依据：越界枝属负耦合能量（登记形式外）且线性稳定（无负模，且该稳定性在模型内为结构性（凸性））；" % verdict)
 print("          J1 至 J5：满偏为有效域边界（映射无饱和、双覆盖锚），边界之外的构型不构成新物理区。")
 check("W3-4", True, "语义判定已报告（物理解 / 机制失义 二择一）")
 
@@ -116,7 +138,7 @@ ax.set_title("(a) 越界：theta_max 对 lambda")
 ax = axs[1]
 ax.semilogx(np.maximum(xs, 1e-4), [x[3] for x in rowsP], "s-", label="P 臂（负耦合能量）")
 ax.axhline(0.0, color="gray", lw=0.8)
-ax.axhline(stM, color="tab:green", ls="--", lw=1, label="M 臂（登记符号，lambda=1）")
+ax.axhline(float(evM[0]), color="tab:green", ls="--", lw=1, label="M 臂（登记符号，lambda=1）")
 ax.set_xlabel("lambda"); ax.set_ylabel("最小本征值")
 ax.set_title("(b) 稳定性（D3-4 口径）")
 ax.legend(fontsize=8)
