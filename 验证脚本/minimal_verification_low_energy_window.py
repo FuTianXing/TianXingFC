@@ -3,11 +3,11 @@
 
 判据（先立判据，再实现）：
   L3-1 低能精确性：格点色散在 u = k l_P -> 0 时给出 omega/(ck) -> 1。
-  L3-2 首阶系数：偏差的首阶系数等于 -(1/24)(sum_a n_a^4)，方向比 [100]:[110]:[111] = 3:1.5:1；
+  L3-2 首阶系数：偏差的首阶系数等于 -(1/24)(sum_a n_a^4)，方向比 [100]:[110]:[111] = 6:3:2；
        换算到体系基准约定（E_P = hbar*omega_P）为 -pi^2/6 * (sum_a n_a^4)(E/E_P)^2。
   L3-3 次阶：残差按 u^4 标度，故误差界由首阶项控制。
-  L3-4 窗口表：给定精度 eps，窗口上界 (E/E_P) = sqrt(eps / C_worst)，C_worst = pi^2/6。
-  L3-5 实际能量对照：LHC、PeV 中微子、最高能宇宙线三个能量上的偏离量级。
+  L3-4 窗口表：给定精度 eps，窗口上界 (E/E_P) = sqrt(eps / C_worst)，C_worst = pi^2/6。；对应能量按体系基准 E_P = 2pi E_P^(t) 计算（折算等价式 (1/24)(E/E_P^(t))^2）
+  L3-5 实际能量对照：LHC、PeV 中微子、最高能宇宙线三个能量上的偏离量级。（同上口径：折算用 1/24 与 E_P^(t)，基准用 pi^2/6 与 E_P）
 
 单位：格距 l_P = 1，c = 1（即 omega 以 1/t_P 为单位），故 u = k，E/E_P^(t) = u。
 确定性，无随机数。
@@ -15,8 +15,11 @@
 
 import numpy as np
 
-E_P_GeV = 1.220890e19          # 普朗克能量（体系基准约定 E_P = hbar*omega_P）
-E_P_eV = E_P_GeV * 1e9
+E_Pt_GeV = 1.220890e19           # 折算普朗克能量 E_P^(t) = hbar/t_P
+C2PI = 2.0 * np.pi
+E_P_basis_GeV = C2PI * E_Pt_GeV  # 体系基准 E_P = hbar*omega_P = 2pi E_P^(t)
+E_Pt_eV = E_Pt_GeV * 1e9
+E_P_basis_eV = E_P_basis_GeV * 1e9
 
 print("=" * 76)
 print("L3-1 低能精确性：omega/(c k) -> 1")
@@ -52,7 +55,7 @@ for name, n in dirs.items():
     theo = -np.sum(n ** 4) / 24.0
     C_t[name] = -theo
     print("  %6s | %14.10f | %14.10f | %12.3e" % (name, val, theo, abs(val - theo) / abs(theo)))
-print("  方向比（取绝对值）：%.4f : %.4f : %.4f（期望 3 : 1.5 : 1）"
+print("  方向比（取绝对值）：%.4f : %.4f : %.4f（期望 6:3:2）"
       % tuple(C_t[k] / min(C_t.values()) for k in ("[100]", "[110]", "[111]")))
 print("  体系基准约定（E_P = hbar*omega_P）下的系数 = (2pi)^2/24 = %.6f 倍" % ((2 * np.pi) ** 2 / 24))
 print("  故最不利方向（[100]）的系数 C_worst = pi^2/6 = %.6f" % (np.pi ** 2 / 6))
@@ -77,7 +80,7 @@ C_worst = np.pi ** 2 / 6
 print("  %10s | %14s | %16s" % ("精度 eps", "(E/E_P) 上界", "对应能量（eV）"))
 for eps in (1e-2, 1e-6, 1e-12, 1e-18, 1e-24):
     ratio = np.sqrt(eps / C_worst)
-    print("  %10.0e | %14.3e | %16.3e" % (eps, ratio, ratio * E_P_eV))
+    print("  %10.0e | %14.3e | %16.3e" % (eps, ratio, ratio * E_P_basis_eV))
 print("  期望：窗口随 sqrt(eps) 收缩；低能层（E << E_P）在全部所列精度下都成立")
 
 print()
@@ -86,8 +89,8 @@ print("L3-5 实际能量对照")
 print("=" * 76)
 cases = [("LHC 质子 13 TeV", 13e12), ("IceCube 中微子 1 PeV", 1e15),
          ("最高能宇宙线 1e20 eV", 1e20), ("极限宇宙线 3e20 eV", 3e20)]
-print("  %22s | %12s | %14s" % ("情形", "E/E_P", "偏离量级 C_worst*(E/E_P)^2"))
+print("  %22s | %12s | %14s" % ("情形", "E/E_P^(t)", "偏离 (1/24)(E/E_P^(t))^2"))
 for name, E in cases:
-    r = E / E_P_eV
-    print("  %22s | %12.3e | %14.3e" % (name, r, C_worst * r ** 2))
-print("  期望：在可及最高能量上，偏离约 1e-16 或更小")
+    r = E / E_Pt_eV
+    print("  %22s | %12.3e | %14.3e" % (name, r, r ** 2 / 24.0))
+print("  期望：在可及最高能量上，偏离约 1e-17 或更小")
