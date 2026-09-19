@@ -13,77 +13,24 @@
   J2 所有速度幅度恒为 c（无参数可承载损耗）
   J3 位置多重集等于自由演化多重集（碰撞 = 标签交换，无动力学内容）
   J4 碰撞定则逐次等于速度交换（无自由参数、无接触时长）
-  J5 旋向和 S = sum(eps_n) 守恒（每次碰撞翻两个符号；即体系净绕数读数）
+  J5 摆程方向和 S = sum(sigma_n) 守恒（每次碰撞翻两个符号；即体系净绕数读数）
+    口径：翻转的是瞬时摆程方向 sigma；手性（螺旋旋向）是几何标签，不入哈密顿、不翻转。
   J6 对照档：若引入反弹系数 e < 1，J1 至 J5 失效且偏差随碰撞数增长
 """
 import numpy as np
 
 C = 1.0
 
-def run(N=8, seed=7, restitution=1.0, tmax=40.0, samples=200):
-    rng = np.random.default_rng(seed)
-    z = np.arange(N) * 1.0 + 0.1 * rng.random(N)      # 初始位置严格有序
-    z = np.sort(z)
-    eps = np.where(rng.random(N) < 0.5, +1.0, -1.0)   # 旋向
-    v = eps * C
-    z0, v0 = z.copy(), v.copy()
-    ncol = 0
-    mom_drift = 0.0
-    rule_ok = True
-    S_hist = [eps.sum()]
-    P0 = (v.sum())
-    times = np.linspace(0, tmax, samples)
-    dev_hist = []
-    for t in times:
-        # 推进到 t（事件驱动）
-        while True:
-            dt = np.min(np.diff(z)) / (2 * C)  # 安全步长上界
-            dt = min(dt, t - 0.0)
-            # 找下一个碰撞时刻（相邻接近对）
-            best, bi = np.inf, -1
-            for i in range(N - 1):
-                if z[i + 1] - z[i] > 1e-14 and v[i] > v[i + 1]:
-                    tc = (z[i + 1] - z[i]) / (v[i] - v[i + 1])
-                    if tc < best:
-                        best, bi = tc, i
-            if bi < 0 or best > t:
-                break
-            z = z + v * best
-            t -= best  # 局部剩余时间
-            times_rem = None
-            # 碰撞：交换速度并施加反弹系数
-            vi, vj = v[bi], v[bi + 1]
-            v[bi], v[bi + 1] = vj, vi
-            if restitution != 1.0:
-                v[bi] *= restitution
-                v[bi + 1] *= restitution
-            eps[bi] *= -1
-            eps[bi + 1] *= -1
-            if not np.isclose(abs(v[bi]) + abs(v[bi + 1]), 2 * C * restitution, atol=1e-12):
-                rule_ok = False
-            ncol += 1
-            mom_drift = max(mom_drift, abs(v.sum() - P0))
-            S_hist.append(eps.sum())
-        z = z + v * (t)  # 剩余时间推进
-        # 与自由演化比较（多重集）
-        free = z0 + v0 * (times[list(times).index(t)] if False else 0.0)
-        # 记录当前时刻
-        zs.append(z.copy())
-        ts.append(times[len(zs) - 1])
-        break
-    return None
-
-# 上面的内联版本结构复杂，改用干净的实现
 def simulate(N=8, seed=7, restitution=1.0, tmax=40.0, samples=400):
     rng = np.random.default_rng(seed)
     z = np.sort(np.arange(N) * 1.0 + 0.1 * rng.random(N))
-    eps = np.where(rng.random(N) < 0.5, +1.0, -1.0)
-    v = eps * C
+    sigma = np.where(rng.random(N) < 0.5, +1.0, -1.0)
+    v = sigma * C
     z0, v0 = z.copy(), v.copy()
     P0 = v.sum()
-    S0 = eps.sum()
+    S0 = sigma.sum()
     events = []
-    rec = {'t': [], 'z': [], 'v': [], 'eps': [], 'dev_free': [], 'mom': [], 'S': [], 'absv': [], 'E': []}
+    rec = {'t': [], 'z': [], 'v': [], 'sigma': [], 'dev_free': [], 'mom': [], 'S': [], 'absv': [], 'E': []}
     # 事件驱动：先把所有碰撞时刻解开（反弹系数为 1 时用解析推进）
     t = 0.0
     tgrid = np.linspace(0, tmax, samples)
@@ -110,8 +57,8 @@ def simulate(N=8, seed=7, restitution=1.0, tmax=40.0, samples=400):
             if restitution != 1.0:
                 v[bi] *= restitution
                 v[bi + 1] *= restitution
-            eps[bi] *= -1.0
-            eps[bi + 1] *= -1.0
+            sigma[bi] *= -1.0
+            sigma[bi + 1] *= -1.0
             ncol += 1
             # J4：等质量弹性硬点的碰撞定则就是速度交换（无自由参数）
             if restitution == 1.0 and not (np.isclose(v[bi], vj) and np.isclose(v[bi + 1], vi)):
@@ -125,9 +72,9 @@ def simulate(N=8, seed=7, restitution=1.0, tmax=40.0, samples=400):
         zs = np.sort(z)
         fs = np.sort(free)
         rec['t'].append(t); rec['z'].append(z.copy()); rec['v'].append(v.copy())
-        rec['eps'].append(eps.copy())
+        rec['sigma'].append(sigma.copy())
         rec['dev_free'].append(np.max(np.abs(zs - fs)))
-        rec['mom'].append(v.sum()); rec['S'].append(eps.sum())
+        rec['mom'].append(v.sum()); rec['S'].append(sigma.sum())
         rec['absv'].append(np.max(np.abs(np.abs(v) - C)))
         rec['E'].append(0.5 * np.sum(v**2))
         gi += 1
@@ -145,7 +92,7 @@ def main():
     print('[J2] 速度幅度最大偏差 = %.2e（期望 0）；总动能 = %.12f（期望 %.1f）' % (np.max(r['absv']), r['E'][-1], 0.5 * len(r['z'][0])))
     print('[J3] 位置多重集对自由演化的最大偏差 = %.2e（期望 0），碰撞次数 = %d' % (np.max(r['dev_free']), r['ncol']))
     print('[J4] 碰撞定则 = 速度交换（无自由参数）：%s' % r['rule_swap_ok'])
-    print('[J5] 旋向和漂移最大 = %.2e（期望 0，S0 = %.0f）' % (np.max(np.abs(np.array(r['S']) - r['S0'])), r['S0']))
+    print('[J5] 摆程方向和漂移最大 = %.2e（期望 0，S0 = %.0f）' % (np.max(np.abs(np.array(r['S']) - r['S0'])), r['S0']))
     r2 = simulate(restitution=0.97)
     print('[J6] 对照档（反弹系数 0.97）：位置多重集最大偏差 = %.3f，速度幅度最大偏差 = %.4f，总动能 %.4f 对 %.1f'
           % (np.max(r2['dev_free']), np.max(r2['absv']), r2['E'][-1], 0.5 * len(r2['z'][0])))
