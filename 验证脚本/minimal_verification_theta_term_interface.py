@@ -70,6 +70,17 @@ def wall_moving(N, h):
     n[0] = np.cos(th); n[1] = np.sin(th)
     return n
 
+def ring_static(N, h, R0=2.0, w=0.5):
+    """静态环壁：依赖 x、y、z 三个空间方向（三维依赖的静态构型）。"""
+    x = (np.arange(N) - N / 2) * h
+    X0, X1, X2, _X3 = np.meshgrid(x, x, x, x, indexing='ij')
+    rho = np.sqrt(X0**2 + X1**2)
+    d = np.sqrt((rho - R0)**2 + X2**2)
+    th = np.pi * 0.5 * (1 + np.tanh(d / w))
+    n = np.zeros((4, N, N, N, N))
+    n[0] = np.cos(th); n[1] = np.sin(th)
+    return n
+
 def instanton_like(N, h, rho0=0.5):
     x = (np.arange(N) - N / 2) * h
     X0, X1, X2, X3 = np.meshgrid(x, x, x, x, indexing='ij')
@@ -88,11 +99,17 @@ for N, h in [(16, 0.25), (24, 0.2)]:
     print(f"[N = {N}] K-1 静态壁 max|rho| = {np.abs(r1).max():.2e}；K-2 运动壁 max|rho| = {np.abs(r2).max():.2e}")
 
 print()
+for N, h in [(16, 0.5), (24, 0.25)]:
+    nr = ring_static(N, h)
+    rr = rho_density(nr, h)
+    print(f"[K-3] N = {N}：静态环壁（三空间方向依赖）max|rho| = {np.abs(rr).max():.2e}")
+print()
 for N, h in [(16, 0.5), (32, 0.25)]:
     ni = instanton_like(N, h)
     ri = rho_density(ni, h)
     vol = h ** 4
     print(f"[K-3] N = {N}（盒 = {N*h:.1f}）：max|rho| = {np.abs(ri).max():.3e}，积分 = {ri.sum() * vol:.6f}")
 print("[K-3 读数] 正对照：点态密度非零而积分在两种分辨率下均为零（全导数结构；与 T1b 的四维数为零一致）。")
-print("[K-4] 结论：平面壁（静态或运动）的 theta 型贡献恒为零，不能充当 C1 的负线项（对壁而言第四候选失效）。")
-print("       曲壁（环）构型的三维依赖未在本判据覆盖，若 C1 需要环的读数，另立判据。")
+print("[K-4] 结论：theta 型四形式对一切静态构型（平面壁、运动壁、静态环）贡献恒为零（前者靠结构零，后者靠时间导数缺失）；")
+print("       故它不能充当 C1 的负线项（第四候选对整个静态扇区失效）。")
+print("       非零密度只出现在含时间导数的四维依赖构型上，且其积分对渐近常数构型为零（全导数，见 K-3 正对照）。")
