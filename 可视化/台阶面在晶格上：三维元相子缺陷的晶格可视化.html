@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>台阶面在晶格上：三维元相子缺陷的晶格可视化</title>
+<style>
+  body { font-family: "Microsoft YaHei", "Segoe UI", sans-serif; background:#0f1216; color:#e8ecf2; margin:0; padding:22px 26px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  h2 { font-size:16px; margin:24px 0 8px; color:#9fd0ff; font-weight:600; }
+  .lead { color:#a9b3c1; max-width:1000px; line-height:1.75; font-size:14px; }
+  .controls { margin:12px 0; padding:12px 14px; background:#161b22; border:1px solid #232a33; border-radius:8px; font-size:13px; }
+  .controls label { margin-right:20px; white-space:nowrap; }
+  canvas { background:#11151a; border:1px solid #232a33; border-radius:8px; display:block; }
+  .row { display:flex; gap:16px; flex-wrap:wrap; }
+  .readout { margin-top:10px; font-size:13px; line-height:1.95; color:#cfe3ff; background:#141a21; border:1px solid #232a33; border-radius:8px; padding:12px 14px; max-width:1310px; }
+  .k { color:#8fa3b8; } .v { color:#ffd479; font-variant-numeric:tabular-nums; }
+  .ok { color:#7ee787; } .warn { color:#ff9a9a; }
+  .legend { font-size:12px; color:#93a1b1; margin:6px 0 0; max-width:1310px; line-height:1.7; }
+  code { color:#ffd479; }
+</style>
+</head>
+<body>
+<h1>台阶面在晶格上</h1>
+<p class="lead">
+元相子晶格上的相位场记作 <code>v</code>：真空取整数值，缺陷是 <code>v</code> 跨过一格的地方。
+每个晶格点是一颗元相子，相邻两点之差是<b>棱差</b>（键），四条键围成的小方格是<b>面元</b>，绕方格一圈把棱差加起来是<b>面元环量</b>。
+可观测的只有棱差与面元环量（都按 <code>mod 2π</code> 读，也就是本页里的「圈」取 <code>wrap</code>）；指针的绝对指向不进入读数。
+</p>
+
+<div class="controls">
+  <label>形态：<select id="mode">
+    <option value="wall">平直墙面</option>
+    <option value="fold">墙面折一步</option>
+    <option value="core">核线（环的横截面）</option>
+  </select></label>
+  <label>墙的位置 / 核的位置 = <input type="range" id="x0" min="2" max="9" step="1" value="4"><span id="x0v" class="v">4</span></label>
+  <label>切割线位置 = <input type="range" id="cut" min="2" max="9" step="1" value="6"><span id="cutv" class="v">6</span></label>
+  <label><input type="checkbox" id="raw"> 显示原始相位（含切割线跳变）</label>
+</div>
+
+<div class="row">
+  <canvas id="c2d" width="560" height="560"></canvas>
+  <canvas id="c3d" width="560" height="560"></canvas>
+</div>
+<p class="legend">
+左：二维横截面（x 为墙的法向）。粗红键是相位跳一格的那层键；橙色方格是环量非零的面元；虚线是切割线（描述选择）。
+右：三维等距投影（6×6×6 抽样），红色键层是台阶面，橙色点是要在三维里配对的核线。
+</p>
+
+<div class="readout" id="readout"></div>
+
+<h2>本页要说明的四件事</h2>
+<p class="lead">
+其一，<b>墙就是一层键</b>。相位跨一格，全部落在横穿墙面的那层键上；把墙的位置 x0 滑动，墙面整体挪位，读数一项都不变（这就是位置简并，与三维那一轮的半格平移差 7.78×10^-12 同源）。
+其二，<b>平直墙面的环量处处为零</b>，把墙面折一步也一样为零：折步只是同一个拓扑类的另一个形状，属光滑形变。荷不落在墙面上。
+其三，<b>荷只出现在核周围</b>。把形态换成核线（环的横截面），围绕核的四条键立刻给出一个整圈：环量取值回到 {0, ±1} 圈，也就是 {0, ±2π} 弧度。这才是「荷住在面元上」的准确含义：核是唯一旋度源。
+其四，<b>切割线是虚线</b>。勾上「显示原始相位」再滑动切割线，指针的绝对读数整体变化，而棱差、面元环量与绕数三项一项不变。
+</p>
+
+<script>
+var N = 12, jc = 6;
+var cv2 = document.getElementById("c2d"), g2 = cv2.getContext("2d");
+var cv3 = document.getElementById("c3d"), g3 = cv3.getContext("2d");
+function wrap(x) { return x - Math.round(x); }
+function rawField(mode, x0, cut) {
+  var v = [], i, j;
+  for (i = 0; i < N; i++) { v[i] = []; for (j = 0; j < N; j++) { v[i][j] = 0; } }
+  if (mode === "core") {
+    for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+      var ang = Math.atan2(j - jc - 0.5, i - x0 - 0.5);
+      v[i][j] = ang / (2 * Math.PI);
+    }
+  } else {
+    var s = 1.2;
+    for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+      var w = mode === "fold" && j >= jc ? 1 : 0;
+      v[i][j] = -0.5 * (1 + Math.tanh((i - x0 - w) / s));
+    }
+    for (j = 0; j < N; j++) { v[0][j] = 0; v[N - 1][j] = -1; }
+  }
+  // 切割线：把 cut 之后的行整体加一（描述选择，不改变任何可观测读数）
+  if (mode === "core") {
+    for (i = 0; i < N; i++) for (j = 0; j < N; j++) { if (i > cut && (j - jc - 0.5) >= 0) v[i][j] += 1; }
+  } else {
+    for (i = 0; i < N; i++) for (j = 0; j < N; j++) { if (j >= cut) v[i][j] += 1; }
+  }
+  return v;
+}
+function observables(v) {
+  var dx = [], dy = [], i, j, bonds = 0, e1 = 0, e2 = 0, wind = 0, circ = [], per = 0, maxper = 0, colsum = 0;
+  for (i = 0; i < N; i++) { dx[i] = []; dy[i] = []; for (j = 0; j < N; j++) {
+    dx[i][j] = i < N - 1 ? wrap(v[i + 1][j] - v[i][j]) : 0;
+    dy[i][j] = j < N - 1 ? wrap(v[i][j + 1] - v[i][j]) : 0;
+  } }
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+    e1 += 0.5 * (dx[i][j] * dx[i][j] + dy[i][j] * dy[i][j]);
+    e2 += 0.001 * (1 - Math.cos(2 * Math.PI * v[i][j]));
+    if (Math.abs(dx[i][j]) > 0.4) bonds++;
+  }
+  for (i = 0; i < N - 1; i++) { circ[i] = []; for (j = 0; j < N - 1; j++) {
+    var c = dx[i][j] + dy[i + 1][j] - dx[i][j + 1] - dy[i][j];
+    c = wrap(c);
+    circ[i][j] = c;
+    if (Math.abs(c) > 0.05) { per++; maxper = Math.max(maxper, Math.abs(c)); }
+    colsum += Math.abs(c);
+  } }
+  for (i = 0; i < N - 1; i++) wind += dx[i][5];
+  return { dx: dx, dy: dy, e1: e1, e2: e2, bonds: bonds, wind: wind, circ: circ, per: per, maxper: maxper, flux: colsum };
+}
+function draw2(v, o, showRaw) {
+  var pad = 40, s = (cv2.width - 2 * pad) / (N - 1), i, j, x, y;
+  g2.clearRect(0, 0, cv2.width, cv2.height); g2.fillStyle = "#0e1216"; g2.fillRect(0, 0, cv2.width, cv2.height);
+  for (i = 0; i < N - 1; i++) for (j = 0; j < N - 1; j++) {
+    if (Math.abs(o.circ[i][j]) > 0.05) {
+      x = pad + j * s; y = pad + (N - 2 - i) * s;
+      g2.fillStyle = o.circ[i][j] > 0 ? "rgba(255,150,90,0.30)" : "rgba(120,180,255,0.30)";
+      g2.fillRect(x, y, s, s);
+      g2.strokeStyle = o.circ[i][j] > 0 ? "#ffb46b" : "#8fc2ff"; g2.lineWidth = 1.8; g2.strokeRect(x, y, s, s);
+      g2.fillStyle = "#fff"; g2.font = "12px Consolas, monospace";
+      g2.fillText(o.circ[i][j] > 0 ? "+1" : "-1", x + s * 0.26, y + s * 0.64);
+    }
+  }
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+    x = pad + j * s; y = pad + (N - 1 - i) * s;
+    if (j < N - 1) paint(x, y, x + s, y, o.dy[i][j]);
+    if (i < N - 1) paint(x, y, x, y - s, o.dx[i][j]);
+  }
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+    x = pad + j * s; y = pad + (N - 1 - i) * s;
+    if (showRaw) {
+      var r = s * 0.32, ph = 2 * Math.PI * v[i][j];
+      g2.strokeStyle = "#2c3640"; g2.lineWidth = 1; g2.beginPath(); g2.arc(x, y, r, 0, 6.2832); g2.stroke();
+      g2.strokeStyle = "#7ee787"; g2.lineWidth = 2; g2.beginPath(); g2.moveTo(x, y);
+      g2.lineTo(x + r * Math.cos(ph), y - r * Math.sin(ph)); g2.stroke();
+    } else {
+      g2.fillStyle = "#3a4550"; g2.beginPath(); g2.arc(x, y, 2.2, 0, 6.2832); g2.fill();
+    }
+  }
+  g2.fillStyle = "#8fa3b8"; g2.font = "12px Microsoft YaHei, sans-serif";
+  g2.fillText("橙色方格：环量 = +1 圈（= +2π）", pad, cv2.height - 10);
+}
+function paint(x1, y1, x2, y2, d) {
+  var a = Math.abs(d);
+  g2.strokeStyle = a > 0.4 ? "#ff6b6b" : (a > 0.05 ? "#c9a227" : "#39434d");
+  g2.lineWidth = a > 0.4 ? 4.4 : (a > 0.05 ? 2.6 : 1.2);
+  g2.beginPath(); g2.moveTo(x1, y1); g2.lineTo(x2, y2); g2.stroke();
+}
+function draw3(mode, x0) {
+  var M = 6, ox = 170, oy = 470, sc = 44, i, j, k;
+  g3.clearRect(0, 0, cv3.width, cv3.height); g3.fillStyle = "#0e1216"; g3.fillRect(0, 0, cv3.width, cv3.height);
+  function P(i, j, k) { return [ox + (k - i * 0.9) * sc * 0.62, oy - (i * 0.5 + j) * sc * 0.62]; }
+  for (i = 0; i < M; i++) for (j = 0; j < M; j++) for (k = 0; k < M; k++) {
+    var p = P(i, j, k);
+    var onWall = (mode !== "core") && Math.abs(i - Math.round(x0 * (M - 1) / (N - 1))) < 0.5;
+    g3.fillStyle = onWall ? "#ff8a8a" : "#2f3944";
+    g3.beginPath(); g3.arc(p[0], p[1], onWall ? 2.4 : 1.5, 0, 6.2832); g3.fill();
+  }
+  g3.font = "12px Microsoft YaHei, sans-serif";
+  if (mode === "core") {
+    var i0 = Math.round(x0 * (M - 1) / (N - 1));
+    for (j = 0; j < M; j++) {
+      var a = P(0, j, Math.round((M - 1) / 2) * 0 + 3), b = P(M - 1, j, 3);
+      g3.strokeStyle = "rgba(255,180,120,0.75)"; g3.lineWidth = 1.8;
+      g3.beginPath(); g3.moveTo(a[0], a[1]); g3.lineTo(b[0], b[1]); g3.stroke();
+    }
+    g3.fillStyle = "#ffd479"; g3.fillText("核线 = 环的横截面的三维像：绕它一圈给一个整圈环量", 24, 26);
+  } else {
+    for (j = 0; j < M; j++) for (k = 0; k < M; k++) {
+      var w = (mode === "fold") && k >= 3 ? 1 : 0;
+      var ii = Math.round(x0 * (M - 1) / (N - 1)) + w;
+      if (ii < 0 || ii > M - 1) continue;
+      var a2 = P(ii, j, k), b2 = P(ii, j, k + 1);
+      g3.strokeStyle = "rgba(255,107,107,0.55)"; g3.lineWidth = 2.2;
+      g3.beginPath(); g3.moveTo(a2[0], a2[1]); g3.lineTo(b2[0], b2[1]); g3.stroke();
+    }
+    g3.fillStyle = "#ffd479"; g3.fillText("红色键层 = 台阶面（相位在此跳一格）", 24, 26);
+  }
+  g3.fillStyle = "#8fa3b8";
+  g3.fillText("x 两端为边界，绕数由边界数据固定", 24, cv3.height - 12);
+}
+function refresh() {
+  var mode = document.getElementById("mode").value;
+  var x0 = +document.getElementById("x0").value;
+  var cut = +document.getElementById("cut").value;
+  var showRaw = document.getElementById("raw").checked;
+  document.getElementById("x0v").textContent = x0;
+  document.getElementById("cutv").textContent = cut;
+  var v = rawField(mode, x0, cut), o = observables(v);
+  draw2(v, o, showRaw); draw3(mode, x0);
+  var name = mode === "wall" ? "平直墙面" : (mode === "fold" ? "墙面折一步" : "核线（环的横截面）");
+  document.getElementById("readout").innerHTML =
+    '<span class="k">形态</span> <span class="v">' + name + '</span>' +
+    ' &nbsp;|&nbsp; <span class="k">强棱差键数（|Δv| > 0.4 圈）</span> <span class="v">' + o.bonds + '</span>' +
+    ' &nbsp;|&nbsp; <span class="k">绕数（沿横列累加棱差）</span> <span class="v">' + o.wind.toFixed(6) + '</span><br>' +
+    '<span class="k">非零面元数</span> <span class="v">' + o.per + '</span>' +
+    ' &nbsp;|&nbsp; <span class="k">单格环量极值</span> <span class="v">' + o.maxper.toFixed(3) + '</span> 圈' +
+    ' &nbsp;|&nbsp; <span class="k">环量取值集合</span> <span class="v">' + (o.per ? "{0, ±1}" : "{0}") + '</span> 圈（即 {0, ±2π} 弧度）<br>' +
+    '<span class="k">棱差能量</span> <span class="v">' + o.e1.toFixed(6) + '</span>' +
+    ' &nbsp;|&nbsp; <span class="k">势项能量</span> <span class="v">' + o.e2.toFixed(6) + '</span>' +
+    ' &nbsp;|&nbsp; <span class="k">总能量</span> <span class="v">' + (o.e1 + o.e2).toFixed(6) + '</span>' +
+    ' &nbsp;|&nbsp; <span class="' + (o.per > 0 ? "warn" : "ok") + '">' + (o.per > 0 ? "有核：荷落在面元上" : "无核：全场环量为零，荷只在边界绕数上") + '</span>';
+}
+["mode", "x0", "cut", "raw"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", refresh);
+  document.getElementById(id).addEventListener("change", refresh);
+});
+refresh();
+</script>
+</body>
+</html>
