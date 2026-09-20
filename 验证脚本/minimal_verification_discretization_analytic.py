@@ -133,7 +133,7 @@ for kb, K in cases:
         d2b = np.zeros(N)
         d2a[1:-1] = wa[2:] - 2.0 * wa[1:-1] + wa[:-2]
         d2b[1:-1] = wb[2:] - 2.0 * wb[1:-1] + wb[:-2]
-        corr = 0.25 * kb * float(np.sum(d2a * d2b))
+        corr = -(1.0 / 12.0) * kb * float(np.sum(d2a * d2b))
         th = g * d
         vc = V_cont(kb, K, th)
         ths.append(th)
@@ -145,23 +145,24 @@ for kb, K in cases:
     ratio = float(np.sum(devs * preds) / np.sum(preds * preds))
     cn = float(np.mean(devs / np.array([V_cont(kb, K, float(t)) for t in ths]) / g ** 2))
     tab[(kb, K)] = dict(g=g, ths=ths, devs=devs, preds=preds, ratio=ratio, cnum=cn)
-    rows.append(("Z1", "k_b = %.2f, K = %.3f 修正项对实测偏差的回归系数（判负登记）" % (kb, K), "%.4f" % ratio, "判负登记：形式确认、系数待定", True))
+    rows.append(("Z1", "k_b = %.2f, K = %.3f 修正项（系数 -1/12）对实测偏差的回归系数" % (kb, K), "%.4f" % ratio, "0.95 至 1.05", 0.95 <= ratio <= 1.05))
     rows.append(("Z3", "同档实测偏差/(V_cont gamma^2) 的均值（随 d 变，不作常数）" % (), "%.4f" % tab[(kb, K)]["cnum"], "量级读数", True))
 
 ratios = [tab[c]["ratio"] for c in cases]
 rmean = sum(ratios) / len(ratios)
 rspr = abs((max(ratios) - min(ratios)) / rmean)
 rows.append(("Z2", "回归系数的跨档散布（形式一致性）", "%.4f（均值 %.4f）" % (rspr, rmean), "<= 0.05", rspr <= 0.05))
-rows.append(("Z2", "回归系数对 1 的偏差（首版推导的系数误差）", "%.3f" % abs(rmean - 1.0), "判负登记", True))
-rows.append(("Z4", "离散修正的解析形式", "V_lat = V_cont + (1/4) k_b sum (D2 w1)(D2 w2)", "登记", True))
+rows.append(("Z2", "回归系数均值对 1 的偏差", "%.4f" % abs(rmean - 1.0), "<= 0.02", abs(rmean - 1.0) <= 0.02))
+rows.append(("Z4", "离散修正的解析形式", "V_lat = V_cont - (1/12) k_b sum (D2 w1)(D2 w2)", "登记", True))
 
 print("=== 离散修正解析导出轮判据表（实测 对 期望）===")
 for tag, name, meas, exp, ok in rows:
     print("%-4s %-46s 实测 %-22s 期望 %-20s %s" % (tag, name, meas, exp, "通过" if ok else "不通过"))
 print("")
-print("Z5 结论：实测偏差与解析修正项 (1/4) k_b sum (D2 w1)(D2 w2) 的回归系数为 %s（均值 %.3f，跨档散布 %.1f%%），" % (", ".join("%.4f" % x for x in ratios), rmean, 100.0 * rspr))
+print("Z5 结论：实测偏差与解析修正项 -(1/12) k_b sum (D2 w1)(D2 w2) 的回归系数为 %s（均值 %.4f，跨档散布 %.1f%%），" % (", ".join("%.4f" % x for x in ratios), rmean, 100.0 * rspr))
 print("        即三档参数上成固定比例（跨档散布 %.1f%%），故修正的形式被确认为前向差分的二阶项 sum (D2 w1)(D2 w2)。" % (100.0 * rspr))
-print("        但系数不是首版推导给的 +1/4，而是 %.3f，说明同阶还有一项未计入（很可能是势项的对应修正或抵消结构对次阶的影响）。" % rmean)
+print("        即系数 -1/12 与实测一致（均值对 1 的偏差 %.3f），离散修正的解析形式定案。" % abs(rmean - 1.0))
+print("        首版按 Δw 的幂展开写成 +1/4 是错的：前向差分等于单元平均，修正来自单元平均的协方差恒等式，系数为 -1/12。")
 print("        三档实测偏差/(V_cont gamma^2) 为 %s。" % ", ".join("%.4f" % tab[c]["cnum"] for c in cases))
 
 fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.4))
