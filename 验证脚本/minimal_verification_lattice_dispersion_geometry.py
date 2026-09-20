@@ -53,6 +53,9 @@ for n in (2, 3, 4, 5, 6):
     ex = 4.0 * S2([q, 0, 0])
     ap = q ** 2 - q ** 4 / 12.0
     print("     q = 1e-%d：精确 %.14e ｜ 展开 %.14e ｜ 相对差 %.2e" % (n, ex, ap, abs(ex - ap) / ex))
+qs_id = np.linspace(1e-3, 3.0, 4001)
+iddev = np.max(np.abs(4.0 * np.sin(qs_id / 2.0) ** 2 - 2.0 * (1.0 - np.cos(qs_id))))
+print("     恒等核对：max |4 sin^2(q/2) - 2(1-cos q)| = %.2e（期望机器零，两写法同源）" % iddev)
 coef = []
 for n in (3, 4, 5, 6):
     q = 10.0 ** (-n)
