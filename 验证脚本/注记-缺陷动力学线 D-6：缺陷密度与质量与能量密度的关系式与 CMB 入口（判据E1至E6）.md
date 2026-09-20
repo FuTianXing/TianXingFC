@@ -17,7 +17,9 @@ D-6 要把格点侧的缺陷质量接到能量密度上，并给 P8a 与 CMB 对
 
 $$\rho_{\rm def} = f\,M\,\rho_P, \qquad \rho_P = \frac{m_P}{l_P^3},$$
 
-其中 $f$ 是缺陷占位份额（每 $l_P^3$ 体积内的缺陷数），$M$ 是格点模型的孤子质量（D-2 闭式 $4\sqrt{k_bK}/\pi$）。物理常数由 $\hbar$、$c$、$G$ 导出，$l_P = \sqrt{\hbar G/c^3}$、$t_P = l_P/c$、$m_P = \sqrt{\hbar c/G}$。观测锚取 $\Omega_bh^2 = 0.0224$ 与 $\rho_ch^{-2} = 1.87834\times10^{-26}\,\mathrm{kg\,m^{-3}}$，故 $\rho_b = 4.2075\times10^{-28}\,\mathrm{kg\,m^{-3}}$。
+其中 $f$ 是缺陷占位份额（每 $l_P^3$ 体积内的缺陷数），$M$ 是格点模型的孤子质量（D-2 闭式 $4\sqrt{k_bK}/\pi$）。物理常数由 $\hbar$、$c$、$G$ 导出，取
+
+$l_P = \sqrt{\hbar G/c^3}$、$t_P = l_P/c$、$m_P = \sqrt{\hbar c/G}$。观测锚取 $\Omega_bh^2 = 0.0224$ 与 $\rho_ch^{-2} = 1.87834\times10^{-26}\,\mathrm{kg\,m^{-3}}$，故 $\rho_b = 4.2075\times10^{-28}\,\mathrm{kg\,m^{-3}}$。
 
 逆式即入口：$f = \rho_b/(M\rho_P)$。给定体系的相变密度（P1 第 4 条），它直接给出对 $\Omega_bh^2$ 的预言。
 
