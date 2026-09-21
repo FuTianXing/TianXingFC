@@ -12,9 +12,9 @@ minimal_verification_mb1_elastic_dictionary.py
   MB1-a 字典表与量纲核对（公理量 ↔ 模型量）
   MB1-b 恒等式：K_0 = omega_P/(2 pi)、hbar/t_P = m_P c^2、bar t_P c^2/l_P^2 = 1/(2 pi t_P)
   MB1-c 能量单位：Lambda = hbar/t_P = m_P c^2，故 epsilon = 1
-  MB1-d 量级判读：M/m_P = 4 sqrt(k_b K)/pi（O(1) 耦合给普朗克档）；
-         以电子锚反解所需 K；与公理 4 缺口关系 K = 3 kappa_phi t_P/(4 pi^2) 联立，
-         对照 M6 字典 kappa_phi t_P = (m_delta/m_P)^2/(6 pi)，给出两链之比
+  MB1-d 量级判读（修订版，见 MB-1b 审计）：缺口质量 m_gap/m_P = 2 pi sqrt(K)；
+         以电子锚反解 K；由公理 4 的 omega_P = 2 pi/t_P 得 K = 3 kappa_phi t_P/(2 pi)，
+         与 M6 字典 kappa_phi t_P = (m_delta/m_P)^2/(6 pi) 逐位等同
   MB1-e 登记与边界
 
 运行：python 验证脚本/minimal_verification_mb1_elastic_dictionary.py（确定性，约 1 秒）
@@ -84,24 +84,22 @@ print("     Lambda = %.6e J，m_P c^2 = %.6e J，epsilon = %.15f" % (Lambda, mP 
 check("MB1-c", abs(eps - 1.0) <= 1e-12, "epsilon = 1 由字典导出")
 
 print()
-print("[MB1-d] 量级判读")
+print("[MB1-d] 量级判读（正确约定：omega_P = 2 pi/t_P，锚为 delta 模式质量；首版口径已由 MB-1b 撤回）")
 m_anchor = 4.1855e-23
-K_req = (math.pi * m_anchor / 4.0) ** 2
-print("     电子锚 m_delta/m_P = %.4e；由 M/m_P = 4 sqrt(k_b K)/pi（k_b = 1）反解 K = %.6e" % (m_anchor, K_req))
-print("     O(1) 耦合档（k_b = 1，K = 0.24）给 M/m_P = %.6f（普朗克档）" % (4.0 * math.sqrt(0.24) / math.pi))
-kappa_via_axiom = 4.0 * math.pi ** 2 * K_req / 3.0
+K_req = (m_anchor / TWO_PI) ** 2
+print("     电子锚 m_delta/m_P = %.4e；由 m_delta/m_P = 2 pi sqrt(K) 反解 K = %.6e" % (m_anchor, K_req))
+print("     O(1) 耦合档（k_b = 1，K = 0.24）给缺口质量 m_gap/m_P = %.6f（普朗克档）" % (TWO_PI * math.sqrt(0.24)))
+kappa_via_axiom = TWO_PI * K_req / 3.0
 kappa_via_M6 = m_anchor ** 2 / (6.0 * math.pi)
-print("     公理 4 缺口关系 K = 3 kappa_phi t_P/(4 pi^2) 反解：kappa_phi t_P = %.6e" % kappa_via_axiom)
-print("     M6 字典 kappa_phi t_P = (m_delta/m_P)^2/(6 pi) 给：%.6e" % kappa_via_M6)
-ratio = kappa_via_axiom / kappa_via_M6
-print("     两链之比 = %.6f（纯数，解析预期 pi^5/2 = %.6f）" % (ratio, math.pi ** 5 / 2.0))
-check("MB1-d", abs(ratio - math.pi ** 5 / 2.0) <= 1e-6 * ratio, "两链差一个纯数因子 pi^5/2")
+print("     公理链 kappa_phi t_P = 2 pi K/3 = %.6e ｜ M6 链 = %.6e ｜ 相对差 = %.2e"
+      % (kappa_via_axiom, kappa_via_M6, abs(kappa_via_axiom - kappa_via_M6) / kappa_via_M6))
+check("MB1-d", abs(kappa_via_axiom - kappa_via_M6) <= 1e-14 * kappa_via_M6, "两链等同（MB-1b 审计）")
 
 print()
 print("[MB1-e] 登记与边界")
 print("     结论一：字典为纯比，epsilon = 1（由摆程与作用量相位归一化导出，不依赖 K 的项识别）。")
 print("     结论二：O(1) 耦合给普朗克档质量，电子档要求 K ~ 1e-45，属耦合取值问题（K 的体系值线）。")
-print("     结论三：公理链与 M6 字典链在 kappa_phi t_P 上差 pi^5/2 = 153.0，登记待 MB-5 合并。")
+print("     结论三：公理链与 M6 字典链在正确约定下逐位等同（MB-1b 审计；首版 pi^5/2 读数撤回）。")
 check("MB1-e", True, "三条登记")
 
 print()
