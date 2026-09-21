@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>给引力装上源和尺（可交互）</title>
+<style>
+  body { font-family: "Microsoft YaHei", "SimHei", system-ui, sans-serif; max-width: 1000px; margin: 24px auto; padding: 0 16px; color: #222; line-height: 1.65; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  h2 { font-size: 17px; margin: 26px 0 8px; }
+  .sub { color: #555; margin: 0 0 14px; }
+  .panel { border: 1px solid #e3e6ea; border-radius: 10px; padding: 14px 16px; margin: 12px 0; background: #fbfbfc; }
+  .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-bottom: 10px; }
+  .controls label { font-size: 14px; }
+  input[type=range] { width: 220px; vertical-align: middle; }
+  canvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 6px; }
+  .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 8px 0; }
+  .card { border: 1px solid #e3e6ea; border-radius: 8px; padding: 8px 12px; background: #fff; }
+  .card b { display: block; font-size: 12px; color: #666; margin-bottom: 2px; }
+  .val { font-size: 17px; color: #14508c; font-variant-numeric: tabular-nums; }
+  .cells { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cell { border: 1px solid #7a9cc0; border-radius: 8px; padding: 8px 10px; background: #eaf1f8; color: #1f3f63; font-size: 14px; text-align: center; transition: transform .2s, box-shadow .2s; }
+  .cell.hot { box-shadow: inset 0 0 0 2px #c0392b; transform: translateY(-1px); }
+  .lid { border: 2px dashed #7fbf7f; border-radius: 10px; padding: 8px; margin-top: 6px; }
+  .lid.off { border-color: #d08a8a; }
+  .msg { font-size: 13px; margin-top: 6px; }
+  .msg.ok { color: #2f7a2f; }
+  .msg.bad { color: #b02a2a; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; background: #fff; }
+  th, td { border: 1px solid #dde3e9; padding: 6px 10px; text-align: left; }
+  th { background: #f2f5f8; }
+  .note { font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 10px; margin-top: 18px; }
+  .warn { color: #b02a2a; }
+  img.schematic { width: 100%; border-radius: 8px; border: 1px solid #e3e6ea; background: #fff; }
+</style>
+</head>
+<body>
+<h1>给引力装上源和尺（可交互）</h1>
+<p class="sub">这是科普《给引力装上源和尺：三维的墙与一座单位之桥》的可交互版。左边拖速度，看墙跑起来时能量与动量怎样按相对论走；右边拖桥因子，看这座唯一换算桥为什么必须等于 1。</p>
+<p><img class="schematic" src="../images/wall_and_bridge_schematic.png" alt="图 1：三维的墙与四格礼盒（a）与单位之桥（b）"></p>
+
+<h2>一、三维的墙与四格礼盒</h2>
+<div class="panel">
+  <div class="controls">
+    <label>墙的速度 v：<input id="v" type="range" min="0" max="0.99" step="0.01" value="0"> <b id="vv">0.00</b>（光速为单位 1）</label>
+    <label><input id="lid" type="checkbox" checked> 盖上守恒盒盖</label>
+  </div>
+  <canvas id="cv" width="960" height="220"></canvas>
+  <div class="readout">
+    <div class="card"><b>洛伦兹因子 γ</b><span class="val" id="gam">1.000</span></div>
+    <div class="card"><b>能量读数 E/M（应等于 γ）</b><span class="val" id="em">1.000</span></div>
+    <div class="card"><b>动量读数 P/(M·v)</b><span class="val" id="pv">1.000</span></div>
+    <div class="card"><b>格点实测偏差（E2）</b><span class="val" id="dev">≤ 0.006% / 0.06%</span></div>
+  </div>
+  <div class="lid" id="lidbox">
+    <div class="cells">
+      <div class="cell" id="c0">能量 T<sup>00</sup></div>
+      <div class="cell" id="c1">动量流 T<sup>0x</sup></div>
+      <div class="cell" id="c2">沿梯度应力 T<sup>xx</sup>（静态为零）</div>
+      <div class="cell" id="c3">横向应力 T<sup>yy</sup>（静态 −T<sup>00</sup>）</div>
+    </div>
+    <div class="msg ok" id="cmsg">盒盖合上：两条守恒律都成立，礼物不会凭空多出来，也不会凭空消失。</div>
+  </div>
+  <p class="note">读数背景：E1 至 E4 三维嵌入。E1 的张力对一维精确解差 0.0000%；E2 的偏差不超过 0.006%（E/M 对 γ）与 0.06%（P 对 γMv）；E3 的四个分量嵌入与一维值乘层数一致到 3.9×10⁻¹⁶。这里的动画只示形状，数值核对在验证脚本里。</p>
+</div>
+
+<h2>二、为什么要一座等于 1 的桥</h2>
+<div class="panel">
+  <div class="controls">
+    <label>桥因子 ε：<input id="eps" type="range" min="0.90" max="1.10" step="0.001" value="1"> <b id="epsv">1.000</b></label>
+  </div>
+  <svg viewBox="0 0 960 220" width="100%" style="background:#fff;border-radius:6px">
+    <rect x="20" y="40" width="180" height="120" fill="#dfe7ef" stroke="#9fb2c6"></rect>
+    <text x="110" y="95" text-anchor="middle" font-size="14" fill="#1f3f63">格子单位</text>
+    <text x="110" y="115" text-anchor="middle" font-size="12" fill="#5b7085">（步、拍、m_P）</text>
+    <rect x="760" y="40" width="180" height="120" fill="#dfe7ef" stroke="#9fb2c6"></rect>
+    <text x="850" y="95" text-anchor="middle" font-size="14" fill="#1f3f63">现实单位</text>
+    <text x="850" y="115" text-anchor="middle" font-size="12" fill="#5b7085">（米、秒、千克）</text>
+    <rect id="brRect" x="200" y="92" width="560" height="16" rx="8" fill="#ffe9b8" stroke="#c99700"></rect>
+    <text id="brLabel" x="480" y="82" text-anchor="middle" font-size="14" fill="#8a6100">桥因子 ε = 1.000（由公理导出）</text>
+    <line id="brGap" x1="480" y1="55" x2="480" y2="145" stroke="#c0392b" stroke-dasharray="4 4" visibility="hidden"></line>
+    <text id="brGapText" x="480" y="165" text-anchor="middle" font-size="12" fill="#b02a2a" visibility="hidden">两端接不上，整体错位</text>
+    <text x="480" y="200" text-anchor="middle" font-size="12" fill="#5b7085">MB-1 至 MB-9：因子是导出的，实质内容是一组分层条件（声速、缺口与锚、项识别）</text>
+  </svg>
+  <div class="readout">
+    <div class="card"><b>K = 3κφt_P</b><span class="val">2.788142×10⁻⁴⁶</span></div>
+    <div class="card"><b>入口份额 f</b><span class="val">1.531335×10⁻¹⁰²</span></div>
+    <div class="card"><b>两端尺度跨度</b><span class="val">101.8 个数量级</span></div>
+    <div class="card"><b>与 1 的偏差</b><span class="val" id="epdev">0.0%</span></div>
+  </div>
+  <p class="note" id="epmsg">桥因子等于 1：与公理推导（MB-1）一致，四个分量共用这一座桥（E4）。把滑杆拖离 1，看两端怎样立刻接不上。</p>
+</div>
+
+<h2>三、四档对照表</h2>
+<div class="panel">
+<table>
+  <tr><th>结论</th><th>档位</th></tr>
+  <tr><td>三维张力与一维精确解一致（E1）</td><td>可复现数值</td></tr>
+  <tr><td>E/M = γ 与 P = γMv（E2）</td><td>可复现数值</td></tr>
+  <tr><td>四分量接入源项与两条守恒律（E3）</td><td>可复现数值</td></tr>
+  <tr><td>桥因子 ε = 1（MB-1）</td><td>代数恒等式</td></tr>
+  <tr><td>惯性 2π 与缺口色散逐位一致（MB-9）</td><td>代数恒等式</td></tr>
+  <tr><td>K 与 f 的定稿值、两项裁决</td><td>条件性命题</td></tr>
+  <tr><td>孤子即粒子（0.6506 MeV 与轻子谱不对齐）</td><td>未完成</td></tr>
+</table>
+</div>
+
+<p class="note">数值与判据来源：C1 三维嵌入 E1 至 E4、量纲桥 MB-1 至 MB-9 与两次裁决（M-E、M-F）；科普原文见《给引力装上源和尺：三维的墙与一座单位之桥》，总图为 images/wall_and_bridge_schematic.png。</p>
+
+<script>
+var cv = document.getElementById("cv");
+var g = cv.getContext("2d");
+var vEl = document.getElementById("v");
+var vv = document.getElementById("vv");
+var gamEl = document.getElementById("gam");
+var emEl = document.getElementById("em");
+var pvEl = document.getElementById("pv");
+var lidEl = document.getElementById("lid");
+var lidBox = document.getElementById("lidbox");
+var cmsg = document.getElementById("cmsg");
+var cells = [document.getElementById("c0"), document.getElementById("c1"), document.getElementById("c2"), document.getElementById("c3")];
+var hotIndex = 0;
+
+function drawWall(t) {
+  var W = cv.width, H = cv.height;
+  var v = parseFloat(vEl.value);
+  g.clearRect(0, 0, W, H);
+  var bx = 40, by = 50, bw = W - 80, bh = 90;
+  g.fillStyle = "#eef2f7"; g.strokeStyle = "#b9c4d0"; g.lineWidth = 1;
+  g.beginPath(); g.rect(bx, by, bw, bh); g.fill(); g.stroke();
+  var x0 = bx + bw * 0.18 + ((v * 140 * t) % (bw * 0.64));
+  g.beginPath();
+  for (var i = 0; i <= 40; i++) {
+    var y = by + bh * i / 40;
+    var x = x0 + 6 * Math.sin(i / 40 * Math.PI * 1.5);
+    if (i === 0) { g.moveTo(x, y); } else { g.lineTo(x, y); }
+  }
+  g.strokeStyle = "rgba(192,57,43,0.25)"; g.lineWidth = 10; g.stroke();
+  g.strokeStyle = "#c0392b"; g.lineWidth = 3; g.stroke();
+  g.fillStyle = "#2c5f8a";
+  g.fillRect(bx + 20, by - 22, 80, 3);
+  g.beginPath(); g.moveTo(bx + 100, by - 27); g.lineTo(bx + 112, by - 20.5); g.lineTo(bx + 100, by - 14); g.closePath(); g.fill();
+  g.font = "13px Microsoft YaHei, SimHei, sans-serif"; g.fillStyle = "#2c5f8a";
+  g.fillText("v", bx + 118, by - 15);
+  g.fillStyle = "#c0392b";
+  g.fillText("墙", x0 - 8, by + bh + 18);
+  g.fillStyle = "#5b7085";
+  g.fillText("条带（三维截面）", bx, by + bh + 18);
+}
+
+function updateNumbers() {
+  var v = parseFloat(vEl.value);
+  var gam = 1 / Math.sqrt(1 - v * v);
+  vv.textContent = v.toFixed(2);
+  gamEl.textContent = gam.toFixed(3);
+  emEl.textContent = gam.toFixed(3);
+  pvEl.textContent = v > 0 ? "1.000" : "—（静止，无动量流）";
+}
+
+function tickHot() {
+  for (var i = 0; i < 4; i++) { cells[i].className = (i === hotIndex) ? "cell hot" : "cell"; }
+  hotIndex = (hotIndex + 1) % 4;
+}
+
+lidEl.addEventListener("change", function () {
+  if (lidEl.checked) {
+    lidBox.className = "lid";
+    cmsg.className = "msg ok";
+    cmsg.textContent = "盒盖合上：两条守恒律都成立，礼物不会凭空多出来，也不会凭空消失。";
+  } else {
+    lidBox.className = "lid off";
+    cmsg.className = "msg bad";
+    cmsg.textContent = "盒盖打开：源可以随意增减，这样的引力理论会被观测直接排除。";
+  }
+});
+
+var epsEl = document.getElementById("eps");
+var epsv = document.getElementById("epsv");
+var epdev = document.getElementById("epdev");
+var epmsg = document.getElementById("epmsg");
+var brRect = document.getElementById("brRect");
+var brLabel = document.getElementById("brLabel");
+var brGap = document.getElementById("brGap");
+var brGapText = document.getElementById("brGapText");
+
+function updateBridge() {
+  var e = parseFloat(epsEl.value);
+  var dev = Math.abs(e - 1) * 100;
+  epsv.textContent = e.toFixed(3);
+  epdev.textContent = dev.toFixed(1) + "%";
+  var off = Math.max(-26, Math.min(26, (e - 1) * 400));
+  brRect.setAttribute("y", (92 + off).toFixed(1));
+  brLabel.setAttribute("y", (82 + off).toFixed(1));
+  if (dev < 0.05) {
+    brRect.setAttribute("fill", "#ffe9b8");
+    brRect.setAttribute("stroke", "#c99700");
+    brLabel.setAttribute("fill", "#8a6100");
+    brGap.setAttribute("visibility", "hidden");
+    brGapText.setAttribute("visibility", "hidden");
+    epmsg.className = "note";
+    epmsg.textContent = "桥因子等于 1：与公理推导（MB-1）一致，四个分量共用这一座桥（E4）。把滑杆拖离 1，看两端怎样立刻接不上。";
+  } else {
+    brRect.setAttribute("fill", "#f6d3cf");
+    brRect.setAttribute("stroke", "#c0392b");
+    brLabel.setAttribute("fill", "#b02a2a");
+    brGap.setAttribute("visibility", "visible");
+    brGapText.setAttribute("visibility", "visible");
+    epmsg.className = "note warn";
+    epmsg.textContent = "偏差 " + dev.toFixed(1) + "%：桥的两端对不上，四个分量与全部物理读数会一起错位。";
+  }
+}
+
+vEl.addEventListener("input", updateNumbers);
+epsEl.addEventListener("input", updateBridge);
+updateNumbers();
+updateBridge();
+setInterval(tickHot, 1100);
+var t0 = performance.now();
+function loop(now) { drawWall((now - t0) / 1000); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
