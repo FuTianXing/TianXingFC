@@ -58,3 +58,53 @@ for name, val in (('电子锚', 1.7518e-45), ('可见物质档', 2.12e-105/1.82e
     print('   %s 的 lambda/J = %.3g（此行为量级对照，第二行按密度档份额比给出）' % (name, val))
 print('   物理可达的 lambda/J 远小于 1（电子锚低 45 个数量级），故本扫描的 >1 段属模型外推区')
 print('K5 判定：见注记 §五')
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
+fig, axs = plt.subplots(1, 3, figsize=(13.5, 4.3))
+_style = {('H1','M'):('tab:red','-'), ('H1','P'):('tab:blue','--'),
+          ('H2','P'):('tab:green','-.'), ('H3','P'):('tab:purple',':'),
+          ('H2','M'):('tab:brown',(0,(1,1))), ('H3','M'):('tab:olive',(0,(3,1)))}
+for key in ('H1','H2','H3'):
+    for arm in ('M','P'):
+        tag = 'M（登记臂，回拉）' if arm == 'M' else 'P（对照臂，推高）'
+        c, ls = _style[(key, arm)]
+        pts = []
+        for lam in lams:
+            e = rec.get((key, tag, lam))
+            if e is None:
+                break
+            pts.append((lam, e[0], e[1], e[2]))
+        okx = [x[0] for x in pts if x[1]]
+        okr = [x[2]['rh'] for x in pts if x[1]]
+        oks = [x[2]['spread'] for x in pts if x[1]]
+        lab = '%s 区 / %s %s臂' % (key, arm, '登记' if arm == 'M' else '对照')
+        axs[0].plot(okx, okr, linestyle=ls, color=c, marker='o', ms=3.2, lw=1.3, label=lab)
+        axs[1].plot(okx, oks, linestyle=ls, color=c, marker='o', ms=3.2, lw=1.3, label=lab)
+        axs[2].plot([x[0] for x in pts], [x[3] for x in pts], linestyle=ls, color=c,
+                    marker='o', ms=3.2, lw=1.3, label=lab)
+axs[0].axhline(b0['rh'], color='gray', lw=0.8, ls='--')
+axs[0].set_xscale('log')
+axs[0].set_xlabel(r'$\lambda/J$')
+axs[0].set_ylabel(r'$r_h$')
+axs[0].set_title(r'$r_h(\lambda)$：源区升升至饱和')
+axs[1].axhline(b0['spread'], color='gray', lw=0.8, ls='--')
+axs[1].set_xscale('log')
+axs[1].set_yscale('log')
+axs[1].set_xlabel(r'$\lambda/J$')
+axs[1].set_ylabel('真空区散布')
+axs[1].set_title('真空散布（对数轴）')
+axs[2].axhline(0.5, color='gray', lw=0.8, ls='--')
+axs[2].axhline(0.0, color='gray', lw=0.8, ls=':')
+axs[2].set_xscale('log')
+axs[2].set_xlabel(r'$\lambda/J$')
+axs[2].set_ylabel(r'$\theta_{\min}$')
+axs[2].set_title(r'$\theta_{\min}$：虚线与点线为 1/2 与 0')
+for a in axs:
+    a.legend(fontsize=7, loc='best')
+plt.tight_layout()
+plt.savefig(R + 'images/lambda_beyond_one.png', dpi=140)
+print('图已存 images/lambda_beyond_one.png')
+
