@@ -50,6 +50,16 @@ for e in (106.65, 106.70, 106.75):
 print("  ln 9 = %.5f 落在区间内" % math.log(9.0))
 print()
 
+
+print("== 口径敏感性 ==")
+depth_num = math.log(1.0 / (n_b * l_P ** 3))
+depth_quark = depth_num - math.log(3.0)
+depth_mass = ln_f
+for name, d in (("质量口径（现行）", depth_mass), ("数口径（每重子一缺陷）", depth_num), ("夸克口径（每重子三缺陷）", depth_quark)):
+    print("  %-22s 深度 = %8.3f ; 比值 = %.5f" % (name, d, d / ln_S))
+print("  ln 9 = %.5f ; 质量口径精度括号 = [%.4f, %.4f]" % (math.log(9.0), ln_f / 106.75, ln_f / 106.65))
+print("  质量等式隐含计数：每重子 %.0f 个缺陷（= m_p/M）" % (m_p_MeV / M_MeV))
+print()
 print("== 其他深度对（纪律核对）==")
 for a, b, na, nb in ((139.15, 106.70, "139.15", "106.70"), (234.4375, 139.15, "234.44", "139.15")):
     print("  %s / %s = %.4f" % (na, nb, a / b))
@@ -74,15 +84,19 @@ ax.set_title("(a) 三个已登记的指数深度", fontsize=12.5, pad=8)
 
 ax = axes[1]
 lo, hi = ln_f / 106.75, ln_f / 106.65
-ax.axhspan(lo, hi, color="#eaf1f8", label="登记精度括号 [%.4f, %.4f]" % (lo, hi))
+ax.axhspan(lo, hi, color="#eaf1f8", label="质量口径精度括号")
 ax.axhline(math.log(9.0), color="#2f7a2f", ls="--", lw=1.4)
-ax.axhline(ln_f / ln_S, color="#c0392b", lw=2.0)
-ax.annotate("ln 9 = 2.19722", (0.02, 2.19745), fontsize=10.5, color="#2f7a2f")
-ax.annotate("比值 2.19716", (0.02, 2.19675), fontsize=10.5, color="#c0392b")
-ax.set_xlim(0, 1); ax.set_ylim(2.1955, 2.1990)
-ax.set_xticks([])
+labels3 = ["质量口径\n2.19716", "数口径\n2.26531", "夸克口径\n2.25501"]
+vals3 = [depth_mass / ln_S, depth_num / ln_S, depth_quark / ln_S]
+ax.bar([0, 1, 2], vals3, color=["#c0392b", "#aab7c4", "#aab7c4"], width=0.5)
+for i, v in enumerate(vals3):
+    ax.text(i, v + 0.0016, "%.5f" % v, ha="center", fontsize=10)
+ax.annotate("ln 9 = 2.19722", (2.35, 2.19760), fontsize=10.5, color="#2f7a2f", ha="right")
+ax.set_xticks([0, 1, 2])
+ax.set_xticklabels(labels3, fontsize=9.5)
+ax.set_ylim(2.19, 2.28)
 ax.set_ylabel("比值", fontsize=11)
-ax.set_title("(b) 精度括号与 ln 9", fontsize=12.5, pad=8)
-ax.legend(fontsize=9.5, loc="lower right")
+ax.set_title("(b) 三种口径的比值与 ln 9", fontsize=12.5, pad=8)
+ax.legend(fontsize=9, loc="lower right")
 fig.savefig(IMG)
 print("saved:", IMG)
