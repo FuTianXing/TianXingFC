@@ -18,6 +18,7 @@
 | J4 | Born 采样闸门（种子 20260914，每设置对 $N=2\times10^6$）：$\hat S$ 在 $2\sqrt2$ 的 $4\sigma$ 内，越经典界 $z\ge300$ | 生死第一颚 |
 | J5 | 经典圈对照：同一 $S^1$ 几何、纤维角为预存值：$S=2.000$；LHV 穷举最大 $=2$ | $4\sigma$ 内 |
 | J6 | 表针退相干控制（同角组对照）：层位关联保持、相干清除：$S=\sqrt2<2$ | 1e-12 |
+| J6b | 去相干态全角度上界：$\max S \le 2$（任意角度不越经典界） | 网格精度 1e-12 |
 | J7 | 可见度阈：$S(p)=2\sqrt2\,p$，阈 $p^*=1/\sqrt2$ | 1e-3 |
 | J8 | 无信号：精确 $P(a{=}+1\mid\beta)=\tfrac12$ 对一切 $\beta$；采样偏差 $<5\sigma$ | 1e-14 |
 | J9 | Ramsey 条纹：零模踢加重组合加层位读出，可见度 $=1$，相位回收输入 $\gamma$ | 1e-12 / 1e-10 |
@@ -42,6 +43,7 @@
 | J4 | $\hat S=2.82692\pm0.00100$（偏 $1.51\sigma$）；越线 $z=827$ | $2.82843$，$z\ge300$ | PASS |
 | J5 | 解析 $S=2.000000000000$，采样 $2.00000\pm0.00141$；LHV 穷举 $=2$ | $2.000$ | PASS |
 | J6 | $S=1.414213562373$ | $\sqrt2$ | PASS |
+| J6b | $\max S = 2.000000$（241² 网格 + β 解析最优） | $\le 2$ | PASS |
 | J7 | $p^*=0.707107$；采样 $p=0.6/0.7071/0.8$ 得 $1.6987/1.9985/2.2628$ | $2\sqrt2\,p$ | PASS |
 | J8 | 精确边际偏差 $0$；采样偏差 $1.4\times10^{-4}<5\sigma=2.5\times10^{-3}$ | $0$ | PASS |
 | J9 | 可见度 $1.00000000000000$；相位回收 $\pi/3$ 精确 | $1$、$\gamma$ | PASS |
@@ -50,7 +52,7 @@
 ![图 1：生死闸门四联（种子 20260914）。(a) 可见度阈：S(p) = 2\sqrt2\,p 对经典界 2 与齐雷尔森界 2\sqrt2；(b) 锁定族剖面：数值最大 S 对锁定相对表针夹角 \gamma 与理论 2\sqrt{1+\cos^2\gamma}；(c) Ramsey 条纹（零模踢角对层位概率，\gamma = \pi/3 采样）；(d) 四种读法对照。](../images/minimal_verification_tsirelson_gate_v0.png)
 
 
-汇总 11/11 PASS。复现：根目录执行 `python 验证脚本/minimal_verification_tsirelson_gate_v0.py`，全确定性（种子 20260914），终端打印全部对照行，图存 `images/minimal_verification_tsirelson_gate_v0.png`，见 §三 图 1（四联：可见度阈、锁定族剖面、Ramsey 条纹、四读法对照）。
+汇总 12/12 PASS。复现：根目录执行 `python 验证脚本/minimal_verification_tsirelson_gate_v0.py`，全确定性（种子 20260914），终端打印全部对照行，图存 `images/minimal_verification_tsirelson_gate_v0.png`，见 §三 图 1（四联：可见度阈、锁定族剖面、Ramsey 条纹、四读法对照）。
 
 ## 四、物理结论
 

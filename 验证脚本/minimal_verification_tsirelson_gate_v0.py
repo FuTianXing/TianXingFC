@@ -31,6 +31,7 @@ P1-29 v0：Tsirelson 生死闸门（战线二方向一）：纠缠锁定对的 C
       同角度 S = 2.000（4 sigma 内）；16 个确定性 LHV 策略穷举最大恰为 2：经典封顶
   J6  表针退相干控制：层位关联保持、表针相干清除：S = sqrt(2) < 2
       （违反载体 = 表针相干通道，层位通道单独不足）
+  J6b 去相干态全角度上界：max S <= 2（241^2 网格 + beta 解析最优）：任意角度不越经典界
   J7  可见度阈：S(p) = 2*sqrt(2) p（白噪声混合），阈 p* = 1/sqrt(2)（1e-3）
   J8  无信号（只读通道，论文第 8 节）：精确 P(a=+1|beta) = 1/2 对一切 beta（1e-14）；
       采样双侧设置偏差 < 5 sigma
@@ -221,6 +222,14 @@ ok = abs(S_deph - np.sqrt(2)) < 1e-12 and S_deph < CL
 gate("J6 表针退相干控制", ok,
      f"层位关联保持、表针清除：S = {S_deph:.12f}（期望 sqrt(2)={np.sqrt(2):.12f}）< 2：违反载体 = 表针通道")
 
+# ---------- J6b 去相干态全角度上界（补强） ----------
+a_g = np.linspace(-np.pi, np.pi, 241)
+a0g, a1g = np.meshgrid(a_g, a_g)
+S_deph_max = float(np.max(np.abs(np.cos(a0g) + np.cos(a1g)) + np.abs(np.cos(a0g) - np.cos(a1g))))
+ok = S_deph_max <= CL + 1e-12
+gate("J6b 去相干态全角度上界", ok,
+     f"max S = {S_deph_max:.6f}（241^2 网格 + beta 解析最优；判据 <= 2：任意角度不越经典界）")
+
 # ---------- J7 可见度阈 ----------
 p_grid = np.linspace(0, 1, 41)
 s_p = 2 * 2 ** 0.5 * p_grid
@@ -314,7 +323,7 @@ ax.plot(p_grid * 100, s_p, "b-", lw=2, label=r"$S(p)=2\sqrt{2}\,p$（精确）")
 for p, s, e in samp_pts:
     ax.errorbar(p * 100, s, yerr=e, fmt="ro", ms=5, capsize=3)
 ax.axhline(CL, color="k", ls="--", lw=1, label="经典界 2")
-ax.axhline(TS, color="purple", ls=":", lw=1.5, label=r"Tsirelson $2\sqrt{2}$")
+ax.axhline(TS, color="purple", ls=":", lw=1.5, label=r"齐雷尔森界 $2\sqrt{2}$")
 ax.axvline(p_star_num * 100, color="gray", ls="-.", lw=1)
 ax.text(p_star_num * 100 + 1, 0.4, r"$p^*=1/\sqrt{2}$", fontsize=10)
 ax.set_xlabel("表针相干度 p (%)")
