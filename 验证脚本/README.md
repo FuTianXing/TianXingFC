@@ -5416,3 +5416,12 @@ ho$（$u^\mu$ 为晶格系四速），并核验静态极限、无阻尼极限、
 **判据**：P1 相量结构（$B^2 = I$ 偏差 $2.6\times10^{-17}$、$\vert z\vert$ 偏差 $0$、wrapped 族 $0.54\sigma$）；P2 奇异值与 Horodecki（偏差 $0$ 与 $4.4\times10^{-16}$，锐锁定 $S_{\max} = 2.828427124746$）；P3 4 界不可达（PR 块奇异值 $(\sqrt2, \sqrt2)$ 给 $S = 4$；模型族 $\vert z\vert \le 1$ 无样本超限；缺口 $4 - 2\sqrt2 = 1.171573$）；P4 锐 $\Delta\alpha = 1.2$ 子午面 $2.127255$ 对全空间 $2.828427$（象限对齐损失 $0.701$）、弥散两口径合流；P5 窗内 $\vert z\vert = 0.993836$ 给 $S_{\max} = 2.819724$（与 367 条 J5 一致）。全过（5/5）。
 
 **结论**：上界的模型内来源是一处结构事实（单位相量生成反射、奇异值恰为 1；4 界的图案在单位圆外）；锐失配只旋转象限、弥散才降上界。材料：[[注记-齐雷尔森上界来源的最小验证：单位相量结构与奇异性缺口（为何止步 2√2）]]、图 `images/minimal_verification_tsirelson_bound_origin.png`。
+### 369. `minimal_verification_information_causality_model.py`（信息因果性的模型内定量判据：协议类穷举、2→1 RAC 与互和信息式，2026-09-23）
+
+**对应注记**：`验证脚本/注记-信息因果性模型内定量判据的最小验证：协议类穷举、RAC 成功率与互信息和式.md`
+
+**验证内容**：在写死的合法协议类（爱丽丝盒输入只依赖 $(a_1,a_2)$、消息可用盒输出、鲍勃设置依赖 $(k,c)$、单副本、1 比特消息）内穷举 $4096 \times 64 \times 2$ 档，算 2→1 RAC 成功率与互信息和式 $J = \max[I(a_1:G_1) + I(a_2:G_2)]$，并与模型族（各向同性族，$\varepsilon = V/\sqrt2$，$S = 4\varepsilon$）的可达边 $\varepsilon = 1/\sqrt2$ 对照。
+
+**判据**：Q1 家族与模型边 $S = 4\varepsilon_{\max} = 2\sqrt2$（$4.4\times10^{-16}$）；Q2 $\max P_{\text{succ}} = \max(3/4, (1+\varepsilon)/2)$（8 档，偏差 $0$）；Q3 锚点 $\varepsilon = 0.5 \to 3/4$、$\varepsilon = 1/\sqrt2 \to \cos^2(\pi/8) = 0.853553391$、$\varepsilon = 1 \to 1$；Q4 互信息和式在 $\varepsilon \le 1/\sqrt2$ 与 $0.75$ 档 $J = 1$、$0.8$ 起越界（$1.062009$）、细扫把交叉点定在 $0.77$ 与 $0.78$ 之间；Q5 400 组混合不超确定性最优；Q6 $4\cdot(1/\sqrt2) = 2\sqrt2$ 与 $\cos^2(\pi/8) = (1+1/\sqrt2)/2$ 逐位重合。全过（6/6）。
+
+**结论**：信息因果性的模型内定量版本以成功概率形式给出紧界（模型边恰为 $\cos^2(\pi/8)$，故 $\varepsilon \le 1/\sqrt2$、$S \le 2\sqrt2$，与 368 条结构上界同数）；互和信息式的单副本版本只给 $S^\ast \approx 3.10$，紧版本留开放。材料：[[注记-信息因果性模型内定量判据的最小验证：协议类穷举、RAC 成功率与互信息和式]]、图 `images/minimal_verification_information_causality_model.png`。
