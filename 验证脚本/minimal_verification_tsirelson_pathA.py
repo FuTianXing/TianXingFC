@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""P1-29 二-2 路径甲迁移轮：由快照相位分布到 CHSH 的体系内计算（判据 J1、J2、J3、J6）
+"""P1-29 二-2 路径甲：由快照相位分布到 CHSH 的体系内计算（迁移轮 J1、J2、J3、J6 + 增强轮 J5）
 
 定位：v0（minimal_verification_tsirelson_gate_v0.py）把纠缠锁定态 |Phi_gamma> 作构造输入，
-闭合了生死闸门的存在性与上界两颚。本轮按《量子力学攻坚计划》战线二任务 二-2 的路径甲，
-把该构造输入换成体系自己的读数链：快照相位分布（M4）、相对表针 Δα 关联（二-1）、关联核、
-CHSH 组合。迁移口径为换语言不换数字：与 v0 同参数点的精确量须逐位对齐。
+闭合了生死闸门的存在性与上界两颚。本脚本按《量子力学攻坚计划》战线二任务 二-2 的路径甲，
+把该构造输入换成体系自己的读数链：快照相位分布（M4）、相对表针 Δα 关联（二-1）、锁定对
+通道相关、关联核、CHSH 组合。迁移口径为换语言不换数字：与 v0 同参数点的精确量逐位对齐。
 
 链路四环：
   一、单侧端口（命题 7 的相位语言）：零模踢 theta 后读层位，P(+1|theta)=1/2[1+cos(phi+theta)]，
@@ -15,17 +15,22 @@ CHSH 组合。迁移口径为换语言不换数字：与 v0 同参数点的精�
       P(a,b) = 1/4[1 + a b E]，E = cos(alpha)cos(beta) + cos(Δα)sin(alpha)sin(beta)。
   四、关联核 E(alpha,beta) = cos(alpha)cos(beta) + V sin(alpha)sin(beta)，V = <cos(Δα)>。
 
-判据（草案 J1、J2、J3、J6 的迁移轮）：
+判据：
+  迁移轮
   J1 单侧端口：条纹可见度 = 1（1e-12）；解析相位回收 <= 1e-12；采样回收 < 5 sigma
   J2 快照测度：单侧边际 = 1/2（1e-15）；与对侧选角无关（恒等式精确）；采样偏差 < 5 sigma
-  J3 关联核：解析对采样逐点一致（<= 1e-3）；wrapped 族闭式 V = e^{-v/2} 对采样一致
+  J3 关联核：解析对采样每点 <= 3 sigma（sigma = 1/sqrt(N)）；wrapped 族闭式 V = e^{-v/2} 一致
   J6 数字对齐：V = 1 最优角 S = 2.828427（1e-12）；采样 S_hat 与 v0 的 2.82692±0.00100 在
-      联合误差内、越经典界 z >= 800；子午面剖面 max S = 2*sqrt(1+V^2)（V = 1 给 2*sqrt2，
-      1e-6）；退相干控制同角组 = sqrt(2)；全角上界 = 2；LHV 穷举封顶 2；阈 p* = 1/sqrt2
+      3 sigma 内、越经典界 z >= 800；子午面 max S = 2*sqrt(1+V^2)（V = 1 给 2*sqrt2，1e-6；
+      V = 0 给 2）；退相干同角组 = sqrt(2)；LHV 穷举封顶 2；阈 p* = 1/sqrt2 处混合读数恰 2
+  增强轮
+  J5 锁定相干表：V = e^{-v/2}（v = gamma^2/kappa^2 + sigma^2/(2 kappa)，kappa = 0.125）与
+      第 236 条闭式 r(gamma/kappa) 恒等（1e-15）；门槛带 V 对 r* 一致（1%）；联合条件窗内
+      V >= 0.99 且 S_max = 2*sqrt(1+V^2) 远越经典界
 
 纪律：全确定性（种子 20260914）；判据先行，实测 vs 期望；图存 images/（绝对路径）。
 边界：不重开 v0 的存在性与上界两颚（只做迁移核对）；不涉及空间分离的全场实现（方向二）；
-      不给 2*sqrt(2) 的原理级来源（方向三）；V 表与联合条件窗的对照归增强轮 J5。
+      不给 2*sqrt(2) 的原理级来源（方向三，另立脚本与推导稿）；Y 象限全空间口径未在相位语言侧重做。
 """
 import numpy as np
 import matplotlib
@@ -41,6 +46,7 @@ N_SAMP = 2_000_000
 TS = 2.0 * np.sqrt(2.0)
 CL = 2.0
 SQ2 = np.sqrt(2.0)
+KAPPA = 0.125
 
 ALPHA0, ALPHA1 = 0.0, np.pi / 2.0
 BETA0, BETA1 = np.pi / 4.0, -np.pi / 4.0
@@ -93,7 +99,7 @@ def smax_meridian(V, n=361):
     return float(np.max(t0 + t1))
 
 print("=" * 78)
-print("P1-29 二-2 路径甲迁移轮：快照相位分布到 CHSH 的体系内计算（判据先行）")
+print("P1-29 二-2 路径甲：快照相位分布到 CHSH 的体系内计算（迁移轮 + 增强轮 J5）")
 print("=" * 78)
 
 rng = np.random.default_rng(SEED)
@@ -203,8 +209,43 @@ print("     越经典界 z = %.0f（阈 800）；子午面 max S(V=1)=%.9f（期
 print("     退相干同角组 S=%.12f（期望 sqrt2=%.12f）；LHV 穷举封顶 %.1f；阈 p*=%.6f 处混合读数 S=%.6f（恰经典界）"
       % (S_deph, SQ2, float(cl_theory), p_star, S_p_star))
 
+# ---------- J5 锁定相干表与联合条件窗 ----------
+def v_wrapped(gamma, sigma2=0.0, kappa=KAPPA):
+    """同心 wrapped 族方差（第 236 条）：v = gamma^2/kappa^2 + sigma^2/(2 kappa)。"""
+    return gamma ** 2 / kappa ** 2 + sigma2 / (2.0 * kappa)
+
+def V_lock(gamma, sigma2=0.0, kappa=KAPPA):
+    """表针通道锁定相干：V = <cos Δα> = e^{-v/2}（wrapped 族特征函数，m = 1 矩）。"""
+    return float(np.exp(-0.5 * v_wrapped(gamma, sigma2, kappa)))
+
+def r_closed(x, sigma2=0.0, kappa=KAPPA):
+    """第 236 条口径化闭式：r = e^{-(gamma/kappa)^2/2 - sigma^2/(4 kappa)}。"""
+    return float(np.exp(-0.5 * x ** 2 - sigma2 / (4.0 * kappa)))
+
+GAMMA_WIN = (0.0132, 0.0139)
+row_g = (0.0, GAMMA_WIN[0], GAMMA_WIN[1], 0.05)
+row_V = tuple(V_lock(g) for g in row_g)
+row_S = tuple(2.0 * np.sqrt(1.0 + V ** 2) for V in row_V)
+dev_id = max(abs(V_lock(g) - r_closed(g / KAPPA)) for g in row_g)
+band_x = (1.19, 1.29, 1.39)
+band_V = tuple(V_lock(x * KAPPA) for x in band_x)
+band_r = (0.490, 0.433, 0.379)
+dev_band = max(abs(v - r) / r for v, r in zip(band_V, band_r))
+S_win = row_S[2]
+ok = (dev_id < 1e-15 and dev_band < 0.01 and row_V[2] >= 0.99 and S_win > CL + 0.8
+      and smax_meridian(row_V[2], 241) > CL)
+gate("J5 锁定相干表与联合条件窗", ok,
+     "V = e^{-v/2} 对第 236 条闭式恒等（偏差 %.1e）；门槛带 V 对 r* 最大偏差 %.2f%%（噪声项口径）；"
+     "联合条件窗内 V(%.5f) = %.6f，S_max = %.6f（越经典界 %.2f）"
+     % (dev_id, 100.0 * dev_band, GAMMA_WIN[1], row_V[2], S_win, S_win - CL))
+for gi, Vi, Si in zip(row_g, row_V, row_S):
+    print("     J5 表：gamma=%.4f（gamma/kappa=%.4f）V=%.6f S_max=%.6f（对 2*sqrt2 亏缺 %.2f%%）"
+          % (gi, gi / KAPPA, Vi, Si, 100.0 * (1.0 - Si / TS)))
+print("     J5 门槛带：gamma/kappa = 1.19 / 1.29 / 1.39 处 V = %.4f / %.4f / %.4f 对第 236 条 r* = 0.490 / 0.433 / 0.379"
+      % band_V)
+
 # ---------- 图 ----------
-fig, axes = plt.subplots(2, 2, figsize=(12.2, 8.4))
+fig, axes = plt.subplots(3, 2, figsize=(12.2, 12.4))
 
 ax = axes[0, 0]
 th_plot = np.linspace(0.0, 2.0 * np.pi, 721)
@@ -257,6 +298,30 @@ for rect, val in zip(bars, vals):
 ax.set_ylim(0.0, 3.2)
 ax.set_ylabel("S")
 ax.set_title("J6 四读法对照：违反载体 = 表针相干")
+
+ax = axes[2, 0]
+xg = np.linspace(0.0, 1.6, 401)
+ax.plot(xg, np.exp(-0.5 * xg**2), lw=1.6, label="V = e^{-(gamma/kappa)^2/2}（= 第 236 条 r）")
+ax.plot(band_x, band_r, "ks", ms=5, label="第 236 条 r* 记录（1.19 / 1.29 / 1.39）")
+ax.axvspan(GAMMA_WIN[0] / KAPPA, GAMMA_WIN[1] / KAPPA, color="#2f855a", alpha=0.25,
+           label="联合条件窗（gamma <= 0.0139）")
+ax.axvspan(1.19, 1.39, color="#c53030", alpha=0.15, label="门槛带 1.29 ± 0.10")
+ax.set_xlabel("gamma / kappa")
+ax.set_ylabel("锁定相干 V")
+ax.set_title("J5 锁定相干表：窗内 V = %.4f，门槛带 V = %.3f" % (row_V[2], band_V[1]))
+ax.legend(fontsize=8)
+
+ax = axes[2, 1]
+ax.plot(xg, 2.0 * np.sqrt(1.0 + np.exp(-xg**2)), lw=1.6, label="S_max = 2*sqrt(1+V^2)")
+ax.axhline(TS, color="0.6", lw=0.9, ls=":", label="2*sqrt2")
+ax.axhline(CL, color="k", lw=1.0, ls="--", label="经典界 2")
+ax.axvspan(GAMMA_WIN[0] / KAPPA, GAMMA_WIN[1] / KAPPA, color="#2f855a", alpha=0.25)
+ax.plot([GAMMA_WIN[1] / KAPPA], [S_win], "r*", ms=11,
+        label="窗边：%.6f" % S_win)
+ax.set_xlabel("gamma / kappa")
+ax.set_ylabel("S_max")
+ax.set_title("J5 窗内可见违反：S_max 高于经典界 %.2f" % (S_win - CL))
+ax.legend(fontsize=8)
 
 fig.tight_layout()
 fig.savefig(FIG_PATH, dpi=140)
