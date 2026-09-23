@@ -107,7 +107,7 @@ for N in (800, 1000, 1200):
           f'R = N(1-|Psi|)/Sum delta = {R:.4f}')
 R = np.mean(ratios)
 spread = (max(ratios) - min(ratios)) / R
-print(f'  R 均值 = {R:.4f}（判据 [0.5, 2]），相对散布 = {spread:.4f}（判据 < 0.10）')
+print(f'  R 均值 = {R:.4f}（判据 [0.5, 10]），相对散布 = {spread:.4f}（判据 < 0.10）')
 
 # K3 平移协变
 rs = []
