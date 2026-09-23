@@ -40,7 +40,7 @@ P1-29 v0：Tsirelson 生死闸门（战线二方向一）：纠缠锁定对的 C
 
 纪律：全确定性（种子 20260914）；实测 vs 期望对照表；图存 images/（绝对路径）。
 边界：不验证纠缠态制备机制（P4-16）；不验证空间分离的全场实现（P4-5 双粒子推广）；
-      不声称 Tsirelson 界已获原理级推导（为何 2*sqrt(2) 而非 4，归方向三）。
+      不声称齐雷尔森界已获原理级推导（为何 2*sqrt(2) 而非 4，归方向三）。
 """
 import numpy as np
 import matplotlib
@@ -54,7 +54,7 @@ FIG_PATH = r"D:\software\TianXingFC\images\minimal_verification_tsirelson_gate_v
 SEED = 20260914
 N_SAMP = 2_000_000
 
-TS = 2.0 ** 0.5 * 2.0          # Tsirelson 界 2*sqrt(2)
+TS = 2.0 ** 0.5 * 2.0          # 齐雷尔森界 2*sqrt(2)
 CL = 2.0                        # 经典界
 
 I2 = np.eye(2, dtype=complex)

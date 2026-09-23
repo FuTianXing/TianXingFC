@@ -113,7 +113,7 @@ report("C5 有限尺寸：n 到 L/4 仍成立", spread5 <= 0.05,
        "n = 5 xi 至 L/4 四档相对散布 <= 5%",
        "；".join("n=%d: %.6f" % (n, v) for n, v in zip((int(5 * XI), 32, 48, int(L / 4)), v5)) + "；散布 %.2f%%" % (100 * spread5))
 
-print("[登记] C6：f(E_xy) 供二-2（Tsirelson 界）使用，本轮只登记，不作判据")
+print("[登记] C6：f(E_xy) 供二-2（齐雷尔森界）使用，本轮只登记，不作判据")
 
 fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.2))
 ax[0].semilogy(ns1, v1, "o-", label="锁定档（先验纠缠锁定帧）")

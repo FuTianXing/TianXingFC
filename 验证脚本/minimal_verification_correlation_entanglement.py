@@ -189,7 +189,7 @@ report("G7 紧致口径与有限尺寸", cap <= np.pi + 1e-9 and all(d <= 0.05 f
        "最大包裹距离 %.6f；各档包裹占比 %s；n = 64 档最大偏差 %.3e"
        % (cap, ["%.4f" % f for f in frac], max(d for P, n, d, _, _, _ in g2 if n == 64)))
 
-print("[登记] G8：f(E_xy) = 2 sig^2 (1 - m)，m = (E - E_inf)/(1 - E_inf)，供 二-2 的 Tsirelson 界使用，本轮只登记")
+print("[登记] G8：f(E_xy) = 2 sig^2 (1 - m)，m = (E - E_inf)/(1 - E_inf)，供 二-2 的齐雷尔森界使用，本轮只登记")
 
 fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.2))
 for P in PS:
