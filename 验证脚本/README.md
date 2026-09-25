@@ -438,3 +438,4 @@
 - **415.** `minimal_verification_crystallization_scaling.py`： [[注记-结晶扩张相变的标度清点（第415条）：标准临界标度全判负与三分之五的机制域|结晶扩张相变的标度清点：标准临界标度全判负与三分之五的机制域]] （2026-09-26）
 - **416.** `minimal_verification_nucleation_seam_model.py`： [[注记-成核-接缝几何的最小模型（第416条）：alpha = 1 - q 标度定理与三分之五的几何靶|成核-接缝几何的最小模型：alpha = 1 - q 标度定理与三分之五的几何靶]] （2026-09-26）
 - **417.** `minimal_verification_q_source_audit.py`： [[注记-q 的来源清点（第417条）：稀释继承下界与校准保护分数|q 的来源清点：稀释继承下界与校准保护分数]] （2026-09-26）
+- **418.** `minimal_verification_superdiffusion_source_audit.py`： [[注记-超扩散输运的候选机制清点（第418条）：长时尾接口与短程结构判负|超扩散输运的候选机制清点：长时尾接口与短程结构判负]] （2026-09-26）
