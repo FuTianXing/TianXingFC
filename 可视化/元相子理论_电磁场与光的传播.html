@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>元相子理论：电磁场与光的传播</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;padding:32px 20px 64px;background:#FAFAF8;color:#2C2C2A;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+font-size:15px;line-height:1.75}
+.wrap{max-width:920px;margin:0 auto}
+h1{font-size:26px;font-weight:600;margin:0 0 6px}
+.meta{color:#888780;font-size:13px;margin:0 0 28px}
+h2{font-size:19px;font-weight:600;margin:42px 0 12px;padding-bottom:8px;border-bottom:1px solid #E5E3DC}
+p{margin:0 0 14px}
+.lead{font-size:16px;color:#444441}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0 8px}
+.card{background:#fff;border:1px solid #E5E3DC;border-radius:12px;padding:16px 18px}
+.card h4{margin:0 0 6px;font-size:14px;font-weight:600;color:#534AB7}
+.card p{margin:0;font-size:13.5px;color:#5F5E5A}
+figure{margin:22px 0;background:#fff;border:1px solid #E5E3DC;border-radius:12px;padding:18px}
+figcaption{font-size:13px;color:#888780;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0;background:#fff}
+th,td{border:1px solid #E5E3DC;padding:9px 12px;text-align:left;vertical-align:top}
+th{background:#F1EFE8;font-weight:600}
+.lv{white-space:nowrap;font-size:13px}
+.lv-a{color:#0F6E56}
+.lv-b{color:#185FA5}
+.lv-c{color:#993C1D}
+ol,ul{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:7px}
+.refs{font-size:13.5px;color:#5F5E5A}
+.refs li{margin-bottom:5px}
+.ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+button{font:inherit;font-size:13px;padding:5px 12px;border:1px solid #D3D1C7;background:#fff;
+border-radius:8px;cursor:pointer;color:#2C2C2A}
+button:hover{border-color:#B4B2A9}
+.read{font-size:13px;color:#888780;margin-left:auto}
+canvas{width:100%;height:260px;display:block}
+.note{font-size:13px;color:#888780;border-left:2px solid #E5E3DC;padding-left:12px;margin:14px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>元相子理论：电磁场与光的传播</h1>
+<p class="meta">傅天行（天行新学研究院）· 可视化整理 2026-09-26 · 材料取自工作区已定稿论文，严格程度按体系四级制标注</p>
+
+<p class="lead">本页把元相子理论对电磁场与光的全部工作压缩成一条主链：实轴方向场 → 联络 → 曲率 → 电场与磁场 → 感知-校正链 → 光。每一节末尾给出该环节的严格程度，纲领性主张与严格结论分开标注。</p>
+
+<h2>一、一句话总纲</h2>
+<div class="cards">
+<div class="card">
+<h4>电磁场</h4>
+<p>元相子实轴方向场（每个元相子的相位零点朝向）的曲率。电场取时间-空间分量 $E_a = F_{a0}$，磁场取纯空间分量 $B_a = \tfrac{1}{2}\epsilon_{abc}F_{bc}$。</p>
+</div>
+<div class="card">
+<h4>麦克斯韦方程组</h4>
+<p>双重来源。无源组是比安基恒等式 $dF = 0$，由 $F = dA$ 自动推出；有源组是校准代价最小化的运动方程。</p>
+</div>
+<div class="card">
+<h4>光</h4>
+<p>实轴方向偏转沿晶格的逐格接力。每个元相子感知邻居、校正自己，偏转由此传播。光速 $c = l_P/t_P$ 是格点延迟，属几何恒等式。</p>
+</div>
+</div>
+
+<h2>二、电磁场的几何本体</h2>
+<p>每个元相子拥有独立复平面与独立实轴方向 $\alpha_n$，即相位零点。相邻格点的实轴方向差定义空间联络 $A_a$，实轴方向的演化定义时间分量 $A_0$。规范势在元相子语言中就是实轴方向场的联络。</p>
+<p>实轴方向的局域重定义 $\alpha_n \to \alpha_n + \lambda_n$ 即局域 $U(1)$ 规范变换，此重定义不改变物理。规范对称性因此从公设变为实体结构的推论。</p>
+
+<figure>
+<svg viewBox="0 0 680 324" width="100%" role="img">
+<title>电磁场的几何本体：从实轴方向场到电场与磁场</title>
+<desc>一排元相子各带一支实轴方向指针，相邻指针的方向差构成空间联络，联络的曲率分成含时间导数与纯空间两部分，分别给出电场与磁场。</desc>
+<defs>
+<marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<text x="40" y="30" font-size="12" fill="#5F5E5A">实轴方向场：每个元相子拥有独立复平面与独立实轴方向 αₙ</text>
+<circle cx="100" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="100" y1="80" x2="109.96" y2="88.36" stroke="#444441" stroke-width="1.5"/>
+<circle cx="100" cy="80" r="2.5" fill="#888780"/>
+<circle cx="180" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="180" y1="80" x2="191.88" y2="85.29" stroke="#444441" stroke-width="1.5"/>
+<circle cx="180" cy="80" r="2.5" fill="#888780"/>
+<circle cx="260" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="260" y1="80" x2="272.87" y2="81.81" stroke="#444441" stroke-width="1.5"/>
+<circle cx="260" cy="80" r="2.5" fill="#888780"/>
+<circle cx="340" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="340" y1="80" x2="352.87" y2="78.19" stroke="#444441" stroke-width="1.5"/>
+<circle cx="340" cy="80" r="2.5" fill="#888780"/>
+<circle cx="420" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="420" y1="80" x2="431.88" y2="74.71" stroke="#444441" stroke-width="1.5"/>
+<circle cx="420" cy="80" r="2.5" fill="#888780"/>
+<circle cx="500" cy="80" r="18" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<line x1="500" y1="80" x2="509.96" y2="71.64" stroke="#444441" stroke-width="1.5"/>
+<circle cx="500" cy="80" r="2.5" fill="#888780"/>
+<line x1="128" y1="112" x2="152" y2="112" stroke="#B4B2A9" stroke-width="0.5" marker-start="url(#arr1)" marker-end="url(#arr1)"/>
+<line x1="208" y1="112" x2="232" y2="112" stroke="#B4B2A9" stroke-width="0.5" marker-start="url(#arr1)" marker-end="url(#arr1)"/>
+<line x1="288" y1="112" x2="312" y2="112" stroke="#B4B2A9" stroke-width="0.5" marker-start="url(#arr1)" marker-end="url(#arr1)"/>
+<line x1="368" y1="112" x2="392" y2="112" stroke="#B4B2A9" stroke-width="0.5" marker-start="url(#arr1)" marker-end="url(#arr1)"/>
+<line x1="448" y1="112" x2="472" y2="112" stroke="#B4B2A9" stroke-width="0.5" marker-start="url(#arr1)" marker-end="url(#arr1)"/>
+<text x="340" y="140" text-anchor="middle" font-size="12" fill="#5F5E5A">相邻方向差 = 空间联络 Aₐ（方向惯性使无扰动时它静止）</text>
+<line x1="340" y1="150" x2="340" y2="164" stroke="#888780" stroke-width="1" marker-end="url(#arr1)"/>
+<rect x="250" y="168" width="180" height="44" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text x="340" y="190" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">曲率 F = dA</text>
+<path d="M340 212 L340 228 L205 228 L205 242" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arr1)"/>
+<path d="M340 228 L475 228 L475 242" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arr1)"/>
+<rect x="90" y="248" width="230" height="56" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="205" y="268" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">电场 E = Fₐ₀</text>
+<text x="205" y="288" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993C1D">时间-空间曲率</text>
+<rect x="360" y="248" width="230" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="475" y="268" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0C447C">磁场 B = ε F_bc / 2</text>
+<text x="475" y="288" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">空间-空间曲率</text>
+</svg>
+<figcaption>图 1：电场与磁场是同一个几何对象（实轴方向场的联络曲率）的两个分量，区别仅在分量是否包含时间方向。</figcaption>
+</figure>
+
+<p>严格程度：实轴方向场等于规范势为条件性命题（$U(1)$ 情形为严格对应）；实轴方向重定义等于规范变换为严格结论。</p>
+
+<h2>三、麦克斯韦方程组的双重来源</h2>
+<p>把电磁场等于联络曲率这一事实代回四行方程，四行立刻分成性质不同的两组。无源组是比安基恒等式 $dF = 0$ 的分量形式，由 $F = dA$ 与 $d^2 = 0$ 自动推出。法拉第定律于是从实验归纳的定律变成曲率的一致性条件，其成立只靠混合偏导可交换 $\partial_t\partial_a = \partial_a\partial_t$。</p>
+<p>有源组是校准代价最小化的运动方程。电流对应绕数结构的迁移，位移电流对应校准重排自身的磁场源。元相子语言中的图像：电流是异物游动搅出漩涡，位移电流是校准重排本身拧出扭转。</p>
+
+<figure>
+<svg viewBox="0 0 680 250" width="100%" role="img">
+<title>麦克斯韦方程组的双重几何来源</title>
+<desc>电磁场等于联络曲率之后，麦克斯韦四行方程分成两组：无源组是比安基恒等式，属几何必然；有源组是校准动力学，属纲领性主张。</desc>
+<defs>
+<marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="200" y="30" width="280" height="56" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text x="340" y="50" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">电磁场 = 实轴方向场的曲率</text>
+<text x="340" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#5F5E5A">F = dA，四行方程按几何性质分两组</text>
+<path d="M340 86 L340 105 L180 105 L180 126" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arr2)"/>
+<path d="M340 105 L500 105 L500 126" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arr2)"/>
+<rect x="55" y="130" width="250" height="76" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="180" y="152" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0C447C">无源组：∇·B = 0，∇×E = −∂ₜB</text>
+<text x="180" y="174" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">比安基恒等式 dF = 0</text>
+<text x="180" y="192" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">严格：几何必然，混合偏导可交换</text>
+<rect x="375" y="130" width="250" height="76" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="500" y="152" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">有源组：∇·E = ρ，∇×B = J + ∂ₜE</text>
+<text x="500" y="174" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993C1D">校准代价最小化的运动方程</text>
+<text x="500" y="192" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993C1D">纲领性：校准作用量待导出</text>
+<text x="340" y="230" text-anchor="middle" font-size="12" fill="#5F5E5A">电流 = 绕数结构迁移，位移电流 = 校准重排自身拧出扭转</text>
+</svg>
+<figcaption>图 2：同一个曲率，两组方程，两种严格程度。无源组无需动力学，有源组等待校准作用量。</figcaption>
+</figure>
+
+<p>严格程度：无源组等于比安基恒等式为严格结论；有源组等于校准动力学为纲领性主张，其闭合依赖校准作用量。</p>
+
+<h2>四、光的传播：感知-校正链</h2>
+<p>每个元相子内禀天行力，即心侧自主校准能力。它只做两件事：感知邻居的实轴方向，校正自己的实轴方向。设 A 的实轴方向偏转 $\delta\alpha_A$，邻居 B 感知到相位差变化并自主校正，B 的校正又触发 C，偏转以感知-校正链逐格传下去。这就是光。</p>
+<p>该链的最小模型为</p>
+$$\ddot\alpha_n+\frac{1}{\tau_{\text{corr}}}\dot\alpha_n=\omega_{\text{cal}}^2\big(\alpha_{n+1}+\alpha_{n-1}-2\alpha_n\big)$$
+<p>左侧是惯性项与阻尼项，右侧是邻居耦合的二阶差分。取连续极限 $x = n l_P$ 得</p>
+$$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\partial\alpha}{\partial t}=c^2\frac{\partial^2\alpha}{\partial x^2},\qquad c^2=\omega_{\text{cal}}^2 l_P^2$$
+<p>忽略阻尼即得波动方程，光速 $c = \omega_{\text{cal}} l_P$。与接力几何的 $c = l_P/t_P$ 统一，要求 $\omega_{\text{cal}} = 1/t_P$。光速的存在要求感知与校正之间存在格点延迟，若感知是瞬时的，光速将为无限大。</p>
+
+<figure>
+<div class="ctrl">
+<button id="play">暂停</button>
+<button id="reset">重置</button>
+<label style="font-size:13px;color:#5F5E5A;display:flex;align-items:center;gap:6px;">接力速度<input id="speed" type="range" min="1" max="6" value="3" style="width:90px;"></label>
+<span class="read" id="read"></span>
+</div>
+<canvas id="cv" role="img" aria-label="实轴方向偏转沿晶格格点逐格接力的动画，波前不断向右推进">实轴方向偏转沿晶格逐格传播的动画。</canvas>
+<figcaption>图 3：每个圆点是一个元相子，指针为其实轴方向。偏转（红曲线）自左向右逐格传递，蓝色虚线标出当前正在校正自己的格点，即波前。</figcaption>
+</figure>
+
+<p>频率的来源同一机制。基态所有元相子以 $\omega_P$ 摆程，光的颜色来自实轴方向演化的偏移 $\omega = \omega_P + \delta\omega$。光子不携带净绕数，故零电荷，属平凡表示。</p>
+<p>光的本质因此从"物"推进到"心物协同"：无数自主校准行为（感知邻居、校正自身）的协同传播，即天行方程的执行波。</p>
+
+<p>严格程度：光等于感知-校正链、光速等于格点延迟、频率偏移等于实轴方向演化速率，三者均为条件性命题；最小模型本身是提案性演示，其形式待校准动力学的涌现层有效理论验证。</p>
+
+<h2>五、平面波的正交关系</h2>
+<p>真空无源时两组方程联立给出波动方程，色散 $\omega = ck$。四条正交关系各自有来源：$\mathbf{E}\perp\mathbf{k}$ 来自无源高斯定律，$\mathbf{B}\perp\mathbf{k}$ 来自比安基恒等式，$\mathbf{E}\perp\mathbf{B}$ 来自法拉第定律，$|\mathbf{E}| = c|\mathbf{B}|$ 来自 $\omega = ck$。</p>
+<p>共同的几何本质：电场与磁场是同一个相位扰动 $\delta\alpha \propto e^{i(\mathbf{k}\cdot\mathbf{x}-\omega t)}$ 的空间旋度与时间导数。扰动只能在垂直于 $\mathbf{k}$ 的平面内振动（晶格介质波的横向极化），其空间旋度与时间导数自动垂直。三者两两垂直，对应四维时空结构在平面波上的投影。</p>
+
+<figure>
+<svg viewBox="0 0 680 296" width="100%" role="img">
+<title>平面波中电场、磁场与传播方向的正交关系</title>
+<desc>沿水平方向传播的平面波，电场以竖直双箭头表示，磁场以四十五度斜向箭头表示，两者都垂直于传播方向且互相垂直。</desc>
+<defs>
+<marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<text x="44" y="58" font-size="12" fill="#712B13">电场 E：时间-空间曲率</text>
+<text x="44" y="80" font-size="12" fill="#0C447C">磁场 B：空间-空间曲率</text>
+<line x1="60" y1="150" x2="620" y2="150" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr3)"/>
+<text x="618" y="140" text-anchor="end" font-size="12" fill="#5F5E5A">传播方向 k</text>
+<line x1="130" y1="114.5" x2="130" y2="185.5" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="192" y1="100" x2="192" y2="200" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="254" y1="140.1" x2="254" y2="159.9" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="316" y1="191" x2="316" y2="109" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="378" y1="197.1" x2="378" y2="102.9" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="440" y1="151.8" x2="440" y2="148.2" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="502" y1="104.5" x2="502" y2="195.5" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="564" y1="106.9" x2="564" y2="193.1" stroke="#993C1D" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+<line x1="113.6" y1="133.6" x2="146.4" y2="166.4" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="168.9" y1="126.9" x2="215.1" y2="173.1" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="249.4" y1="145.4" x2="258.6" y2="154.6" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="297.1" y1="131.1" x2="334.9" y2="168.9" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="356.2" y1="128.2" x2="399.8" y2="171.8" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="439.2" y1="149.2" x2="440.8" y2="150.8" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="480.9" y1="128.9" x2="523.1" y2="171.1" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<line x1="544.1" y1="130.1" x2="583.9" y2="169.9" stroke="#185FA5" stroke-width="1.2" marker-end="url(#arr3)"/>
+<text x="340" y="236" text-anchor="middle" font-size="12" fill="#5F5E5A">E ⟂ B ⟂ k：空间轴与时间轴的正交在相位扰动上的投影</text>
+<text x="340" y="258" text-anchor="middle" font-size="12" fill="#5F5E5A">|E| = c|B| 来自 ω = ck；c = l_P / t_P，几何恒等式</text>
+</svg>
+<figcaption>图 4：平面波的三条正交轴。$|\mathbf{E}| = c|\mathbf{B}|$ 不是独立假设，它由色散关系 $\omega = ck$ 与光速的几何定义共同给出。</figcaption>
+</figure>
+
+<p>严格程度：正交关系的推导为严格结论，属标准波解分析。</p>
+
+<h2>六、严格程度分层</h2>
+<table>
+<thead>
+<tr><th>结论</th><th class="lv">严格程度</th></tr>
+</thead>
+<tbody>
+<tr><td>无源组等于比安基恒等式，法拉第定律为曲率一致性条件</td><td class="lv lv-a">严格</td></tr>
+<tr><td>正交关系 $\mathbf{E}\perp\mathbf{B}\perp\mathbf{k}$ 的推导</td><td class="lv lv-a">严格</td></tr>
+<tr><td>实轴方向重定义等于局域规范变换（变换等价性）</td><td class="lv lv-a">严格</td></tr>
+<tr><td>实轴方向场等于规范势</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>光等于感知-校正链的传播</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>光速等于格点延迟，$c = l_P/t_P$</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>频率偏移等于实轴方向偏转的演化速率</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>场局域性等于每个元相子的感知结构</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>电流等于绕数结构的迁移</td><td class="lv lv-b">条件性命题（静态对应严格，动态待推）</td></tr>
+<tr><td>有源组等于校准代价最小化的运动方程</td><td class="lv lv-c">纲领性主张</td></tr>
+<tr><td>位移电流等于校准重排自身的磁场源</td><td class="lv lv-c">纲领性主张</td></tr>
+<tr><td>最小曲率原理等于净值审计的动力学后果</td><td class="lv lv-c">纲领性主张</td></tr>
+</tbody>
+</table>
+
+<h2>七、遗留问题</h2>
+<ol>
+<li><strong>校准作用量的完整形式</strong>：从感知-校正链动力学导出麦克斯韦有源方程，是有源组从纲领升级为定理的关键，也是整个电磁学攻坚的收敛点。</li>
+<li><strong>洛伦兹力机制</strong>：运动电荷在磁场中的偏转 $\mathbf{F} = q\mathbf{v}\times\mathbf{B}$ 如何从绕数结构与涡旋线的耦合涌现。</li>
+<li><strong>磁铁定量桥梁</strong>：自旋（内部 $\pi$ 扭转）的有序排列如何具体产生外部实轴方向场的空间扭转。</li>
+<li><strong>位移电流定量验证</strong>：校准重排的磁场源与 $\partial_t\mathbf{E}$ 项的精确对应。</li>
+<li><strong>感知-校正链的三项参数</strong>：感知机制（邻居如何感知偏转）、格点延迟（每格 $t_P$ 需从耦合动力学导出）、响应强度（完全对齐或部分对齐决定色散）。</li>
+<li><strong>紫外预言待检验</strong>：洛伦兹破坏首阶项 $\delta\omega/\omega \sim -(E/E_P)^2$，立方各向异性 $[100]:[110]:[111] = 6:3:2$，由粒性侧格点结构决定。</li>
+</ol>
+
+<h2>八、出处</h2>
+<ul class="refs">
+<li>[[电磁场的元相子几何：麦克斯韦方程组的双重几何来源]]（2026-08-13 定稿，2026-08-14 增补 §8.1 磁铁与磁单极）</li>
+<li>[[电磁场总论：元相子几何视角的完整图景]]（总结文档）</li>
+<li>[[变化磁场与变化电场的相互产生：从几何必然到实体根源]]（2026-08-14 定稿，三个解释层次的对比）</li>
+<li>[[天行力与规范原理的物理来源：去中心化校准作为光的传播与规范对称性的基础]]（光的传播机制与光速来源）</li>
+<li>[[元相子振荡晶格的色散关系：低能光速涌现与洛伦兹破坏首阶项]]（低能光速涌现与紫外修正）</li>
+<li>[[以太问题的终结：从洛伦兹以太到元相子介质]]（介质地位与爱因斯坦以太三要素）</li>
+</ul>
+
+</div>
+<script>
+(function(){
+var cv=document.getElementById('cv');
+if(!cv) return;
+var ctx=cv.getContext('2d');
+var N=44,t=0,playing=true,last=0,W=0,H=0;
+var speedEl=document.getElementById('speed');
+var readEl=document.getElementById('read');
+var btn=document.getElementById('play');
+var resetBtn=document.getElementById('reset');
+function resize(){
+  var dpr=window.devicePixelRatio||1;
+  W=cv.clientWidth||600; H=cv.clientHeight||260;
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function xOf(n){ return 24+(W-48)*n/(N-1); }
+function draw(){
+  if(!W) resize();
+  ctx.clearRect(0,0,W,H);
+  var baseY=H*0.76, cy=baseY-105, A=0.55, sigma=4.2, lam=5.0, span=N+10;
+  var nc=((t%span)+span)%span-5;
+  var al=[],i;
+  for(i=0;i<N;i++){ var d=i-nc; al[i]=A*Math.exp(-(d*d)/(2*sigma*sigma))*Math.cos(2*Math.PI*d/lam); }
+  ctx.beginPath(); ctx.moveTo(xOf(0),cy); ctx.lineTo(xOf(N-1),cy);
+  ctx.strokeStyle='#D3D1C7'; ctx.lineWidth=0.5; ctx.stroke();
+  ctx.beginPath();
+  for(i=0;i<N;i++){ var x=xOf(i), y=cy-30*(al[i]/A); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+  ctx.strokeStyle='#993C1D'; ctx.lineWidth=1.2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xOf(0),baseY); ctx.lineTo(xOf(N-1),baseY);
+  ctx.strokeStyle='#D3D1C7'; ctx.lineWidth=0.5; ctx.stroke();
+  for(i=0;i<N;i++){
+    var x=xOf(i), near=Math.abs(i-nc)<0.6;
+    ctx.beginPath(); ctx.arc(x,baseY,4.5,0,6.2832);
+    ctx.fillStyle=near?'#F5C4B3':'#F1EFE8';
+    ctx.strokeStyle=near?'#993C1D':'#B4B2A9'; ctx.lineWidth=0.8; ctx.fill(); ctx.stroke();
+    var ang=-Math.PI/2+al[i];
+    ctx.beginPath(); ctx.moveTo(x,baseY); ctx.lineTo(x+13*Math.cos(ang),baseY+13*Math.sin(ang));
+    ctx.strokeStyle=near?'#993C1D':'#5F5E5A'; ctx.lineWidth=1.4; ctx.stroke();
+  }
+  var xw=xOf(Math.min(N-1,Math.max(0,nc)));
+  ctx.beginPath(); ctx.moveTo(xw,cy-42); ctx.lineTo(xw,baseY+18);
+  ctx.setLineDash([3,3]); ctx.strokeStyle='#185FA5'; ctx.lineWidth=0.8; ctx.stroke(); ctx.setLineDash([]);
+  ctx.font='12px system-ui,-apple-system,sans-serif';
+  ctx.fillStyle='#5F5E5A';
+  ctx.fillText('实轴方向偏转的分布',24,cy-50);
+  ctx.fillText('晶格链：一个格点一个元相子，指针 = 实轴方向',24,H-8);
+  ctx.fillStyle='#185FA5';
+  ctx.fillText('波前：正在校正自己的格点',Math.min(W-190,xw+4),cy-50);
+  if(readEl){ var k=Math.max(0,nc); readEl.textContent='已接力 '+Math.round(k)+' 格 · 用时 '+Math.round(k)+' t_P'; }
+}
+function loop(ts){
+  if(!last) last=ts;
+  var dt=Math.min(0.05,(ts-last)/1000); last=ts;
+  if(playing) t+=(+speedEl.value)*dt*1.6;
+  draw(); requestAnimationFrame(loop);
+}
+btn.addEventListener('click',function(){ playing=!playing; btn.textContent=playing?'暂停':'播放'; });
+resetBtn.addEventListener('click',function(){ t=0; draw(); });
+speedEl.addEventListener('input',draw);
+resize();
+if(window.ResizeObserver) new ResizeObserver(resize).observe(cv);
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
