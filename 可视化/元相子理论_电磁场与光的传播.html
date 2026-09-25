@@ -4,13 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>元相子理论：电磁场与光的传播</title>
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
-  svg: { fontCache: 'global' }
-};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <style>
 :root{color-scheme:light}
 *{box-sizing:border-box}
@@ -47,17 +41,36 @@ button:hover{border-color:#B4B2A9}
 .read{font-size:13px;color:#888780;margin-left:auto}
 canvas{width:100%;height:260px;display:block}
 .note{font-size:13px;color:#888780;border-left:2px solid #E5E3DC;padding-left:12px;margin:14px 0}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.toc a{font-size:13px;color:#185FA5;text-decoration:none;border:1px solid #E5E3DC;
+border-radius:8px;padding:4px 10px;background:#fff}
+.toc a:hover{border-color:#B4B2A9}
+.mjerr{font-size:13px;color:#993C1D;background:#FAECE7;border-radius:8px;
+padding:8px 12px;margin:0 0 18px;display:none}
+h2{scroll-margin-top:12px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <h1>元相子理论：电磁场与光的传播</h1>
-<p class="meta">傅天行（天行新学研究院）· 可视化整理 2026-09-26 · 材料取自工作区已定稿论文，严格程度按体系四级制标注</p>
+<p class="meta">傅天行（天行新学研究院）· 可视化整理 2026-09-26 · 材料取自工作区已定稿论文，严格程度按体系分层标注</p>
 
 <p class="lead">本页把元相子理论对电磁场与光的全部工作压缩成一条主链：实轴方向场 → 联络 → 曲率 → 电场与磁场 → 感知-校正链 → 光。每一节末尾给出该环节的严格程度，纲领性主张与严格结论分开标注。</p>
 
-<h2>一、一句话总纲</h2>
+<nav class="toc">
+<a href="#s1">一 一句话总纲</a>
+<a href="#s2">二 电磁场的几何本体</a>
+<a href="#s3">三 麦克斯韦方程组的双重来源</a>
+<a href="#s4">四 光的传播：感知-校正链</a>
+<a href="#s5">五 平面波的正交关系</a>
+<a href="#s6">六 严格程度分层</a>
+<a href="#s7">七 遗留问题</a>
+<a href="#s8">八 出处</a>
+</nav>
+<div class="mjerr" id="mferr">公式渲染脚本未能从网络加载，页面中的公式显示为源码形式，正文结论不受影响。</div>
+
+<h2 id="s1">一、一句话总纲</h2>
 <div class="cards">
 <div class="card">
 <h4>电磁场</h4>
@@ -69,12 +82,12 @@ canvas{width:100%;height:260px;display:block}
 </div>
 <div class="card">
 <h4>光</h4>
-<p>实轴方向偏转沿晶格的逐格接力。每个元相子感知邻居、校正自己，偏转由此传播。光速 $c = l_P/t_P$ 是格点延迟，属几何恒等式。</p>
+<p>实轴方向偏转沿晶格的逐格接力。每个元相子感知邻居、校正自己，偏转由此传播。光速由格点延迟给定，$c = l_P/t_P$。</p>
 </div>
 </div>
 
-<h2>二、电磁场的几何本体</h2>
-<p>每个元相子拥有独立复平面与独立实轴方向 $\alpha_n$，即相位零点。相邻格点的实轴方向差定义空间联络 $A_a$，实轴方向的演化定义时间分量 $A_0$。规范势在元相子语言中就是实轴方向场的联络。</p>
+<h2 id="s2">二、电磁场的几何本体</h2>
+<p>每个元相子拥有独立复平面与独立实轴方向 $\alpha_n$，即相位零点。相邻格点的实轴方向差定义空间联络 $A_a$，实轴方向的演化定义时间分量 $A_0$。规范势在元相子语言中对应实轴方向场的联络（图 1）。</p>
 <p>实轴方向的局域重定义 $\alpha_n \to \alpha_n + \lambda_n$ 即局域 $U(1)$ 规范变换，此重定义不改变物理。规范对称性因此从公设变为实体结构的推论。</p>
 
 <figure>
@@ -126,11 +139,12 @@ canvas{width:100%;height:260px;display:block}
 <figcaption>图 1：电场与磁场是同一个几何对象（实轴方向场的联络曲率）的两个分量，区别仅在分量是否包含时间方向。</figcaption>
 </figure>
 
-<p>严格程度：实轴方向场等于规范势为条件性命题（$U(1)$ 情形为严格对应）；实轴方向重定义等于规范变换为严格结论。</p>
+<p>静电势与时间分量的衔接已解决：$A_0 = -\varphi$（库仑规范），静电场是相位搬移畸变的空间梯度。静电学与电动力学由此合并为同一套语言。</p>
+<p>严格程度：实轴方向场对应规范势为条件性命题（$U(1)$ 情形为严格对应）；实轴方向重定义等于规范变换为严格结论。</p>
 
-<h2>三、麦克斯韦方程组的双重来源</h2>
-<p>把电磁场等于联络曲率这一事实代回四行方程，四行立刻分成性质不同的两组。无源组是比安基恒等式 $dF = 0$ 的分量形式，由 $F = dA$ 与 $d^2 = 0$ 自动推出。法拉第定律于是从实验归纳的定律变成曲率的一致性条件，其成立只靠混合偏导可交换 $\partial_t\partial_a = \partial_a\partial_t$。</p>
-<p>有源组是校准代价最小化的运动方程。电流对应绕数结构的迁移，位移电流对应校准重排自身的磁场源。元相子语言中的图像：电流是异物游动搅出漩涡，位移电流是校准重排本身拧出扭转。</p>
+<h2 id="s3">三、麦克斯韦方程组的双重来源</h2>
+<p>把电磁场等于联络曲率这一事实代回四行方程，四行立刻分成性质不同的两组。无源组是比安基恒等式 $dF = 0$ 的分量形式，由 $F = dA$ 与 $d^2 = 0$ 自动推出。法拉第定律于是从实验归纳的定律变成曲率的一致性条件，其成立只靠混合偏导可交换 $\partial_t\partial_a = \partial_a\partial_t$（图 2）。</p>
+<p>有源组是校准代价最小化的运动方程。电流对应绕数结构的迁移，位移电流对应校准重排自身的磁场源。元相子语言中的图像：电流是绕数结构在晶格中迁移，迁移处拖着周围指针转，搅出漩涡；位移电流是校准重排本身拧出扭转。</p>
 
 <figure>
 <svg viewBox="0 0 680 250" width="100%" role="img">
@@ -161,8 +175,8 @@ canvas{width:100%;height:260px;display:block}
 
 <p>严格程度：无源组等于比安基恒等式为严格结论；有源组等于校准动力学为纲领性主张，其闭合依赖校准作用量。</p>
 
-<h2>四、光的传播：感知-校正链</h2>
-<p>每个元相子内禀天行力，即心侧自主校准能力。它只做两件事：感知邻居的实轴方向，校正自己的实轴方向。设 A 的实轴方向偏转 $\delta\alpha_A$，邻居 B 感知到相位差变化并自主校正，B 的校正又触发 C，偏转以感知-校正链逐格传下去。这就是光。</p>
+<h2 id="s4">四、光的传播：感知-校正链</h2>
+<p>每个元相子内禀天行力，即心侧自主校准能力。它只做两件事：感知邻居的实轴方向，校正自己的实轴方向。设 A 的实轴方向偏转 $\delta\alpha_A$，邻居 B 感知到相位差变化并自主校正，B 的校正又触发 C，偏转以感知-校正链逐格传下去，这就是光（图 3）。</p>
 <p>该链的最小模型为</p>
 $$\ddot\alpha_n+\frac{1}{\tau_{\text{corr}}}\dot\alpha_n=\omega_{\text{cal}}^2\big(\alpha_{n+1}+\alpha_{n-1}-2\alpha_n\big)$$
 <p>左侧是惯性项与阻尼项，右侧是邻居耦合的二阶差分。取连续极限 $x = n l_P$ 得</p>
@@ -180,14 +194,15 @@ $$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\parti
 <figcaption>图 3：每个圆点是一个元相子，指针为其实轴方向。偏转（红曲线）自左向右逐格传递，蓝色虚线标出当前正在校正自己的格点，即波前。</figcaption>
 </figure>
 
-<p>频率的来源同一机制。基态所有元相子以 $\omega_P$ 摆程，光的颜色来自实轴方向演化的偏移 $\omega = \omega_P + \delta\omega$。光子不携带净绕数，故零电荷，属平凡表示。</p>
+<p>频率的来源同一机制。基态所有元相子以 $\omega_P$ 摆程，光的颜色来自实轴方向演化的偏移 $\omega = \omega_P + \delta\omega$。光子不携带净绕数，故零电荷，属平凡表示。光子因此有双重身份：基态光子是元相子本身，构成时空砖块；激发光子是校准波，是时空上的扰动。</p>
 <p>光的本质因此从"物"推进到"心物协同"：无数自主校准行为（感知邻居、校正自身）的协同传播，即天行方程的执行波。</p>
+<p>这套介质图像不违反相对论。元相子介质满足爱因斯坦 1920 年给出的以太三要素：没有可供探测的静止参照系，具有物理性质（真空不空），不定义光速（光速是 $c = l_P/t_P$ 的几何恒等式，与介质参数无关）。迈克尔逊-莫雷实验排除的是定义光速的力学介质，元相子介质属于爱因斯坦意义上允许的以太，并补上其缺失的载体。</p>
 
 <p>严格程度：光等于感知-校正链、光速等于格点延迟、频率偏移等于实轴方向演化速率，三者均为条件性命题；最小模型本身是提案性演示，其形式待校准动力学的涌现层有效理论验证。</p>
 
-<h2>五、平面波的正交关系</h2>
+<h2 id="s5">五、平面波的正交关系</h2>
 <p>真空无源时两组方程联立给出波动方程，色散 $\omega = ck$。四条正交关系各自有来源：$\mathbf{E}\perp\mathbf{k}$ 来自无源高斯定律，$\mathbf{B}\perp\mathbf{k}$ 来自比安基恒等式，$\mathbf{E}\perp\mathbf{B}$ 来自法拉第定律，$|\mathbf{E}| = c|\mathbf{B}|$ 来自 $\omega = ck$。</p>
-<p>共同的几何本质：电场与磁场是同一个相位扰动 $\delta\alpha \propto e^{i(\mathbf{k}\cdot\mathbf{x}-\omega t)}$ 的空间旋度与时间导数。扰动只能在垂直于 $\mathbf{k}$ 的平面内振动（晶格介质波的横向极化），其空间旋度与时间导数自动垂直。三者两两垂直，对应四维时空结构在平面波上的投影。</p>
+<p>共同的几何本质：电场与磁场是同一个相位扰动 $\delta\alpha \propto e^{i(\mathbf{k}\cdot\mathbf{x}-\omega t)}$ 的空间旋度与时间导数。扰动只能在垂直于 $\mathbf{k}$ 的平面内振动（晶格介质波的横向极化），其空间旋度与时间导数自动垂直。三者两两垂直，对应四维时空结构在平面波上的投影（图 4）。</p>
 
 <figure>
 <svg viewBox="0 0 680 296" width="100%" role="img">
@@ -221,12 +236,13 @@ $$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\parti
 <text x="340" y="236" text-anchor="middle" font-size="12" fill="#5F5E5A">E ⟂ B ⟂ k：空间轴与时间轴的正交在相位扰动上的投影</text>
 <text x="340" y="258" text-anchor="middle" font-size="12" fill="#5F5E5A">|E| = c|B| 来自 ω = ck；c = l_P / t_P，几何恒等式</text>
 </svg>
-<figcaption>图 4：平面波的三条正交轴。$|\mathbf{E}| = c|\mathbf{B}|$ 不是独立假设，它由色散关系 $\omega = ck$ 与光速的几何定义共同给出。</figcaption>
+<figcaption>图 4：平面波的三条正交轴。$|\mathbf{E}| = c|\mathbf{B}|$ 由色散关系 $\omega = ck$ 与光速的几何定义共同给出，无需独立假设。</figcaption>
 </figure>
 
+<p>电场的行为依有无源而异：静电场管喷（散度等于电荷），电磁波中的电场散度为零，喷不存在，只剩转（旋度由法拉第感应给出）。磁场始终管转。</p>
 <p>严格程度：正交关系的推导为严格结论，属标准波解分析。</p>
 
-<h2>六、严格程度分层</h2>
+<h2 id="s6">六、严格程度分层</h2>
 <table>
 <thead>
 <tr><th>结论</th><th class="lv">严格程度</th></tr>
@@ -235,9 +251,11 @@ $$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\parti
 <tr><td>无源组等于比安基恒等式，法拉第定律为曲率一致性条件</td><td class="lv lv-a">严格</td></tr>
 <tr><td>正交关系 $\mathbf{E}\perp\mathbf{B}\perp\mathbf{k}$ 的推导</td><td class="lv lv-a">严格</td></tr>
 <tr><td>实轴方向重定义等于局域规范变换（变换等价性）</td><td class="lv lv-a">严格</td></tr>
+<tr><td>规范对称性等于自主校准能力的冗余性（无需中央协调者）</td><td class="lv lv-a">严格</td></tr>
+<tr><td>$c = l_P/t_P$ 作为格距与格点耗时的比值（几何恒等式）</td><td class="lv lv-a">严格</td></tr>
 <tr><td>实轴方向场等于规范势</td><td class="lv lv-b">条件性命题</td></tr>
 <tr><td>光等于感知-校正链的传播</td><td class="lv lv-b">条件性命题</td></tr>
-<tr><td>光速等于格点延迟，$c = l_P/t_P$</td><td class="lv lv-b">条件性命题</td></tr>
+<tr><td>感知-校正链每格恰好耗时 $t_P$（光速由此落地）</td><td class="lv lv-b">条件性命题</td></tr>
 <tr><td>频率偏移等于实轴方向偏转的演化速率</td><td class="lv lv-b">条件性命题</td></tr>
 <tr><td>场局域性等于每个元相子的感知结构</td><td class="lv lv-b">条件性命题</td></tr>
 <tr><td>电流等于绕数结构的迁移</td><td class="lv lv-b">条件性命题（静态对应严格，动态待推）</td></tr>
@@ -246,8 +264,9 @@ $$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\parti
 <tr><td>最小曲率原理等于净值审计的动力学后果</td><td class="lv lv-c">纲领性主张</td></tr>
 </tbody>
 </table>
+<p class="note">注记：《电磁场的元相子几何》§8.1 曾把磁单极的拓扑排除判为严格，该判断依赖实轴方向场全局单值（$U(1)$ 丛平凡）这一隐含前提。《电磁场总论》2026-08-26 的诊断更正指出，若允许分区实轴方向场（非平凡丛），Dirac 磁单极可被容纳，电荷量子化获得 $qg_m/\hbar = n/2$ 的拓扑锁定。引用该结论时须带此前提，不宜当作无条件严格结果。</p>
 
-<h2>七、遗留问题</h2>
+<h2 id="s7">七、遗留问题</h2>
 <ol>
 <li><strong>校准作用量的完整形式</strong>：从感知-校正链动力学导出麦克斯韦有源方程，是有源组从纲领升级为定理的关键，也是整个电磁学攻坚的收敛点。</li>
 <li><strong>洛伦兹力机制</strong>：运动电荷在磁场中的偏转 $\mathbf{F} = q\mathbf{v}\times\mathbf{B}$ 如何从绕数结构与涡旋线的耦合涌现。</li>
@@ -257,7 +276,7 @@ $$\frac{\partial^2\alpha}{\partial t^2}+\frac{1}{\tau_{\text{corr}}}\frac{\parti
 <li><strong>紫外预言待检验</strong>：洛伦兹破坏首阶项 $\delta\omega/\omega \sim -(E/E_P)^2$，立方各向异性 $[100]:[110]:[111] = 6:3:2$，由粒性侧格点结构决定。</li>
 </ol>
 
-<h2>八、出处</h2>
+<h2 id="s8">八、出处</h2>
 <ul class="refs">
 <li>[[电磁场的元相子几何：麦克斯韦方程组的双重几何来源]]（2026-08-13 定稿，2026-08-14 增补 §8.1 磁铁与磁单极）</li>
 <li>[[电磁场总论：元相子几何视角的完整图景]]（总结文档）</li>
@@ -288,8 +307,8 @@ function xOf(n){ return 24+(W-48)*n/(N-1); }
 function draw(){
   if(!W) resize();
   ctx.clearRect(0,0,W,H);
-  var baseY=H*0.76, cy=baseY-105, A=0.55, sigma=4.2, lam=5.0, span=N+10;
-  var nc=((t%span)+span)%span-5;
+  var baseY=H*0.76, cy=baseY-105, A=0.55, sigma=4.2, lam=5.0, span=N+34, pad=17;
+  var nc=((t%span)+span)%span-pad;
   var al=[],i;
   for(i=0;i<N;i++){ var d=i-nc; al[i]=A*Math.exp(-(d*d)/(2*sigma*sigma))*Math.cos(2*Math.PI*d/lam); }
   ctx.beginPath(); ctx.moveTo(xOf(0),cy); ctx.lineTo(xOf(N-1),cy);
@@ -308,16 +327,21 @@ function draw(){
     ctx.beginPath(); ctx.moveTo(x,baseY); ctx.lineTo(x+13*Math.cos(ang),baseY+13*Math.sin(ang));
     ctx.strokeStyle=near?'#993C1D':'#5F5E5A'; ctx.lineWidth=1.4; ctx.stroke();
   }
+  var onChain=(nc>=0&&nc<=N-1);
   var xw=xOf(Math.min(N-1,Math.max(0,nc)));
-  ctx.beginPath(); ctx.moveTo(xw,cy-42); ctx.lineTo(xw,baseY+18);
-  ctx.setLineDash([3,3]); ctx.strokeStyle='#185FA5'; ctx.lineWidth=0.8; ctx.stroke(); ctx.setLineDash([]);
+  if(onChain){
+    ctx.beginPath(); ctx.moveTo(xw,cy-42); ctx.lineTo(xw,baseY+18);
+    ctx.setLineDash([3,3]); ctx.strokeStyle='#185FA5'; ctx.lineWidth=0.8; ctx.stroke(); ctx.setLineDash([]);
+  }
   ctx.font='12px system-ui,-apple-system,sans-serif';
   ctx.fillStyle='#5F5E5A';
   ctx.fillText('实轴方向偏转的分布',24,cy-50);
   ctx.fillText('晶格链：一个格点一个元相子，指针 = 实轴方向',24,H-8);
-  ctx.fillStyle='#185FA5';
-  ctx.fillText('波前：正在校正自己的格点',Math.min(W-190,xw+4),cy-50);
-  if(readEl){ var k=Math.max(0,nc); readEl.textContent='已接力 '+Math.round(k)+' 格 · 用时 '+Math.round(k)+' t_P'; }
+  if(onChain){
+    ctx.fillStyle='#185FA5';
+    ctx.fillText('波前：正在校正自己的格点',Math.min(W-190,xw+4),cy-50);
+  }
+  if(readEl){ var k=Math.min(N-1,Math.max(0,nc)); readEl.textContent='已接力 '+Math.round(k)+' 格 · 用时 '+Math.round(k)+' t_P'; }
 }
 function loop(ts){
   if(!last) last=ts;
@@ -331,6 +355,35 @@ speedEl.addEventListener('input',draw);
 resize();
 if(window.ResizeObserver) new ResizeObserver(resize).observe(cv);
 requestAnimationFrame(loop);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
+(function(){
+function render(){
+  if(!window.renderMathInElement) return false;
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'\\[',right:'\\]',display:true}
+    ],
+    throwOnError:false
+  });
+  return true;
+}
+if(!render()){
+  var tries=0;
+  var iv=setInterval(function(){
+    tries++;
+    if(render()||tries>20){
+      clearInterval(iv);
+      if(tries>20){ var e=document.getElementById('mferr'); if(e) e.style.display='block'; }
+    }
+  },150);
+}
 })();
 </script>
 </body>
