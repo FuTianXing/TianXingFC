@@ -437,3 +437,4 @@
 - **414.** `minimal_verification_growth_exponent_audit.py`： [[注记-生长指数三分之五的来源判识（第414条）：KZ 解空间、最简分数与上端紧配合|生长指数三分之五的来源判识：KZ 解空间、最简分数与上端紧配合]] （2026-09-26）
 - **415.** `minimal_verification_crystallization_scaling.py`： [[注记-结晶扩张相变的标度清点（第415条）：标准临界标度全判负与三分之五的机制域|结晶扩张相变的标度清点：标准临界标度全判负与三分之五的机制域]] （2026-09-26）
 - **416.** `minimal_verification_nucleation_seam_model.py`： [[注记-成核-接缝几何的最小模型（第416条）：alpha = 1 - q 标度定理与三分之五的几何靶|成核-接缝几何的最小模型：alpha = 1 - q 标度定理与三分之五的几何靶]] （2026-09-26）
+- **417.** `minimal_verification_q_source_audit.py`： [[注记-q 的来源清点（第417条）：稀释继承下界与校准保护分数|q 的来源清点：稀释继承下界与校准保护分数]] （2026-09-26）
