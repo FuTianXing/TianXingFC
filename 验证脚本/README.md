@@ -6,453 +6,431 @@
 - **运行方式**：在工作区根目录执行 `python 验证脚本/<脚本名>.py`；全部结果打印到终端，图存 `images/`（脚本内为绝对路径，工作区移动时需同步修改）
 - **状态**：三轮验证全部通过；脚本可复现（确定性计算，随机数种子固定）；2026-09-12 增补第 34 条（C1-0 初始化与测量装置）与第 35 条（振幅通道径向曲线与自由弛豫检验）
 
----
+---## 一、脚本清单（2026-09-25 改制为列表式索引）
 
-## 一、脚本清单（2026-09-25 改制为登记表）
-
-本清单原为 422 个条目的平铺正文（66.6 万字符），2026-09-25 改制为登记表：每条一行，细节落点在对应验证注记或 [[验证脚本/历史条目/历史条目-001-050|历史条目]] 分档文件（每 50 号一档，条目原文逐字保留，编号不回收，历史撞号保持原状）。检索方式：按脚本名、编号或主题词 grep 本表，命中后只读落点文件；历史条目文件用 grep 定位行号取段，勿整读。新条目登记规则见 AGENTS.md 数值验证脚本规范：完成一轮验证即在表末追加一行，编号取当前最大号之后，条目正文写进注记，本表只留一行。
-
-| 编号  | 脚本                                                                                               | 主题                                     | 日期         | 判据    | 详情落点                                                                |              |
-| --- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | ---------- | ----- | ------------------------------------------------------------------- | ------------ |
-| 1   | `minimal_verification_frame_tilt.py`                                                             | 标量版                                    | 2026-09-05 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 2   | `minimal_verification_so3_link.py`                                                               | SO(3) 链接变量版                            | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 3   | `minimal_verification_3plus1.py`                                                                 | 3+1 雏形                                 | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 4   | `minimal_verification_kink3d.py + minimal_verification_kink_hamiltonian.py`                      | kink 三维稳定性                             | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 5   | `minimal_verification_meff.py`                                                                   | m_eff 定量与色散形状                          | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 6   | `minimal_verification_conversion_wave_recheck.py`                                                | 预印本 §4.3 复核                            | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 7   | `minimal_verification_geodesic_response.py`                                                      | 测地响应线性与质量对齐                            | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 8   | `minimal_verification_mu_diagnosis.py`                                                           | μ 差异闭合                                 | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 9   | `minimal_verification_dislocation_pinning.py + minimal_verification_pinning_depth.py`            | 钉扎身份                                   | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 10  | `minimal_verification_relativistic_dispersion.py`                                                | 相对论色散完整验证                              | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 11  | `minimal_verification_ring_adjudication.py`                                                      | 环的裁决实验                                 | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 12  | `minimal_verification_scar_protection.py`                                                        | 疤的裁决实验                                 | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 13  | `非脚本条目`                                                                                          | 纠缠侧承载探路                                | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 14  | `minimal_verification_sector_dynamics.py`                                                        | 扇区约束动力学：两种绕数的裁决                        | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 15  | `minimal_verification_elastic_identity.py`                                                       | 弹性身份裁决                                 | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 16  | `minimal_verification_quantum_bridge_a.py`                                                       | 张量桥分段 a：SO(3) 标架 3+1 定量装配              | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 17  | `minimal_verification_quantum_bridge_b.py`                                                       | 张量桥分段 b：动态写入-波动方程与 $c_s = c$ 同一化       | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 18  | `minimal_verification_normal_field_wave.py`                                                      | 法线场动力学健康性判据                            | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 19  | `minimal_verification_geodesic_transport.py`                                                     | 法线场响应侧测地线平行输运判据                        | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 20  | `minimal_verification_elastic_balance.py`                                                        | 判据 A 语义同构核对：层位移场弹性平衡                   | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 21  | `minimal_verification_normalization_gm.py`                                                       | 归一化数值步：真实质量标定                          | 2026-09-10 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 22  | `minimal_verification_identification_multiplier.py`                                              | 识别式乘数：κ 的线性响应公式与唯一解定理                  | 2026-09-11 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 23  | `minimal_verification_shapiro_delay_channel.py`                                                  | 接力光速与 Shapiro 延迟通道                     | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 24  | `minimal_verification_vector_sector_parity.py`                                                   | 矢量扇区判据：奇偶通道与扇区选择                       | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 25  | `minimal_verification_twist_channel_source.py`                                                   | 法线轴静扭转通道：质量流源与偶极结构                     | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 26  | `minimal_verification_twist_coupling_normalization.py`                                           | 矢量块耦合归一化：写入系数与广义相对论同形                  | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 27  | `minimal_verification_selfconsistent_well_scaling.py`                                            | 自撑阱均匀标度：kink 自洽结构                      | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 28  | `minimal_verification_vector_constraint.py`                                                      | 矢量通道受约束性：静态约束是必要条件                     | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 29  | `minimal_verification_orientation_origin.py`                                                     | 取向项微观来源：由标量记录的时间导数自动给出                 | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 30  | `minimal_verification_radial_3d_scaling.py`                                                      | 自撑阱三维径向推广：四通道同齐次度                      | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 31  | `minimal_verification_tt_projection.py`                                                          | TT 投影：投影算子的构造与计数                       | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 32  | `minimal_verification_tt_projection_origin.py`                                                   | TT 投影微观来源：约束结构自动给出                     | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 33  | `minimal_verification_3plus1_hinge.py`                                                           | 3+1 铰链显式化：TT 扇区的演化方程闭合                 | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 34  | `minimal_verification_vortex_init_apparatus.py`                                                  | C1-0：涡旋初始化与横截面绕数测量装置                   | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 35  | `minimal_verification_amplitude_channel_ring.py`                                                 | 振幅通道下的涡旋环径向曲线与自由弛豫检验                   | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 36  | `minimal_verification_collision_taxonomy.py`                                                     | M2 生死闸门：相互作用分层判据的两协议可见度                | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 37  | `minimal_verification_single_system_sampling.py`                                                 | M4：单系统 Born 采样与相位均匀性检验                 | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 38  | `minimal_verification_layer_share.py`                                                            | M5：层位份额语义，相干份额作为位置概率                   | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 39  | `minimal_verification_measurement_basis.py`                                                      | M6：块分解唯一性，扇区操作刚性与局域不可见性                | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 40  | `minimal_verification_deficit_identity.py`                                                       | M7：波函数双重身份，全局相干代价与局域亏空预算的标度同一          | 2026-09-12 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 41  | `minimal_verification_superposition_domain.py`                                                   | M8：叠加适用域，线性区的深度与缺陷形成阈                  | 2026-09-13 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 42  | `minimal_verification_two_lobe_carrier.py`                                                       | M7b 两瓣叠加态单场承载的最小验证：份额折叠、挫折弦与相位通道       | 2026-09-14 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 43  | `minimal_verification_tsirelson_gate_v0.py`                                                      | P1-29 v0 生死闸门：纠缠锁定对、经典圈对照与可见度阈         | 2026-09-14 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 44  | `minimal_verification_coupling_reopen.py`                                                        | 弱版耦合重开的最小验证：一阶零与二阶非零的结构                | 2026-09-15 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 45  | `minimal_verification_c1_protocols.py`                                                           | C1-1：边界与协议确立，开放边界吸收与双协议一致              | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 46  | `minimal_verification_c1_morphology.py`                                                          | C1-2：形态枚举，位错环、畴壁与点的存在性与稳定性             | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 48  | `minimal_verification_c1_derrick.py`                                                             | C1-3：Derrick 复查，E(R) 标度律、钉扎临界曲线与脱钉阈值   | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 49  | `minimal_verification_c1_anchor.py`                                                              | C1-4：锚核筛选，格点内锁定的驻留窗口、宽度核对与窗口互斥         | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 50  | `minimal_verification_c1_bodyterm.py`                                                            | C1-4b：体项可行性判定，泡壁环稳定条件的精确化与体项扫描         | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 51  | `minimal_verification_c1_locked_pocket.py`                                                       | C1-4c：锁定缺失泡的构造判定，正定泛函的界面能与负线项的可达性      | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-001-051                                            | 条目 001-051]] |
-| 52  | `minimal_verification_stress_channel.py`                                                         | G2-L1 应力通道：T^ij 的计数、迹耦合与源侧的 O(v^2) 要求  | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 53  | `minimal_verification_channel_normalization.py`                                                  | G2-L2 三通道归一化一致性：单入口、4 pi 与外部锚          | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 54  | `minimal_verification_low_energy_window.py`                                                      | G2-L3 等价声明的精度边界：低能窗口与偏离量级              | 2026-09-16 | —     | [[注记-幅度基数与E_P口径的两层分离                                                | 注记]]         |
-| 55  | `minimal_verification_source_convention.py`                                                      | G2-L1b 源的口径：theta 的源取 T_00 加应力迹        | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 56  | `minimal_verification_tt_action.py`                                                              | G4 第二半第一块：TT 扇区二次作用量与无质量自旋 2 标准形式的匹配   | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 57  | `minimal_verification_kinetic_flow.py`                                                           | 张量桥 d 动能流项：动量密度的相位梯度形式与 γ 对应           | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 58  | `minimal_verification_helicity.py`                                                               | G2 具名缺口之二：螺旋度 ±2 的显式确认                 | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 59  | `minimal_verification_tmunu_assembly.py`                                                         | 张量桥 d 装配轮：应力项的混合形式与 T^{00} 完整场侧表达式     | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 60  | `minimal_verification_winding_leakage.py`                                                        | 量子层 Q4：绕数跨扇区泄漏的最小阶数与尺寸标度               | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 61  | `minimal_verification_zn_sectors.py`                                                             | 定向口径下的 Z_N 扇区重建：绕数算符代数、简并 N² 与 Q4 复验   | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 62  | `minimal_verification_bh4a_max_mass.py`                                                          | BH4a 支撑失效的最大质量零阶判据：临界质量的结构与量级带         | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 63  | `minimal_verification_string_deform.py`                                                          | 量子层 Q5：弦算符的可形变完成，同调不变、局域算子标量化与最小支撑     | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 64  | `minimal_verification_toric3d_structure.py`                                                      | 三维结构核对：定向口径在 3-环面上的对易代数与绕环膜清单          | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 65  | `minimal_verification_marginal_operators.py`                                                     | P4-31 边际洛伦兹算符：四维不变量枚举与对称性禁止            | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 66  | `minimal_verification_toric3d_spectrum.py`                                                       | 三维谱与局域平凡性：3-环面的简并 N³ 与局域算子分类           | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 67  | `minimal_verification_elastic_isotropy.py`                                                       | P4-31 子项：框架格点的弹性常数与各向同性关系              | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 68  | `minimal_verification_cpt_odd_operators.py`                                                      | P4-31 子项二：CPT 奇边际算符的对称性地位              | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 69  | `minimal_verification_autoclose_trace.py`                                                        | BH3-5 留痕判据一维先导：自动闭合几何与结构留痕             | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 70  | `minimal_verification_parity_symmetry.py`                                                        | P4-31 前提：文档更新式的宇称精确性                   | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 71  | `非脚本条目`                                                                                          | 对照协议注记，无脚本                             | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 72  | `minimal_verification_toric_boundary.py`                                                         | 边界模式轮：缠绕守恒边界的量子层形态与总通量锁定               | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 73  | `minimal_verification_oneloop_marginal.py`                                                       | P4-31 其三：一圈自能对边际系数的生成量                 | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 74  | `minimal_verification_toric_boundary_3d.py`                                                      | 边界模式轮三维：立方体样本的闭合面关系与周界回路锁定             | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 75  | `minimal_verification_state_graph.py`                                                            | 离散化保护的否定：相位量子化的状态图全连通与多圈锁定退化           | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 76  | `minimal_verification_composite_width.py`                                                        | 复合模型轮：FK kink 宽度参数区扫描                  | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 77  | `minimal_verification_reopen_realfield.py`                                                       | 弱版方向一：真实记录构型下的失稳量级与驻波门槛                | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 78  | `minimal_verification_ring_fourpiece_recheck.py + minimal_verification_ring_collapse_recheck.py` | 裁决实验四件套复跑                              | 2026-09-06 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 79  | `minimal_verification_fermion_anomaly.py`                                                        | P4-31 前置项：极简费米子扇区模型，判负记录               | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 80  | `minimal_verification_bond_identity.py`                                                          | 键身份轮：键变量取实轴方向差的两读法对照与保护前提              | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 81  | `minimal_verification_complex_structure_op.py`                                                   | 复结构序参量的显式形式化第一轮                        | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 82  | `minimal_verification_amplitude_composition.py`                                                  | 振幅合成轮：宏观振幅 = 份额开方乘块内相干度                | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 83  | `minimal_verification_amplitude_emergence.py`                                                    | 振幅涌现轮：从固定模单体集合与相位分布导出局部振幅场             | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 84  | `minimal_verification_anisotropy_family.py`                                                      | 各向异性因子同族性的交叉核对，部分判负                    | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 85  | `minimal_verification_parity_banding.py`                                                         | 奇偶分档的精确形态：带边锁定、显式本征矢与非锁定的匹配条件          | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 86  | `minimal_verification_amplitude_phase_joint.py`                                                  | 相位-振幅联测轮：同一构型里的绕数、宽度与质量三读              | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 87  | `minimal_verification_m4d1_3d_config.py`                                                         | M4-D1：三维构型读数，耦合失稳的一维读数三维化              | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 88  | `minimal_verification_m4d2_trigger_race.py`                                                      | M4-D2：两路触发的竞争，交叉写入速率与三维退化              | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 89  | `minimal_verification_m4d3_horizon_write.py`                                                     | M4-D3：视界线自洽性与写入判据                      | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 90  | `minimal_verification_m6_s2_scales.py`                                                           | M6-S2 可做部分：单位链、坍缩驱动的斜坡速率与交叉判定          | 2026-09-17 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 91  | `minimal_verification_sampling_unbiasedness.py`                                                  | 采样无偏性轮：计数口径决定偏置                        | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 92  | `minimal_verification_continuous_limit_bandlimit.py`                                             | 连续极限与带限轮：尼奎斯特界与晶格带边的作用域                | 2026-09-18 | 11/11 | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 93  | `minimal_verification_self_triggered_sampling.py`                                                | 自触发采样轮：相位临界条件给出时钟、速率不变性与噪声标度           | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 94  | `minimal_verification_collision_flux_weighting.py`                                               | 碰撞通量加权轮：锁速载子口径闭合，包络群速口径的偏差与放大          | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 95  | `minimal_verification_flux_weighting_3d_defect.py`                                               | 通量加权的三维各向异性与局域长度轮：方向依赖与尺度不变性           | 2026-09-18 | 8/8   | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 96  | `minimal_verification_carrier_clock_vs_excitation.py`                                            | 载子钟与激发数轮：率口径给不出份额                      | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 97  | `minimal_verification_carrier_identity_breathing.py`                                             | 载子身份与呼吸模式轮：计数跟时间平均份额走                  | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 98  | `minimal_verification_carrier_occupancy_wkb.py`                                                  | 独立载子经典占据轮：经典占据给不出份额                    | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 99  | `minimal_verification_semiclassical_excited_modes.py`                                            | 高激发态半经典对照轮：体区移交经典、转折点带留给波性             | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 100 | `minimal_verification_collision_counting_bias.py`                                                | 碰撞计数轮：按碰撞计不等于按激发计，机制面收束                | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 101 | `minimal_verification_t1b2_frame_sector.py`                                                      | T1b-2 标架扇区空间拓扑荷轮：整值在 SO(3) 层不可见、双覆盖给 Z | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-052-101                                            | 条目 052-101]] |
-| 102 | `minimal_verification_m6_s2r_tracking.py`                                                        | M6-S2R 斜坡复核：记录跟随的阻尼判据                  | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 103 | `minimal_verification_counting_rule_emergence.py`                                                | 计数规则涌现轮：受激发射给份额、自发发射给均匀本底              | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 104 | `minimal_verification_m6_s2g_damping.py`                                                         | M6-S2G γ 取数可做部分：最小模型的守恒性与观测上限          | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 105 | `minimal_verification_spontaneous_term_derivation.py`                                            | 自发项导出轮：本底来自时钟折返                        | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 106 | `minimal_verification_lv_coefficient_matching.py`                                                | 框架侧有效算符系数的导出：破缺参数到 SME 系数的精确换算         | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 107 | `minimal_verification_light_deflection_local_frame.py`                                           | 光在静态倾角场中的偏折：局域轴读法与全局轴读法                | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 108 | `minimal_verification_t1b2a_frame_tetrad_4d.py`                                                  | T1b-2a 标架扇区四维离散口径与非阿贝尔推广               | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 109 | `minimal_verification_i1_domain_wall_w2.py`                                                      | 接口判定 I-1：畴壁与双覆盖标签的一致性由端点决定             | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 110 | `minimal_verification_record_ruler_coupling.py`                                                  | 记录场是否改写局域尺：键能模型上的读数                    | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 111 | `minimal_verification_ruler_coupling_candidates.py`                                              | 尺-记录耦合候选筛查：局部键能项给不出全值                  | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 112 | `minimal_verification_lambda_light_deflection.py`                                                | 空间系数 lambda 的光偏折锚：偏折角随 lambda 的线性律     | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 113 | `minimal_verification_gravity_channel_lock.py`                                                   | 引力通道第二重锁：比值型组合归一化无关且恒零                 | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 114 | `minimal_verification_tidal_ricci_lambda.py`                                                     | GV1 潮汐项与里奇对应：真空条件把 lambda 逼到 1         | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 115 | `minimal_verification_covariant_wave_form.py`                                                    | GV4 协变波动形式：坐标相速恒等式与联络项                 | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 116 | `minimal_verification_gv6_vector_sector_gate.py`                                                 | GV6 矢量扇区的定量门：救拖曳要 O(1) 强度的时间反演奇通道      | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 117 | `minimal_verification_rebuild_1d.py`                                                             | 本体层重建阶段 2：链接型写入的一维最小模型                 | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 118 | `minimal_verification_registration_efficiency.py`                                                | 登记效率轮：周期结构显形需强耦合                       | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 119 | `minimal_verification_rebuild_3d.py`                                                             | 本体层重建阶段 3 批一：三维稳态格林函数、谱与因果前沿           | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 120 | `minimal_verification_rebuild_3d_batch2.py`                                                      | 本体层重建阶段 3 批二：无迹锁、弹性常数与矢量扇区             | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 121 | `minimal_verification_full_quantization.py`                                                      | 完全量子化轮：谐振子格点在算符层面没有 +1 本底              | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 122 | `minimal_verification_m6_s1_field.py`                                                            | M6-S1 可做部分：真实场构型：写入律与容量裁剪              | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 123 | `minimal_verification_clock_operator_check.py`                                                   | 声明式检查轮：本底要什么算符、给出什么签名                  | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 124 | `minimal_verification_collision_writes_record.py`                                                | 碰撞即写入轮：写入时刻等于折返时刻、本底等于碰撞率、稀释统计 $Q = -\ | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 125 | `minimal_verification_m6_s3_spectrum.py`                                                         | M6-S3 可做部分：真实场构型的谱读数与 lambda 扫描        | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 126 | `minimal_verification_rebuild_stage4_lambda.py`                                                  | 本体层重建阶段 4 批一：识别式重跑与 $\lambda$ 导出的读数    | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 127 | `minimal_verification_write_operator.py`                                                         | 写入算符轮：过轴即写、写即转移、反作用落在被采样对象             | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 128 | `minimal_verification_write_operator_n_plus_1.py`                                                | 写入算符 $n+1$ 轮：每过轴写 $n+1$ 笔              | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 129 | `minimal_verification_m6_s21b_dispersion.py`                                                     | M6-S2-1b 路线一：本构常数比 K/J 的色散路线换算与格点核对    | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 130 | `minimal_verification_detector_deadtime.py`                                                      | 探测器死时间与关联轮：两种亏欠同向、标度可分                 | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 131 | `minimal_verification_deadtime_correlation.py`                                                   | 死时间关联效应轮：洞宽定死时间、凹陷深度定效率                | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 132 | `minimal_verification_write_operator_3d.py`                                                      | 写入算符三维与缺陷轮：逐站点直和、底噪按站点数标度、绕数缺陷给整周期滑移   | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 133 | `minimal_verification_m6_s3n_nonlinear.py`                                                       | M6-S3N 非线性在场一读：斜坡驱动的交错失稳与线性时钟定性对照      | 2026-09-18 | 5/5   | [[注记-M6-S3N（非线性在场一读）：斜坡驱动的交错失稳与线性时钟定性对照                             | 注记]]         |
-| 134 | `minimal_verification_frame_curvature.py`                                                        | 标架场曲率轮：面元环量局域在核、离散 Stokes 成立、半整数绕数要求一条 | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 135 | `minimal_verification_m6_s21b_elastic.py`                                                        | M6-S2-1b 路线二：弹性本构路线的双通道换算桥接与弹性定律核对     | 2026-09-18 | 4/4   | [[注记-M6-S2-1b（路线二）：弹性本构路线的双通道换算桥接与弹性定律核对                            | 注记]]         |
-| 136 | `minimal_verification_string_observability.py`                                                   | 弦的可观测性轮：切割线不可观测、墙只活在棱层                 | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 137 | `minimal_verification_m6_direction_lambda.py`                                                    | M6 方向-λ 定向核查：翻转线的小-λ 渐近与 kappa_phi 候选对 | 2026-09-19 | 3/3   | [[注记-M6-方向-λ核查：耦合系数翻转线的小-λ 渐近与 κ_φ 候选的对齐                            | 注记]]         |
-| 138 | `minimal_verification_m6_dictionary_reconciliation.py`                                           | M6 字典核对：归一化口径对齐、J 惯性反推与识别项可推导边界        | 2026-09-19 | 4/4   | [[注记-M6-字典对账：归一化口径对齐、J 惯性反推与识别项的可推导边界                               | 注记]]         |
-| 139 | `minimal_verification_write_sector_compatibility.py`                                             | 写入算符与绕数扇区相容性轮：P3-13 第一步                | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 140 | `minimal_verification_sector_label_operator.py`                                                  | 扇区标签算符轮：与写对易、整数谱与提升关系、对易子的选择定则         | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 141 | `minimal_verification_full_deflection_angle.py`                                                  | 满偏角的极限地位：机制失义边界、视界过零与双覆盖锚              | 2026-09-19 | —     | [[注记-满偏角的极限地位：机制失义边界、视界过零与双覆盖锚（J1至J5）                               | 注记]]         |
-| 142 | `minimal_verification_defect_motion_topology.py`                                                 | 缺陷动力学耦合轮：站点层拓扑阻塞、阈值穿越等于电荷对生成、棱层插值与半荷分裂 | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 143 | `minimal_verification_motion_two_sided.py`                                                       | 运动双侧轮：连续累加与离散绕数在同一条过程上                 | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 144 | `minimal_verification_transition_rate.py`                                                        | 跃迁率轮：跃迁时长、跃迁率上界与记录流分辨率                 | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 145 | `minimal_verification_system_factor_1365.py`                                                     | 系统因子 1.365 的剖分：截断、离散色散与读数形状            | 2026-09-19 | —     | [[注记-系统因子1.365的剖分：截断、离散色散与读数形状（S1至S4）                               | 注记]]         |
-| 146 | `minimal_verification_full_quantization_3d.py`                                                   | 完全量子化三维轮：真振子的两通道速率律、截断收敛与反作用           | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 147 | `minimal_verification_trace_s_channel.py`                                                        | 迹型 s 系数的 O(1) 因子：桥因子的身份与两条标定           | 2026-09-19 | —     | [[注记-迹型s系数的O(1)因子：桥因子的身份与两条标定（T1至T4）                                | 注记]]         |
-| 148 | `minimal_verification_relation_layer_algebra.py`                                                 | 关系层相位代数轮：P3-13 第三步、路线乙第一波              | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 149 | `minimal_verification_fermion_channel_window.py`                                                 | 费米子通道第一轮：宇称奇源与 m_* 窗口                  | 2026-09-19 | —     | [[注记-费米子通道第一轮：复合模型的宇称奇源与 m_★ 窗口（F1至F4）                              | 注记]]         |
-| 150 | `minimal_verification_relation_layer_born.py`                                                    | 关系层 Born 规则轮：P3-13 第四步、R7 紧口径与 R1 轻量   | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 151 | `minimal_verification_relation_layer_carrier.py`                                                 | 关系层载体与内积轮：P3-13 第五步、路线乙必答项             | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-102-151                                            | 条目 102-151]] |
-| 152 | `minimal_verification_relation_layer_analytic.py`                                                | 载体与内积解析形式轮：P3-13 第六步                   | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 153 | `minimal_verification_fermion_channel_coefficient.py`                                            | 费米子通道第二轮：T 奇耦合系数与能量分解                  | 2026-09-19 | —     | [[注记-费米子通道第二轮：复合模型的T奇耦合系数与能量分解（G1至G4）                               | 注记]]         |
-| 154 | `非脚本条目`                                                                                          | BH3-3 后续时标侧：格点退出完成时标与重标瞬时性             | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 155 | `minimal_verification_composite_window_crossing.py`                                              | 费米子通道第三轮：宽度窗口与洛伦兹窗口的交叉核对               | 2026-09-19 | —     | [[注记-费米子通道第三轮：宽度窗口与洛伦兹窗口的交叉核对（H1至H4）                                | 注记]]         |
-| 156 | `minimal_verification_relation_layer_convergence.py`                                             | P3-13 收尾轮：份额恒等式的方差形式与连续极限的收敛率          | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 157 | `minimal_verification_fermion_channel_3d_partition.py`                                           | 费米子通道第四轮：三维面壁的能量均分核对                   | 2026-09-19 | —     | [[注记-费米子通道第四轮：三维面壁的能量均分核对（P1至P4）                                    | 注记]]         |
-| 158 | `非脚本条目`                                                                                          | BH3-3 后续三维衔接：层收缩静态痕迹验证                 | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 159 | `非脚本条目`                                                                                          | G4-1：γ 频率依赖，常数口径的适用带与记忆时间上界            | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 160 | `minimal_verification_t0_reading_discriminator.py`                                               | 识别式阶段 1 第一轮：判定项读数化                     | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 161 | `minimal_verification_weyl_pair.py`                                                              | 魏尔对与海森堡衔接轮：时钟-移位魏尔关系、提升关系的接缝分解与不确定性界的衔 | 2026-09-19 | —     | [[注记-魏尔对与海森堡衔接轮的最小验证：时钟-移位魏尔关系、提升关系的接缝分解与不确定性界的衔接条件                 | 注记]]         |
-| 162 | `非脚本条目`                                                                                          | BH6 大振幅非线性首轮：精确异类势下的失稳时钟与两通道核对         | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 163 | `minimal_verification_selfconsistent_channels_a1.py`                                             | 识别式阶段 2 第一轮：自撑阱四通道显式权重与系数族             | 2026-09-19 | —     | [[注记-识别式阶段2第一轮：自撑阱四通道显式权重与系数族（A1四判据）                                | 注记]]         |
-| 164 | `minimal_verification_a2_consistency.py`                                                         | 识别式阶段 2 第二轮：A2 与判据 P、S 的逐项比对           | 2026-09-19 | —     | [[注记-识别式阶段2第二轮：A2与判据P、S的逐项比对                                        | 注记]]         |
-| 165 | `minimal_verification_seam_continuum.py`                                                         | 接缝项连续极限轮：有效接缝项 = Z 乘切割连接相干、三种区制与切割自由度  | 2026-09-19 | —     | [[注记-接缝项连续极限轮的最小验证：有效接缝项 = Z 乘切割连接相干、三种区制与切割自由度                     | 注记]]         |
-| 166 | `minimal_verification_b2_product_degeneracy.py`                                                  | 识别式阶段 3 第一轮：退化定理的读数化                   | 2026-09-19 | —     | [[注记-识别式阶段3第一轮：退化定理的读数化（B2四判据）                                      | 注记]]         |
-| 167 | `minimal_verification_position_momentum.py`                                                      | P3-10 首轮：位置动量算符的边界项形式、位置矩阵元的 Z 分之一常数 p | 2026-09-19 | —     | [[注记-P3-10 首轮的最小验证：位置动量算符的边界项形式、位置矩阵元的 Z 分之一常数 pi 与两种接缝的区分          | 注记]]         |
-| 168 | `minimal_verification_b1_operator_homogeneity.py`                                                | 识别式阶段 3 第二轮：B1 自撑恒等式的三维径向细化            | 2026-09-19 | —     | [[注记-识别式阶段3第二轮：B1自撑恒等式的三维径向细化                                       | 注记]]         |
-| 169 | `非脚本条目`                                                                                          | BH6 后续轮：时域触发的平衡背景重设与静态-动态一致性           | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 170 | `minimal_verification_spectrum_unfolding.py`                                                     | 连续谱解卷（P3-14）首轮：环链离散谱与开链连续谱、最大间距常数 pi 与 | 2026-09-19 | —     | [[注记-连续谱解卷（P3-14）首轮的最小验证：环链离散谱与开链连续谱、最大间距常数 pi 与边界项的 Z 平方收敛         | 注记]]         |
-| 171 | `minimal_verification_zero_point_energy.py`                                                      | 三-4 零点能因子首轮：折返点计数与 delta 外推            | 2026-09-19 | —     | [[注记-三-4 零点能因子首轮的最小验证：折返点计数（软四分之一、硬二分之一）与 delta 外推到二分之一             | 注记]]         |
-| 172 | `minimal_verification_zero_point_asymptotic.py`                                                  | 三-4 解析余项轮：作用量口径的折返点 1/2 与协议相关的拟合系数     | 2026-09-19 | —     | [[注记-三-4 解析余项轮的最小验证：作用量口径的折返点二分之一、协议相关的拟合系数与两几何的闭式谱                 | 注记]]         |
-| 173 | `minimal_verification_mathieu_asymptotic.py`                                                     | 三-4 Mathieu 渐近轮：$a_n$ 的 $(2n+1)$ 结构与 $ | 2026-09-19 | —     | [[注记-三-4 Mathieu 渐近轮的最小验证：a_n 的 (2n+1) 结构、p 表象 WKB 偏移与有限 N 的表象恒等式失效 | 注记]]         |
-| 174 | `minimal_verification_correlation_distance.py`                                                   | 二-1 首轮：锁定档相位差方差与格距无关、对照档线性增长           | 2026-09-19 | —     | [[注记-二-1 首轮的最小验证：锁定档相位差方差与格距无关、对照档线性增长与显式函数                         | 注记]]         |
-| 175 | `minimal_verification_correlation_locking_origin.py`                                             | 二-1 解析段：锁定场的两层口径与相关长度                  | 2026-09-19 | —     | [[注记-二-1 解析段的最小验证：锁定场的两层口径（增量层由缺陷密度、场层由锁定质量）与相关长度                   | 注记]]         |
-| 176 | `minimal_verification_theta_term_interface.py`                                                   | theta 型项对界面能的贡献：平面壁恒零与全导数结构            | 2026-09-19 | —     | [[注记-theta型项对界面能的贡献：平面壁恒零与全导数结构（K1至K4）                              | 注记]]         |
-| 177 | `minimal_verification_bh33_3d_sat_trace.py`                                                      | BH3-3 后续（饱和档三维痕迹）：容量裁剪在场的层收缩痕迹读数、质量项容量 | 2026-09-19 | —     | [[注记-BH3-3后续（饱和档三维痕迹）：容量裁剪在场的层收缩痕迹读数与档位订正                           | 注记]]         |
-| 178 | `minimal_verification_feedback_interface.py`                                                     | 键能反馈的界面效应：反感分支、软化分支与刚度下限               | 2026-09-19 | —     | [[注记-键能反馈的界面效应：反感分支、软化分支与刚度下限（L1至L4）                                | 注记]]         |
-| 179 | `minimal_verification_correlation_field_closedform.py`                                           | 二-1 第三段：场层相关函数的两点指数闭式与 xi_f 的窗口相关性     | 2026-09-19 | —     | [[注记-二-1 第三段的最小验证：场层相关函数的两点指数闭式与 xi_f 的窗口相关性                        | 注记]]         |
-| 180 | `minimal_verification_c1_softening_window.py`                                                    | C1 窗口算术：软化反馈的强度上限与所需驻留半径的定量对接          | 2026-09-19 | —     | [[注记-C1窗口算术：软化反馈的强度上限与所需驻留半径的定量对接                                   | 注记]]         |
-| 181 | `minimal_verification_c1_anchor_feedback_unified.py`                                             | C1 统一构型：锚核与反馈的合成规则判定与越零判死              | 2026-09-19 | —     | [[注记-C1统一构型：锚核与反馈的合成规则判定与越零判死                                       | 注记]]         |
-| 182 | `minimal_verification_correlation_field_analytic.py`                                             | 二-1 第四段：系数解析式、慢者取正与 xi_f 窗口漂移预测        | 2026-09-19 | —     | [[注记-二-1 第四段的最小验证：场层相关系数的解析式、慢者取正与 xi_f 窗口漂移的预测                     | 注记]]         |
-| 183 | `minimal_verification_correlation_entanglement.py`                                               | 二-1 第五段：显式函数 f(E_xy)、三档锁定值塌缩与对照档无平台排除  | 2026-09-19 | —     | [[注记-二-1 第五段的最小验证：显式函数 f(E_xy)、三档锁定值的塌缩与对照档的无平台排除                   | 注记]]         |
-| 184 | `minimal_verification_locked_frame_stabilizer.py`                                                | 二-1 第六段：锁定模的体系内来源（同调扇区标签、保护距离与条件恶化）    | 2026-09-19 | —     | [[注记-二-1 第六段的最小验证：锁定模的体系内来源（同调扇区标签、保护距离与条件恶化）                       | 注记]]         |
-| 185 | `非脚本条目`                                                                                          | BH6 可选后续（滑移与超满偏）：稳定性图谱与触发通道判定          | 2026-09-19 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 186 | `minimal_verification_direction_linkage.py`                                                      | 方向系数衔接与低能窗口口径更正：相位 $1/24$ 族、群速 $1/8$ 族 | 2026-09-19 | —     | [[注记-方向系数衔接与低能窗口口径更正                                                | 注记]]         |
-| 187 | `minimal_verification_amplitude_basis.py`                                                        | 幅度基数与 $E_P$ 口径的两层分离：$\sum n_a^4$ 三套取值与 | 2026-09-19 | —     | [[注记-幅度基数与E_P口径的两层分离                                                | 注记]]         |
-| 188 | `非脚本条目`                                                                                          | BH6 可选后续二轮（严格驻态族）：h 至 10 的驻态连续化、稳定性与剖面 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 189 | `minimal_verification_locked_mode_variance.py`                                                   | 二-1 第七段：共享分量方差的体系内来源（场层零模、求和规则与整体模余量）  | 2026-09-20 | —     | [[注记-二-1 第七段的最小验证：共享分量方差的体系内来源（场层零模、求和规则与整体模余量）                     | 注记]]         |
-| 190 | `minimal_verification_frame_variance_origin.py`                                                  | 二-1 第八段：整体模余量的体系内来源（锁定坐标涨落、同步相变门槛与两项合成 | 2026-09-20 | —     | [[注记-二-1 第八段的最小验证：整体模余量的体系内来源（锁定坐标涨落、同步相变门槛与两项合成）                   | 注记]]         |
-| 191 | `minimal_verification_constraint_removal.py`                                                     | 二-1 补缺轮：C4 的去约束对照（保留星项与面项饱和、去任一项出现线性依赖 | 2026-09-20 | —     | [[注记-二-1 补缺轮的最小验证：去约束对照（保留星项与面项饱和、去任一项出现线性依赖）                       | 注记]]         |
-| 192 | `minimal_verification_dynamic_write_covariant.py`                                                | G3 与判据 C 合轮：动态写入的协变形式与阻尼观测量级           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 193 | `非脚本条目`                                                                                          | BH6 后续三轮（大种子扫掠）：势垒门的幅度定位与落点分类          | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 194 | `minimal_verification_perfect_elasticity.py`                                                     | 完美弹性定理：等速硬点链的碰撞不变量与自由演化等价              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 195 | `minimal_verification_gamma_scale.py`                                                            | gamma 的量级判定：膨胀落位率候选与所需观测精度             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 196 | `minimal_verification_mode_frequency_origin.py`                                                  | 三-4 补缺轮：零点能里 omega_0 的体系内来源（晶格色散、带边与基模 | 2026-09-20 | —     | [[注记-三-4 补缺轮的最小验证：零点能里 omega_0 的体系内来源（晶格色散、带边与基模规模律）                | 注记]]         |
-| 197 | `minimal_verification_stagger_selection.py`                                                      | 交错基态的选择机制：锁相自维持与不构成吸引子                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 198 | `minimal_verification_unfolding_3d.py`                                                           | 三-3 补缺轮：连续谱解卷的三维构造（谱可加、逐方向魏尔关系与三条接缝的交线 | 2026-09-20 | —     | [[注记-三-3 补缺轮的最小验证：连续谱解卷的三维构造（谱可加、逐方向魏尔关系与三条接缝的交线结构）                 | 注记]]         |
-| 199 | `minimal_verification_unfolding_scattering.py`                                                   | 三-3 余项：解卷信息损失在散射侧的形式（离散谱的共振化与拓扑数据的丢失）  | 2026-09-20 | —     | [[注记-三-3 余项的最小验证：解卷信息损失在散射侧的形式（离散谱的共振化与拓扑数据的丢失）                     | 注记]]         |
-| 200 | `minimal_verification_kappa_interface.py`                                                        | P4-16 第一步第一轮：锁定耦合 kappa 的导出（保护距离通道、闭式与 | 2026-09-20 | —     | [[注记-P4-16 第一步第一轮的最小验证：锁定耦合 kappa 的导出（保护距离通道、闭式与门槛相容）               | 注记]]         |
-| 201 | `非脚本条目`                                                                                          | 光锥兼容性最小验证：视界=光锥闭合面                     | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-152-201                                            | 条目 152-201]] |
-| 202 | `非脚本条目`                                                                                          | gxx 强场完成形式判据：真空条件钉住与停滞律收束              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 203 | `minimal_verification_g6_link_synthesis.py`                                                      | G6：h00 = 2 theta 的显式链接合成               | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 204 | `minimal_verification_drag_channel.py`                                                           | G5/GV6：拖曳通道的微观来源与强度归一                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 205 | `minimal_verification_threshold_coefficient.py`                                                  | P4-16 第一步第二轮：门槛的精确系数（实测系数带、噪声方向与应用边界）  | 2026-09-20 | —     | [[注记-P4-16 第一步第二轮的最小验证：门槛的精确系数（实测系数带、噪声方向与应用边界）                     | 注记]]         |
-| 206 | `minimal_verification_vonmises_exact.py`                                                         | P4-16 第一步第三轮：自洽族的判定（低档两族不可分、高档两族皆失效）   | 2026-09-20 | —     | [[注记-P4-16 第一步第三轮的最小验证：自洽族的判定（低档两族不可分、高档两族皆失效）                      | 注记]]         |
-| 207 | `minimal_verification_mixture_exact.py`                                                          | P4-16 第一步第四轮：混合式的判别（低频档成立、均匀脱锁分量被否定）   | 2026-09-20 | —     | [[注记-P4-16 第一步第四轮的最小验证：混合式的判别（低频档成立、均匀脱锁分量被否定）                      | 注记]]         |
-| 208 | `minimal_verification_unlocked_shape.py`                                                         | P4-16 第一步第五轮：脱锁分量的形状（四阶矩为负排除同心族、形状仍未定案 | 2026-09-20 | —     | [[注记-P4-16 第一步第五轮的最小验证：脱锁分量的形状（四阶矩为负排除同心族、形状仍未定案）                   | 注记]]         |
-| 209 | `minimal_verification_kappa_bond_route.py`                                                       | P4-16 第一步第六轮（路线丙）：键能曲率通道的绝对标度（两口径判别与所需 | 2026-09-20 | —     | [[注记-P4-16 第一步第六轮的最小验证：键能曲率通道的绝对标度（两口径判别与所需曲率比）                     | 注记]]         |
-| 210 | `minimal_verification_kappa_from_state.py`                                                       | P4-16 路线甲第一轮：由整体态量测有效耦合（两个候选形式均被否）     | 2026-09-20 | —     | [[注记-P4-16 路线甲第一轮的最小验证：由整体态量测有效耦合（两个候选形式均被否）                        | 注记]]         |
-| 211 | `minimal_verification_projection_operator.py`                                                    | P4-16 路线甲第二轮：投射算符的显式构造（同步扇区投影与纯度给耦合）   | 2026-09-20 | —     | [[注记-P4-16 路线甲第二轮的最小验证：投射算符的显式构造（同步扇区投影与纯度给耦合）                      | 注记]]         |
-| 212 | `minimal_verification_sector_count.py`                                                           | P4-16 路线甲第三轮：扇区数 N_W = L 的独立导出（整数格点恒等式 | 2026-09-20 | —     | [[注记-P4-16 路线甲第三轮的最小验证：扇区数 N_W = L 的独立导出（整数格点恒等式与维度口径）              | 注记]]         |
-| 213 | `minimal_verification_sector_distribution.py`                                                    | P4-16 路线甲第四轮：扇区分布的动力学来源（绕数扩散、宇称结构与成对事件 | 2026-09-20 | —     | [[注记-P4-16 路线甲第四轮的最小验证：扇区分布的动力学来源（绕数扩散、宇称结构与成对事件混合）                 | 注记]]         |
-| 214 | `minimal_verification_pair_events.py`                                                            | P4-16 路线甲第五轮：成对事件的动力学来源（缺陷对同向穿越与密度阈值）  | 2026-09-20 | —     | [[注记-P4-16 路线甲第五轮的最小验证：成对事件的动力学来源（缺陷对同向穿越与密度阈值）                     | 注记]]         |
-| 215 | `minimal_verification_h0i_link_synthesis.py`                                                     | h0i 的链接级合成：动量读数项的度规组装与拖曳强度             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 216 | `minimal_verification_diffusion_mismatch.py`                                                     | P4-16 路线甲第六轮：扩散时间与失配宽度的对应（相干时间律与失配上界）  | 2026-09-20 | —     | [[注记-P4-16 路线甲第六轮的最小验证：扩散时间与失配宽度的对应（相干时间律与失配上界）                     | 注记]]         |
-| 217 | `minimal_verification_u2_coupling_stress.py`                                                     | U2 最小臂：耦合重开区的有效应力判决                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 218 | `minimal_verification_u2_transient.py`                                                           | U2-B 瞬态层：写-弛豫轨迹上的真空保持与停滞律轨迹            | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 219 | `minimal_verification_threshold_crossover.py`                                                    | P4-16 路线甲第八轮（裁决轮）：均匀化缺口裁决（阈值修正为 L^2/(4 | 2026-09-20 | —     | [[注记-P4-16 路线甲第八轮的最小验证：均匀化缺口裁决（阈值修正为 L^2 除以 4 pi，缺口消解为联合条件）         | 注记]]         |
-| 220 | `minimal_verification_bh7_w4_ceiling.py`                                                         | BH7-W4：封顶曲线（满偏逼近的连续极限与有效荷封顶）           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 221 | `minimal_verification_dragging_split.py`                                                         | 拖曳预言 4.6% 差的份额拆分：离散残差归零与敏感轴投影          | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 222 | `minimal_verification_bh7_w1_staggered.py`                                                       | BH7-W1：交错序参量读数（结构序破坏的微观判据）             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 223 | `minimal_verification_normal_transition.py`                                                      | 法向跃迁的公理级导出：触发侧的核对与方向侧的代价计数             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 224 | `minimal_verification_defect_speed.py`                                                           | P4-16 路线甲第九轮：缺陷穿越速度的微观值（色散给出的因果上限与长波极限 | 2026-09-20 | —     | [[注记-P4-16 路线甲第九轮的最小验证：缺陷穿越速度的微观值（色散给出的因果上限与长波极限）                   | 注记]]         |
-| 225 | `minimal_verification_bh7_w3_beyond.py`                                                          | BH7-W3：越界构型的探索读数（存在性与结构；稳定性口径未立）       | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 226 | `minimal_verification_write_allocation.py`                                                       | 写事件的分配细节：链接层面的显式规则与核的方向结构              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 227 | `minimal_verification_defect_mass_speed.py`                                                      | 缺陷质量与穿越速度的关系（第 224 条余项）：有质量晶格色散、$v_{\m | 2026-09-20 | —     | [[注记-缺陷质量与穿越速度的关系：晶格色散的质量缺口、v_max 的精确闭式与均匀化条件只被收紧                   | 注记]]         |
-| 228 | `minimal_verification_bh7_c1_interface.py`                                                       | BH7xC1 接口：缺陷密度代理读数（键级零缺陷与位点漂移的分离）      | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 229 | `minimal_verification_mass_mapping.py`                                                           | BH7 质量映射：读数到 M/m_P 的换算（r_h/2 链与单位链复核）  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 230 | `minimal_verification_bh7_w1_extended.py`                                                        | BH7-W1 开域：三轴外推（格点效应、时程稳定性与缺陷密度饱和）      | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 231 | `minimal_verification_lambda_value.py`                                                           | 耦合强度实际值：lambda = (m_delta/m_P)^2 换算链与  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 232 | `minimal_verification_c1_softmode_route.py`                                                      | C1 路线乙首判：软模承载宽度的能量竞争                   | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 233 | `minimal_verification_c1_softmode_ring.py`                                                       | C1 路线乙第二判：三维环的驻留与脱钉复核                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 234 | `minimal_verification_locking_gap.py`                                                            | 锁定帧的谱隙独立核算：横模谱隙等于回拉份额、门槛为谱隙的倍数与稳定子 gap | 2026-09-20 | —     | [[注记-锁定帧的谱隙独立核算：横模谱隙等于回拉份额、门槛为谱隙的倍数与稳定子 gap 的不同源                    | 注记]]         |
-| 235 | `minimal_verification_unlocked_shape_2.py`                                                       | P4-16 第一步第七轮：脱锁分量的形状续轮（四阶矩的负号是单快照涨落、形状 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 236 | `minimal_verification_threshold_closedform.py`                                                   | P4-16 第一步第八轮：门槛系数的闭式口径换算与第 206 条族判别的改判 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 237 | `minimal_verification_threshold_crosscheck.py`                                                   | P4-16 第一步第九轮：门槛带的跨口径对照（自洽参照系压低有效方差 9%  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 238 | `minimal_verification_defect_dynamics_d1.py`                                                     | 缺陷动力学线 D-1：含锁定势的等速硬点链（碰撞不变量与自由演化等价存活、等 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 239 | `minimal_verification_defect_dynamics_d2.py`                                                     | 缺陷动力学线 D-2：连续极限与色散（涨落缺口与孤子质量的分工、第 227  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 240 | `minimal_verification_defect_dynamics_d3.py`                                                     | 缺陷动力学线 D-3：质量与迁移率（终端速度律、响应质量等于形状范数与三质量 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 241 | `minimal_verification_c1_quartic_route.py`                                                       | C1 路线甲筛：四次项在标量载体上的 Derrick 标度与判负       | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 242 | `minimal_verification_c1_protection_transplant.py`                                               | C1 保护层可搬用性判定：弦算符结构与到边界的弦               | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 243 | `minimal_verification_c1_assembly.py`                                                            | C1-6 组装轮：三层复合位错粒子的哈密顿量组装与参数区核对         | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 244 | `minimal_verification_c1_assembly_3d.py`                                                         | C1-6 三维版：线缺陷扇区的绕数衰减与保护层前提              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 245 | `minimal_verification_w4_mass_density.py`                                                        | 张量桥 d 的 W4 通路：静质量密度与振幅亏损的标度关系          | 2026-09-16 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 246 | `minimal_verification_m6_s21_lambda_routes.py`                                                   | M6-S2-1 补：耦合系数 lambda 的多途径提取           | 2026-09-18 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 247 | `minimal_verification_calibration_channel.py`                                                    | 校准通道的动力学形式：相位表扇区的扩散型弛豫与分扇区条件           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 248 | `minimal_verification_kappa_scale.py`                                                            | kappa 的微观值：候选阶梯、结构上界与可观测性判定            | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 249 | `minimal_verification_elasticity_axiom.py`                                                       | 完美弹性的公理级形式化：恢复系数恒为一与不变量守恒              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 250 | `minimal_verification_gamma_H0_mechanism.py`                                                     | gamma 与落位率的机制性联系：两条候选机制的判定             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 251 | `minimal_verification_momentum_reading.py`                                                       | 动量读数项的第一原理：逐拍写入的协变完备化与拖曳强度             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-202-251                                            | 条目 202-251]] |
-| 252 | `minimal_verification_diffusion_rate.py`                                                         | P4-16 路线甲第七轮：扩散率的微观来源（缺陷通量的因果上限与均匀化条件的 | 2026-09-20 | —     | [[注记-P4-16 路线甲第七轮的最小验证：扩散率的微观来源（缺陷通量的因果上限与均匀化条件的比较）                 | 注记]]         |
-| 253 | `minimal_verification_tt_origin_3d.py`                                                           | 分段 c 第四环：三维约束结构与张量块计数                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 254 | `minimal_verification_defect_dynamics_d4.py`                                                     | 缺陷动力学线 D-4 消费式接口轮：与 C1 线的口径映射与参数区间不相交  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 255 | `minimal_verification_defect_dynamics_d5.py`                                                     | 缺陷动力学线 D-5 接口轮：缺陷过轴一笔、与包络份额的配对形式、两个速度上 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 256 | `minimal_verification_defect_dynamics_d6.py`                                                     | 缺陷动力学线 D-6：密度-质量-能量关系式与 CMB 重子密度的可代入入口 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 257 | `minimal_verification_defect_dynamics_d7.py`                                                     | 缺陷动力学线 D-7 最小实现半：孤子扇区的最小量子化、离散钉扎读数与三维形 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 258 | `minimal_verification_bh7_rhob_mechanism.py`                                                     | BH7 线 ρb 机制归属：反相核与切断读数                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 258 | `minimal_verification_pinning_lorentz_tension.py`                                                | 钉扎-洛伦兹张力轮：格点钉扎的偏好参考系效应与实验约束的对照         | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 259 | `minimal_verification_c1_w4_wave_side_width.py`                                                  | C1-6 W4 轮：宽度的波性侧承载（软模关联长度与转换波有效波长）     | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 259 | `minimal_verification_born_criterion_scale.py`                                                   | Born 判据尺度读法轮：三种能隙读法与失效阈值               | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 260 | `minimal_verification_shape_factor.py`                                                           | 描述项形状因子轮：有效相互作用的程长与振幅标度                | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 261 | `minimal_verification_c1_w12_3d.py`                                                              | C1-6 W1/W2 三维版：保护结构在三维线缺陷构型上的复核        | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 261 | `minimal_verification_two_soliton_relax.py`                                                      | 精确双孤子松弛轮：振幅的确认与三项登记                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 262 | `minimal_verification_tail_amplitude.py`                                                         | 尾振幅解析形式轮：标度律的定案与两处订正                   | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 263 | `minimal_verification_tail_amplitude_kappa.py`                                                   | 尾振幅弹性系数标度轮：教科书形式与实测形式谁对                | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 264 | `minimal_verification_c1_protected_dynamics.py`                                                  | C1-6 保护动力学轮：边界冻结下的线缺陷弛豫                | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 264 | `minimal_verification_subleading.py`                                                             | 次主导成分轮：交叉项积分工具与前置因子的相消                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 265 | `minimal_verification_c1_morphology_table.py`                                                    | C1-6 L2 轮：形态参数表（字典、重测与壁张力）             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 265 | `minimal_verification_correction_identity.py`                                                    | 修正项解析身份轮：两种候选形式均判负                     | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 266 | `minimal_verification_harmonic_expansion.py`                                                     | 逐阶展开轮：尾的谐波系数与收敛阶                       | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 267 | `minimal_verification_c1_anchor_design.py`                                                       | C1-6 锚核内驻设计轮：拉力、凹口增益与驻留判据              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 267 | `minimal_verification_harmonic_closedform.py`                                                    | 谐波系数解析导出轮：闭式与一阶系数的解析值                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 268 | `minimal_verification_harmonic_coeffs.py`                                                        | 高阶谐波系数导出轮：c1 解析定案，两条数值路线判负             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 269 | `minimal_verification_residue_expansion.py`                                                      | 留数逐阶展开轮：尾部谐波的通项与形状因子线收官                | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 270 | `minimal_verification_g1b_second_order.py`                                                       | G1b 首轮：静球对称的二阶靶子与判定项                   | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 270 | `minimal_verification_discretization.py`                                                         | 离散修正轮：经验形式定案，三条机制候选的判定                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 271 | `minimal_verification_profile_test.py`                                                           | 剖面测试重做轮：机制的归因与更紧的系数                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 272 | `minimal_verification_g1b_source_assembly.py`                                                    | G1b 第二轮：二阶源项与自耦合的机制装配                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 272 | `minimal_verification_discretization_analytic.py`                                                | 离散修正解析导出轮：形式确认、系数待定                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 273 | `minimal_verification_discretization_analytic.py`                                                | 离散修正解析导出轮定案：系数 $-1/12$                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 274 | `minimal_verification_g1b_sourced_second_order.py`                                               | G1b 第三轮：携源剖面的二阶源项与残差消去                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 274 | `minimal_verification_window_ledger.py`                                                          | 参数区四窗口对照轮：三窗相容、P1-40 状态更新与通道分岔         | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 275 | `minimal_verification_g1b_continuum_limit.py`                                                    | G1b 第四轮：连续极限                           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 275 | `minimal_verification_string_tension.py`                                                         | 弦张力轮：自由弦端不可存在，3D 带电对象取闭弦环              | 2026-09-20 | —     | [[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数                            | 注记]]         |
-| 276 | `minimal_verification_string_scaling.py`                                                         | 弦张力标度轮：线性于刚度与环的稳定半径                    | 2026-09-20 | —     | [[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数                            | 注记]]         |
-| 277 | `minimal_verification_g1b_source_mechanism.py`                                                   | G1b 第五轮：源侧二阶项的机制侧判定                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 277 | `minimal_verification_ring_scaling.py`                                                           | 环的 E(R) 标度轮：面积律与塌缩方向的不一致               | 2026-09-20 | —     | [[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数                            | 注记]]         |
-| 278 | `非脚本条目`                                                                                          | 环需强钉扎、延展型由边界保护                         | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 279 | `minimal_verification_g1b_write_measure.py`                                                      | G1b 第六轮：源因子的机制来源：写入的测度原理               | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 279 | `minimal_verification_boundary_protection.py`                                                    | 固定边界绕数保护轮：三层读数与一处判负                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 280 | `minimal_verification_g1b_ruler_selection.py`                                                    | G1b 第七轮：测度原理的第一原理判据：四种尺的定量判别           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 281 | `非脚本条目`                                                                                          | 相位绕圈住在关系层棱差                            | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 282 | `minimal_verification_g1b_covariant_assembly.py`                                                 | G1b 第八轮：四维组装：三扇区读数与 3+1 约束             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 283 | `minimal_verification_g1b_general_static.py`                                                     | G1b 第九轮：一般静态位形（非球）                     | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 284 | `minimal_verification_mdelta_recount.py`                                                         | 统一口径重算：时标区间读数                          | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 285 | `minimal_verification_g1b_time_machine.py`                                                       | G1b 第十轮：含时器械：4D 差分张量与标量扇区的真空条件         | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 286 | `minimal_verification_g1b_tt_sector.py`                                                          | G1b 第十一轮：TT 扇区器械：全对称 3x3 空间度规与两种偏振的真空条 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 287 | `minimal_verification_tension_reeval.py`                                                         | 张力常数重估轮：第 278 条的环判据不依赖张力、第 279 条的能量量级与 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 288 | `minimal_verification_string_tension_relax.py`                                                   | 弦张力松弛复测轮：ansatz 斜率属势项面积产物、松弛壁张力随根号 K   | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 289 | `minimal_verification_boundary_protection_3d.py`                                                 | 三维延展构型保护性复核：面积律的系数对上新壁张力               | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-252-289                                            | 条目 252-289]] |
-| 290 | `minimal_verification_g1b_tt_completion.py`                                                      | G1b 第十二轮：TT 背景上的完成形式判据                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 291 | `minimal_verification_g1b_second_order_metric.py`                                                | G1b 第十三轮：几何侧二阶修正的显式构造                  | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 292 | `minimal_verification_defect_write_beat_3d.py`                                                   | 三维面缺陷的写入节拍轮：笔数等于批数乘截面、写入即折返、准时性对噪声     | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 293 | `minimal_verification_g1b_second_order_metric2.py`                                               | G1b 第十四轮：装配核验重做：矢量扇区槽与轮廓基元             | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 294 | `minimal_verification_g1b_second_order_metric3.py`                                               | G1b 第十五轮：横向与无迹基元的下一层装配                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 295 | `minimal_verification_proposition17_3d.py`                                                       | 命题 17 的三维时长口径轮：取样稀释作用在整批上              | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 296 | `minimal_verification_insertion_law.py`                                                          | 插入律的系数：三条候选的核算与可判差别                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 297 | `minimal_verification_thermal_history.py`                                                        | 热史一致性核对：落位因子必须为几何占比的一半                 | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 298 | `minimal_verification_placement_exponent.py`                                                     | 落位律的运动学判据：约束落在膨胀指数上                    | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 299 | `minimal_verification_insertion_slaving.py`                                                      | 奴役机制与插入的三种读法                           | 2026-09-20 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 300 | `minimal_verification_g1b_moving_source.py`                                                      | G1b 第十六轮：动源完成形式首判：平移源的 O(v) 扇区与拖曳轮廓    | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 301 | `minimal_verification_g1b_lorentz_boost.py`                                                      | G1b 第十七轮：洛伦兹助推候选的完整形式：助推核验、比值解析式与 O(th | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 302 | `minimal_verification_g1b_crossing_waves.py`                                                     | G1b 第十八轮：两束交叉平面波的二阶装配：交叉残差、逐波完成与一般 (u, | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 303 | `minimal_verification_g1b_uv_class.py`                                                           | G1b 第十九轮：(u,v) 类响应分类与交叉修正的最小选择：规范核、像结构 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 304 | `minimal_verification_clock_shared_bg_stim.py`                                                   | 本底与受激项的时钟口径轮：窗口不共用时计数比随取样间隔三段变化        | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 305 | `minimal_verification_g1b_gauge_fixed_cross.py`                                                  | G1b 第二十轮：六场支撑里的规范固定与交叉修正的唯一代表          | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 306 | `minimal_verification_g1b_cross_closed_form.py`                                                  | G1b 第二十一轮：交叉修正的闭式解                     | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 307 | `minimal_verification_c6_measurability.py`                                                       | C6 可测含量评估轮：膝关节落在哪个分箱宽                  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 308 | `minimal_verification_g1b_cross_generality.py`                                                   | G1b 第二十二轮：闭式解的一般性复核：振幅不等与旋转族斜交角        | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 309 | `minimal_verification_corrugated_batch_dilution.py`                                              | 带褶皱壁在稀释档下的批内一致率轮：散布达分箱宽的 7% 即碎裂        | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 310 | `minimal_verification_primordial_seed_scales.py`                                                 | 原初扰动来源核算：种子深亚视界与枢轴超视界                  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 311 | `minimal_verification_g1b_cross_angle_family.py`                                                 | G1b 第二十三轮：交叉角族：非 90 度交叉下闭式解的推广与复现      | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 312 | `minimal_verification_write_rate_residence_channel.py`                                           | 写入率接驻留判据的通道合成轮：低速测速计与两通道四格判定           | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 313 | `minimal_verification_g1b_collinear_limit.py`                                                    | G1b 第二十四轮：共线极限锚点：解析交叉完成式、合成恒等与四阶地板     | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 314 | `minimal_verification_g1b_quartic_floor.py`                                                      | G1b 第二十五轮：四次幂地板的解析导出：pp-波精确方程、二阶复现与四阶修 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 315 | `minimal_verification_g1b_series_convergence.py`                                                 | G1b 第二十六轮：级数收敛到精确解：打靶对照、误差幂律与半径两路测定    | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 316 | `minimal_verification_g1b_radius_ledger.py`                                                      | G1b 第二十七轮：半径口径复核与两扇区换算：初始切片退化的识别、实轴域边界 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 317 | `minimal_verification_g1b_profile_domain.py`                                                     | G1b 第二十八轮：一般剖面的域边界：网格版 λ 级数、剖面类分野与误差律  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 318 | `minimal_verification_g1b_normalization.py`                                                      | G1b 第二十九轮：归一化口径钉死：边界机制（度量分量过零）与不变量 Λ*  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 319 | `minimal_verification_lattice_dispersion_geometry.py`                                            | 洛伦兹线说明轮：首阶偏离的几何来源与方向指纹，判据 D1 至 D5      | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 320 | `minimal_verification_observer_residual_split.py`                                                | 观测者响应线：残差分离轮：晶格修正与外势 boost 失配的分离，判据 OP | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 321 | `非脚本条目`                                                                                          | 引力线收口轮：剖面族边界扫描与 θ 口径核对，判据 PF1 至 PF5    | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 322 | `minimal_verification_strong_gradient_propagation.py`                                            | D2 轮：强梯度区的微观传播检验                       | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 323 | `minimal_verification_luoshu_criteria.py`                                                        | 核邻域九方位读数的洛书式结构判据轮：判负                   | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 324 | `minimal_verification_lorentz_damage_scan.py`                                                    | D3 轮：第四档损坏（洛伦兹结构）                      | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 325 | `minimal_verification_vortex_pair_imex.py`                                                       | 涡旋对松弛器与对数项分解轮：松弛后既无对数项也无线性壁项           | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 326 | `minimal_verification_vortex_ring_relax.py`                                                      | 环边界下的面缺陷松弛轮：自支撑的核环不存活                  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 327 | `minimal_verification_u3_first_step.py`                                                          | U3 第一步：两条界限的同型化与满量程核对                  | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 328 | `minimal_verification_p1_24_coefficient_closure.py`                                              | P1-24 系数缺口的供给侧对接：重建尺读数与偏折全值            | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 329 | `minimal_verification_vortex_ring_pinned.py`                                                     | 强钉扎档核环轮：K = 0.24 下核环仍不存活、K = 0.30 档松弛器 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 330 | `minimal_verification_stiff_hard_wall.py`                                                        | 刚性区松弛器与壁张力切换轮：松弛器修好、两支公式都不成立           | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 331 | `minimal_verification_second_order_source_lock.py`                                               | 次阶源锁定复验（首轮）：含动能与应力源的两条守恒、迹源装配与呼吸通道的唯一性 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 332 | `minimal_verification_mass_scale_independence.py`                                                | D4 轮：质量刻度的独立标定                         | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 333 | `minimal_verification_strip_samesize.py`                                                         | 同尺寸条带小 K 档重测轮：未复现第 286 条读数             | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 334 | `minimal_verification_lambda_beyond_one.py`                                                      | H3 轮：$\lambda/J > 1$ 的开域扫描             | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 335 | `minimal_verification_strip_boundary_audit.py`                                                   | 条带分歧三向对照与 x 向边界修正轮：分歧定位为 x 向周期性        | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 336 | `minimal_verification_strip_table_fixed.py`                                                      | 修正实现重跑条带表轮：连续式只在小刚度档成立                 | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 337 | `minimal_verification_second_order_source_lock_wave.py`                                          | 次阶源锁定复验·第三段：波动扇区的响应侧                   | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 338 | `minimal_verification_second_order_source_lock_time.py`                                          | 次阶源锁定复验·第二段：含时源的时间响应                   | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 340 | `minimal_verification_free_branch_tt_count.py`                                                   | 1D 自由支与三维 TT 同一化的显式计数：秩二、约化两支与算符同一     | 2026-09-21 | —     | [[验证脚本/历史条目/历史条目-290-340                                            | 条目 290-340]] |
-| 341 | `minimal_verification_largeK_wall_closed_form.py`                                                | 大刚度档壁张力的解析式轮：两格快跳族、指数尾闭式与渐近系数          | 2026-09-21 | —     | [[注记-大刚度档壁张力的解析式：两格快跳族、指数尾与渐近系数（判据Y1至Z9）                            | 注记]]         |
-| 342 | `minimal_verification_c1_anchor_c1window.py`                                                     | C1 窗口驻留判据重测轮：AN 口径的拉力在刚度大档失效、弦不出现的对照读数 | 2026-09-21 | —     | [[注记-C1 窗口驻留判据重测轮：AN 口径的拉力在刚度大档失效、弦不出现的对照读数（判据CW1至CW7）              | 注记]]         |
-| 343 | `minimal_verification_g1b_boundary_reduction.py`                                                 | G1b 第三十轮：边界条件的解析约化：横向尺度因子、凹性与零点判据      | 2026-09-22 | —     | [[注记-G1b第三十轮：边界条件的解析约化：横向尺度因子、凹性与零点判据（判据R1至R6）                      | 注记]]         |
-| 344 | `minimal_verification_c1_e1_embedding.py`                                                        | C1 三维嵌入第一判据 E1：条带几何的弦张力闭合、横截面分离与沿线稳定性  | 2026-09-22 | —     | [[注记-C1 三维嵌入E1：条带几何的弦张力闭合、横截面分离与沿线稳定性（判据E1-1至E1-5）                  | 注记]]         |
-| 345 | `minimal_verification_c1_e2_timed_source.py`                                                     | C1 三维嵌入第二判据 E2：含时源分量的嵌入：运动壁的动量流、gamma  | 2026-09-22 | —     | [[注记-C1 三维嵌入E2：含时源分量的嵌入：运动壁的动量流、γ 结构与沿线调制稳定性（判据E2-1至E2-5）           | 注记]]         |
-| 346 | `minimal_verification_c1_e3_source_assembly.py`                                                  | C1 三维嵌入第三判据 E3：横截面积分口径接回引力侧源项装配        | 2026-09-22 | —     | [[注记-C1 三维嵌入E3：横截面积分口径接回引力侧源项装配（判据E3-1至E3-5）                        | 注记]]         |
-| 347 | `minimal_verification_c1_e4_unit_bridge.py`                                                      | C1 三维嵌入第四判据 E4：源项装配的物理单位换算：单一桥梁因子与闭合核对 | 2026-09-22 | —     | [[注记-C1 三维嵌入E4：源项装配的物理单位换算：单一桥梁因子与闭合核对（判据E4-1至E4-5）                 | 注记]]         |
-| 348 | `minimal_verification_mb1_elastic_dictionary.py`                                                 | 量纲桥 MB-1：路线甲的变量字典与两链的纯数因子差             | 2026-09-22 | —     | [[注记-量纲桥MB-1：路线甲的变量字典与两链的纯数因子差（判据MB1-a至MB1-e）                       | 注记]]         |
-| 349 | `minimal_verification_mb1b_convention_audit.py`                                                  | 量纲桥 MB-1b：两链比值的归属审计与约定核对               | 2026-09-22 | —     | [[注记-量纲桥MB-1b：两链比值的归属审计与约定核对（判据MB1b-a至MB1b-e）                       | 注记]]         |
-| 350 | `minimal_verification_mb2_sound_speed.py`                                                        | 量纲桥 MB-2：晶格声速自洽条件                      | 2026-09-22 | —     | [[注记-量纲桥MB-2：晶格声速自洽条件（判据MB2-a至MB2-d）                                | 注记]]         |
-| 351 | `非脚本条目`                                                                                          | 注记-量纲桥MB-3（路线判定注记，文本溯源，无脚本）：写入幅度中质量的物理 | 2026-09-22 | —     | [[注记-量纲桥MB-3：写入幅度中质量的物理身份（路线丁判定）                                    | 注记]]         |
-| 352 | `minimal_verification_mb4_anchor_calibration.py`                                                 | 量纲桥 MB-4：以电子锚定标的桥因子与四窗口相容性             | 2026-09-22 | —     | [[注记-量纲桥MB-4：以电子锚定标的桥因子与四窗口相容性（判据MB4-a至MB4-e）                       | 注记]]         |
-| 353 | `minimal_verification_mb5_route_merge.py`                                                        | 量纲桥 MB-5：四条路线合并：桥的形式判定与过定检查            | 2026-09-22 | —     | [[注记-量纲桥MB-5：四条路线合并：桥的形式判定与过定检查（判据MB5-a至MB5-e）                      | 注记]]         |
-| 354 | `minimal_verification_mb6_entry_fraction.py`                                                     | 量纲桥 MB-6：入口份额 f 的钉定                    | 2026-09-22 | —     | [[注记-量纲桥MB-6：入口份额f的钉定（判据MB6-a至MB6-e）                                | 注记]]         |
-| 355 | `minimal_verification_mb7_k_value_merge.py`                                                      | 量纲桥 MB-7：K 的体系值连动与 D 线遗留收口             | 2026-09-22 | —     | [[注记-量纲桥MB-7：K的体系值连动与D线遗留收口（判据MB7-a至MB7-e）                          | 注记]]         |
-| 356 | `minimal_verification_mb9_inertia_derivation.py`                                                 | 量纲桥 MB-9：惯性归一的独立导出：公理 4 哈密顿的显式系数       | 2026-09-22 | —     | [[注记-量纲桥MB-9：惯性归一的独立导出：公理4哈密顿的显式系数（判据MB9-a至MB9-e）                   | 注记]]         |
-| 357 | `minimal_verification_mb8_ruling_finalize.py`                                                    | 量纲桥 MB-8：M-E 与 M-F 的裁决落定：锚身份与项识别       | 2026-09-22 | —     | [[注记-量纲桥MB-8：M-E与M-F的裁决落定：锚身份与项识别（判据MB8-a至MB8-e）                    | 注记]]         |
-| 358 | `minimal_verification_soliton_anchor_consistency.py`                                             | 孤子粒性归属：A 组三条读数口径统一、B 组量子数清单、C 组装订封口    | 2026-09-22 | —     | [[注记-孤子粒性归属（第358条）：三条读数口径统一、量子数清单与装订封口                              | 注记]]         |
-| 359 | `minimal_verification_kappa_phi_necessity.py`                                                    | κ_φ 必要性：N1 极限清单与 N2 替代机制的读数复现要求        | 2026-09-22 | —     | [[注记-κ_φ 必要性（第359条）：N1 极限清单与 N2 替代机制的读数复现要求                         | 注记]]         |
-| 360 | `minimal_verification_survival_factor_candidates.py`                                             | 存活因子 S 的机制候选：四种指数抑制的参数量级与判句            | 2026-09-22 | —     | [[注记-S 的机制候选（第360条）：四种指数抑制的参数量级与判句                                  | 注记]]         |
-| 361 | `minimal_verification_lz_counting_form.py`                                                       | A 路判句：缺口与扫速的计数形式                       | 2026-09-22 | —     | [[注记-A 路判句（第361条）：缺口与扫速的计数形式                                        | 注记]]         |
-| 362 | `minimal_verification_front_width_audit.py`                                                      | A 路前沿侧侦察：前沿速度已知、宽度缺失                   | 2026-09-22 | —     | [[注记-A 路前沿侧侦察（第362条）：前沿速度已知、宽度缺失                                    | 注记]]         |
-| 363 | `minimal_verification_f_depth_audit.py`                                                          | 入口份额 f 与指数深度审查：234.4 自洽、上游 rho_P 定义需一句 | 2026-09-22 | —     | [[注记-入口份额 f 与指数深度审查（第363条）：234.4 自洽、上游 rho_P 定义需一句修正                | 注记]]         |
-| 364 | `minimal_verification_freezeout_temperature_audit.py`                                            | B 路冻结温度审查：所需势垒落电弱档，体系温度族内有一对近合         | 2026-09-22 | —     | [[注记-B 路冻结温度审查（第364条）：所需势垒落在电弱档，体系温度族内有一对近合                         | 注记]]         |
-| 365 | `minimal_verification_barrier_identity_audit.py`                                                 | B 路势垒身份审查：定居密度作锁定势垒，身份自然但有两项代价         | 2026-09-22 | —     | [[注记-B 路势垒身份审查（第365条）：定居密度作锁定势垒，身份自然但有两项代价                          | 注记]]         |
-| 366 | `minimal_verification_depth_ratio_ln9.py`                                                        | 指数深度比 2.197 的登记观察：234.44、106.70 与 ln 9 | 2026-09-22 | —     | [[注记-指数深度比 2.197 的登记观察（第366条）：234.44、106.70 与 ln 9                  | 注记]]         |
-| 367 | `minimal_verification_tsirelson_pathA.py`                                                        | 二-2 路径甲迁移轮：由快照相位分布到 CHSH 的体系内计算        | 2026-09-23 | —     | [[注记-二-2 路径甲迁移轮的最小验证：由快照相位分布到 CHSH 的体系内计算                           | 注记]]         |
-| 368 | `minimal_verification_tsirelson_bound_origin.py`                                                 | 方向三上界来源：为何止步 2√2 的单位相量结构与奇异性缺口         | 2026-09-23 | —     | [[注记-齐雷尔森上界来源的最小验证：单位相量结构与奇异性缺口（为何止步 2√2）                           | 注记]]         |
-| 369 | `minimal_verification_information_causality_model.py`                                            | 信息因果性的模型内定量判据：协议类穷举、2→1 RAC 与互和信息式     | 2026-09-23 | —     | [[注记-信息因果性模型内定量判据的最小验证：协议类穷举、RAC 成功率与互信息和式                          | 注记]]         |
-| 370 | `minimal_verification_lv_sme_mapping.py`                                                         | SME 对接：d=6 立方系数的等效归一、boost 量级与三通道对照    | 2026-09-24 | —     | [[注记-SME 对接（第370条）：d=6 立方系数的等效归一、boost 量级与三通道对照                     | 注记]]         |
-| 371 | `minimal_verification_individual_layer_sufficiency.py`                                           | 墙三个体层充分统计量：份额、块内相干与块间相位的分工             | 2026-09-24 | —     | [[注记-个体层充分统计量的最小验证：份额、块内相干与块间相位的分工（沉默的可判定化）                         | 注记]]         |
-| 372 | `minimal_verification_record_separation.py`                                                      | 滚动记录与持久记录的可分性：无独立因子条件、两种累积律与重写实现       | 2026-09-24 | —     | [[注记-滚动记录与持久记录可分性的最小验证：无独立因子条件、两种累积律与重写实现的影响                        | 注记]]         |
-| 373 | `minimal_verification_liv_conventions.py`                                                        | LIV 约定线：相位与群速度的因子、球面平均与 SME 记号对应       | 2026-09-24 | —     | [[注记-LIV 约定线（第373条）：相位与群速度的因子、球面平均与 SME 记号对应                        | 注记]]         |
-| 374 | `minimal_verification_traversal_decoherence_cost.py`                                             | 弹性遍历通道的相干代价：M2 缓降读数换算、宏观约束与可逆性判别       | 2026-09-24 | —     | [[注记-弹性遍历通道相干代价的最小验证：M2 缓降读数的换算、宏观约束与可逆性判别                          | 注记]]         |
-| 375 | `minimal_verification_elastic_reversibility.py`                                                  | 弹性通道代价归属：M2 缓增的轨迹分解与时间反演可逆性            | 2026-09-24 | —     | [[注记-弹性通道代价归属的最小验证：M2 缓增的轨迹分解与时间反演可逆性                               | 注记]]         |
-| 376 | `minimal_verification_front_profile_minimal.py`                                                  | P8a 前沿剖面最小模型：紫外截断封缺口与宽度翻译为弛豫率          | 2026-09-24 | —     | [[注记-P8a 前沿剖面最小模型（第376条）：紫外截断封缺口与宽度翻译为弛豫率                           | 注记]]         |
-| 377 | `minimal_verification_information_causality_class_extension.py`                                  | 协议类扩类穷举：两副本受限子类、类包含关系检查与方法学教训          | 2026-09-24 | —     | [[注记-协议类扩类穷举的最小验证：两副本受限子类、类包含关系检查与教训                                | 注记]]         |
-| 378 | `minimal_verification_gain_threshold_content.py`                                                 | 增益阈值的物理内容：读数门限、指针分辨与记录寿命三分             | 2026-09-24 | —     | [[注记-增益阈值物理内容的最小验证：读数门限、指针分辨与记录寿命的三分                                | 注记]]         |
-| 379 | `minimal_verification_record_criterion.py`                                                       | 记录判据：独立性的定义域、反例与判据级表述                  | 2026-09-24 | —     | [[注记-记录判据的最小验证：独立性的定义域、反例与判据级表述                                     | 注记]]         |
-| 380 | `minimal_verification_a_path_width_sources.py`                                                   | A 路宽度来源三路审查：校准扩散与势曲率判负、KZ 冻结活口         | 2026-09-24 | —     | [[注记-A 路宽度来源三路审查（第380条）：校准扩散与势曲率判负、KZ 冻结活口与淬火时标窗口                   | 注记]]         |
-| 381 | `minimal_verification_kz_applicability.py`                                                       | KZ 适用性判定：临界冻结不适用、注入-接缝机制与畴尺度候选         | 2026-09-24 | —     | [[注记-KZ 适用性判定（第381条）：临界冻结不适用、注入-接缝机制与畴尺度候选                          | 注记]]         |
-| 382 | `minimal_verification_tsweep_identity.py`                                                        | LZ 的 t_sweep 物理身份判定：缺口硬约束、快过程排除与缺口归约   | 2026-09-24 | —     | [[注记-LZ 的 t_sweep 物理身份判定（第382条）：缺口硬约束、快过程排除与缺口归约                    | 注记]]         |
-| 383 | `minimal_verification_pointer_granularity.py`                                                    | 限制二收口：逐层指针与阈值读出的可分辨性                   | 2026-09-24 | —     | [[注记-限制二收口的最小验证：逐层指针与阈值读出的可分辨性                                      | 注记]]         |
-| 384 | `minimal_verification_solidification_time.py`                                                    | 凝固时间的最小动力学：三候选时标估算与 A 路的单参数压缩          | 2026-09-24 | —     | [[注记-凝固时间的最小动力学（第384条）：三候选时标估算与 A 路的单参数压缩                           | 注记]]         |
-| 385 | `minimal_verification_record_resolution_unit.py`                                                 | 前提 P1 的独立性审查：被记录量的分辨单元恰为一层             | 2026-09-24 | —     | [[注记-前提 P1 独立性审查的最小验证：被记录量的分辨单元恰为一层                                 | 注记]]         |
-| 386 | `minimal_verification_pinning_density_gate.py`                                                   | 钉扎密度的门槛：位错间距窗口与自然候选的距离                 | 2026-09-24 | —     | [[注记-钉扎密度的门槛（第386条）：位错间距窗口与自然候选的距离                                  | 注记]]         |
-| 387 | `minimal_verification_detector_inputs.py`                                                        | 探测器物侧构造：三件输入的指认、单通道反证与双通道判据            | 2026-09-24 | —     | [[注记-探测器物侧构造的最小验证：三件输入的指认、单通道反证与双通道判据                               | 注记]]         |
-| 388 | `minimal_verification_information_causality_asymptotic.py`                                       | 信息因果性渐近族：和式紧化、两方向阈值判定与单副本松弛            | 2026-09-24 | —     | [[注记-信息因果性渐近族的最小验证：和式紧化、两方向阈值判定与单副本松弛                               | 注记]]         |
-| 389 | `minimal_verification_delta_field_side.py`                                                       | Delta 的场侧实现：寄存器占据的当前构型分量与历史残差          | 2026-09-24 | —     | [[注记-Delta 场侧实现的最小验证：寄存器占据的当前构型分量与历史残差                              | 注记]]         |
-| 390 | `minimal_verification_b_path_closure.py`                                                         | B 路收尾判定：三件闭环条件的可达性与精度缺口                | 2026-09-24 | —     | [[注记-B 路收尾判定（第390条）：三件闭环条件的可达性与精度缺口                                 | 注记]]         |
-| 391 | `minimal_verification_delta_to_visibility.py`                                                    | 偏离到可见度的换算：三式等价与指数的因子来源                 | 2026-09-24 | —     | [[注记-偏离到可见度换算的最小验证：三式等价与指数的因子来源                                     | 注记]]         |
-| 392 | `minimal_verification_information_causality_dpi.py`                                              | 信息因果性链的局域数据处理口径：条件化 DPI、非条件化失效与容量侧无约束  | 2026-09-24 | —     | [[注记-信息因果性链的局域数据处理口径的最小验证：条件化 DPI、非条件化失效与容量侧无约束                     | 注记]]         |
-| 393 | `minimal_verification_c_path_instanton.py`                                                       | C 路首轮：瞬子作用量的量级二分与 g² 落点                | 2026-09-24 | —     | [[注记-C 路首轮（第393条）：瞬子作用量的量级二分与 g² 落点                                 | 注记]]         |
-| 394 | `minimal_verification_gain_abs_scale.py`                                                         | 写入深度的绝对标度：幅度与率的分工及耦合的绝对约束              | 2026-09-24 | —     | [[注记-写入深度绝对标度的最小验证：幅度与率的分工及耦合的绝对约束                                  | 注记]]         |
-| 395 | `minimal_verification_seventeen_inventory.py`                                                    | 17 的出现清单：派生链识别与 34π 的精度判定              | 2026-09-24 | —     | [[注记-17 的出现清单（第395条）：派生链识别与 34π 的精度判定                               | 注记]]         |
-| 396 | `minimal_verification_y_quadrant_phase.py`                                                       | Y 象限的相位语言操作合成：双原语链、第二次重组合与象限对齐角表       | 2026-09-24 | —     | [[注记-Y 象限的相位语言操作合成的最小验证：双原语链、第二次重组合与象限对齐角表                          | 注记]]         |
-| 397 | `minimal_verification_deviation_window.py`                                                       | 受保护扇区的偏离窗口：三分分解与实验界对照                  | 2026-09-24 | —     | [[注记-受保护扇区偏离窗口的最小验证：三分分解与实验界对照                                      | 注记]]         |
-| 398 | `minimal_verification_f_chain_first.py`                                                          | f 线首轮：Kibble 链条四环清点与 f 的口径表            | 2026-09-24 | —     | [[注记-f 线首轮（第398条）：Kibble 链条四环清点与 f 的口径表                             | 注记]]         |
-| 399 | `minimal_verification_empty_branch_gravity.py`                                                   | 空支能量的引力地位：两瓣叠加模型内的判据 K1 至 K6           | 2026-09-24 | —     | [[注记-空支能量的引力地位的最小验证：两瓣叠加模型内的判据 K1 至 K6                              | 注记]]         |
-| 400 | `minimal_verification_layered_reading_reliability.py`                                            | 分层读数可靠性：充分性、中层最小性与附内容边界                | 2026-09-25 | —     | [[注记-分层读数可靠性的最小验证：充分性、中层最小性与附内容边界（判据 L1 与 L3）                       | 注记]]         |
-| 401 | `minimal_verification_compression_irreversibility.py`                                            | 压缩不可逆方向：信息不增、丢失不可追回与任务性能的非单调性          | 2026-09-25 | —     | [[注记-压缩不可逆方向的最小验证：信息沿压缩方向不增、丢失不可追回与任务性能的非单调性（判据 L2）                 | 注记]]         |
-| 402 | `minimal_verification_coarse_graining_alignment.py`                                              | 切法与任务对齐：装置响应类型、互信息与准确率的分歧              | 2026-09-25 | —     | [[注记-切法与任务对齐的最小验证：装置响应类型、互信息与准确率的分歧（对齐判据 L8）                        | 注记]]         |
-| 403 | `minimal_verification_alignment_exhaustive.py`                                                   | 对齐判据形式的独立复现：无平局模型上的穷举检验                | 2026-09-25 | —     | [[注记-对齐判据形式的独立复现：无平局模型上的穷举检验与判据表述修正（对齐判据 L8）                        | 注记]]         |
-| 404 | `minimal_verification_integration_target.py`                                                     | 整合的目标函数：最简无损切法的档数最小性与跨任务变化，判据 L7a 与 L7 | 2026-09-25 | —     | [[注记-整合的目标函数的最小验证：最简无损切法的档数最小性与跨任务变化（判据 L7a 与 L7d）                  | 注记]]         |
-| 405 | `minimal_verification_intersubjectivity.py`                                                      | 主体间性：公开事件与统计集中两条路径、平均分歧的线性律与边界对准的不可消除性 | 2026-09-25 | —     | [[注记-主体间性的最小验证：公开事件与统计集中两条路径、平均分歧的线性律与边界对准的不可消除性（判据 L6）             | 注记]]         |
-| 406 | `minimal_verification_macroscopic_intersubjectivity.py`                                          | 宏观客体的主体间分歧量级：热德布罗意尺度、档位表与波包扩散，判据 L6 的宏 | 2026-09-25 | —     | [[注记-宏观客体的主体间分歧量级：热德布罗意尺度、档位表与波包扩散（判据 L6 的宏观档）                      | 注记]]         |
-| 407 | `minimal_verification_cost_function_unlock.py`                                                   | 代价函数解锁四条判据：预算阈值、档数分布与单一性解耦，L4、L7b、L7c、 | 2026-09-25 | —     | [[注记-代价函数解锁四条判据的最小验证：预算阈值、档数分布与单一性解耦（L4、L7b、L7c、L7e）                | 注记]]         |
-| 408 | `minimal_verification_xi_independence.py`                                                        | ξ 的独立依据：单参数曲线结构与扩散建立的对照                | 2026-09-25 | —     | [[注记-ξ 的独立依据（第408条）：单参数曲线结构与扩散建立的对照                                 | 注记]]         |
-| 409 | `minimal_verification_state_boundary.py`                                                         | 态化边界：三条关联强度上界与合成缺口的两因子分解               | 2026-09-25 | —     | [[注记-态化边界的最小验证：三条关联强度上界与合成缺口的两因子分解                                  | 注记]]         |
-| 410 | `minimal_verification_superdiffusion_audit.py`                                                   | 超扩散候选清点：D_req 与体系输运系数的对照               | 2026-09-25 | —     | [[注记-超扩散候选清点（第410条）：D_req 与体系输运系数的对照                                | 注记]]         |
-| 411 | `minimal_verification_annihilation_factor.py`                                                    | 湮灭因子 A 的动力学：钉扎与湮灭的竞赛                   | 2026-09-25 | —     | [[注记-湮灭因子 A 的动力学（第411条）：钉扎与湮灭的竞赛                                    | 注记]]         |
-| 412 | `minimal_verification_record_publicity.py`                                                       | 记录的公共性：读出反作用的权衡不变量与复读精度预算，探针第三层        | 2026-09-25 | —     | [[注记-记录公共性的最小验证：读出反作用的权衡不变量与复读精度预算（探针第三层）                           | 注记]]         |
-
-
-**让号说明**：本条目原为第 52 条，因与该号另一条目重号，按后落盘者顺延的惯例改为第 245 条（2026-09-20）。正文中引用「第 52 条」且指本条者，请改引第 245 条。
-
-**对应注记**：`验证脚本/注记-张量桥d的W4通路：静质量密度与振幅亏损的标度关系.md`
-
-**验证内容**：张量桥分段 (d) 静质量密度通路第一轮。「int(1-A^2) 与束缚能线性」的判据级检验。
-
-| 判据 | 结果 |
-|---|---|
-| L0 构造自检 | min\|psi\| 0.959 至 0.492 单调降 |
-| L1a/L2a 原线性判据 | R^2 = 0.956 / 0.935，均判负（记录） |
-| L1b 深度方向幂律 | E_B ∝ W_amp^2.04（平方标度） |
-| L2b 宽度方向幂律 | E_B ∝ W_amp^0.54（混合律，路径依赖） |
-| L3b 环深度扫描 | 反向（锚核目标变更效应，读数） |
-
-结论：线性假设被否；正确关系为深度方向平方（能量二次型对亏损一次型）、宽度方向混合；对 (d) 通路的建议：静质量密度场侧形式取二次型（势能密度型），一次型作幅度指标；完整分解保持三项结构。过程记录：判据修正（线性到平方）与自变量修正（同几何族）两处。
+本清单原为 422 个条目的平铺正文（66.6 万字符），2026-09-25 改制为列表式索引：每条一行，有验证注记的条目直接链到注记，其余链到 [[验证脚本/历史条目/历史条目-001-051|历史条目]] 分档文件（每 50 号一档，条目原文逐字保留，编号不回收，历史撞号保留）。条目按编号升序排列；编号本身从未改动，历次文档中「README 第 N 条」式引用全部有效。检索方式：按脚本名、编号或主题词 grep 本清单，命中后只读落点文件。新条目登记规则见 AGENTS.md 数值验证脚本规范：完成一轮验证即在清单末尾追加一行，编号取当前最大号之后，条目正文写进注记。
+- **1.** `minimal_verification_frame_tilt.py`：标量版（2026-09-05），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **2.** `minimal_verification_so3_link.py`：SO(3) 链接变量版（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **3.** `minimal_verification_3plus1.py`：3+1 雏形（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **4.** `minimal_verification_kink3d.py` + `minimal_verification_kink_hamiltonian.py`：kink 三维稳定性（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **5.** `minimal_verification_meff.py`：m_eff 定量与色散形状（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **6.** `minimal_verification_conversion_wave_recheck.py`：预印本 §4.3 复核（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **7.** `minimal_verification_geodesic_response.py`：测地响应线性与质量对齐（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **8.** `minimal_verification_mu_diagnosis.py`：μ 差异闭合（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **9.** `minimal_verification_dislocation_pinning.py` + `minimal_verification_pinning_depth.py`：钉扎身份（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **10.** `minimal_verification_relativistic_dispersion.py`：相对论色散完整验证（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **11.** `minimal_verification_ring_adjudication.py`：环的裁决实验（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **12.** `minimal_verification_scar_protection.py`：疤的裁决实验（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **13.** `scar_probe_topo.py` + `scar_probe_topo_q.py`：纠缠侧承载探路（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **14.** `minimal_verification_sector_dynamics.py`：扇区约束动力学：两种绕数的裁决（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **15.** `minimal_verification_elastic_identity.py`：弹性身份裁决（2026-09-06），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **16.** `minimal_verification_quantum_bridge_a.py`：张量桥分段 a：SO(3) 标架 3+1 定量装配（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **17.** `minimal_verification_quantum_bridge_b.py`：张量桥分段 b：动态写入-波动方程与 $c_s = c$ 同一化（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **18.** `minimal_verification_normal_field_wave.py`：法线场动力学健康性判据（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **19.** `minimal_verification_geodesic_transport.py`：法线场响应侧测地线平行输运判据（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **20.** `minimal_verification_elastic_balance.py`：判据 A 语义同构核对：层位移场弹性平衡（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **21.** `minimal_verification_normalization_gm.py`：归一化数值步：真实质量标定（2026-09-10），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **22.** `minimal_verification_identification_multiplier.py`：识别式乘数：κ 的线性响应公式与唯一解定理（2026-09-11），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **23.** `minimal_verification_shapiro_delay_channel.py`：接力光速与 Shapiro 延迟通道（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **24.** `minimal_verification_vector_sector_parity.py`：矢量扇区判据：奇偶通道与扇区选择（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **25.** `minimal_verification_twist_channel_source.py`：法线轴静扭转通道：质量流源与偶极结构（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **26.** `minimal_verification_twist_coupling_normalization.py`：矢量块耦合归一化：写入系数与广义相对论同形（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **27.** `minimal_verification_selfconsistent_well_scaling.py`：自撑阱均匀标度：kink 自洽结构（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **28.** `minimal_verification_vector_constraint.py`：矢量通道受约束性：静态约束是必要条件（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **29.** `minimal_verification_orientation_origin.py`：取向项微观来源：由标量记录的时间导数自动给出（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **30.** `minimal_verification_radial_3d_scaling.py`：自撑阱三维径向推广：四通道同齐次度（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **31.** `minimal_verification_tt_projection.py`：TT 投影：投影算子的构造与计数（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **32.** `minimal_verification_tt_projection_origin.py`：TT 投影微观来源：约束结构自动给出（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **33.** `minimal_verification_3plus1_hinge.py`：3+1 铰链显式化：TT 扇区的演化方程闭合（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **34.** `minimal_verification_vortex_init_apparatus.py`：C1-0：涡旋初始化与横截面绕数测量装置（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **35.** `minimal_verification_amplitude_channel_ring.py`：振幅通道下的涡旋环径向曲线与自由弛豫检验（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **36.** `minimal_verification_collision_taxonomy.py`：M2 生死闸门：相互作用分层判据的两协议可见度（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **37.** `minimal_verification_single_system_sampling.py`：M4：单系统 Born 采样与相位均匀性检验（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **38.** `minimal_verification_layer_share.py`：M5：层位份额语义，相干份额作为位置概率（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **39.** `minimal_verification_measurement_basis.py`：M6：块分解唯一性，扇区操作刚性与局域不可见性（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **40.** `minimal_verification_deficit_identity.py`：M7：波函数双重身份，全局相干代价与局域亏空预算的标度同一（2026-09-12），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **41.** `minimal_verification_superposition_domain.py`：M8：叠加适用域，线性区的深度与缺陷形成阈（2026-09-13），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **42.** `minimal_verification_two_lobe_carrier.py`：M7b 两瓣叠加态单场承载的最小验证：份额折叠、挫折弦与相位通道（2026-09-14），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **43.** `minimal_verification_tsirelson_gate_v0.py`：P1-29 v0 生死闸门：纠缠锁定对、经典圈对照与可见度阈（2026-09-14），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **44.** `minimal_verification_coupling_reopen.py`：弱版耦合重开的最小验证：一阶零与二阶非零的结构（2026-09-15），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **45.** `minimal_verification_c1_protocols.py`：C1-1：边界与协议确立，开放边界吸收与双协议一致（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **46.** `minimal_verification_c1_morphology.py`：C1-2：形态枚举，位错环、畴壁与点的存在性与稳定性（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **48.** `minimal_verification_c1_derrick.py`：C1-3：Derrick 复查，E(R) 标度律、钉扎临界曲线与脱钉阈值（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **49.** `minimal_verification_c1_anchor.py`：C1-4：锚核筛选，格点内锁定的驻留窗口、宽度核对与窗口互斥（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **50.** `minimal_verification_c1_bodyterm.py`：C1-4b：体项可行性判定，泡壁环稳定条件的精确化与体项扫描（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **51.** `minimal_verification_c1_locked_pocket.py`：C1-4c：锁定缺失泡的构造判定，正定泛函的界面能与负线项的可达性（2026-09-16），[[验证脚本/历史条目/历史条目-001-051|条目档 001-051]]
+- **52.** `minimal_verification_stress_channel.py`：G2-L1 应力通道：T^ij 的计数、迹耦合与源侧的 O(v^2) 要求（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **53.** `minimal_verification_channel_normalization.py`：G2-L2 三通道归一化一致性：单入口、4 pi 与外部锚（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **54.** `minimal_verification_low_energy_window.py`：G2-L3 等价声明的精度边界：低能窗口与偏离量级（2026-09-16），[[注记-幅度基数与E_P口径的两层分离|幅度基数与E_P口径的两层分离]]
+- **55.** `minimal_verification_source_convention.py`：G2-L1b 源的口径：theta 的源取 T_00 加应力迹（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **56.** `minimal_verification_tt_action.py`：G4 第二半第一块：TT 扇区二次作用量与无质量自旋 2 标准形式的匹配（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **57.** `minimal_verification_kinetic_flow.py`：张量桥 d 动能流项：动量密度的相位梯度形式与 γ 对应（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **58.** `minimal_verification_helicity.py`：G2 具名缺口之二：螺旋度 ±2 的显式确认（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **59.** `minimal_verification_tmunu_assembly.py`：张量桥 d 装配轮：应力项的混合形式与 T^{00} 完整场侧表达式（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **60.** `minimal_verification_winding_leakage.py`：量子层 Q4：绕数跨扇区泄漏的最小阶数与尺寸标度（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **61.** `minimal_verification_zn_sectors.py`：定向口径下的 Z_N 扇区重建：绕数算符代数、简并 N² 与 Q4 复验（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **62.** `minimal_verification_bh4a_max_mass.py`：BH4a 支撑失效的最大质量零阶判据：临界质量的结构与量级带（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **63.** `minimal_verification_string_deform.py`：量子层 Q5：弦算符的可形变完成，同调不变、局域算子标量化与最小支撑（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **64.** `minimal_verification_toric3d_structure.py`：三维结构核对：定向口径在 3-环面上的对易代数与绕环膜清单（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **65.** `minimal_verification_marginal_operators.py`：P4-31 边际洛伦兹算符：四维不变量枚举与对称性禁止（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **66.** `minimal_verification_toric3d_spectrum.py`：三维谱与局域平凡性：3-环面的简并 N³ 与局域算子分类（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **67.** `minimal_verification_elastic_isotropy.py`：P4-31 子项：框架格点的弹性常数与各向同性关系（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **68.** `minimal_verification_cpt_odd_operators.py`：P4-31 子项二：CPT 奇边际算符的对称性地位（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **69.** `minimal_verification_autoclose_trace.py`：BH3-5 留痕判据一维先导：自动闭合几何与结构留痕（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **70.** `minimal_verification_parity_symmetry.py`：P4-31 前提：文档更新式的宇称精确性（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **71.** 对照协议注记，无脚本（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **72.** `minimal_verification_toric_boundary.py`：边界模式轮：缠绕守恒边界的量子层形态与总通量锁定（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **73.** `minimal_verification_oneloop_marginal.py`：P4-31 其三：一圈自能对边际系数的生成量（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **74.** `minimal_verification_toric_boundary_3d.py`：边界模式轮三维：立方体样本的闭合面关系与周界回路锁定（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **75.** `minimal_verification_state_graph.py`：离散化保护的否定：相位量子化的状态图全连通与多圈锁定退化（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **76.** `minimal_verification_composite_width.py`：复合模型轮：FK kink 宽度参数区扫描（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **77.** `minimal_verification_reopen_realfield.py`：弱版方向一：真实记录构型下的失稳量级与驻波门槛（2026-09-16），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **78.** `minimal_verification_ring_fourpiece_recheck.py` + `minimal_verification_ring_collapse_recheck.py`：裁决实验四件套复跑（2026-09-06），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **79.** `minimal_verification_fermion_anomaly.py`：P4-31 前置项：极简费米子扇区模型，判负记录（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **80.** `minimal_verification_bond_identity.py`：键身份轮：键变量取实轴方向差的两读法对照与保护前提（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **81.** `minimal_verification_complex_structure_op.py`：复结构序参量的显式形式化第一轮（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **82.** `minimal_verification_amplitude_composition.py`：振幅合成轮：宏观振幅 = 份额开方乘块内相干度（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **83.** `minimal_verification_amplitude_emergence.py`：振幅涌现轮：从固定模单体集合与相位分布导出局部振幅场（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **84.** `minimal_verification_anisotropy_family.py`：各向异性因子同族性的交叉核对，部分判负（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **85.** `minimal_verification_parity_banding.py`：奇偶分档的精确形态：带边锁定、显式本征矢与非锁定的匹配条件（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **86.** `minimal_verification_amplitude_phase_joint.py`：相位-振幅联测轮：同一构型里的绕数、宽度与质量三读（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **87.** `minimal_verification_m4d1_3d_config.py`：M4-D1：三维构型读数，耦合失稳的一维读数三维化（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **88.** `minimal_verification_m4d2_trigger_race.py`：M4-D2：两路触发的竞争，交叉写入速率与三维退化（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **89.** `minimal_verification_m4d3_horizon_write.py`：M4-D3：视界线自洽性与写入判据（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **90.** `minimal_verification_m6_s2_scales.py`：M6-S2 可做部分：单位链、坍缩驱动的斜坡速率与交叉判定（2026-09-17），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **91.** `minimal_verification_sampling_unbiasedness.py`：采样无偏性轮：计数口径决定偏置（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **92.** `minimal_verification_continuous_limit_bandlimit.py`：连续极限与带限轮：尼奎斯特界与晶格带边的作用域（2026-09-18），判据 11/11，[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **93.** `minimal_verification_self_triggered_sampling.py`：自触发采样轮：相位临界条件给出时钟、速率不变性与噪声标度（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **94.** `minimal_verification_collision_flux_weighting.py`：碰撞通量加权轮：锁速载子口径闭合，包络群速口径的偏差与放大（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **95.** `minimal_verification_flux_weighting_3d_defect.py`：通量加权的三维各向异性与局域长度轮：方向依赖与尺度不变性（2026-09-18），判据 8/8，[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **96.** `minimal_verification_carrier_clock_vs_excitation.py`：载子钟与激发数轮：率口径给不出份额（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **97.** `minimal_verification_carrier_identity_breathing.py`：载子身份与呼吸模式轮：计数跟时间平均份额走（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **98.** `minimal_verification_carrier_occupancy_wkb.py`：独立载子经典占据轮：经典占据给不出份额（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **99.** `minimal_verification_semiclassical_excited_modes.py`：高激发态半经典对照轮：体区移交经典、转折点带留给波性（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **100.** `minimal_verification_collision_counting_bias.py`：碰撞计数轮：按碰撞计不等于按激发计，机制面收束（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **101.** `minimal_verification_t1b2_frame_sector.py`：T1b-2 标架扇区空间拓扑荷轮：整值在 SO(3) 层不可见、双覆盖给 Z_2（2026-09-18），[[验证脚本/历史条目/历史条目-052-101|条目档 052-101]]
+- **102.** `minimal_verification_m6_s2r_tracking.py`：M6-S2R 斜坡复核：记录跟随的阻尼判据（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **103.** `minimal_verification_counting_rule_emergence.py`：计数规则涌现轮：受激发射给份额、自发发射给均匀本底（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **104.** `minimal_verification_m6_s2g_damping.py`：M6-S2G γ 取数可做部分：最小模型的守恒性与观测上限（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **105.** `minimal_verification_spontaneous_term_derivation.py`：自发项导出轮：本底来自时钟折返（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **106.** `minimal_verification_lv_coefficient_matching.py`：框架侧有效算符系数的导出：破缺参数到 SME 系数的精确换算（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **107.** `minimal_verification_light_deflection_local_frame.py`：光在静态倾角场中的偏折：局域轴读法与全局轴读法（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **108.** `minimal_verification_t1b2a_frame_tetrad_4d.py`：T1b-2a 标架扇区四维离散口径与非阿贝尔推广（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **109.** `minimal_verification_i1_domain_wall_w2.py`：接口判定 I-1：畴壁与双覆盖标签的一致性由端点决定（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **110.** `minimal_verification_record_ruler_coupling.py`：记录场是否改写局域尺：键能模型上的读数（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **111.** `minimal_verification_ruler_coupling_candidates.py`：尺-记录耦合候选筛查：局部键能项给不出全值（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **112.** `minimal_verification_lambda_light_deflection.py`：空间系数 lambda 的光偏折锚：偏折角随 lambda 的线性律（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **113.** `minimal_verification_gravity_channel_lock.py`：引力通道第二重锁：比值型组合归一化无关且恒零（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **114.** `minimal_verification_tidal_ricci_lambda.py`：GV1 潮汐项与里奇对应：真空条件把 lambda 逼到 1（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **115.** `minimal_verification_covariant_wave_form.py`：GV4 协变波动形式：坐标相速恒等式与联络项（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **116.** `minimal_verification_gv6_vector_sector_gate.py`：GV6 矢量扇区的定量门：救拖曳要 O(1) 强度的时间反演奇通道（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **117.** `minimal_verification_rebuild_1d.py`：本体层重建阶段 2：链接型写入的一维最小模型（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **118.** `minimal_verification_registration_efficiency.py`：登记效率轮：周期结构显形需强耦合（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **119.** `minimal_verification_rebuild_3d.py`：本体层重建阶段 3 批一：三维稳态格林函数、谱与因果前沿（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **120.** `minimal_verification_rebuild_3d_batch2.py`：本体层重建阶段 3 批二：无迹锁、弹性常数与矢量扇区（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **121.** `minimal_verification_full_quantization.py`：完全量子化轮：谐振子格点在算符层面没有 +1 本底（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **122.** `minimal_verification_m6_s1_field.py`：M6-S1 可做部分：真实场构型：写入律与容量裁剪（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **123.** `minimal_verification_clock_operator_check.py`：声明式检查轮：本底要什么算符、给出什么签名（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **124.** `minimal_verification_collision_writes_record.py`：碰撞即写入轮：写入时刻等于折返时刻、本底等于碰撞率、稀释统计 $Q = -\eta$（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **125.** `minimal_verification_m6_s3_spectrum.py`：M6-S3 可做部分：真实场构型的谱读数与 lambda 扫描（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **126.** `minimal_verification_rebuild_stage4_lambda.py`：本体层重建阶段 4 批一：识别式重跑与 $\lambda$ 导出的读数（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **127.** `minimal_verification_write_operator.py`：写入算符轮：过轴即写、写即转移、反作用落在被采样对象（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **128.** `minimal_verification_write_operator_n_plus_1.py`：写入算符 $n+1$ 轮：每过轴写 $n+1$ 笔（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **129.** `minimal_verification_m6_s21b_dispersion.py`：M6-S2-1b 路线一：本构常数比 K/J 的色散路线换算与格点核对（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **130.** `minimal_verification_detector_deadtime.py`：探测器死时间与关联轮：两种亏欠同向、标度可分（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **131.** `minimal_verification_deadtime_correlation.py`：死时间关联效应轮：洞宽定死时间、凹陷深度定效率（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **132.** `minimal_verification_write_operator_3d.py`：写入算符三维与缺陷轮：逐站点直和、底噪按站点数标度、绕数缺陷给整周期滑移（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **133.** `minimal_verification_m6_s3n_nonlinear.py`：M6-S3N 非线性在场一读：斜坡驱动的交错失稳与线性时钟定性对照（2026-09-18），判据 5/5，[[注记-M6-S3N（非线性在场一读）：斜坡驱动的交错失稳与线性时钟定性对照|M6-S3N（非线性在场一读）]]
+- **134.** `minimal_verification_frame_curvature.py`：标架场曲率轮：面元环量局域在核、离散 Stokes 成立、半整数绕数要求一条弦（2026-09-18），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **135.** `minimal_verification_m6_s21b_elastic.py`：M6-S2-1b 路线二：弹性本构路线的双通道换算桥接与弹性定律核对（2026-09-18），判据 4/4，[[注记-M6-S2-1b（路线二）：弹性本构路线的双通道换算桥接与弹性定律核对|M6-S2-1b（路线二）]]
+- **136.** `minimal_verification_string_observability.py`：弦的可观测性轮：切割线不可观测、墙只活在棱层（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **137.** `minimal_verification_m6_direction_lambda.py`：M6 方向-λ 定向核查：翻转线的小-λ 渐近与 kappa_phi 候选对齐（2026-09-19），判据 3/3，[[注记-M6-方向-λ核查：耦合系数翻转线的小-λ 渐近与 κ_φ 候选的对齐|M6-方向-λ核查]]
+- **138.** `minimal_verification_m6_dictionary_reconciliation.py`：M6 字典核对：归一化口径对齐、J 惯性反推与识别项可推导边界（2026-09-19），判据 4/4，[[注记-M6-字典对账：归一化口径对齐、J 惯性反推与识别项的可推导边界|M6-字典对账]]
+- **139.** `minimal_verification_write_sector_compatibility.py`：写入算符与绕数扇区相容性轮：P3-13 第一步（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **140.** `minimal_verification_sector_label_operator.py`：扇区标签算符轮：与写对易、整数谱与提升关系、对易子的选择定则（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **141.** `minimal_verification_full_deflection_angle.py`：满偏角的极限地位：机制失义边界、视界过零与双覆盖锚（2026-09-19），[[注记-满偏角的极限地位：机制失义边界、视界过零与双覆盖锚（J1至J5）|满偏角的极限地位]]
+- **142.** `minimal_verification_defect_motion_topology.py`：缺陷动力学耦合轮：站点层拓扑阻塞、阈值穿越等于电荷对生成、棱层插值与半荷分裂（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **143.** `minimal_verification_motion_two_sided.py`：运动双侧轮：连续累加与离散绕数在同一条过程上（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **144.** `minimal_verification_transition_rate.py`：跃迁率轮：跃迁时长、跃迁率上界与记录流分辨率（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **145.** `minimal_verification_system_factor_1365.py`：系统因子 1.365 的剖分：截断、离散色散与读数形状（2026-09-19），[[注记-系统因子1.365的剖分：截断、离散色散与读数形状（S1至S4）|系统因子1.365的剖分]]
+- **146.** `minimal_verification_full_quantization_3d.py`：完全量子化三维轮：真振子的两通道速率律、截断收敛与反作用（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **147.** `minimal_verification_trace_s_channel.py`：迹型 s 系数的 O(1) 因子：桥因子的身份与两条标定（2026-09-19），[[注记-迹型s系数的O(1)因子：桥因子的身份与两条标定（T1至T4）|迹型s系数的O(1)因子]]
+- **148.** `minimal_verification_relation_layer_algebra.py`：关系层相位代数轮：P3-13 第三步、路线乙第一波（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **149.** `minimal_verification_fermion_channel_window.py`：费米子通道第一轮：宇称奇源与 m_* 窗口（2026-09-19），[[注记-费米子通道第一轮：复合模型的宇称奇源与 m_★ 窗口（F1至F4）|费米子通道第一轮]]
+- **150.** `minimal_verification_relation_layer_born.py`：关系层 Born 规则轮：P3-13 第四步、R7 紧口径与 R1 轻量（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **151.** `minimal_verification_relation_layer_carrier.py`：关系层载体与内积轮：P3-13 第五步、路线乙必答项（2026-09-19），[[验证脚本/历史条目/历史条目-102-151|条目档 102-151]]
+- **152.** `minimal_verification_relation_layer_analytic.py`：载体与内积解析形式轮：P3-13 第六步（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **153.** `minimal_verification_fermion_channel_coefficient.py`：费米子通道第二轮：T 奇耦合系数与能量分解（2026-09-19），[[注记-费米子通道第二轮：复合模型的T奇耦合系数与能量分解（G1至G4）|费米子通道第二轮]]
+- **154.** `minimal_verification_bh33_exit_timescale.py`：BH3-3 后续时标侧：格点退出完成时标与重标瞬时性（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **155.** `minimal_verification_composite_window_crossing.py`：费米子通道第三轮：宽度窗口与洛伦兹窗口的交叉核对（2026-09-19），[[注记-费米子通道第三轮：宽度窗口与洛伦兹窗口的交叉核对（H1至H4）|费米子通道第三轮]]
+- **156.** `minimal_verification_relation_layer_convergence.py`：P3-13 收尾轮：份额恒等式的方差形式与连续极限的收敛率（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **157.** `minimal_verification_fermion_channel_3d_partition.py`：费米子通道第四轮：三维面壁的能量均分核对（2026-09-19），[[注记-费米子通道第四轮：三维面壁的能量均分核对（P1至P4）|费米子通道第四轮]]
+- **158.** `minimal_verification_bh33_3d_trace.py`：BH3-3 后续三维衔接：层收缩静态痕迹验证（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **159.** `minimal_verification_g41_frequency_dependence.py`：G4-1：γ 频率依赖，常数口径的适用带与记忆时间上界（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **160.** `minimal_verification_t0_reading_discriminator.py`：识别式阶段 1 第一轮：判定项读数化（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **161.** `minimal_verification_weyl_pair.py`：魏尔对与海森堡衔接轮：时钟-移位魏尔关系、提升关系的接缝分解与不确定性界的衔接条件（2026-09-19），[[注记-魏尔对与海森堡衔接轮的最小验证：时钟-移位魏尔关系、提升关系的接缝分解与不确定性界的衔接条件|魏尔对与海森堡衔接轮的最小验证]]
+- **162.** `minimal_verification_bh6_large_amplitude.py`：BH6 大振幅非线性首轮：精确异类势下的失稳时钟与两通道核对（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **163.** `minimal_verification_selfconsistent_channels_a1.py`：识别式阶段 2 第一轮：自撑阱四通道显式权重与系数族（2026-09-19），[[注记-识别式阶段2第一轮：自撑阱四通道显式权重与系数族（A1四判据）|识别式阶段2第一轮]]
+- **164.** `minimal_verification_a2_consistency.py`：识别式阶段 2 第二轮：A2 与判据 P、S 的逐项比对（2026-09-19），[[注记-识别式阶段2第二轮：A2与判据P、S的逐项比对|识别式阶段2第二轮]]
+- **165.** `minimal_verification_seam_continuum.py`：接缝项连续极限轮：有效接缝项 = Z 乘切割连接相干、三种区制与切割自由度（2026-09-19），[[注记-接缝项连续极限轮的最小验证：有效接缝项 = Z 乘切割连接相干、三种区制与切割自由度|接缝项连续极限轮的最小验证]]
+- **166.** `minimal_verification_b2_product_degeneracy.py`：识别式阶段 3 第一轮：退化定理的读数化（2026-09-19），[[注记-识别式阶段3第一轮：退化定理的读数化（B2四判据）|识别式阶段3第一轮]]
+- **167.** `minimal_verification_position_momentum.py`：P3-10 首轮：位置动量算符的边界项形式、位置矩阵元的 Z 分之一常数 pi 与两种接缝的区分（2026-09-19），[[注记-P3-10 首轮的最小验证：位置动量算符的边界项形式、位置矩阵元的 Z 分之一常数 pi 与两种接缝的区分|P3-10 首轮的最小验证]]
+- **168.** `minimal_verification_b1_operator_homogeneity.py`：识别式阶段 3 第二轮：B1 自撑恒等式的三维径向细化（2026-09-19），[[注记-识别式阶段3第二轮：B1自撑恒等式的三维径向细化|识别式阶段3第二轮]]
+- **169.** `minimal_verification_bh6_convention.py`：BH6 后续轮：时域触发的平衡背景重设与静态-动态一致性（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **170.** `minimal_verification_spectrum_unfolding.py`：连续谱解卷（P3-14）首轮：环链离散谱与开链连续谱、最大间距常数 pi 与边界项的 Z 平方收敛（2026-09-19），[[注记-连续谱解卷（P3-14）首轮的最小验证：环链离散谱与开链连续谱、最大间距常数 pi 与边界项的 Z 平方收敛|连续谱解卷（P3-14）首轮的最小验]]
+- **171.** `minimal_verification_zero_point_energy.py`：三-4 零点能因子首轮：折返点计数与 delta 外推（2026-09-19），[[注记-三-4 零点能因子首轮的最小验证：折返点计数（软四分之一、硬二分之一）与 delta 外推到二分之一|三-4 零点能因子首轮的最小验证]]
+- **172.** `minimal_verification_zero_point_asymptotic.py`：三-4 解析余项轮：作用量口径的折返点 1/2 与协议相关的拟合系数（2026-09-19），[[注记-三-4 解析余项轮的最小验证：作用量口径的折返点二分之一、协议相关的拟合系数与两几何的闭式谱|三-4 解析余项轮的最小验证]]
+- **173.** `minimal_verification_mathieu_asymptotic.py`：三-4 Mathieu 渐近轮：$a_n$ 的 $(2n+1)$ 结构与 $p$ 表象 WKB 偏移（2026-09-19），[[注记-三-4 Mathieu 渐近轮的最小验证：a_n 的 (2n+1) 结构、p 表象 WKB 偏移与有限 N 的表象恒等式失效|三-4 Mathieu 渐近轮的最小]]
+- **174.** `minimal_verification_correlation_distance.py`：二-1 首轮：锁定档相位差方差与格距无关、对照档线性增长（2026-09-19），[[注记-二-1 首轮的最小验证：锁定档相位差方差与格距无关、对照档线性增长与显式函数|二-1 首轮的最小验证]]
+- **175.** `minimal_verification_correlation_locking_origin.py`：二-1 解析段：锁定场的两层口径与相关长度（2026-09-19），[[注记-二-1 解析段的最小验证：锁定场的两层口径（增量层由缺陷密度、场层由锁定质量）与相关长度|二-1 解析段的最小验证]]
+- **176.** `minimal_verification_theta_term_interface.py`：theta 型项对界面能的贡献：平面壁恒零与全导数结构（2026-09-19），[[注记-theta型项对界面能的贡献：平面壁恒零与全导数结构（K1至K4）|theta型项对界面能的贡献]]
+- **177.** `minimal_verification_bh33_3d_sat_trace.py`：BH3-3 后续（饱和档三维痕迹）：容量裁剪在场的层收缩痕迹读数、质量项容量吞没与档位订正（2026-09-19），[[注记-BH3-3后续（饱和档三维痕迹）：容量裁剪在场的层收缩痕迹读数与档位订正|BH3-3后续（饱和档三维痕迹）]]
+- **178.** `minimal_verification_feedback_interface.py`：键能反馈的界面效应：反感分支、软化分支与刚度下限（2026-09-19），[[注记-键能反馈的界面效应：反感分支、软化分支与刚度下限（L1至L4）|键能反馈的界面效应]]
+- **179.** `minimal_verification_correlation_field_closedform.py`：二-1 第三段：场层相关函数的两点指数闭式与 xi_f 的窗口相关性（2026-09-19），[[注记-二-1 第三段的最小验证：场层相关函数的两点指数闭式与 xi_f 的窗口相关性|二-1 第三段的最小验证]]
+- **180.** `minimal_verification_c1_softening_window.py`：C1 窗口算术：软化反馈的强度上限与所需驻留半径的定量对接（2026-09-19），[[注记-C1窗口算术：软化反馈的强度上限与所需驻留半径的定量对接|C1窗口算术]]
+- **181.** `minimal_verification_c1_anchor_feedback_unified.py`：C1 统一构型：锚核与反馈的合成规则判定与越零判死（2026-09-19），[[注记-C1统一构型：锚核与反馈的合成规则判定与越零判死|C1统一构型]]
+- **182.** `minimal_verification_correlation_field_analytic.py`：二-1 第四段：系数解析式、慢者取正与 xi_f 窗口漂移预测（2026-09-19），[[注记-二-1 第四段的最小验证：场层相关系数的解析式、慢者取正与 xi_f 窗口漂移的预测|二-1 第四段的最小验证]]
+- **183.** `minimal_verification_correlation_entanglement.py`：二-1 第五段：显式函数 f(E_xy)、三档锁定值塌缩与对照档无平台排除（2026-09-19），[[注记-二-1 第五段的最小验证：显式函数 f(E_xy)、三档锁定值的塌缩与对照档的无平台排除|二-1 第五段的最小验证]]
+- **184.** `minimal_verification_locked_frame_stabilizer.py`：二-1 第六段：锁定模的体系内来源（同调扇区标签、保护距离与条件恶化）（2026-09-19），[[注记-二-1 第六段的最小验证：锁定模的体系内来源（同调扇区标签、保护距离与条件恶化）|二-1 第六段的最小验证]]
+- **185.** `minimal_verification_bh6_h_gt_1.py`：BH6 可选后续（滑移与超满偏）：稳定性图谱与触发通道判定（2026-09-19），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **186.** `minimal_verification_direction_linkage.py`：方向系数衔接与低能窗口口径更正：相位 $1/24$ 族、群速 $1/8$ 族与 $E_P$ 口径（2026-09-19），[[注记-方向系数衔接与低能窗口口径更正|方向系数衔接与低能窗口口径更正]]
+- **187.** `minimal_verification_amplitude_basis.py`：幅度基数与 $E_P$ 口径的两层分离：$\sum n_a^4$ 三套取值与 L3 旧读数反解（2026-09-19），[[注记-幅度基数与E_P口径的两层分离|幅度基数与E_P口径的两层分离]]
+- **188.** `minimal_verification_bh6_strict_family.py`：BH6 可选后续二轮（严格驻态族）：h 至 10 的驻态连续化、稳定性与剖面口径重算（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **189.** `minimal_verification_locked_mode_variance.py`：二-1 第七段：共享分量方差的体系内来源（场层零模、求和规则与整体模余量）（2026-09-20），[[注记-二-1 第七段的最小验证：共享分量方差的体系内来源（场层零模、求和规则与整体模余量）|二-1 第七段的最小验证]]
+- **190.** `minimal_verification_frame_variance_origin.py`：二-1 第八段：整体模余量的体系内来源（锁定坐标涨落、同步相变门槛与两项合成）（2026-09-20），[[注记-二-1 第八段的最小验证：整体模余量的体系内来源（锁定坐标涨落、同步相变门槛与两项合成）|二-1 第八段的最小验证]]
+- **191.** `minimal_verification_constraint_removal.py`：二-1 补缺轮：C4 的去约束对照（保留星项与面项饱和、去任一项出现线性依赖）（2026-09-20），[[注记-二-1 补缺轮的最小验证：去约束对照（保留星项与面项饱和、去任一项出现线性依赖）|二-1 补缺轮的最小验证]]
+- **192.** `minimal_verification_dynamic_write_covariant.py`：G3 与判据 C 合轮：动态写入的协变形式与阻尼观测量级（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **193.** `minimal_verification_bh6_large_seed.py`：BH6 后续三轮（大种子扫掠）：势垒门的幅度定位与落点分类（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **194.** `minimal_verification_perfect_elasticity.py`：完美弹性定理：等速硬点链的碰撞不变量与自由演化等价（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **195.** `minimal_verification_gamma_scale.py`：gamma 的量级判定：膨胀落位率候选与所需观测精度（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **196.** `minimal_verification_mode_frequency_origin.py`：三-4 补缺轮：零点能里 omega_0 的体系内来源（晶格色散、带边与基模规模律）（2026-09-20），[[注记-三-4 补缺轮的最小验证：零点能里 omega_0 的体系内来源（晶格色散、带边与基模规模律）|三-4 补缺轮的最小验证]]
+- **197.** `minimal_verification_stagger_selection.py`：交错基态的选择机制：锁相自维持与不构成吸引子（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **198.** `minimal_verification_unfolding_3d.py`：三-3 补缺轮：连续谱解卷的三维构造（谱可加、逐方向魏尔关系与三条接缝的交线结构）（2026-09-20），[[注记-三-3 补缺轮的最小验证：连续谱解卷的三维构造（谱可加、逐方向魏尔关系与三条接缝的交线结构）|三-3 补缺轮的最小验证]]
+- **199.** `minimal_verification_unfolding_scattering.py`：三-3 余项：解卷信息损失在散射侧的形式（离散谱的共振化与拓扑数据的丢失）（2026-09-20），[[注记-三-3 余项的最小验证：解卷信息损失在散射侧的形式（离散谱的共振化与拓扑数据的丢失）|三-3 余项的最小验证]]
+- **200.** `minimal_verification_kappa_interface.py`：P4-16 第一步第一轮：锁定耦合 kappa 的导出（保护距离通道、闭式与门槛相容）（2026-09-20），[[注记-P4-16 第一步第一轮的最小验证：锁定耦合 kappa 的导出（保护距离通道、闭式与门槛相容）|P4-16 第一步第一轮的最小验证]]
+- **201.** `minimal_verification_light_cone_horizon.py`：光锥兼容性最小验证：视界=光锥闭合面（2026-09-20），[[验证脚本/历史条目/历史条目-152-201|条目档 152-201]]
+- **202.** `minimal_verification_gxx_completion.py`：gxx 强场完成形式判据：真空条件钉住与停滞律收束（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **203.** `minimal_verification_g6_link_synthesis.py`：G6：h00 = 2 theta 的显式链接合成（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **204.** `minimal_verification_drag_channel.py`：G5/GV6：拖曳通道的微观来源与强度归一（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **205.** `minimal_verification_threshold_coefficient.py`：P4-16 第一步第二轮：门槛的精确系数（实测系数带、噪声方向与应用边界）（2026-09-20），[[注记-P4-16 第一步第二轮的最小验证：门槛的精确系数（实测系数带、噪声方向与应用边界）|P4-16 第一步第二轮的最小验证]]
+- **206.** `minimal_verification_vonmises_exact.py`：P4-16 第一步第三轮：自洽族的判定（低档两族不可分、高档两族皆失效）（2026-09-20），[[注记-P4-16 第一步第三轮的最小验证：自洽族的判定（低档两族不可分、高档两族皆失效）|P4-16 第一步第三轮的最小验证]]
+- **207.** `minimal_verification_mixture_exact.py`：P4-16 第一步第四轮：混合式的判别（低频档成立、均匀脱锁分量被否定）（2026-09-20），[[注记-P4-16 第一步第四轮的最小验证：混合式的判别（低频档成立、均匀脱锁分量被否定）|P4-16 第一步第四轮的最小验证]]
+- **208.** `minimal_verification_unlocked_shape.py`：P4-16 第一步第五轮：脱锁分量的形状（四阶矩为负排除同心族、形状仍未定案）（2026-09-20），[[注记-P4-16 第一步第五轮的最小验证：脱锁分量的形状（四阶矩为负排除同心族、形状仍未定案）|P4-16 第一步第五轮的最小验证]]
+- **209.** `minimal_verification_kappa_bond_route.py`：P4-16 第一步第六轮（路线丙）：键能曲率通道的绝对标度（两口径判别与所需曲率比）（2026-09-20），[[注记-P4-16 第一步第六轮的最小验证：键能曲率通道的绝对标度（两口径判别与所需曲率比）|P4-16 第一步第六轮的最小验证]]
+- **210.** `minimal_verification_kappa_from_state.py`：P4-16 路线甲第一轮：由整体态量测有效耦合（两个候选形式均被否）（2026-09-20），[[注记-P4-16 路线甲第一轮的最小验证：由整体态量测有效耦合（两个候选形式均被否）|P4-16 路线甲第一轮的最小验证]]
+- **211.** `minimal_verification_projection_operator.py`：P4-16 路线甲第二轮：投射算符的显式构造（同步扇区投影与纯度给耦合）（2026-09-20），[[注记-P4-16 路线甲第二轮的最小验证：投射算符的显式构造（同步扇区投影与纯度给耦合）|P4-16 路线甲第二轮的最小验证]]
+- **212.** `minimal_verification_sector_count.py`：P4-16 路线甲第三轮：扇区数 N_W = L 的独立导出（整数格点恒等式与维度口径）（2026-09-20），[[注记-P4-16 路线甲第三轮的最小验证：扇区数 N_W = L 的独立导出（整数格点恒等式与维度口径）|P4-16 路线甲第三轮的最小验证]]
+- **213.** `minimal_verification_sector_distribution.py`：P4-16 路线甲第四轮：扇区分布的动力学来源（绕数扩散、宇称结构与成对事件混合）（2026-09-20），[[注记-P4-16 路线甲第四轮的最小验证：扇区分布的动力学来源（绕数扩散、宇称结构与成对事件混合）|P4-16 路线甲第四轮的最小验证]]
+- **214.** `minimal_verification_pair_events.py`：P4-16 路线甲第五轮：成对事件的动力学来源（缺陷对同向穿越与密度阈值）（2026-09-20），[[注记-P4-16 路线甲第五轮的最小验证：成对事件的动力学来源（缺陷对同向穿越与密度阈值）|P4-16 路线甲第五轮的最小验证]]
+- **215.** `minimal_verification_h0i_link_synthesis.py`：h0i 的链接级合成：动量读数项的度规组装与拖曳强度（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **216.** `minimal_verification_diffusion_mismatch.py`：P4-16 路线甲第六轮：扩散时间与失配宽度的对应（相干时间律与失配上界）（2026-09-20），[[注记-P4-16 路线甲第六轮的最小验证：扩散时间与失配宽度的对应（相干时间律与失配上界）|P4-16 路线甲第六轮的最小验证]]
+- **217.** `minimal_verification_u2_coupling_stress.py`：U2 最小臂：耦合重开区的有效应力判决（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **218.** `minimal_verification_u2_transient.py`：U2-B 瞬态层：写-弛豫轨迹上的真空保持与停滞律轨迹（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **219.** `minimal_verification_threshold_crossover.py`：P4-16 路线甲第八轮（裁决轮）：均匀化缺口裁决（阈值修正为 L^2/(4 pi)，缺口消解为联合条件）（2026-09-20），[[注记-P4-16 路线甲第八轮的最小验证：均匀化缺口裁决（阈值修正为 L^2 除以 4 pi，缺口消解为联合条件）|P4-16 路线甲第八轮的最小验证]]
+- **220.** `minimal_verification_bh7_w4_ceiling.py`：BH7-W4：封顶曲线（满偏逼近的连续极限与有效荷封顶）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **221.** `minimal_verification_dragging_split.py`：拖曳预言 4.6% 差的份额拆分：离散残差归零与敏感轴投影（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **222.** `minimal_verification_bh7_w1_staggered.py`：BH7-W1：交错序参量读数（结构序破坏的微观判据）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **223.** `minimal_verification_normal_transition.py`：法向跃迁的公理级导出：触发侧的核对与方向侧的代价计数（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **224.** `minimal_verification_defect_speed.py`：P4-16 路线甲第九轮：缺陷穿越速度的微观值（色散给出的因果上限与长波极限）（2026-09-20），[[注记-P4-16 路线甲第九轮的最小验证：缺陷穿越速度的微观值（色散给出的因果上限与长波极限）|P4-16 路线甲第九轮的最小验证]]
+- **225.** `minimal_verification_bh7_w3_beyond.py`：BH7-W3：越界构型的探索读数（存在性与结构；稳定性口径未立）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **226.** `minimal_verification_write_allocation.py`：写事件的分配细节：链接层面的显式规则与核的方向结构（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **227.** `minimal_verification_defect_mass_speed.py`：缺陷质量与穿越速度的关系（第 224 条余项）：有质量晶格色散、$v_{\max}$ 的精确闭式与均匀化条件只被收紧（2026-09-20），[[注记-缺陷质量与穿越速度的关系：晶格色散的质量缺口、v_max 的精确闭式与均匀化条件只被收紧|缺陷质量与穿越速度的关系]]
+- **228.** `minimal_verification_bh7_c1_interface.py`：BH7xC1 接口：缺陷密度代理读数（键级零缺陷与位点漂移的分离）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **229.** `minimal_verification_mass_mapping.py`：BH7 质量映射：读数到 M/m_P 的换算（r_h/2 链与单位链复核）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **230.** `minimal_verification_bh7_w1_extended.py`：BH7-W1 开域：三轴外推（格点效应、时程稳定性与缺陷密度饱和）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **231.** `minimal_verification_lambda_value.py`：耦合强度实际值：lambda = (m_delta/m_P)^2 换算链与 BH7 门槛表（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **232.** `minimal_verification_c1_softmode_route.py`：C1 路线乙首判：软模承载宽度的能量竞争（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **233.** `minimal_verification_c1_softmode_ring.py`：C1 路线乙第二判：三维环的驻留与脱钉复核（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **234.** `minimal_verification_locking_gap.py`：锁定帧的谱隙独立核算：横模谱隙等于回拉份额、门槛为谱隙的倍数与稳定子 gap 的不同源（2026-09-20），[[注记-锁定帧的谱隙独立核算：横模谱隙等于回拉份额、门槛为谱隙的倍数与稳定子 gap 的不同源|锁定帧的谱隙独立核算]]
+- **235.** `minimal_verification_unlocked_shape_2.py`：P4-16 第一步第七轮：脱锁分量的形状续轮（四阶矩的负号是单快照涨落、形状定为同心 wrapped 族、门槛闭式阻塞解除）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **236.** `minimal_verification_threshold_closedform.py`：P4-16 第一步第八轮：门槛系数的闭式口径换算与第 206 条族判别的改判（wrapped 族复归）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **237.** `minimal_verification_threshold_crosscheck.py`：P4-16 第一步第九轮：门槛带的跨口径对照（自洽参照系压低有效方差 9% 至 17%）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **238.** `minimal_verification_defect_dynamics_d1.py`：缺陷动力学线 D-1：含锁定势的等速硬点链（碰撞不变量与自由演化等价存活、等速前提属碰撞层）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **239.** `minimal_verification_defect_dynamics_d2.py`：缺陷动力学线 D-2：连续极限与色散（涨落缺口与孤子质量的分工、第 227 条质量口径的确认）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **240.** `minimal_verification_defect_dynamics_d3.py`：缺陷动力学线 D-3：质量与迁移率（终端速度律、响应质量等于形状范数与三质量差额的登记）（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **241.** `minimal_verification_c1_quartic_route.py`：C1 路线甲筛：四次项在标量载体上的 Derrick 标度与判负（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **242.** `minimal_verification_c1_protection_transplant.py`：C1 保护层可搬用性判定：弦算符结构与到边界的弦（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **243.** `minimal_verification_c1_assembly.py`：C1-6 组装轮：三层复合位错粒子的哈密顿量组装与参数区核对（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **244.** `minimal_verification_c1_assembly_3d.py`：C1-6 三维版：线缺陷扇区的绕数衰减与保护层前提（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **245.** `minimal_verification_w4_mass_density.py`：张量桥 d 的 W4 通路：静质量密度与振幅亏损的标度关系（2026-09-16），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **246.** `minimal_verification_m6_s21_lambda_routes.py`：M6-S2-1 补：耦合系数 lambda 的多途径提取（2026-09-18），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **247.** `minimal_verification_calibration_channel.py`：校准通道的动力学形式：相位表扇区的扩散型弛豫与分扇区条件（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **248.** `minimal_verification_kappa_scale.py`：kappa 的微观值：候选阶梯、结构上界与可观测性判定（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **249.** `minimal_verification_elasticity_axiom.py`：完美弹性的公理级形式化：恢复系数恒为一与不变量守恒（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **250.** `minimal_verification_gamma_H0_mechanism.py`：gamma 与落位率的机制性联系：两条候选机制的判定（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **251.** `minimal_verification_momentum_reading.py`：动量读数项的第一原理：逐拍写入的协变完备化与拖曳强度（2026-09-20），[[验证脚本/历史条目/历史条目-202-251|条目档 202-251]]
+- **252.** `minimal_verification_diffusion_rate.py`：P4-16 路线甲第七轮：扩散率的微观来源（缺陷通量的因果上限与均匀化条件的比较）（2026-09-20），[[注记-P4-16 路线甲第七轮的最小验证：扩散率的微观来源（缺陷通量的因果上限与均匀化条件的比较）|P4-16 路线甲第七轮的最小验证]]
+- **253.** `minimal_verification_tt_origin_3d.py`：分段 c 第四环：三维约束结构与张量块计数（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **254.** `minimal_verification_defect_dynamics_d4.py`：缺陷动力学线 D-4 消费式接口轮：与 C1 线的口径映射与参数区间不相交（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **255.** `minimal_verification_defect_dynamics_d5.py`：缺陷动力学线 D-5 接口轮：缺陷过轴一笔、与包络份额的配对形式、两个速度上界的层次（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **256.** `minimal_verification_defect_dynamics_d6.py`：缺陷动力学线 D-6：密度-质量-能量关系式与 CMB 重子密度的可代入入口（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **257.** `minimal_verification_defect_dynamics_d7.py`：缺陷动力学线 D-7 最小实现半：孤子扇区的最小量子化、离散钉扎读数与三维形式（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **258.** `minimal_verification_bh7_rhob_mechanism.py`：BH7 线 ρb 机制归属：反相核与切断读数（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **258.** `minimal_verification_pinning_lorentz_tension.py`：钉扎-洛伦兹张力轮：格点钉扎的偏好参考系效应与实验约束的对照（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **259.** `minimal_verification_c1_w4_wave_side_width.py`：C1-6 W4 轮：宽度的波性侧承载（软模关联长度与转换波有效波长）（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **259.** `minimal_verification_born_criterion_scale.py`：Born 判据尺度读法轮：三种能隙读法与失效阈值（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **260.** `minimal_verification_shape_factor.py`：描述项形状因子轮：有效相互作用的程长与振幅标度（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **261.** `minimal_verification_c1_w12_3d.py`：C1-6 W1/W2 三维版：保护结构在三维线缺陷构型上的复核（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **261.** `minimal_verification_two_soliton_relax.py`：精确双孤子松弛轮：振幅的确认与三项登记（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **262.** `minimal_verification_tail_amplitude.py`：尾振幅解析形式轮：标度律的定案与两处订正（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **263.** `minimal_verification_tail_amplitude_kappa.py`：尾振幅弹性系数标度轮：教科书形式与实测形式谁对（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **264.** `minimal_verification_c1_protected_dynamics.py`：C1-6 保护动力学轮：边界冻结下的线缺陷弛豫（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **264.** `minimal_verification_subleading.py`：次主导成分轮：交叉项积分工具与前置因子的相消（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **265.** `minimal_verification_c1_morphology_table.py`：C1-6 L2 轮：形态参数表（字典、重测与壁张力）（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **265.** `minimal_verification_correction_identity.py`：修正项解析身份轮：两种候选形式均判负（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **266.** `minimal_verification_harmonic_expansion.py`：逐阶展开轮：尾的谐波系数与收敛阶（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **267.** `minimal_verification_c1_anchor_design.py`：C1-6 锚核内驻设计轮：拉力、凹口增益与驻留判据（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **267.** `minimal_verification_harmonic_closedform.py`：谐波系数解析导出轮：闭式与一阶系数的解析值（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **268.** `minimal_verification_harmonic_coeffs.py`：高阶谐波系数导出轮：c1 解析定案，两条数值路线判负（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **269.** `minimal_verification_residue_expansion.py`：留数逐阶展开轮：尾部谐波的通项与形状因子线收官（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **270.** `minimal_verification_g1b_second_order.py`：G1b 首轮：静球对称的二阶靶子与判定项（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **270.** `minimal_verification_discretization.py`：离散修正轮：经验形式定案，三条机制候选的判定（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **271.** `minimal_verification_profile_test.py`：剖面测试重做轮：机制的归因与更紧的系数（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **272.** `minimal_verification_g1b_source_assembly.py`：G1b 第二轮：二阶源项与自耦合的机制装配（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **272.** `minimal_verification_discretization_analytic.py`：离散修正解析导出轮：形式确认、系数待定（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **273.** `minimal_verification_discretization_analytic.py`：离散修正解析导出轮定案：系数 $-1/12$（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **274.** `minimal_verification_g1b_sourced_second_order.py`：G1b 第三轮：携源剖面的二阶源项与残差消去（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **274.** `minimal_verification_window_ledger.py`：参数区四窗口对照轮：三窗相容、P1-40 状态更新与通道分岔（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **275.** `minimal_verification_g1b_continuum_limit.py`：G1b 第四轮：连续极限（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **275.** `minimal_verification_string_tension.py`：弦张力轮：自由弦端不可存在，3D 带电对象取闭弦环（2026-09-20），[[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数|弦图像的降级]]
+- **276.** `minimal_verification_string_scaling.py`：弦张力标度轮：线性于刚度与环的稳定半径（2026-09-20），[[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数|弦图像的降级]]
+- **277.** `minimal_verification_g1b_source_mechanism.py`：G1b 第五轮：源侧二阶项的机制侧判定（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **277.** `minimal_verification_ring_scaling.py`：环的 E(R) 标度轮：面积律与塌缩方向的不一致（2026-09-20），[[注记-弦图像的降级：相位绕圈住在关系层棱差，三维局域弦属 ansatz 读数|弦图像的降级]]
+- **278.** 环需强钉扎、延展型由边界保护（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **279.** `minimal_verification_g1b_write_measure.py`：G1b 第六轮：源因子的机制来源：写入的测度原理（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **279.** `minimal_verification_boundary_protection.py`：固定边界绕数保护轮：三层读数与一处判负（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **280.** `minimal_verification_g1b_ruler_selection.py`：G1b 第七轮：测度原理的第一原理判据：四种尺的定量判别（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **281.** 相位绕圈住在关系层棱差（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **282.** `minimal_verification_g1b_covariant_assembly.py`：G1b 第八轮：四维组装：三扇区读数与 3+1 约束（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **283.** `minimal_verification_g1b_general_static.py`：G1b 第九轮：一般静态位形（非球）（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **284.** `minimal_verification_mdelta_recount.py`：统一口径重算：时标区间读数（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **285.** `minimal_verification_g1b_time_machine.py`：G1b 第十轮：含时器械：4D 差分张量与标量扇区的真空条件（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **286.** `minimal_verification_g1b_tt_sector.py`：G1b 第十一轮：TT 扇区器械：全对称 3x3 空间度规与两种偏振的真空条件（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **287.** `minimal_verification_tension_reeval.py`：张力常数重估轮：第 278 条的环判据不依赖张力、第 279 条的能量量级与壁张力同式（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **288.** `minimal_verification_string_tension_relax.py`：弦张力松弛复测轮：ansatz 斜率属势项面积产物、松弛壁张力随根号 K（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **289.** `minimal_verification_boundary_protection_3d.py`：三维延展构型保护性复核：面积律的系数对上新壁张力（2026-09-20），[[验证脚本/历史条目/历史条目-252-289|条目档 252-289]]
+- **290.** `minimal_verification_g1b_tt_completion.py`：G1b 第十二轮：TT 背景上的完成形式判据（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **291.** `minimal_verification_g1b_second_order_metric.py`：G1b 第十三轮：几何侧二阶修正的显式构造（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **292.** `minimal_verification_defect_write_beat_3d.py`：三维面缺陷的写入节拍轮：笔数等于批数乘截面、写入即折返、准时性对噪声（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **293.** `minimal_verification_g1b_second_order_metric2.py`：G1b 第十四轮：装配核验重做：矢量扇区槽与轮廓基元（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **294.** `minimal_verification_g1b_second_order_metric3.py`：G1b 第十五轮：横向与无迹基元的下一层装配（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **295.** `minimal_verification_proposition17_3d.py`：命题 17 的三维时长口径轮：取样稀释作用在整批上（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **296.** `minimal_verification_insertion_law.py`：插入律的系数：三条候选的核算与可判差别（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **297.** `minimal_verification_thermal_history.py`：热史一致性核对：落位因子必须为几何占比的一半（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **298.** `minimal_verification_placement_exponent.py`：落位律的运动学判据：约束落在膨胀指数上（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **299.** `minimal_verification_insertion_slaving.py`：奴役机制与插入的三种读法（2026-09-20），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **300.** `minimal_verification_g1b_moving_source.py`：G1b 第十六轮：动源完成形式首判：平移源的 O(v) 扇区与拖曳轮廓（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **301.** `minimal_verification_g1b_lorentz_boost.py`：G1b 第十七轮：洛伦兹助推候选的完整形式：助推核验、比值解析式与 O(theta) 偏置剖分（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **302.** `minimal_verification_g1b_crossing_waves.py`：G1b 第十八轮：两束交叉平面波的二阶装配：交叉残差、逐波完成与一般 (u,v) 类闭合（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **303.** `minimal_verification_g1b_uv_class.py`：G1b 第十九轮：(u,v) 类响应分类与交叉修正的最小选择：规范核、像结构与支撑阶梯（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **304.** `minimal_verification_clock_shared_bg_stim.py`：本底与受激项的时钟口径轮：窗口不共用时计数比随取样间隔三段变化（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **305.** `minimal_verification_g1b_gauge_fixed_cross.py`：G1b 第二十轮：六场支撑里的规范固定与交叉修正的唯一代表（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **306.** `minimal_verification_g1b_cross_closed_form.py`：G1b 第二十一轮：交叉修正的闭式解（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **307.** `minimal_verification_c6_measurability.py`：C6 可测含量评估轮：膝关节落在哪个分箱宽（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **308.** `minimal_verification_g1b_cross_generality.py`：G1b 第二十二轮：闭式解的一般性复核：振幅不等与旋转族斜交角（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **309.** `minimal_verification_corrugated_batch_dilution.py`：带褶皱壁在稀释档下的批内一致率轮：散布达分箱宽的 7% 即碎裂（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **310.** `minimal_verification_primordial_seed_scales.py`：原初扰动来源核算：种子深亚视界与枢轴超视界（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **311.** `minimal_verification_g1b_cross_angle_family.py`：G1b 第二十三轮：交叉角族：非 90 度交叉下闭式解的推广与复现（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **312.** `minimal_verification_write_rate_residence_channel.py`：写入率接驻留判据的通道合成轮：低速测速计与两通道四格判定（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **313.** `minimal_verification_g1b_collinear_limit.py`：G1b 第二十四轮：共线极限锚点：解析交叉完成式、合成恒等与四阶地板（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **314.** `minimal_verification_g1b_quartic_floor.py`：G1b 第二十五轮：四次幂地板的解析导出：pp-波精确方程、二阶复现与四阶修正（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **315.** `minimal_verification_g1b_series_convergence.py`：G1b 第二十六轮：级数收敛到精确解：打靶对照、误差幂律与半径两路测定（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **316.** `minimal_verification_g1b_radius_ledger.py`：G1b 第二十七轮：半径口径复核与两扇区换算：初始切片退化的识别、实轴域边界与第四轮口径对照（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **317.** `minimal_verification_g1b_profile_domain.py`：G1b 第二十八轮：一般剖面的域边界：网格版 λ 级数、剖面类分野与误差律（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **318.** `minimal_verification_g1b_normalization.py`：G1b 第二十九轮：归一化口径钉死：边界机制（度量分量过零）与不变量 Λ*（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **319.** `minimal_verification_lattice_dispersion_geometry.py`：洛伦兹线说明轮：首阶偏离的几何来源与方向指纹，判据 D1 至 D5（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **320.** `minimal_verification_observer_residual_split.py`：观测者响应线：残差分离轮：晶格修正与外势 boost 失配的分离，判据 OP1 至 OP5（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **321.** `BTMminimal_verification_profile_family_and_scale_ledger.py`：引力线收口轮：剖面族边界扫描与 θ 口径核对，判据 PF1 至 PF5（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **322.** `minimal_verification_strong_gradient_propagation.py`：D2 轮：强梯度区的微观传播检验（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **323.** `minimal_verification_luoshu_criteria.py`：核邻域九方位读数的洛书式结构判据轮：判负（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **324.** `minimal_verification_lorentz_damage_scan.py`：D3 轮：第四档损坏（洛伦兹结构）（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **325.** `minimal_verification_vortex_pair_imex.py`：涡旋对松弛器与对数项分解轮：松弛后既无对数项也无线性壁项（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **326.** `minimal_verification_vortex_ring_relax.py`：环边界下的面缺陷松弛轮：自支撑的核环不存活（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **327.** `minimal_verification_u3_first_step.py`：U3 第一步：两条界限的同型化与满量程核对（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **328.** `minimal_verification_p1_24_coefficient_closure.py`：P1-24 系数缺口的供给侧对接：重建尺读数与偏折全值（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **329.** `minimal_verification_vortex_ring_pinned.py`：强钉扎档核环轮：K = 0.24 下核环仍不存活、K = 0.30 档松弛器发散（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **330.** `minimal_verification_stiff_hard_wall.py`：刚性区松弛器与壁张力切换轮：松弛器修好、两支公式都不成立（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **331.** `minimal_verification_second_order_source_lock.py`：次阶源锁定复验（首轮）：含动能与应力源的两条守恒、迹源装配与呼吸通道的唯一性（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **332.** `minimal_verification_mass_scale_independence.py`：D4 轮：质量刻度的独立标定（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **333.** `minimal_verification_strip_samesize.py`：同尺寸条带小 K 档重测轮：未复现第 286 条读数（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **334.** `minimal_verification_lambda_beyond_one.py`：H3 轮：$\lambda/J > 1$ 的开域扫描（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **335.** `minimal_verification_strip_boundary_audit.py`：条带分歧三向对照与 x 向边界修正轮：分歧定位为 x 向周期性（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **336.** `minimal_verification_strip_table_fixed.py`：修正实现重跑条带表轮：连续式只在小刚度档成立（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **337.** `minimal_verification_second_order_source_lock_wave.py`：次阶源锁定复验·第三段：波动扇区的响应侧（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **338.** `minimal_verification_second_order_source_lock_time.py`：次阶源锁定复验·第二段：含时源的时间响应（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **340.** `minimal_verification_free_branch_tt_count.py`：1D 自由支与三维 TT 同一化的显式计数：秩二、约化两支与算符同一（2026-09-21），[[验证脚本/历史条目/历史条目-290-340|条目档 290-340]]
+- **341.** `minimal_verification_largeK_wall_closed_form.py`：大刚度档壁张力的解析式轮：两格快跳族、指数尾闭式与渐近系数（2026-09-21），[[注记-大刚度档壁张力的解析式：两格快跳族、指数尾与渐近系数（判据Y1至Z9）|大刚度档壁张力的解析式]]
+- **342.** `minimal_verification_c1_anchor_c1window.py`：C1 窗口驻留判据重测轮：AN 口径的拉力在刚度大档失效、弦不出现的对照读数（2026-09-21），[[注记-C1 窗口驻留判据重测轮：AN 口径的拉力在刚度大档失效、弦不出现的对照读数（判据CW1至CW7）|C1 窗口驻留判据重测轮]]
+- **343.** `minimal_verification_g1b_boundary_reduction.py`：G1b 第三十轮：边界条件的解析约化：横向尺度因子、凹性与零点判据（2026-09-22），[[注记-G1b第三十轮：边界条件的解析约化：横向尺度因子、凹性与零点判据（判据R1至R6）|G1b第三十轮]]
+- **344.** `minimal_verification_c1_e1_embedding.py`：C1 三维嵌入第一判据 E1：条带几何的弦张力闭合、横截面分离与沿线稳定性（2026-09-22），[[注记-C1 三维嵌入E1：条带几何的弦张力闭合、横截面分离与沿线稳定性（判据E1-1至E1-5）|C1 三维嵌入E1]]
+- **345.** `minimal_verification_c1_e2_timed_source.py`：C1 三维嵌入第二判据 E2：含时源分量的嵌入：运动壁的动量流、gamma 结构与沿线调制稳定性（2026-09-22），[[注记-C1 三维嵌入E2：含时源分量的嵌入：运动壁的动量流、γ 结构与沿线调制稳定性（判据E2-1至E2-5）|C1 三维嵌入E2]]
+- **346.** `minimal_verification_c1_e3_source_assembly.py`：C1 三维嵌入第三判据 E3：横截面积分口径接回引力侧源项装配（2026-09-22），[[注记-C1 三维嵌入E3：横截面积分口径接回引力侧源项装配（判据E3-1至E3-5）|C1 三维嵌入E3]]
+- **347.** `minimal_verification_c1_e4_unit_bridge.py`：C1 三维嵌入第四判据 E4：源项装配的物理单位换算：单一桥梁因子与闭合核对（2026-09-22），[[注记-C1 三维嵌入E4：源项装配的物理单位换算：单一桥梁因子与闭合核对（判据E4-1至E4-5）|C1 三维嵌入E4]]
+- **348.** `minimal_verification_mb1_elastic_dictionary.py`：量纲桥 MB-1：路线甲的变量字典与两链的纯数因子差（2026-09-22），[[注记-量纲桥MB-1：路线甲的变量字典与两链的纯数因子差（判据MB1-a至MB1-e）|量纲桥MB-1]]
+- **349.** `minimal_verification_mb1b_convention_audit.py`：量纲桥 MB-1b：两链比值的归属审计与约定核对（2026-09-22），[[注记-量纲桥MB-1b：两链比值的归属审计与约定核对（判据MB1b-a至MB1b-e）|量纲桥MB-1b]]
+- **350.** `minimal_verification_mb2_sound_speed.py`：量纲桥 MB-2：晶格声速自洽条件（2026-09-22），[[注记-量纲桥MB-2：晶格声速自洽条件（判据MB2-a至MB2-d）|量纲桥MB-2]]
+- **351.** 注记-量纲桥MB-3（路线判定注记，文本溯源，无脚本）：写入幅度中质量的物理身份，2026-09-22（2026-09-22），[[注记-量纲桥MB-3：写入幅度中质量的物理身份（路线丁判定）|量纲桥MB-3]]
+- **352.** `minimal_verification_mb4_anchor_calibration.py`：量纲桥 MB-4：以电子锚定标的桥因子与四窗口相容性（2026-09-22），[[注记-量纲桥MB-4：以电子锚定标的桥因子与四窗口相容性（判据MB4-a至MB4-e）|量纲桥MB-4]]
+- **353.** `minimal_verification_mb5_route_merge.py`：量纲桥 MB-5：四条路线合并：桥的形式判定与过定检查（2026-09-22），[[注记-量纲桥MB-5：四条路线合并：桥的形式判定与过定检查（判据MB5-a至MB5-e）|量纲桥MB-5]]
+- **354.** `minimal_verification_mb6_entry_fraction.py`：量纲桥 MB-6：入口份额 f 的钉定（2026-09-22），[[注记-量纲桥MB-6：入口份额f的钉定（判据MB6-a至MB6-e）|量纲桥MB-6]]
+- **355.** `minimal_verification_mb7_k_value_merge.py`：量纲桥 MB-7：K 的体系值连动与 D 线遗留收口（2026-09-22），[[注记-量纲桥MB-7：K的体系值连动与D线遗留收口（判据MB7-a至MB7-e）|量纲桥MB-7]]
+- **356.** `minimal_verification_mb9_inertia_derivation.py`：量纲桥 MB-9：惯性归一的独立导出：公理 4 哈密顿的显式系数（2026-09-22），[[注记-量纲桥MB-9：惯性归一的独立导出：公理4哈密顿的显式系数（判据MB9-a至MB9-e）|量纲桥MB-9]]
+- **357.** `minimal_verification_mb8_ruling_finalize.py`：量纲桥 MB-8：M-E 与 M-F 的裁决落定：锚身份与项识别（2026-09-22），[[注记-量纲桥MB-8：M-E与M-F的裁决落定：锚身份与项识别（判据MB8-a至MB8-e）|量纲桥MB-8]]
+- **358.** `minimal_verification_soliton_anchor_consistency.py`：孤子粒性归属：A 组三条读数口径统一、B 组量子数清单、C 组装订封口（2026-09-22），[[注记-孤子粒性归属（第358条）：三条读数口径统一、量子数清单与装订封口|孤子粒性归属（第358条）]]
+- **359.** `minimal_verification_kappa_phi_necessity.py`：κ_φ 必要性：N1 极限清单与 N2 替代机制的读数复现要求（2026-09-22），[[注记-κ_φ 必要性（第359条）：N1 极限清单与 N2 替代机制的读数复现要求|κ_φ 必要性（第359条）]]
+- **360.** `minimal_verification_survival_factor_candidates.py`：存活因子 S 的机制候选：四种指数抑制的参数量级与判句（2026-09-22），[[注记-S 的机制候选（第360条）：四种指数抑制的参数量级与判句|S 的机制候选（第360条）]]
+- **361.** `minimal_verification_lz_counting_form.py`：A 路判句：缺口与扫速的计数形式（2026-09-22），[[注记-A 路判句（第361条）：缺口与扫速的计数形式|A 路判句（第361条）]]
+- **362.** `minimal_verification_front_width_audit.py`：A 路前沿侧侦察：前沿速度已知、宽度缺失（2026-09-22），[[注记-A 路前沿侧侦察（第362条）：前沿速度已知、宽度缺失|A 路前沿侧侦察（第362条）]]
+- **363.** `minimal_verification_f_depth_audit.py`：入口份额 f 与指数深度审查：234.4 自洽、上游 rho_P 定义需一句修正（2026-09-22），[[注记-入口份额 f 与指数深度审查（第363条）：234.4 自洽、上游 rho_P 定义需一句修正|入口份额 f 与指数深度审查（第36]]
+- **364.** `minimal_verification_freezeout_temperature_audit.py`：B 路冻结温度审查：所需势垒落电弱档，体系温度族内有一对近合（2026-09-22），[[注记-B 路冻结温度审查（第364条）：所需势垒落在电弱档，体系温度族内有一对近合|B 路冻结温度审查（第364条）]]
+- **365.** `minimal_verification_barrier_identity_audit.py`：B 路势垒身份审查：定居密度作锁定势垒，身份自然但有两项代价（2026-09-22），[[注记-B 路势垒身份审查（第365条）：定居密度作锁定势垒，身份自然但有两项代价|B 路势垒身份审查（第365条）]]
+- **366.** `minimal_verification_depth_ratio_ln9.py`：指数深度比 2.197 的登记观察：234.44、106.70 与 ln 9（2026-09-22），[[注记-指数深度比 2.197 的登记观察（第366条）：234.44、106.70 与 ln 9|指数深度比 2.197 的登记观察（]]
+- **367.** `minimal_verification_tsirelson_pathA.py`：二-2 路径甲迁移轮：由快照相位分布到 CHSH 的体系内计算（2026-09-23），[[注记-二-2 路径甲迁移轮的最小验证：由快照相位分布到 CHSH 的体系内计算|二-2 路径甲迁移轮的最小验证]]
+- **368.** `minimal_verification_tsirelson_bound_origin.py`：方向三上界来源：为何止步 2√2 的单位相量结构与奇异性缺口（2026-09-23），[[注记-齐雷尔森上界来源的最小验证：单位相量结构与奇异性缺口（为何止步 2√2）|齐雷尔森上界来源的最小验证]]
+- **369.** `minimal_verification_information_causality_model.py`：信息因果性的模型内定量判据：协议类穷举、2→1 RAC 与互和信息式（2026-09-23），[[注记-信息因果性模型内定量判据的最小验证：协议类穷举、RAC 成功率与互信息和式|信息因果性模型内定量判据的最小验证]]
+- **370.** `minimal_verification_lv_sme_mapping.py`：SME 对接：d=6 立方系数的等效归一、boost 量级与三通道对照（2026-09-24），[[注记-SME 对接（第370条）：d=6 立方系数的等效归一、boost 量级与三通道对照|SME 对接（第370条）]]
+- **371.** `minimal_verification_individual_layer_sufficiency.py`：墙三个体层充分统计量：份额、块内相干与块间相位的分工（2026-09-24），[[注记-个体层充分统计量的最小验证：份额、块内相干与块间相位的分工（沉默的可判定化）|个体层充分统计量的最小验证]]
+- **372.** `minimal_verification_record_separation.py`：滚动记录与持久记录的可分性：无独立因子条件、两种累积律与重写实现（2026-09-24），[[注记-滚动记录与持久记录可分性的最小验证：无独立因子条件、两种累积律与重写实现的影响|滚动记录与持久记录可分性的最小验证]]
+- **373.** `minimal_verification_liv_conventions.py`：LIV 约定线：相位与群速度的因子、球面平均与 SME 记号对应（2026-09-24），[[注记-LIV 约定线（第373条）：相位与群速度的因子、球面平均与 SME 记号对应|LIV 约定线（第373条）]]
+- **374.** `minimal_verification_traversal_decoherence_cost.py`：弹性遍历通道的相干代价：M2 缓降读数换算、宏观约束与可逆性判别（2026-09-24），[[注记-弹性遍历通道相干代价的最小验证：M2 缓降读数的换算、宏观约束与可逆性判别|弹性遍历通道相干代价的最小验证]]
+- **375.** `minimal_verification_elastic_reversibility.py`：弹性通道代价归属：M2 缓增的轨迹分解与时间反演可逆性（2026-09-24），[[注记-弹性通道代价归属的最小验证：M2 缓增的轨迹分解与时间反演可逆性|弹性通道代价归属的最小验证]]
+- **376.** `minimal_verification_front_profile_minimal.py`：P8a 前沿剖面最小模型：紫外截断封缺口与宽度翻译为弛豫率（2026-09-24），[[注记-P8a 前沿剖面最小模型（第376条）：紫外截断封缺口与宽度翻译为弛豫率|P8a 前沿剖面最小模型（第376条]]
+- **377.** `minimal_verification_information_causality_class_extension.py`：协议类扩类穷举：两副本受限子类、类包含关系检查与方法学教训（2026-09-24），[[注记-协议类扩类穷举的最小验证：两副本受限子类、类包含关系检查与教训|协议类扩类穷举的最小验证]]
+- **378.** `minimal_verification_gain_threshold_content.py`：增益阈值的物理内容：读数门限、指针分辨与记录寿命三分（2026-09-24），[[注记-增益阈值物理内容的最小验证：读数门限、指针分辨与记录寿命的三分|增益阈值物理内容的最小验证]]
+- **379.** `minimal_verification_record_criterion.py`：记录判据：独立性的定义域、反例与判据级表述（2026-09-24），[[注记-记录判据的最小验证：独立性的定义域、反例与判据级表述|记录判据的最小验证]]
+- **380.** `minimal_verification_a_path_width_sources.py`：A 路宽度来源三路审查：校准扩散与势曲率判负、KZ 冻结活口（2026-09-24），[[注记-A 路宽度来源三路审查（第380条）：校准扩散与势曲率判负、KZ 冻结活口与淬火时标窗口|A 路宽度来源三路审查（第380条）]]
+- **381.** `minimal_verification_kz_applicability.py`：KZ 适用性判定：临界冻结不适用、注入-接缝机制与畴尺度候选（2026-09-24），[[注记-KZ 适用性判定（第381条）：临界冻结不适用、注入-接缝机制与畴尺度候选|KZ 适用性判定（第381条）]]
+- **382.** `minimal_verification_tsweep_identity.py`：LZ 的 t_sweep 物理身份判定：缺口硬约束、快过程排除与缺口归约（2026-09-24），[[注记-LZ 的 t_sweep 物理身份判定（第382条）：缺口硬约束、快过程排除与缺口归约|LZ 的 t_sweep 物理身份判]]
+- **383.** `minimal_verification_pointer_granularity.py`：限制二收口：逐层指针与阈值读出的可分辨性（2026-09-24），[[注记-限制二收口的最小验证：逐层指针与阈值读出的可分辨性|限制二收口的最小验证]]
+- **384.** `minimal_verification_solidification_time.py`：凝固时间的最小动力学：三候选时标估算与 A 路的单参数压缩（2026-09-24），[[注记-凝固时间的最小动力学（第384条）：三候选时标估算与 A 路的单参数压缩|凝固时间的最小动力学（第384条）]]
+- **385.** `minimal_verification_record_resolution_unit.py`：前提 P1 的独立性审查：被记录量的分辨单元恰为一层（2026-09-24），[[注记-前提 P1 独立性审查的最小验证：被记录量的分辨单元恰为一层|前提 P1 独立性审查的最小验证]]
+- **386.** `minimal_verification_pinning_density_gate.py`：钉扎密度的门槛：位错间距窗口与自然候选的距离（2026-09-24），[[注记-钉扎密度的门槛（第386条）：位错间距窗口与自然候选的距离|钉扎密度的门槛（第386条）]]
+- **387.** `minimal_verification_detector_inputs.py`：探测器物侧构造：三件输入的指认、单通道反证与双通道判据（2026-09-24），[[注记-探测器物侧构造的最小验证：三件输入的指认、单通道反证与双通道判据|探测器物侧构造的最小验证]]
+- **388.** `minimal_verification_information_causality_asymptotic.py`：信息因果性渐近族：和式紧化、两方向阈值判定与单副本松弛（2026-09-24），[[注记-信息因果性渐近族的最小验证：和式紧化、两方向阈值判定与单副本松弛|信息因果性渐近族的最小验证]]
+- **389.** `minimal_verification_delta_field_side.py`：Delta 的场侧实现：寄存器占据的当前构型分量与历史残差（2026-09-24），[[注记-Delta 场侧实现的最小验证：寄存器占据的当前构型分量与历史残差|Delta 场侧实现的最小验证]]
+- **390.** `minimal_verification_b_path_closure.py`：B 路收尾判定：三件闭环条件的可达性与精度缺口（2026-09-24），[[注记-B 路收尾判定（第390条）：三件闭环条件的可达性与精度缺口|B 路收尾判定（第390条）]]
+- **391.** `minimal_verification_delta_to_visibility.py`：偏离到可见度的换算：三式等价与指数的因子来源（2026-09-24），[[注记-偏离到可见度换算的最小验证：三式等价与指数的因子来源|偏离到可见度换算的最小验证]]
+- **392.** `minimal_verification_information_causality_dpi.py`：信息因果性链的局域数据处理口径：条件化 DPI、非条件化失效与容量侧无约束（2026-09-24），[[注记-信息因果性链的局域数据处理口径的最小验证：条件化 DPI、非条件化失效与容量侧无约束|信息因果性链的局域数据处理口径的最小]]
+- **393.** `minimal_verification_c_path_instanton.py`：C 路首轮：瞬子作用量的量级二分与 g² 落点（2026-09-24），[[注记-C 路首轮（第393条）：瞬子作用量的量级二分与 g² 落点|C 路首轮（第393条）]]
+- **394.** `minimal_verification_gain_abs_scale.py`：写入深度的绝对标度：幅度与率的分工及耦合的绝对约束（2026-09-24），[[注记-写入深度绝对标度的最小验证：幅度与率的分工及耦合的绝对约束|写入深度绝对标度的最小验证]]
+- **395.** `minimal_verification_seventeen_inventory.py`：17 的出现清单：派生链识别与 34π 的精度判定（2026-09-24），[[注记-17 的出现清单（第395条）：派生链识别与 34π 的精度判定|17 的出现清单（第395条）]]
+- **396.** `minimal_verification_y_quadrant_phase.py`：Y 象限的相位语言操作合成：双原语链、第二次重组合与象限对齐角表（2026-09-24），[[注记-Y 象限的相位语言操作合成的最小验证：双原语链、第二次重组合与象限对齐角表|Y 象限的相位语言操作合成的最小验证]]
+- **397.** `minimal_verification_deviation_window.py`：受保护扇区的偏离窗口：三分分解与实验界对照（2026-09-24），[[注记-受保护扇区偏离窗口的最小验证：三分分解与实验界对照|受保护扇区偏离窗口的最小验证]]
+- **398.** `minimal_verification_f_chain_first.py`：f 线首轮：Kibble 链条四环清点与 f 的口径表（2026-09-24），[[注记-f 线首轮（第398条）：Kibble 链条四环清点与 f 的口径表|f 线首轮（第398条）]]
+- **399.** `minimal_verification_empty_branch_gravity.py`：空支能量的引力地位：两瓣叠加模型内的判据 K1 至 K6（2026-09-24），[[注记-空支能量的引力地位的最小验证：两瓣叠加模型内的判据 K1 至 K6|空支能量的引力地位的最小验证]]
+- **400.** `minimal_verification_layered_reading_reliability.py`：分层读数可靠性：充分性、中层最小性与附内容边界（2026-09-25），[[注记-分层读数可靠性的最小验证：充分性、中层最小性与附内容边界（判据 L1 与 L3）|分层读数可靠性的最小验证]]
+- **401.** `minimal_verification_compression_irreversibility.py`：压缩不可逆方向：信息不增、丢失不可追回与任务性能的非单调性（2026-09-25），[[注记-压缩不可逆方向的最小验证：信息沿压缩方向不增、丢失不可追回与任务性能的非单调性（判据 L2）|压缩不可逆方向的最小验证]]
+- **402.** `minimal_verification_coarse_graining_alignment.py`：切法与任务对齐：装置响应类型、互信息与准确率的分歧（2026-09-25），[[注记-切法与任务对齐的最小验证：装置响应类型、互信息与准确率的分歧（对齐判据 L8）|切法与任务对齐的最小验证]]
+- **403.** `minimal_verification_alignment_exhaustive.py`：对齐判据形式的独立复现：无平局模型上的穷举检验（2026-09-25），[[注记-对齐判据形式的独立复现：无平局模型上的穷举检验与判据表述修正（对齐判据 L8）|对齐判据形式的独立复现]]
+- **404.** `minimal_verification_integration_target.py`：整合的目标函数：最简无损切法的档数最小性与跨任务变化，判据 L7a 与 L7d（2026-09-25），[[注记-整合的目标函数的最小验证：最简无损切法的档数最小性与跨任务变化（判据 L7a 与 L7d）|整合的目标函数的最小验证]]
+- **405.** `minimal_verification_intersubjectivity.py`：主体间性：公开事件与统计集中两条路径、平均分歧的线性律与边界对准的不可消除性，判据 L6（2026-09-25），[[注记-主体间性的最小验证：公开事件与统计集中两条路径、平均分歧的线性律与边界对准的不可消除性（判据 L6）|主体间性的最小验证]]
+- **406.** `minimal_verification_macroscopic_intersubjectivity.py`：宏观客体的主体间分歧量级：热德布罗意尺度、档位表与波包扩散，判据 L6 的宏观档（2026-09-25），[[注记-宏观客体的主体间分歧量级：热德布罗意尺度、档位表与波包扩散（判据 L6 的宏观档）|宏观客体的主体间分歧量级]]
+- **407.** `minimal_verification_cost_function_unlock.py`：代价函数解锁四条判据：预算阈值、档数分布与单一性解耦，L4、L7b、L7c、L7e（2026-09-25），[[注记-代价函数解锁四条判据的最小验证：预算阈值、档数分布与单一性解耦（L4、L7b、L7c、L7e）|代价函数解锁四条判据的最小验证]]
+- **408.** `minimal_verification_xi_independence.py`：ξ 的独立依据：单参数曲线结构与扩散建立的对照（2026-09-25），[[注记-ξ 的独立依据（第408条）：单参数曲线结构与扩散建立的对照|ξ 的独立依据（第408条）]]
+- **409.** `minimal_verification_state_boundary.py`：态化边界：三条关联强度上界与合成缺口的两因子分解（2026-09-25），[[注记-态化边界的最小验证：三条关联强度上界与合成缺口的两因子分解|态化边界的最小验证]]
+- **410.** `minimal_verification_superdiffusion_audit.py`：超扩散候选清点：D_req 与体系输运系数的对照（2026-09-25），[[注记-超扩散候选清点（第410条）：D_req 与体系输运系数的对照|超扩散候选清点（第410条）]]
+- **411.** `minimal_verification_annihilation_factor.py`：湮灭因子 A 的动力学：钉扎与湮灭的竞赛（2026-09-25），[[注记-湮灭因子 A 的动力学（第411条）：钉扎与湮灭的竞赛|湮灭因子 A 的动力学（第411条）]]
+- **412.** `minimal_verification_record_publicity.py`：记录的公共性：读出反作用的权衡不变量与复读精度预算，探针第三层（2026-09-25），[[注记-记录公共性的最小验证：读出反作用的权衡不变量与复读精度预算（探针第三层）|记录公共性的最小验证]]
 
 ## 二、三轮验证合起来的结论链
 
