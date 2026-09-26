@@ -485,4 +485,4 @@
 - **460.** `minimal_verification_c9_freezing_time.py`： [[注记-C9 凝固时长的可算入口（第460条）：取甲之后的凝固时标形式与 C8 联合窗口|C9 凝固时长的可算入口：取甲之后的凝固时标形式与 C8 联合窗口]] （2026-09-27），判据 C9a 至 C9e（5/5）
 - **459.** `minimal_verification_composition_universality.py`： [[注记-组成普适判据的最小验证：多形态缺陷的自由下落与eta为零（判据CU1至CU4）|组成普适判据：多形态缺陷的自由下落与 eta 为零]] （2026-09-27），判据 CU1 至 CU4（7/7）
 - **461.** `minimal_verification_e5_bridge.py`： [[注记-E5 的增益与缺陷质量换算（第461条）：两门槛在同一刻度上的分工与支配|E5 的增益与缺陷质量换算：两门槛在同一刻度上的分工与支配]] （2026-09-27），判据 E5-1 至 E5-5（5/5）
-- **462.** `minimal_verification_staggered_channel.py`： [[注记-交错通道的双重身份（第462条）：合成零模、动力学正刚度与lambda的钉住依赖|交错通道的双重身份：合成零模、动力学正刚度与 lambda 的钉住依赖]] （2026-09-27），判据 RD1 至 RD3（3/3）
+- **462.** `minimal_verification_staggered_channel.py`： [[注记-交错通道的双重身份（第462条）：合成零模、正刚度与lambda的钉住依赖|交错通道的双重身份：合成零模、正刚度与 lambda 的钉住依赖]] （2026-09-27），判据 RD1 至 RD3（3/3）

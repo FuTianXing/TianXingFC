@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""交错通道的双重身份：合成零模与动力学正刚度（第 462 条；局域尺判定指南乙首轮 RD1 至 RD3）。
+"""交错通道的双重身份：合成零模与正刚度（第 462 条；局域尺判定指南乙首轮 RD1 至 RD3）。
 
 模型复刻阶段 2 一维链接模型（minimal_verification_rebuild_1d.py）：
 链接 0..199，两端 Dirichlet（u_0 = u_199 = 0），内点 1..198；
@@ -7,7 +7,7 @@
 站点记录 theta_s = (u_{s-1} + u_s)/2；链接中点配对 theta_mid(e) = (u_{e-1} + 2u_e + u_{e+1})/4。
 
 判据：
-  RD1 交错方向的体弛豫率 = -2 alpha（解析）；二次型 Q = 2 alpha eta^2 (NL-1)（正定）
+  RD1 交错方向的体刚度读数（稳定子作用值）= -2 alpha（解析）；二次型 Q = 2 alpha eta^2 (NL-1)（正定；无耗散口径）
   RD2 两个维数分离：稳态算子零空间维数 0（解唯一）；
       合成映射核维数 = 列数 - 秩 = 1（交错通道）
   RD3 通道效应：源外 lambda 恒等（机器零）且源链接偏离 s/(2 alpha)；
@@ -64,7 +64,7 @@ def theta_mid_of(uu):
     return (uu[:-2] + 2.0 * uu[1:-1] + uu[2:]) / 4.0
 
 
-print("== RD1 交错方向的动力学刚度 ==")
+print("== RD1 交错方向的正刚度（能量层） ==")
 n_int = NL - 2
 B = np.zeros((n_int, n_int))
 for i in range(n_int):
@@ -77,7 +77,7 @@ v_int = (-1.0) ** np.arange(1, NL - 1)
 ratio = (B @ v_int) / v_int
 body = ratio[8:-8]
 rd1_dev = float(np.max(np.abs(body - (-2.0 * ALPHA))))
-print(f"  体区间弛豫率均值 = {float(np.mean(body)):.15f}（解析 -2 alpha = {-2.0*ALPHA:.1f}），最大偏差 {rd1_dev:.3e}")
+print(f"  体区间刚度读数均值 = {float(np.mean(body)):.15f}（解析 -2 alpha = {-2.0*ALPHA:.1f}），最大偏差 {rd1_dev:.3e}")
 print(f"  边界两点读数：{ratio[0]:.6f}、{ratio[1]:.6f}、{ratio[-2]:.6f}、{ratio[-1]:.6f}")
 eta = 0.01
 dalt = np.diff(eta * alt)
@@ -85,7 +85,7 @@ Q = 0.5 * ALPHA * float(np.sum(dalt ** 2))
 Q_ana = 2.0 * ALPHA * eta ** 2 * (NL - 1)
 print(f"  交错扰动的二次型 Q = {Q:.6e}（解析 2 alpha eta^2 (NL-1) = {Q_ana:.6e}）")
 rd1_ok = check("RD1", rd1_dev < 1e-12 and abs(Q - Q_ana) < 1e-15 * Q_ana,
-               f"体弛豫率 -2 alpha（偏差 {rd1_dev:.1e}）；二次型正定（比值 {Q/Q_ana:.12f}）")
+               f"体刚度读数 -2 alpha（偏差 {rd1_dev:.1e}）；二次型正定（比值 {Q/Q_ana:.12f}）")
 
 print("== RD2 两个维数的分离 ==")
 svA = np.linalg.svd(A, compute_uv=False)
@@ -131,7 +131,7 @@ e_int = np.arange(1, NL - 1)
 ax.plot(e_int, ratio, "o-", ms=2.5)
 ax.axhline(-2.0, color="k", ls="--", lw=1, label="解析 -2 alpha")
 ax.set_xlabel("内点链接索引"); ax.set_ylabel("(B v)/v")
-ax.set_title("交错方向弛豫率（体值与环境修正）"); ax.legend(fontsize=8); ax.grid(alpha=0.3)
+ax.set_title("交错方向刚度读数（体值与边界修正）"); ax.legend(fontsize=8); ax.grid(alpha=0.3)
 ax = axes[1]
 ax.plot(e_int, dl2, "o-", ms=2.5, label="lambda 偏移（eta = 0.01）")
 ax.set_xlabel("内点链接索引"); ax.set_ylabel("delta lambda")
