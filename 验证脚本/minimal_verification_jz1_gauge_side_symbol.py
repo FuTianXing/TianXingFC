@@ -3,7 +3,7 @@
 
 判据（先判据后实现）：
   G1 等幅条件：低幅二次系数比 a_E/|a_B| = 2 tP^2/dt^2 - 1。
-     dt = tP 时等幅反号（比值 1，洛伦兹符号成立）；dt = sqrt(2) tP 时 a_E = 0（E 型双计临界相消）；
+     dt = tP 时等幅反号（比值 1，洛伦兹符号成立）；dt = sqrt(2) tP 时 a_E = 0（E 型双归属临界相消）；
      dt = 2 tP 时比值 -0.5（符号翻转）。
   G2 色散与光速：线性化横向模 omega^2 = (1/tP^2)[4 sin^2(kx lP/2) + 4 sin^2(ky lP/2)]，
      长波 omega/k -> lP/tP（无自由参数，用最小 k 检验）。velocity Verlet 测频与解析对照。
@@ -108,7 +108,7 @@ osc = evolve(-1.0)
 dec = evolve(+1.0)
 k0 = 0.2
 w0 = omega_analytic(k0)
-print("G1 规范侧二次系数（E 型双计与等幅条件）")
+print("G1 规范侧二次系数（E 型双归属与等幅条件）")
 print("dt/tP   a_E        |a_B|      比值   解析比值")
 for r in rows_G1:
     print("%.4f  %+.8f  %.8f  %+.6f  %+.6f" % r)
