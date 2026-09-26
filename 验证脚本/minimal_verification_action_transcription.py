@@ -2,7 +2,7 @@
 """
 minimal_verification_action_transcription.py
 
-作用量转录的最小验证（第 448 条）：通道二机制句"写入即作用量转录"的判据化。
+作用量转录的最小验证（第 457 条）：通道二机制句"写入即作用量转录"的判据化。
 
 机制主张：碰撞写入把缺陷当拍的作用量状态转录到波性侧记录——写入幅度等于
 缺陷该拍的作用量积累相对作用量量子 hbar 的份额：delta_theta = E t_P / hbar
@@ -126,7 +126,7 @@ results.append(('TA5d', '辐射型 Delta p / p（对照）', p_emit / p_before,
 
 # ---------- 打印 ----------
 print('=' * 72)
-print('作用量转录的最小验证（第 448 条）：TA1 至 TA5')
+print('作用量转录的最小验证（第 457 条）：TA1 至 TA5')
 print('=' * 72)
 n_pass = 0
 for tag, name, val, expect, ok in results:
