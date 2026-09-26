@@ -447,3 +447,4 @@
 - **424.** `minimal_verification_lattice_green_function.py`： [[注记-格点格林函数的尾指数测量（第424条）：1D 三分之一、2D 一次与 3D 的均衡污染|格点格林函数的尾指数测量：1D 三分之一、2D 一次与 3D 的均衡污染]] （2026-09-26）
 - **425.** `minimal_verification_gradient_tail_chain.py`： [[注记-传递链首轮（第425条）：力关联尾的二分之 d 律与速度尾反推|传递链首轮：力关联尾的二分之 d 律与速度尾反推]] （2026-09-26）
 - **426.** `minimal_verification_gle_tauberian.py`： [[注记-换算规则的第一原理化（第426条）：γv = 2 - γF 的推导、γF = 1 临界退化与数值验证|换算规则的第一原理化：γv = 2 - γF 的推导、γF = 1 临界退化与数值验证]] （2026-09-26）
+- **427.** `minimal_verification_stationary_phase_corner.py`： [[注记-γF 等于 d 半的解析化（第427条）：BZ 角点半稳相求和、1D 闭式与噪声地板下的 2D-3D|γF 等于 d 半的解析化：BZ 角点半稳相求和、1D 闭式与噪声地板下的 2D-3D]] （2026-09-26）
