@@ -133,7 +133,7 @@
 - **121.** `minimal_verification_full_quantization.py`： [[注记-完全量子化轮的最小验证：谐振子格点在算符层面没有 +1 本底|完全量子化轮：谐振子格点在算符层面没有 +1 本底]] （2026-09-18）
 - **122.** `minimal_verification_m6_s1_field.py`： [[注记-M6-S1（可做部分）：真实场构型的写入律与容量裁剪|M6-S1 可做部分：真实场构型：写入律与容量裁剪]] （2026-09-18）
 - **123.** `minimal_verification_clock_operator_check.py`： [[注记-声明式检查轮的最小验证：本底要什么算符，给出什么签名|声明式检查轮：本底要什么算符、给出什么签名]] （2026-09-18）
-- **124.** `minimal_verification_collision_writes_record.py`： [[注记-碰撞即写入轮的最小验证：写入时刻等于折返时刻，本底等于碰撞率，稀释统计为 Q = -eta|碰撞即写入轮：写入时刻等于折返时刻、本底等于碰撞率、稀释统计 $Q = -\eta$]] （2026-09-18）
+- **124.** `minimal_verification_collision_writes_record.py`： [[注记-碰撞即写入轮的最小验证：写入时刻等于折返时刻，本底等于碰撞率，稀释统计为 $Q = -\eta$|碰撞即写入轮：写入时刻等于折返时刻、本底等于碰撞率、稀释统计 $Q = -\eta$]] （2026-09-18）
 - **125.** `minimal_verification_m6_s3_spectrum.py`： [[注记-M6-S3（可做部分）：真实场构型的谱读数与 λ 扫描|M6-S3 可做部分：真实场构型的谱读数与 lambda 扫描]] （2026-09-18）
 - **126.** `minimal_verification_rebuild_stage4_lambda.py`： [[注记-本体层重建阶段4：识别式重跑与lambda导出的读数（L1至L3）|本体层重建阶段 4 批一：识别式重跑与 $\lambda$ 导出的读数]] （2026-09-18）
 - **127.** `minimal_verification_write_operator.py`： [[注记-写入算符轮的最小验证：过轴即写、写即转移、反作用落在被采样对象|写入算符轮：过轴即写、写即转移、反作用落在被采样对象]] （2026-09-18）
