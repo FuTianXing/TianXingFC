@@ -62,6 +62,25 @@ def solve(s_links):
     return theta, u
 
 
+def solve_feedback(s_links, c, iters=60, tol=1e-14):
+    """反馈档：kappa_e = 1 + c u_e 的定点迭代（阶段 4 L2 的同形式）。"""
+    kap = np.ones((D, N, N, N))
+    theta = None
+    nu = 0
+    for it in range(iters):
+        f = inc_link(s_links / kap) / D
+        theta = fft_solve(f)
+        u = interp_site(theta) + s_links / kap
+        kap_new = 1.0 + c * u
+        dk = float(np.max(np.abs(kap_new - kap)))
+        kap = kap_new
+        nu = it + 1
+        if dk < tol:
+            break
+    u = interp_site(theta) + s_links / kap
+    return theta, u, nu, dk
+
+
 def source_iso():
     s = np.zeros((D, N, N, N))
     for mu in range(D):
@@ -119,6 +138,17 @@ for (lo, hi) in ((8, 16), (12, 20)):
     fb = np.polyfit(1.0 / rr[sel], profB[sel], 1)[0]
     print("  窗 [%2d, %2d]：缺陷系数 = %.6e；光纯纵 = %.6e；比值 = %.5f" % (lo, hi, fa, fb, fb / fa))
 print("  期望：同总源强下单极一致，比值随窗右移趋于 1（多极/离散项衰减）")
+
+print()
+print("== B4 反馈档（c = 0.1，定点迭代） ==")
+for tag, sl in (("缺陷", sA), ("光纯纵", sB)):
+    th, uu, nu, dk = solve_feedback(sl, 0.1)
+    mk, ek = lam_stats(th, uu)
+    peak = float(np.max(np.abs(th)))
+    pk0 = float(np.max(np.abs(thA if tag == "缺陷" else thB)))
+    print("  %s：迭代 %d 步（末步残差 %.2e）；lambda 中位 = %.15f；max|lambda-1| = %.3e；峰值 %.4f（无反馈 %.4f）"
+          % (tag, nu, dk, mk, ek, peak, pk0))
+print("  期望：反馈在场（峰值变化非零）且源外比值仍逐点精确为 1（源外 u_e = theta_mid 与 kappa 无关）")
 
 print()
 print("== B3 近场各向异性登记（r = 4 处） ==")
