@@ -2,7 +2,7 @@
 """
 minimal_verification_load_equals_write.py
 
-载荷等同写入的最小验证（第 447 条）：命题 B 的判据化。
+载荷等同写入的最小验证（第 458 条）：命题 B 的判据化。
 
 命题 B（倾角注记通道三）：写入幅度 delta_theta 与最近邻格点载荷读数 theta(l_P)
 的等同，由写事件分配规则（判据 L）与离散格林函数结构给出，无需引入 PN 匹配。
@@ -147,7 +147,7 @@ results.append(('DB4b', '交叉项（源 2 对源 1 近邻读数的贡献）/d2'
 C_ref = Cs[2]
 disc_factor = 4.0 * np.pi * C_ref
 print('=' * 72)
-print('载荷等同写入的最小验证（第 447 条）：命题 B 判据 DB1 至 DB4')
+print('载荷等同写入的最小验证（第 458 条）：命题 B 判据 DB1 至 DB4')
 print('=' * 72)
 n_pass = 0
 for tag, name, val, expect, ok in results:
