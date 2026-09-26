@@ -137,17 +137,63 @@ def check3(N=64, m=3, eps_list=(0.5, 0.25, 0.12, 0.06, 0.03)):
     print('  判据三: %s' % ('PASS' if ok3 else 'FAIL'))
     return ok3, rows
 
+def check4(N=256, T=2000.0, dt_sample=0.05, ms=(1, 2, 4, 8, 16, 32)):
+    """判据四（惯性项变分）：洛伦兹作用量 L = I/2*sum(dalpha^2) - I/(2 t_P^2)*sum(1-cos(dAlpha))
+    变分给出 dalpha_n = alpha_{n+1}+alpha_{n-1}-2 alpha_n（I=t_P=1 无量纲），
+    驻波频率应等于离散色散 omega = 2|sin(pi m/N)|，长波极限 omega -> k（c=1）。"""
+    print('=' * 72)
+    print('判据四（惯性项变分）：数值积分驻波频率（模投影 + 频率扫描）vs 离散色散')
+    n = np.arange(N)
+    dt = 0.002
+    maxrel = 0.0
+    rows = []
+    for m in ms:
+        k = 2 * np.pi * m / N
+        mode = np.sin(k * n)
+        alpha = mode.copy()
+        v = np.zeros(N)
+        acc = lambda a: np.roll(a, -1) + np.roll(a, 1) - 2 * a
+        nsteps = int(T / dt)
+        keep = int(dt_sample / dt)
+        ts, rec = [], []
+        for step in range(nsteps):
+            if step % keep == 0:
+                ts.append(step * dt)
+                rec.append(np.dot(alpha, mode))
+            v += 0.5 * dt * acc(alpha)
+            alpha = alpha + dt * v
+            v += 0.5 * dt * acc(alpha)
+        A = np.array(rec)
+        w_exp = 2 * abs(np.sin(k / 2))
+        w_scan = np.linspace(0.7 * w_exp, 1.3 * w_exp, 4001)
+        cw = np.cos(w_scan[:, None] * np.array(ts)[None, :])
+        sw = np.sin(w_scan[:, None] * np.array(ts)[None, :])
+        cc = cw @ A
+        ss = sw @ A
+        resid = np.dot(A, A) - (cc * cc + ss * ss) / (np.einsum('ij,ij->i', cw, cw) + np.einsum('ij,ij->i', sw, sw))
+        w_num = w_scan[np.argmin(resid)]
+        rel = abs(w_num - w_exp) / w_exp
+        rows.append((k, w_num, w_exp, rel))
+        maxrel = max(maxrel, rel)
+        print('  m=%2d | 实测 omega=%.6f | 期望 %.6f | 相对差=%.2e' % (m, w_num, w_exp, rel))
+    print('  实测: 全 m 最大相对差 = %.3e（期望 < 1e-3）' % maxrel)
+    print('  长波极限: omega/k -> 1（c = l_P/t_P，无自由参数）')
+    ok4 = maxrel < 1e-3
+    print('  判据四: %s' % ('PASS' if ok4 else 'FAIL'))
+    return ok4, rows
+
 def main():
-    print('JZ1 阶段四：审计代价泛函三判据（seed=%d）' % SEED)
+    print('JZ1 阶段四：审计代价泛函四判据（seed=%d）' % SEED)
     ok1, d1 = check1()
     ok2, d2 = check2()
     ok3, d3 = check3()
-    npass = sum([ok1, ok2, ok3])
+    ok4, d4 = check4()
+    npass = sum([ok1, ok2, ok3, ok4])
     print('=' * 72)
-    print('总判据: %d/3 %s' % (npass, 'PASS' if npass == 3 else 'FAIL'))
+    print('总判据: %d/4 %s' % (npass, 'PASS' if npass == 4 else 'FAIL'))
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
-    ax = axes[0]
+    fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
+    ax = axes[0][0]
     labels = ['C[g.phi]\n(规范块)', 'C[phi]\n(规范块)', 'C_naive[g]\n(朴素)', 'C_naive\n(朴素)']
     vals = [d1[1], d1[0], d1[3], d1[2]]
     bars = ax.bar(labels, vals, color=['#2a7', '#2a7', '#c66', '#c66'])
@@ -156,7 +202,7 @@ def main():
     ax.tick_params(axis='x', labelsize=7)
     for b, v in zip(bars, vals):
         ax.text(b.get_x() + b.get_width() / 2, v, '%.1f' % v, ha='center', va='bottom', fontsize=7)
-    ax = axes[1]
+    ax = axes[0][1]
     A, y, coef, exp = d2
     names = ['a(x^2)', 'b(x^4)', 'c(x^6)', 'd(x^8)']
     xs = np.arange(4)
@@ -165,7 +211,7 @@ def main():
     ax.set_xticks(xs); ax.set_xticklabels(names, fontsize=7)
     ax.set_title('check2: C taylor coefficients\n= 1-cos(x) series')
     ax.legend(fontsize=7)
-    ax = axes[2]
+    ax = axes[0][2] if False else axes[1][0]
     eps = [r[0] for r in d3]
     cn = [r[1] for r in d3]
     ca = [r[2] for r in d3]
@@ -174,6 +220,17 @@ def main():
     ax.plot(ee, N2_curve(ee), '-', label='N^2[1-J0(2 eps s)]')
     ax.set_xlabel('eps'); ax.set_ylabel('C')
     ax.set_title('check3: analytic match\n(2D sine config)')
+    ax.legend(fontsize=7)
+    ax = axes[1][1]
+    ks = [r[0] for r in d4]
+    wn = [r[1] for r in d4]
+    we = [r[2] for r in d4]
+    kk = np.linspace(0, np.pi, 200)
+    ax.plot(kk, 2 * np.abs(np.sin(kk / 2)), '-', label='dispersion 2|sin(k/2)|')
+    ax.plot(ks, wn, 'o', label='measured')
+    ax.plot(ks, we, 'rx', label='exact')
+    ax.set_xlabel('k'); ax.set_ylabel('omega')
+    ax.set_title('check4: inertia term -> wave\n(long-wave c = l_P/t_P)')
     ax.legend(fontsize=7)
     plt.tight_layout()
     plt.savefig(IMG, dpi=130)
