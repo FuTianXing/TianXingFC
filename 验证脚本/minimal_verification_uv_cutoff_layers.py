@@ -8,6 +8,8 @@
      omega_N 由采样率给出（每摆程一次事件），两者分属演化层与读数层。
   V3 区间模式的地位：omega 落在 (omega_N, omega_BZ] 的模式存在但不可分辨，
      其时间采样序列与混叠频率 omegaP - omega 的序列逐点相同（机器零）。
+  V4 折叠映射（2026-09-27 增补轮）：混叠区模式的读数频率全落在 [2pi - omega_BZ, omega_N) 内，
+     即读数频率有下界 2pi - omega_BZ = 2.8191/tP；全区间抽样序列逐点一致。
 
 容差预算：omega_BZ 由 61^3 网格扫描给出，角点被网格包含故为精确值，容差取 1e-12；
 V3 的序列比对为三角恒等式，偏差仅舍入，容差取 1e-10。区间上下界的比较为精确不等式。
@@ -68,14 +70,29 @@ print("取 omega = omega_BZ = %.6f / tP，混叠频率 omegaP - omega = %.6f / t
 print("混叠频率落在可分辨区（< omega_N = %.6f）：%s" % (omegaN, w_ali < omegaN))
 print("两模式在采样点上的序列最大差 = %.3e（期望机器零）" % seq_diff)
 print()
+# ---------------- V4：混叠区折叠映射 ----------------
+ws_fold = np.linspace(omegaN + 1e-6, wmax_ana, 400)
+w_read = omegaP - ws_fold
+fold_lo, fold_hi = omegaP - wmax_ana, omegaN
+s4 = np.arange(0, 300)
+seq_v4 = 0.0
+for w in ws_fold[::40]:
+    seq_v4 = max(seq_v4, float(np.max(np.abs(np.cos(w * s4 * tP) - np.cos((omegaP - w) * s4 * tP)))))
+print("V4 混叠区折叠映射（2026-09-27 增补轮）")
+print("读数频率范围 [%.9f, %.9f] / tP（解析 [2pi - 2sqrt3, pi] = [%.9f, %.9f]）" % (w_read.min(), w_read.max(), fold_lo, fold_hi))
+print("抽样点序列最大差 = %.3e（期望机器零）" % seq_v4)
+print()
+
 flag1 = bool(abs(wmax_num - wmax_ana) < 1e-12 and wmax_ana > omegaN
              and abs(ratio - 2.0 * np.sqrt(3.0) / np.pi) < 1e-12)
 flag2 = bool(abs(Sg.max() - 3.0) < 1e-12)
 flag3 = bool(seq_diff < 1e-10 and w_ali < omegaN)
+flag4 = bool(np.all(w_read >= fold_lo - 1e-12) and np.all(w_read <= fold_hi + 1e-12) and seq_v4 < 1e-10)
 print("判据 V1（两上限数值关系：谱支撑大于可分辨界限）：%s" % ("通过" if flag1 else "未通过"))
 print("判据 V2（谱支撑上限来自角点 S = 3，与采样率无关）：%s" % ("通过" if flag2 else "未通过"))
 print("判据 V3（区间模式存在但不可分辨：混叠序列一致）：%s" % ("通过" if flag3 else "未通过"))
-print("判据总计：%d/3" % (int(flag1) + int(flag2) + int(flag3)))
+print("判据 V4（折叠映射：读数频率下界与全区间一致）：%s" % ("通过" if flag4 else "未通过"))
+print("判据总计：%d/4" % (int(flag1) + int(flag2) + int(flag3) + int(flag4)))
 
 # ---------------- 出图 ----------------
 fig, axp = plt.subplots(2, 2, figsize=(11, 8))
@@ -84,6 +101,7 @@ axp[0, 0].axhline(omegaN, color="r", ls="--", lw=1.1, label="Nyquist (readout la
 axp[0, 0].axhline(wmax_ana, color="g", ls=":", lw=1.1, label="Brillouin max (evolution layer)")
 axp[0, 0].fill_between([0, ks_body[-1]], omegaN, wmax_ana, color="orange", alpha=0.18,
                        label="exists but unresolvable")
+axp[0, 0].plot(ks_body, omegaP - np.array(w_body), "orange", ls="--", lw=1.0, label="folded readout (V4)")
 axp[0, 0].set_xlabel("k (body diagonal)"); axp[0, 0].set_ylabel("omega")
 axp[0, 0].set_title("V1 two cutoffs"); axp[0, 0].legend(fontsize=7)
 
