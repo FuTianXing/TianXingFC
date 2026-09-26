@@ -8,6 +8,9 @@
   G2 色散与光速：线性化横向模 omega^2 = (1/tP^2)[4 sin^2(kx lP/2) + 4 sin^2(ky lP/2)]，
      长波 omega/k -> lP/tP（无自由参数，用最小 k 检验）。velocity Verlet 测频与解析对照。
   G3 反例对照：去掉取向惯性能（L = -V，欧氏全正）后二次系数同号，omega^2 < 0，无传播（纯衰减）。
+
+容差预算：G2 相对差来源为 velocity Verlet 相位误差 O(omega^3 dt^2) 与零交叉量化 O(dt/T)。
+取 dt = 0.02、omega <= 0.4，预算在 1e-4 量级，故判据容差取 1e-3（含安全余量）。
 """
 import numpy as np
 import matplotlib
@@ -46,6 +49,11 @@ def fit_c2(fun, eps_list):
     A = np.vstack([e ** 2, e ** 4, e ** 6]).T
     c, *_ = np.linalg.lstsq(A, y, rcond=None)
     return float(c[0])
+
+# 冒烟检查：组态变化性与操作轴一致性（变化的轴 = 差分/操作的轴）
+assert np.max(np.abs(d0)) > 0.0 and np.max(np.abs(P1)) > 0.0
+print("冒烟检查：max|d0| = %.4f（时间轴差分，空间均匀）；max|P1| = %.4f（空间扭折，axis0/axis1 差分）"
+      % (np.max(np.abs(d0)), np.max(np.abs(P1))))
 
 eps = [1e-4, 2e-4, 4e-4, 8e-4, 1.6e-3]
 rows_G1 = []
