@@ -489,3 +489,4 @@
 - **463.** `minimal_verification_composition_weight.py`： [[注记-合成权重唯一性（第463条）：算术平均被各向同性与中心对称唯一钉住|合成权重唯一性：算术平均被各向同性与中心对称唯一钉住]] （2026-09-27），判据 W1 至 W3（3/3）
 - **464.** `minimal_verification_ellipsoid_selfsupport.py`： [[注记-非球对称自撑的第一轮（第464条）：椭球kink的逐点破缺与能量破缺标度|非球对称自撑的第一轮：椭球 kink 的逐点破缺与能量破缺标度]] （2026-09-27），判据 NS1 至 NS3（3/3）
 - **465.** `minimal_verification_variational_shape.py`： [[注记-变分形状修正（第465条）：径向化降阶、能量破缺四次标度与l=4形状扫描|变分形状修正：径向化降阶、能量破缺四次标度与 l=4 形状扫描]] （2026-09-27），判据 V1 至 V3（3/3）
+- **466.** `minimal_verification_selfsupport_eigen.py`： [[注记-自撑壁的E-L本征问题（第466条）：Derrick缩放、平移零模与形状本征谱|自撑壁的 E-L 本征问题：Derrick 缩放、平移零模与形状本征谱]] （2026-09-27），判据 EL1 至 EL3（3/3）
