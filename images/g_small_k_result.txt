@@ -1,0 +1,38 @@
+=== S1 (2+1) 维：sigma 沿 gamma^3，小动量极限 ===
+  q=0.020  dim=2  EP2 FAIL  eigenvalues [-0.9998, 0.9998]  g=0.000000
+  q=0.050  dim=2  EP2 FAIL  eigenvalues [-0.998752, 0.998752]  g=0.000000
+  q=0.100  dim=2  EP2 FAIL  eigenvalues [-0.995037, 0.995037]  g=0.000000
+  q=0.200  dim=2  EP2 FAIL  eigenvalues [-0.980581, 0.980581]  g=0.000000
+  q=0.400  dim=2  EP2 FAIL  eigenvalues [-0.928477, 0.928477]  g=0.000000
+  q=0.800  dim=2  EP2 FAIL  eigenvalues [-0.780869, 0.780869]  g=0.000000
+S1 PASS  (2+1 dimensions: EP2 fails and g = 0 at every q; the spin is not
+     a good label because the third spatial direction is absent)
+
+=== S2 (3+1) 维平行自旋：sigma 沿 gamma^1（动量方向）===
+  q=0.020  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+  q=0.050  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+  q=0.100  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+  q=0.200  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+  q=0.400  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+  q=0.800  dim=2  EP2 PASS  eigenvalues [-1.0, 1.0]  g=2.000000
+S2 PASS  (eigenvalues +-1 exactly and g = 2 exactly at every q)
+
+=== S3 (3+1) 维正交自旋：sigma 沿 gamma^3，对照 ===
+  q=0.020  EP2 FAIL  eigenvalues [-0.9998, 0.9998]  g=0.000000
+  q=0.050  EP2 FAIL  eigenvalues [-0.998752, 0.998752]  g=0.000000
+  q=0.100  EP2 FAIL  eigenvalues [-0.995037, 0.995037]  g=0.000000
+  q=0.200  EP2 FAIL  eigenvalues [-0.980581, 0.980581]  g=0.000000
+  q=0.400  EP2 FAIL  eigenvalues [-0.928477, 0.928477]  g=0.000000
+  q=0.800  EP2 FAIL  eigenvalues [-0.780869, 0.780869]  g=0.000000
+S3 PASS  (control: the orthogonal spin is not a good label, g = 0)
+
+=== S4 g 对 Wilson 参数 r 的稳定性 ===
+  r=0.00  eigenvalues [-1.0, 1.0]  g=2.00000000  EP2 PASS
+  r=0.05  eigenvalues [-1.0, 1.0]  g=2.00000000  EP2 PASS
+  r=0.10  eigenvalues [-1.0, 1.0]  g=2.00000000  EP2 PASS
+  r=0.20  eigenvalues [-1.0, 1.0]  g=2.00000000  EP2 PASS
+  r=0.40  eigenvalues [-1.0, 1.0]  g=2.00000000  EP2 PASS
+S4 PASS  (g = 2 independent of r)
+
+figure: D:/software/TianXingFC/images/g_small_k.png
+SUMMARY S1..S4 = ALL PASS
