@@ -1,0 +1,55 @@
+=== 冒烟 ===
+H dim 512 (expect 8 N^2 = 512)
+Hermitian dev = 0.00e+00
+H_sp herm dev = 0.00e+00
+momentum operator vs sin(k): max dev = 3.33e-16
+gamma squares (expect +1 -1 -1 -1): ['+1', '-1', '-1', '-1']
+Gamma5^2 - I = 0.00e+00   Gamma5 herm dev = 0.00e+00
+Gamma5 anticommutators with gamma^0..3: ['0e+00', '0e+00', '0e+00', '0e+00']
+Gamma5 eigen: +1 x2, -1 x2
+
+=== U1 谱因子化 ===
+  N=6 m=0.0  max|numeric - analytic| = 7.327e-15  PASS
+  N=6 m=0.5  max|numeric - analytic| = 6.883e-15  PASS
+  N=6 m=1.0  max|numeric - analytic| = 1.044e-14  PASS
+  N=8 m=0.0  max|numeric - analytic| = 8.660e-15  PASS
+  N=8 m=0.5  max|numeric - analytic| = 7.550e-15  PASS
+  N=8 m=1.0  max|numeric - analytic| = 9.992e-15  PASS
+T-U1 PASS
+
+=== U2 连续极限 ===
+  (m^2 + A^2)/(c^2 k^2) - 1 : max = 3.003e-05
+  budget = r k_max/c + k_max^2/3 = 3.003e-05
+  residual equals the discretisation budget: True
+U2 PASS
+
+=== U3 无零模与 E=0 对称 ===
+  min |E| = 0.200000
+  max |E_i + E_{N-i}| = 7.216e-15
+  Gamma5 spectrum: +1 x256, -1 x256
+U3 PASS
+
+=== U4 <Gamma5> 与 D4 判定 ===
+  {Gamma5_sp, H_sp} = 0.000e+00
+  {Gamma5, H_full} = 6.000e-01 (mode factor anticommutes with the spacetime chirality,
+     contributing 2 kappa = 0.600)
+  {Gamma5, H} = 0.000e+00
+  Gamma5 maps a +E eigenstate to -E: max|H w + E w| = 2.777e-15
+  Gamma5 spectrum: +1 x128, -1 x128 (equal split, both non-empty)
+  max |<Gamma5>| on energy eigenstates = 2.484e-15 (structurally zero)
+  2+1 dimensions measured max|<Gamma5>| = 2.484e-15
+  3+1 free Dirac: Clifford monomials commuting with H, square I, herm = 2
+     they are ['1_0000', '-1_0000'] (only the trivial ones)
+  -> the two chiral branches of D4 exist as the +-1 eigenspaces of Gamma5, both
+     non-empty and equal in dimension. They are NOT energy eigenstates:
+     {Gamma5,H}=0 makes Gamma5 interchange the +-E sectors, so <Gamma5> vanishes
+     on every energy eigenstate, in 2+1 and 3+1 alike and for any mass.
+U4 PASS
+
+=== U5 宇称结构与 Wilson 项相容性 ===
+  {P,Gamma5} = 0.0e+00   {P,gamma^i} = ['0e+00', '0e+00']
+  {P, W} = 0.0e+00   {Gamma5, W} = 0.0e+00
+U5 PASS
+
+figure: D:/software/TianXingFC/images/two_plus_one_d4.png
+SUMMARY U1..U5 = ALL PASS
