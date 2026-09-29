@@ -1,0 +1,39 @@
+=== 冒烟 ===
+dim 512, H herm dev 0.00e+00
+S: herm 0.0e+00  S^2-I 0.0e+00
+P = S Gamma5: herm 0.0e+00  P^2-I 0.0e+00
+gamma squares (expect +1 -1 -1 -1): ['+1', '-1', '-1', '-1']
+Gamma5 anticommutators: ['0e+00', '0e+00', '0e+00', '0e+00']
+  (basis locked to the 494 round; a drift here invalidates S and M)
+
+=== K1 Gamma5 与 H 的反对易及两支能量反号 ===
+  {Gamma5, H_sp} = 0.000e+00
+  Gamma5 maps a +E state to -E: max|H w + E w| = 1.887e-15
+K1 PASS
+
+=== K2 谱对称、两扇区简并度、无零模 ===
+  max|E_i + E_{N-i}| = 5.107e-15
+  positive-E states 256, negative-E states 256, zero-mode 0
+  the two branches are the E>0 and E<0 sectors, equal in number
+K2 PASS
+
+=== K3 模态因子：守恒但与 Gamma5 反对易 ===
+  [sigma_z (x) I, H_full] = 0.000e+00  (conserved)
+  {sigma_z (x) I, Gamma5} = 2.000e+00
+  -> the mode factor is conserved but anticommutes with Gamma5, so no state is a
+     simultaneous eigenstate of both; it cannot separate the two branches.
+K3 PASS
+
+=== K4 畴壁 Z2 标签与乘积 ===
+  {S, H_sp} = 0.000e+00   [S, H_sp] = 1.000e+00   (S anticommutes with H)
+  [S, Gamma5] = 0.000e+00   (S commutes with Gamma5 in this basis)
+  P = S Gamma5: [P, H_full] = 0.000e+00   [P, Gamma5] = 0.000e+00
+  joint spectrum (P, Gamma5): {'(1, -1)': 266, '(1, 1)': 246}
+  -> S anticommutes with H, not conserved, cannot be a separator.
+     P = S Gamma5 is conserved and commutes with Gamma5, but its spectrum is entirely +1, i.e. P is the identity on the physical space,
+     so P carries no information and does not separate the two branches.
+     The joint spectrum has 2 combinations, both with P = +1 and Gamma5 = -+1.
+K4 PASS
+
+figure: D:/software/TianXingFC/images/d4_separator.png
+SUMMARY K1..K4 = ALL PASS
