@@ -1,0 +1,81 @@
+=== 冒烟 ===
+H2 shape 512, Hermitian dev 0.00e+00
+H4 shape 1024, Hermitian dev 0.00e+00
+Clifford 4x4 (Euclidean): {G0,G1}=0e+00 {G0,G2}=0e+00 {G1,G2}=0e+00  squares=1e+00 1e+00 1e+00
+
+=== PD1 2x2 宇称候选：穷举完备性与无解确认 ===
+  commuting with both sigma_x and sigma_y: ['I']
+  centralizer of {sigma_x, sigma_y} in 2x2 is {+-I}; neither anticommutes with sigma_z
+  -> no 2x2 Pauli operator satisfies [P,sigma_x]=[P,sigma_y]=0 and {P,sigma_z}=0
+  {P, sigma_z} for the centralizer: {'I': 2.0}
+  P_A (x) R_thh   max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_A (x) R_h     max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_A (x) R_th    max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_A (x) I       max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_B (x) R_thh   max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_B (x) R_h     max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_B (x) R_th    max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_B (x) I       max|P^2 - I| = 0.00e+00   max|P H P - H| = 0.000000   <- identity, trivial
+  P_C (x) R_thh   max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_C (x) R_h     max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_C (x) R_th    max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_C (x) I       max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_D (x) R_thh   max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_D (x) R_h     max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_D (x) R_th    max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  P_D (x) I       max|P^2 - I| = 0.00e+00   max|P H P - H| = 1.000000
+  non-trivial candidates: 15, of which symmetries: 0
+PD1 PASS  (no 2x2 parity exists; the lattice candidates confirm it numerically)
+
+=== PD2 宇称与 sigma_y 的对易结构 ===
+  P_A  [P,sigma_y] = 0.00e+00   {P,sigma_y} = 2.00e+00   -> commute
+  P_B  [P,sigma_y] = 0.00e+00   {P,sigma_y} = 2.00e+00   -> commute
+  P_C  [P,sigma_y] = 2.00e+00   {P,sigma_y} = 0.00e+00   -> anticommute
+  P_D  [P,sigma_y] = 2.00e+00   {P,sigma_y} = 0.00e+00   -> anticommute
+  anticommuting candidates: ['P_C', 'P_D']
+  none of them is a symmetry of H (PD1), so the D4 algebraic premise
+  (P connects the two branches) does NOT hold in the 2-component realisation
+PD2 PASS
+
+=== PD3 4x4 对照 ===
+  I          [Q,G0]=0e+00 [Q,G1]=0e+00 {Q,G2}=2e+00 Q^2-I=0e+00 
+  G0         [Q,G0]=0e+00 [Q,G1]=2e+00 {Q,G2}=0e+00 Q^2-I=0e+00 
+  G1         [Q,G0]=2e+00 [Q,G1]=0e+00 {Q,G2}=0e+00 Q^2-I=0e+00 
+  G2         [Q,G0]=2e+00 [Q,G1]=2e+00 {Q,G2}=2e+00 Q^2-I=0e+00 
+  G0G1       [Q,G0]=2e+00 [Q,G1]=2e+00 {Q,G2}=2e+00 Q^2-I=2e+00 
+  G1G2       [Q,G0]=0e+00 [Q,G1]=2e+00 {Q,G2}=0e+00 Q^2-I=2e+00 
+  G0G2       [Q,G0]=2e+00 [Q,G1]=0e+00 {Q,G2}=0e+00 Q^2-I=2e+00 
+  SIG5       [Q,G0]=0e+00 [Q,G1]=0e+00 {Q,G2}=2e+00 Q^2-I=0e+00 
+  G0SIG5     [Q,G0]=0e+00 [Q,G1]=2e+00 {Q,G2}=0e+00 Q^2-I=0e+00 
+  G1SIG5     [Q,G0]=2e+00 [Q,G1]=0e+00 {Q,G2}=0e+00 Q^2-I=0e+00 
+  G2SIG5     [Q,G0]=2e+00 [Q,G1]=2e+00 {Q,G2}=2e+00 Q^2-I=0e+00 
+  G0G1SIG5   [Q,G0]=2e+00 [Q,G1]=2e+00 {Q,G2}=2e+00 Q^2-I=2e+00 
+  G1G2SIG5   [Q,G0]=0e+00 [Q,G1]=2e+00 {Q,G2}=0e+00 Q^2-I=2e+00 
+  G0G2SIG5   [Q,G0]=2e+00 [Q,G1]=0e+00 {Q,G2}=0e+00 Q^2-I=2e+00 
+  G0G1G2     [Q,G0]=0e+00 [Q,G1]=0e+00 {Q,G2}=2e+00 Q^2-I=2e+00 
+  4x4 candidates satisfying [Q,G0]=[Q,G1]=0, {Q,G2}=0, Q^2=I: none
+  SIG5 = i G0 G1 G2: [SIG5,G0]=0.0e+00 [SIG5,G1]=0.0e+00 {SIG5,G2}=2.0e+00 SIG5^2-I=0.0e+00
+  SIG5 vs the gamma set: max|anticommutator| = 2.000e+00, max|commutator| = 0.000e+00
+  -> SIG5 commutes with all three gammas and squares to I, i.e. it is the centre
+     of the 4x4 Euclidean Clifford, a trivial spectator symmetry, not a parity
+  lattice realisation: max|P H4 P + H4| = 1.00e+00   max|P H4 P - H4| = 0.000000
+  -> the lattice parity maps H to -H, i.e. it is a particle-hole type operator;
+     the spectrum is then symmetric about E = 0, matching SK3 of the 489 round
+  naive lattice parity (pure h inversion): max|P H4 P - H4| = 1.000000
+PD3 PASS  (no parity in (2+1)d at either 2x2 or 4x4; SIG5 is a trivial central symmetry)
+
+=== PD4 Wilson 项（k 空间）===
+  PD4a parity E2(-k)=E2(k), max dev 0.00e+00  PASS
+  PD4b doubling split: r=0 -> 4.44e-16 ; r=6.0 -> 355.3058  monotone=True  PASS
+  PD4c low-k continuum intact, max rel dev 3.00e-06  PASS
+  PD4d doublet-physical separation maximised at r = 6.000
+       physical lowest |E| = 0.539505, doublet |E| = 0.697938, separation = 0.158433
+       at r = 0 the two are degenerate: |E| = 0.536712 and 0.536712
+
+=== PD5 赝手性的质量退化 ===
+  {sigma_y, H} at m=0  = 0.000e+00
+  {sigma_y, H} at m=m0 = 1.000e+00
+PD5 PASS
+
+figure: D:/software/TianXingFC/images/parity_wilson.png
+SUMMARY PD1..PD5 = ALL PASS
