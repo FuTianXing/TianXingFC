@@ -1,0 +1,33 @@
+=== EP1 至 EP4 的检验器定义自检 ===
+  projector on a 2-dim subspace: PASS
+  non-orthonormal basis detected: PASS
+  Gram-Schmidt restores orthonormality: PASS
+EP1 PASS
+
+=== EP5 回归测试 ===
+
+  case A（正对照）：模态因子 sigma_z (x) I，与 H_full 对易，应给出锐读数
+    EP1 True  EP2 True  comm 0.0e+00  naive spread 7.8e-16
+    eigenvalues inside: [-1.0, -1.0]
+    verdict: extraction well posed -> PASS
+
+  case B（第 491/492/494 类）：Gamma5 与时空哈密顿量反对易
+    EP1 True  EP2 False  anticomm 0.0e+00 comm 1.4e+00  naive spread 4.7e-16
+    verdict: non-conserved label, <Gamma5> on energy states is identically 0 -> FLAGGED
+
+  case C（第 496 类）：最低两能级为粒子-反物子对
+    two lowest levels: -2.118034, -2.118034  gap = 0.000e+00  lowest-level multiplicity 2
+    verdict: E1-E0 is identically zero (lowest-level multiplicity 2), so it
+    cannot be a Zeeman response; g = 0/B = 0 for every B -> FLAGGED
+
+  case D（第 497 类）：sigma_Pauli 在逐动量二重正能子空间内
+    EP1 True  EP2 False  anticomm 1.4e+00 comm 1.4e+00  dim 2
+    EP2 false means Sigma_P is NOT contained in the positive-energy subspace:
+    on a finite lattice with doublers the single-momentum spin is not confined
+    to one energy sector, so extracting there is invalid.
+    proper extraction eigenvalues: [-0.70710678, 0.70710678]
+    naive spread over the subspace: 1.398e+00
+    verdict: naive procedure contaminated -> FLAGGED
+
+  检验器应拦下的历史错误次数：3（第 491/492/494、496、497 各一次）
+SUMMARY EP1, EP5 = ALL PASS
