@@ -8,11 +8,11 @@ Gamma5 anticommutators: ['0e+00', '0e+00', '0e+00', '0e+00']
 
 === K1 Gamma5 与 H 的反对易及两支能量反号 ===
   {Gamma5, H_sp} = 0.000e+00
-  Gamma5 maps a +E state to -E: max|H w + E w| = 1.887e-15
+  Gamma5 maps a +E state to -E: max|H w + E w| = 7.737e-16
 K1 PASS
 
 === K2 谱对称、两扇区简并度、无零模 ===
-  max|E_i + E_{N-i}| = 5.107e-15
+  max|E_i + E_{N-i}| = 5.551e-15
   positive-E states 256, negative-E states 256, zero-mode 0
   the two branches are the E>0 and E<0 sectors, equal in number
 K2 PASS
@@ -28,7 +28,7 @@ K3 PASS
   {S, H_sp} = 0.000e+00   [S, H_sp] = 1.000e+00   (S anticommutes with H)
   [S, Gamma5] = 0.000e+00   (S commutes with Gamma5 in this basis)
   P = S Gamma5: [P, H_full] = 0.000e+00   [P, Gamma5] = 0.000e+00
-  joint spectrum (P, Gamma5): {'(1, -1)': 266, '(1, 1)': 246}
+  joint spectrum (P, Gamma5): {'(1, -1)': 255, '(1, 1)': 257}
   -> S anticommutes with H, not conserved, cannot be a separator.
      P = S Gamma5 is conserved and commutes with Gamma5, but its spectrum is entirely +1, i.e. P is the identity on the physical space,
      so P carries no information and does not separate the two branches.
