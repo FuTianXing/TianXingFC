@@ -1,0 +1,38 @@
+=== 冒烟与闭式对照（xi/h = 16）===
+random config E = 2519.179870 (expect nonzero)
+uniform sigma=+1: E = 0.000e+00 (expect 0)
+  lam=0.01  h=0.625000  bubble E=0.399965  closed 4 sqrt(lam)=0.400000  rel=8.677e-05  PASS
+  lam=0.04  h=0.312500  bubble E=0.799931  closed 4 sqrt(lam)=0.800000  rel=8.677e-05  PASS
+  lam=0.25  h=0.125000  bubble E=1.999826  closed 4 sqrt(lam)=2.000000  rel=8.677e-05  PASS
+  lam=1.00  h=0.062500  bubble E=3.999653  closed 4 sqrt(lam)=4.000000  rel=8.677e-05  PASS
+
+=== JP1 壁位势：气泡实数平移 ===
+  lam=0.01 N=1024  rel range=2.776e-16 (tol 1e-10)  PASS
+  lam=0.01 N=2048  rel range=2.776e-16 (tol 1e-10)  PASS
+  lam=0.04 N=1024  rel range=2.776e-16 (tol 1e-10)  PASS
+  lam=0.04 N=2048  rel range=2.776e-16 (tol 1e-10)  PASS
+  lam=0.25 N=1024  rel range=3.331e-16 (tol 1e-10)  PASS
+  lam=0.25 N=2048  rel range=3.331e-16 (tol 1e-10)  PASS
+  lam=1.00 N=1024  rel range=3.331e-16 (tol 1e-10)  PASS
+  lam=1.00 N=2048  rel range=3.331e-16 (tol 1e-10)  PASS
+JP1 PASS
+
+=== JP2 sigma 畴壁的 Z2 标签 ===
+  lam=0.01  walls=2 (even and >=2: True)  PASS
+  lam=0.04  walls=2 (even and >=2: True)  PASS
+  lam=0.25  walls=2 (even and >=2: True)  PASS
+  lam=1.00  walls=2 (even and >=2: True)  PASS
+  each sigma wall is one J -> -J crossing, i.e. the SU(2) centre -I; (-I)^2 = I
+JP2 PASS
+
+=== JP3 反射联结下 W_phi = 0 的结构性 ===
+  lam=0.01  local jump=1.457937 (expect 1.457937)  winding dev=2.398e-14 (tol 1e-10)  PASS
+  lam=0.04  local jump=1.457937 (expect 1.457937)  winding dev=2.398e-14 (tol 1e-10)  PASS
+  lam=0.25  local jump=1.457937 (expect 1.457937)  winding dev=2.398e-14 (tol 1e-10)  PASS
+  lam=1.00  local jump=1.457937 (expect 1.457937)  winding dev=2.398e-14 (tol 1e-10)  PASS
+  local U(1) jump is structural and nonzero: reflection sends u to its conjugate
+  winding zero is the statement that the reflection costs no topological charge
+JP3 PASS
+
+figure: D:/software/TianXingFC/images/domain_wall_z2_fermion.png
+SUMMARY JP1/JP2/JP3 = ALL PASS
