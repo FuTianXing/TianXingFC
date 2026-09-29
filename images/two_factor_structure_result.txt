@@ -1,0 +1,48 @@
+=== 冒烟 ===
+H_sp hermitian dev = 0.00e+00
+H_sp dim 32, Gamma5 dim 4
+Gamma5 eigen: +1 x2, -1 x2
+
+=== W1 3+1 维 Clifford 自洽性 ===
+  metric diag = ['+1', '-1', '-1', '-1']  (expect 1 -1 -1 -1)
+  pairwise anticommutators max = 0.0e+00
+  Gamma5^2 - I = 0.0e+00   Gamma5 herm dev = 0.0e+00
+W1 PASS
+
+=== W2 宇称算符的唯一性与穷举完备性 ===
+  candidate count = 32 (16 subsets x 2 phases)
+  solutions to [P,g0]=0, {P,gi}=0, P^2=I, herm: ['10001']
+W2 PASS  (exhaustive over 32 monomials; unique solution)
+
+=== W3 P 与 Gamma5 的反对易 ===
+  {P,Gamma5} = 0.0e+00   [P,Gamma5] = 2.0e+00   P^2 - I = 0.0e+00
+  Gamma5 spectrum: +1 x2, -1 x2 (equal split)
+W3 PASS  (parity connects the branches, Gamma5 distinguishes them)
+
+=== W4 Wilson 项在时空因子上的相容性 ===
+  {P, W} = 0.0e+00   {Gamma5, W} = 0.0e+00
+  doubling split: r=0 -> 4.44e-16 ; r=6.0 -> 144.0000  monotone=True
+  -> the Wilson term is compatible with both P and Gamma5 while lifting the doublets
+W4 PASS
+
+=== W5 两因子可分离性与谱的因子化代价 ===
+  [A, B] = 0.0e+00   constructive factorisation error = 0.0e+00
+  every spacetime level carries a twofold mode degeneracy (32 -> 16 levels)
+  four lowest states, joint labels (mode Sz, spacetime Gamma5):
+     -1.000000  +0.000000
+     -1.000000  -0.000000
+     -1.000000  -0.000000
+     -1.000000  +0.000000
+  joint-label sign counts (meaningless when <Gamma5> = 0): [(-1, -1), (-1, 1)]
+  mode label sharp (|<sigma_z>| = 1 on every state): True
+  spacetime chirality unprotected (|<Gamma5>| = 0 at finite mass): True
+  -> separation is exact, and the two factors behave differently:
+     the mode factor carries a sharp label because its own Hamiltonian selects a
+     branch, while the spacetime chirality is NOT protected at finite mass. A
+     massive Dirac spinor's energy eigenstates are L/R mixtures, so D4's two
+     branches exist as a Gamma5 labelling of the OPERATOR, not of the STATES.
+     The lift therefore makes D4 decidable but does not by itself close it.
+W5 PASS
+
+figure: D:/software/TianXingFC/images/two_factor_structure.png
+SUMMARY W1..W5 = ALL PASS
