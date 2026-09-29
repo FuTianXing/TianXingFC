@@ -53,7 +53,7 @@ SF = np.block([[-I2, Z2], [Z2, I2]])
 def shift2(n, axis):
     S = np.zeros((n * n, n * n), dtype=complex)
     idx = np.arange(n * n)
-    i, j = idx // (n * n), idx % n
+    i, j = idx // n, idx % n   # 二维 n x n：正确为 idx//n，原写成 idx//(n*n) 使第一坐标恒为 0
     for a in range(n * n):
         c = [int(i[a]), int(j[a])]
         c[axis] = (c[axis] + 1) % n

@@ -1,0 +1,20 @@
+=== M1 Sigma 的对易结构 ===
+  Sigma: herm 0.0e+00  Sigma^2 - 1/4 I = 0.0e+00  (expect -1/4 for a spin-1/2 generator)
+  [Sigma, kinetic] = 5.0e-01
+  [Sigma, mass]    = 0.0e+00  (commutes: spin is a conserved label)
+  {P, Sigma}     = 1.0e+00
+  {Gamma5, Sigma}= 1.0e+00
+  Sigma eigenvalues: [-0.5, 0.5]
+  lowest multiplet degeneracy 8, Sigma eigenvalues inside: [-0.372678, -0.372678, -0.372678, -0.372678, 0.372678, 0.372678, 0.372678, 0.372678]
+
+=== M2/M3 劈裂的线性响应与 g ===
+  r=0.00  g(B): ['-0.74536', '-0.74536', '-0.74536', '-0.74536', '-0.74536']
+  r=0.05  g(B): ['-0.72894', '-0.72894', '-0.72894', '-0.72894', '-0.72894']
+  r=0.10  g(B): ['-0.71283', '-0.71283', '-0.71283', '-0.71283', '-0.71283']
+  r=0.20  g(B): ['-0.68168', '-0.68168', '-0.68168', '-0.68168', '-0.68168']
+  r=0.40  g(B): ['-0.62403', '-0.62403', '-0.62403', '-0.62403', '-0.62403']
+  r=0, B=0.002: g = -0.745356  (target 2, dev 2.745e+00)
+  spread over B at r=0: 3.386e-13
+  spread over r: 1.213e-01
+
+figure: D:/software/TianXingFC/images/g_factor.png
