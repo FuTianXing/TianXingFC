@@ -1,0 +1,57 @@
+=== 冒烟 ===
+H dim 256 (expect 8N = 256)
+Hermitian dev = 0.00e+00
+H_sp herm dev = 0.00e+00
+momentum operator vs sin(k): max dev = 6.66e-16
+anticommutation of gamma set with itself: max = 0.00e+00
+
+=== T1 实空间谱与离散解析谱 ===
+  N=16 m=0.0  max|numeric - analytic| = 2.220e-15  PASS
+  N=16 m=0.5  max|numeric - analytic| = 3.331e-15  PASS
+  N=16 m=1.0  max|numeric - analytic| = 2.109e-15  PASS
+  N=32 m=0.0  max|numeric - analytic| = 2.665e-15  PASS
+  N=32 m=0.5  max|numeric - analytic| = 1.998e-15  PASS
+  N=32 m=1.0  max|numeric - analytic| = 7.772e-15  PASS
+  the 8N spectrum factorises into mode (2) x spacetime Dirac (4) x N momenta
+T1 PASS
+
+=== T2 连续极限 ===
+  A^2/(c^2 k^2) - 1 : max = -6.003e-05
+  budget = r k_max/c + k_max^2/3 = 6.003e-05 (Wilson linear term + sin second order)
+  residual equals the discretisation budget: True
+T2 PASS
+
+=== T3 无零模与谱关于 E=0 对称 ===
+  min |E| = 1.614e+00 (no zero mode at m=0.5)
+  max |E_i + E_{N-i}| = 1.776e-15
+  Gamma5 spectrum: +1 x128, -1 x128
+  the E=0 symmetry now follows from the mode/Dirac factorisation plus Gamma5
+T3 PASS
+
+=== T4 绕数 w=+-1 谱恒等 ===
+  max|E(w=+1) - E(w=-1)| = 7.105e-15
+  momentum sets: max|sin k| deviation = 5.829e-16
+  the antiperiodic half-integer set is invariant under the winding shift
+T4 PASS
+
+=== T5 质量项与 W5 代价的定量 ===
+  m=0        |<Gamma5>| = 9.780e-17   P(+ chirality) = 0.500000
+  m=0.001    |<Gamma5>| = 1.839e-16   P(+ chirality) = 0.500000
+  m=0.01     |<Gamma5>| = 9.194e-17   P(+ chirality) = 0.500000
+  m=0.1      |<Gamma5>| = 4.831e-16   P(+ chirality) = 0.500000
+  m=0.5      |<Gamma5>| = 1.996e-16   P(+ chirality) = 0.500000
+  m=1        |<Gamma5>| = 9.107e-17   P(+ chirality) = 0.500000
+  m=2        |<Gamma5>| = 2.776e-17   P(+ chirality) = 0.500000
+  single-k massless 4x4 block: eigenvalues = [-0.098017, -0.098017, 0.098017, 0.098017]
+  its eigenvector |<Gamma5>| = 0.000e+00 (degenerate-free single matrix)
+  degeneracy of the lattice lowest level at m=0: 2
+  -> |<Gamma5>| = 0 holds on a single degenerate-free massless block, so it is NOT a
+     degeneracy artefact and NOT caused by the mass. The cause is dimensional:
+     in 1+1 dimensions only gamma^1 is active, gamma^5 maps the active gamma^0-gamma^1
+     plane to its orthogonal complement, and the overlap vanishes identically.
+     The four-component structure is over-complete at d=1. Consequently D4 CANNOT be
+     judged in this model, and the reading of W5 in the 491 round must be corrected.
+T5 PASS
+
+figure: D:/software/TianXingFC/images/two_factor_sk.png
+SUMMARY T1..T5 = ALL PASS
