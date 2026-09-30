@@ -90,6 +90,24 @@ def naive_spread(O, B, rng, trials=64):
     return max(out) - min(out)
 
 
+def tautology_check(fn, counter, trials=1):
+    r"""EP5：恒真检验（2026-09-30 增，第 508 条教训）。
+
+    构造上恒为真的判据（含两个算符共享因子、同一表达式的两种写法、
+    替身构造的算术后果）不含物理信息，须能给出「改掉它就 FAIL」的反例。
+    用法：counter 为一个与 fn 同型但在物理上应 FAIL 的替代构造；
+    返回 dict(valid, f_ok, counter_ok)：
+      valid       恒真检验是否有效（f_ok 为真且 counter_ok 为假才算有效）
+      说明        valid=True 表明 fn 测物理；valid=False 表明 fn 是恒真或反例无效。
+    依据：第 508 条 J1-S 因 K = sz ⊗ G5 与 T3 = sz ⊗ I4 共享 sz 因子而恒对易，
+    J1-C 因替身 H = sz⊗A + eps(g⊗I) 在 sz 的两个等维块上传递权重相同而恒对称。
+    """
+    f_ok = fn()
+    counter_ok = counter()
+    return {"valid": bool(f_ok) and not bool(counter_ok),
+            "f_ok": f_ok, "counter_ok": counter_ok}
+
+
 def conservation(H, O):
     r"""EP4：返回 (anticomm, comm) 两个偏差。"""
     return nrm(O @ H + H @ O), nrm(O @ H - H @ O)
