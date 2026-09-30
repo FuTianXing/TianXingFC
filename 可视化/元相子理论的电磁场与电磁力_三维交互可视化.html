@@ -115,7 +115,7 @@ a{color:#1D4E89}
         <button id="b1b" aria-pressed="true">基准取向场</button>
         <button id="b1c" aria-pressed="true">规范网格</button>
       </div>
-      <div class="row"><label>格点数</label><input type="range" id="s1n" min="3" max="7" step="1" value="5"><output id="o1n">5</output></div>
+      <div class="row"><label>格点边长</label><input type="range" id="s1n" min="3" max="20" step="1" value="6"><output id="o1n">6</output></div>
       <div class="row"><label>场强</label><input type="range" id="s1s" min="0" max="100" step="1" value="55"><output id="o1s">0.55</output></div>
     </div>
     <div class="ctl">
@@ -123,7 +123,7 @@ a{color:#1D4E89}
       <div class="readout" id="r1"></div>
     </div>
   </div>
-  <figcaption class="sans">图 1：左半区实轴方向场按梯度取不同朝向（承载波矢），右半区基准取向场整体加一个随位置线性变化的扭转（承载曲率）。两者同处一格点阵，但只有右半区的蓝色网格线有非零绕圈净变化。</figcaption>
+  <figcaption class="sans">图 1：两个取向场共处同一格点阵，每个格点同时给出一个红色箭头（实轴方向场，承载波矢与光）与一个蓝色扭转标记（基准取向场，承载联络与曲率）。扭转标记是带缺口的圆环，缺口处的短臂指向该点的零度基准方位，臂的方位角随位置线性增长，这就是曲率的来源。箭头与标记的长度都随格距自适应，格点数可调至 20。注意：蓝色标记的臂朝向在整片区域内连续旋转，而红箭头的指向只由 x 方向的梯度决定，两者不可混读。</figcaption>
 
   <table>
     <tr><th>场</th><th>承载什么</th><th>几何读法</th><th>规范变换</th></tr>
@@ -432,64 +432,114 @@ if (document.readyState === "loading") {
 /* ---------------- 图 1 ---------------- */
 function fig1(){
   const cv = document.getElementById("cv1");
-  const a = boot(cv, [5.2, 3.9, 5.8]);
-  const N = 5, S = 7;
-  const g1 = grid(a, N, S, 0xD8D5C9, 0.5);
-  const g2 = grid(a, N, S, ORIENT, 0.34);
-  g2.position.y = 0.012;
+  const a = boot(cv, [5.4, 4.2, 6.2]);
+  // 密格时相机自动拉远（见 upd）
+  const S = 7;
+  const g1 = grid(a, 2, S, 0xD8D5C9, 0.34);
+  const g2 = grid(a, 2, S, ORIENT, 0.22);
+  g2.position.y = 0.006;
   const ax = axes(a, S);
   const grpA = new THREE.Group(), grpB = new THREE.Group();
   a.scene.add(grpA, grpB);
-  const st = {n:N, s:0.55, ax:1, or:1, gd:1};
-  // 图元全部挂在组内，visible 由组统一控制；不预先挂 scene
+  const st = {n:6, s:0.55, ax:1, or:1, gd:1};
+  // 扭转标记：带缺口的环，缺口处的短臂指示局部取向，臂的方位角即扭转量
+  function twistMark(radius, th, col){
+    const grp = new THREE.Group();
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, radius * 0.085, 8, 40, Math.PI * 1.62),
+      new THREE.MeshBasicMaterial({color: col, transparent: true, opacity: 0.62}));
+    ring.rotation.x = Math.PI / 2;
+    grp.add(ring);
+    // 缺口处的臂：从圆心指向缺口起点
+    const arm = new THREE.Mesh(
+      new THREE.BoxGeometry(radius * 0.075, radius * 0.075, radius * 0.62),
+      new THREE.MeshBasicMaterial({color: col, transparent: true, opacity: 0.95}));
+    arm.position.set(Math.sin(th) * radius * 1.30, 0, Math.cos(th) * radius * 1.30);
+    arm.rotation.y = th;
+    grp.add(arm);
+    // 臂端小球，强调朝向
+    const tip = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * 0.15, 10, 8),
+      new THREE.MeshBasicMaterial({color: col}));
+    tip.position.set(Math.sin(th) * radius * 1.60, 0, Math.cos(th) * radius * 1.60);
+    grp.add(tip);
+    return grp;
+  }
   function rebuild(){
     while (grpA.children.length) grpA.remove(grpA.children[grpA.children.length-1]);
     while (grpB.children.length) grpB.remove(grpB.children[grpB.children.length-1]);
-    const n = st.n, half = (n-1)/2, sp = S/n;
-    for (let i=0;i<n;i++) for (let j=0;j<n;j++){
-      const x = (i-half)*sp, z = (j-half)*sp;
-      const grd = (x/(S/2))*st.s*Math.PI*1.6;
-      const s = arrow(new THREE.Vector3(Math.cos(grd), 0, Math.sin(grd)), AXIS, 0.95, 0.085);
-      s.position.set(x, 0.34, z);
-      grpA.add(s);
+    const n = st.n, half = (n - 1) / 2, sp = S / n;
+    // 疏格（n <= 8）画逐点扭转标记；密格（n > 8）改画连续的基准取向场丝线，
+    // 避免标记互相重叠成一团
+    const dense = n > 8;
+    const rMark = Math.min(sp * 0.24, 0.26);
+    const rArrow = Math.max(sp * (dense ? 0.40 : 0.46), 0.16);
+    const stride = dense ? Math.ceil(n / 7) : 1;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const x = (i - half) * sp, z = (j - half) * sp;
+      // 实轴方向场：波矢沿 x 梯度，箭头长度自适应格距
+      const grd = (x / (S / 2)) * st.s * Math.PI * 0.9;
+      if (!dense || j % stride === 0 || i % stride === 0) {
+        const a1 = arrow(new THREE.Vector3(Math.cos(grd), 0, Math.sin(grd)), AXIS, rArrow, rArrow * 0.15);
+        a1.position.set(x - Math.cos(grd) * rArrow * 0.5, 0.012, z - Math.sin(grd) * rArrow * 0.5);
+        grpA.add(a1);
+      }
+      // 基准取向场：疏格画标记，密格只画抽样行
+      if (!dense || j % stride === 0) {
+        const tw = (x / (S / 2)) * st.s * Math.PI * 1.05;
+        const m = twistMark(rMark, tw, ORIENT);
+        m.position.set(x, 0.012, z);
+        grpB.add(m);
+      }
     }
-    for (let i=0;i<n;i++) for (let j=0;j<n;j++){
-      const x = (i-half)*sp, z = (j-half)*sp;
-      const tw = (x/(S/2))*st.s*Math.PI*1.15;
-      const e = 0.34 + 0.30 * Math.abs(Math.sin(tw));
-      const loop = new THREE.Mesh(
-        new THREE.TorusGeometry(0.34, 0.032, 8, 32),
-        new THREE.MeshBasicMaterial({color:ORIENT, transparent:true, opacity:0.72}));
-      loop.rotation.x = Math.PI/2;
-      loop.rotation.z = tw;
-      loop.scale.set(1.0, 0.45 + 0.55 * Math.abs(Math.cos(tw)), 1.0);
-      loop.position.set(x, 0.06, z);
-      grpB.add(loop);
+    // 密格时补一排沿 x 的基准取向丝线，把扭转趋势连成可读的场
+    if (dense) {
+      for (let k = 0; k <= 40; k++) {
+        const x = -S / 2 + (k / 40) * S;
+        const tw = (x / (S / 2)) * st.s * Math.PI * 1.05;
+        const pts = [];
+        for (let q = 0; q <= 24; q++) {
+          const z = -S / 2 + (q / 24) * S;
+          pts.push(new THREE.Vector3(x, 0.030, z));
+        }
+        const ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({color: ORIENT, transparent: true, opacity: 0.13}));
+        grpB.add(ln);
+      }
     }
   }
   rebuild();
   a.draw.push(function(){
-    grpA.rotation.y += 0.0016;
-    grpB.rotation.y -= 0.0011;
+    grpA.rotation.y += 0.0012;
+    grpB.rotation.y -= 0.0008;
   });
   const r1 = document.getElementById("r1");
   function upd(){
     grpA.visible = !!st.ax; grpB.visible = !!st.or;
     g1.visible = !!st.gd; g2.visible = !!st.gd;
     document.getElementById("o1n").textContent = st.n;
-    document.getElementById("o1s").textContent = fmt(st.s,2);
+    document.getElementById("o1s").textContent = fmt(st.s, 2);
+    const sp = S / st.n;
     r1.innerHTML =
-      "实轴方向场：<b>" + (st.ax?"显示":"隐藏") + "</b>，" + (st.n*st.n) + " 个箭头<br>" +
-      "基准取向场：<b>" + (st.or?"显示":"隐藏") + "</b>，扭转随位置线性增长<br>" +
-      "曲率读数：光滑区 <b>0</b>（holonomy 恒等）<br>" +
-      "波矢读数：Δα ∝ 位置，" + fmt(st.s*Math.PI*0.85/S,4) + " 每单位长度<br>" +
+      "实轴方向场（红箭头）：<b>" + (st.ax ? "显示" : "隐藏") + "</b>，共 <b>" + (st.n * st.n) + "</b> 个<br>" +
+      "基准取向场（蓝扭转标记）：<b>" + (st.or ? "显示" : "隐藏") + "</b><br>" +
+      "扭转角读数：θ(x) = " + fmt(st.s * Math.PI * 1.05, 2) + " × (x / " + fmt(S / 2, 1) + ")<br>" +
+      "光轴差读数：Δα = k l_P，k ∝ 位置<br>" +
+      "曲率读数：光滑区 <b>0</b>，曲率只在缺陷（疤）处<br>" +
+      "格距 l_P 读数：" + fmt(sp, 3) + "（箭头与标记随格距自适应）<br>" +
+      (st.n > 8 ? "密格模式：标记按行抽样，<br>并加连续丝线连出扭转趋势" : "疏格模式：逐点标记") + "<br>" +
       "层属：波矢连续（演化层），写入离散（采样层）";
   }
   document.getElementById("s1n").oninput = function(){ st.n = +this.value; rebuild(); upd(); };
-  document.getElementById("s1s").oninput = function(){ st.s = +this.value/100; rebuild(); upd(); };
+  document.getElementById("s1s").oninput = function(){ st.s = +this.value / 100; rebuild(); upd(); };
   const tg = [["b1a","ax"],["b1b","or"],["b1c","gd"]];
-  tg.forEach(function(p){ document.getElementById(p[0]).onclick = function(){
-    st[p[1]] = st[p[1]]?0:1; this.setAttribute("aria-pressed", st[p[1]]?"true":"false"); upd(); }; });
+  tg.forEach(function(pp){
+    document.getElementById(pp[0]).onclick = function(){
+      st[pp[1]] = st[pp[1]] ? 0 : 1;
+      this.setAttribute("aria-pressed", st[pp[1]] ? "true" : "false");
+      upd();
+    };
+  });
   upd();
   return a;
 }
