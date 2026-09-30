@@ -4,6 +4,10 @@
   Gram-Schmidt restores orthonormality: PASS
 EP1 PASS
 
+=== EP0 简并检测 ===
+  demo H = sz (x) I4: max cluster degeneracy = 4, clusters = 2
+  degenerate subspace detected -> PASS
+
 === EP5 回归测试 ===
 
   case A（正对照）：模态因子 sigma_z (x) I，与 H_full 对易，应给出锐读数
