@@ -71,3 +71,7 @@ $\sigma_z$、$\Gamma_5$、$\alpha_i$、$\beta$、$\gamma^0\gamma^3$ 等元件的
     - 归纳三类失效模式：判据错配、读数不合法、判否记成判负
     - 提出三条改造：EP 检验模板必调并增简并检测、README 增设判否档、算符约定公用表
     - 给出四条落点清单
+- **2026-09-30 落点 1 执行**（触发：作者同意「EP 检验强制化若采纳需要改 AGENTS.md 规范第 5 条」）
+    - AGENTS.md《数值验证脚本规范》第 5 条改为模板必调并增设简并检测（EP0），指向第 506 条子空间谱分类，禁止单矢期望
+    - `验证脚本/minimal_verification_extraction_protocol.py` 增 `degeneracy_scan` 函数与 EP0 段，运行 SUMMARY EP1、EP5 全过，EP0 判 PASS
+    - 落点 2（README 判否档）与落点 3（算符约定表）待作者裁决；落点 4（第 504、505 条更正）按验证注记的更正清单执行

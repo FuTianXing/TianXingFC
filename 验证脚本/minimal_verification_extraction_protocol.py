@@ -102,6 +102,24 @@ def block(k1, k2, m, r):
             - 1j * np.sin(k2) * G2), meff
 
 
+def degeneracy_scan(H, tol=TOL):
+    r"""EP0：扫描谱的简并结构，返回 (最大簇重数, 簇列表)。
+
+    簇为 (起始指标, 结束指标, 本征值) 三元组。最大重数大于 1 时，
+    落在此子空间的读数须改走子空间谱分类，禁止单矢期望（第 506 条）。
+    """
+    ev = np.linalg.eigvalsh(H)
+    groups, i, n = [], 0, len(ev)
+    while i < n:
+        j = i
+        while j + 1 < n and abs(ev[j + 1] - ev[i]) < tol:
+            j += 1
+        groups.append((i, j, float(ev[i])))
+        i = j + 1
+    maxdeg = max(j - i + 1 for i, j, _ in groups)
+    return maxdeg, groups
+
+
 def main():
     out, ok = [], []
     rng = np.random.default_rng(SEED)
@@ -120,6 +138,16 @@ def main():
     j1 = project_check(B_ok) and not project_check(B_bad)
     ok.append(j1)
     out.append("EP1 %s" % ("PASS" if j1 else "FAIL"))
+
+    out.append("")
+    out.append("=== EP0 简并检测 ===")
+    Hdeg = np.kron(SZ, I4)
+    maxdeg, groups = degeneracy_scan(Hdeg)
+    out.append("  demo H = sz (x) I4: max cluster degeneracy = %d, clusters = %d"
+               % (maxdeg, len(groups)))
+    deg_ok = maxdeg >= 2
+    out.append("  degenerate subspace detected -> %s" % ("PASS" if deg_ok else "FAIL"))
+    ok.append(deg_ok)
 
     out.append("")
     out.append("=== EP5 回归测试 ===")
