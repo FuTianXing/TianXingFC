@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="lib/katex/katex.min.css">
 <title>元相子理论的电磁场与电磁力：三维交互可视化</title>
 <style>
 :root{
@@ -306,6 +307,7 @@ a{color:#1D4E89}
 
 </div>
 
+<script src="lib/katex/katex.min.js" onload="window.__katexReady=true" onerror="var t=document.createElement('script');t.src='https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js';t.onload=function(){window.__katexReady=true;window.dispatchEvent(new Event('load'))};document.head.appendChild(t)"></script>
 <script src="lib/three.min.js"></script>
 <script src="lib/OrbitControls.js"></script>
 <script>
@@ -368,6 +370,65 @@ function arrow(v, col, len, rad){
 }
 function fmt(x, n){ return Number(x).toFixed(n===undefined?3:n); }
 
+/* ---------------- KaTeX 渲染 ---------------- */
+var __mathDone = false;
+function renderMath(){
+  if (typeof katex === "undefined") return false;
+  if (__mathDone) return true;
+  var D = "$";
+  var conv = function(t){
+    return t.replace(/\\\(([\s\S]*?)\\\)/g, function(_, m){ return D + m + D; })
+            .replace(/\\\[([\s\S]*?)\\\]/g, function(_, m){ return D + D + m + D + D; });
+  };
+  var re = new RegExp("(\\" + D + "{1,2}[\\s\\S]*?\\" + D + "{1,2})", "g");
+  var walk = function(root){
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var targets = [], n;
+    while ((n = walker.nextNode())) {
+      var q = n.parentNode;
+      if (q && q.closest && q.closest(".katex,script,style,code")) continue;
+      var raw = n.nodeValue;
+      if (raw.indexOf(D) < 0 && raw.indexOf("\\(") < 0 && raw.indexOf("\\[") < 0) continue;
+      targets.push(n);
+    }
+    targets.forEach(function(node){
+      var txt = conv(node.nodeValue);
+      if (txt.indexOf(D) < 0) { node.nodeValue = txt; return; }
+      var parts = txt.split(re);
+      var html = [];
+      parts.forEach(function(seg){
+        var m = seg.match(new RegExp("^\\" + D + "{1,2}([\\s\\S]*?)\\" + D + "{1,2}$"));
+        if (m) {
+          try {
+            html.push(katex.renderToString(m[1], {throwOnError:false, displayMode: seg[0].length === 2}));
+          } catch (e) { html.push(seg); }
+        } else if (seg) {
+          html.push(seg.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"));
+        }
+      });
+      var span = document.createElement("span");
+      span.innerHTML = html.join("");
+      node.parentNode.replaceChild(span, node);
+    });
+  };
+  walk(document.querySelector(".wrap"));
+  __mathDone = true;
+  return true;
+}
+function bootMath(){
+  if (renderMath()) return;
+  var tries = 0;
+  var timer = setInterval(function(){
+    tries++;
+    if (renderMath() || tries > 100) clearInterval(timer);
+  }, 100);
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bootMath);
+} else {
+  bootMath();
+}
+
 /* ---------------- 图 1 ---------------- */
 function fig1(){
   const cv = document.getElementById("cv1");
@@ -380,22 +441,17 @@ function fig1(){
   const grpA = new THREE.Group(), grpB = new THREE.Group();
   a.scene.add(grpA, grpB);
   const st = {n:N, s:0.55, ax:1, or:1, gd:1};
-  const spokes = [];
-  for (let i=0;i<3;i++){ const s = arrow(new THREE.Vector3(1,0,0), AXIS, 1.2, 0.09); grpA.add(s); spokes.push(s); }
-  const loops = [];
+  // 图元全部挂在组内，visible 由组统一控制；不预先挂 scene
   function rebuild(){
-    while (grpA.children.length>3) grpA.remove(grpA.children[grpA.children.length-1]);
+    while (grpA.children.length) grpA.remove(grpA.children[grpA.children.length-1]);
     while (grpB.children.length) grpB.remove(grpB.children[grpB.children.length-1]);
-    spokes.forEach(function(s){ grpA.remove(s); });
-    loops.forEach(function(l){ grpA.remove(l); });
-    spokes.length = 0; loops.length = 0;
     const n = st.n, half = (n-1)/2, sp = S/n;
     for (let i=0;i<n;i++) for (let j=0;j<n;j++){
       const x = (i-half)*sp, z = (j-half)*sp;
       const grd = (x/(S/2))*st.s*Math.PI*1.6;
       const s = arrow(new THREE.Vector3(Math.cos(grd), 0, Math.sin(grd)), AXIS, 0.95, 0.085);
       s.position.set(x, 0.34, z);
-      grpA.add(s); spokes.push(s);
+      grpA.add(s);
     }
     for (let i=0;i<n;i++) for (let j=0;j<n;j++){
       const x = (i-half)*sp, z = (j-half)*sp;
@@ -408,7 +464,7 @@ function fig1(){
       loop.rotation.z = tw;
       loop.scale.set(1.0, 0.45 + 0.55 * Math.abs(Math.cos(tw)), 1.0);
       loop.position.set(x, 0.06, z);
-      grpB.add(loop); loops.push(loop);
+      grpB.add(loop);
     }
   }
   rebuild();
@@ -418,8 +474,8 @@ function fig1(){
   });
   const r1 = document.getElementById("r1");
   function upd(){
-    grpA.visible = st.ax; grpB.visible = st.or;
-    g1.visible = st.gd; g2.visible = st.gd;
+    grpA.visible = !!st.ax; grpB.visible = !!st.or;
+    g1.visible = !!st.gd; g2.visible = !!st.gd;
     document.getElementById("o1n").textContent = st.n;
     document.getElementById("o1s").textContent = fmt(st.s,2);
     r1.innerHTML =
