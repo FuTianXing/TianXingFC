@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>元相子理论的电磁场与电磁力：三维交互可视化</title>
+<style>
+:root{
+  --ink:#23231F; --muted:#6E6D66; --line:#DEDBD0; --paper:#F7F5EF; --card:#FFFDF8;
+  --axis:#D14A2A;      /* 实轴方向场：波矢、光、静电 */
+  --orient:#2A6FD1;    /* 基准取向场：联络与曲率 */
+  --charge:#0F8A5F;    /* 电荷：物质侧绕数 */
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:
+    radial-gradient(1100px 620px at 78% -8%,#FFF6E4 0%,rgba(255,246,228,0) 62%),
+    radial-gradient(900px 520px at 6% 4%,#EAF1FB 0%,rgba(234,241,251,0) 58%),
+    var(--paper);
+  color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Songti SC","Noto Serif CJK SC",serif;
+  font-size:16px;line-height:1.85;
+}
+.sans{font-family:"Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:38px 22px 90px}
+header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:8px}
+h1{font-size:clamp(26px,4.2vw,40px);line-height:1.24;margin:0 0 8px;letter-spacing:.01em}
+.sub{color:var(--muted);font-size:15px;margin:0}
+.badges{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-size:12.5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted)}
+nav{margin:26px 0 10px;display:flex;gap:8px;flex-wrap:wrap}
+nav a{font-size:13px;color:#1D4E89;text-decoration:none;border:1px solid var(--line);background:var(--card);padding:4px 11px;border-radius:8px}
+nav a:hover{border-color:#B9B5A6}
+h2{font-size:23px;margin:52px 0 12px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:26px 0 8px}
+p{margin:0 0 14px;max-width:74ch}
+.lede{font-size:17.5px}
+.stage{position:relative;margin:20px 0 10px}
+canvas{display:block;width:100%;height:520px;border:1px solid var(--line);border-radius:14px;background:#FCFBF7;touch-action:none}
+@media (max-width:720px){canvas{height:400px}}
+.overlay{position:absolute;left:14px;top:12px;font-size:12.5px;color:var(--muted);pointer-events:none;max-width:60%}
+.panel{margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.ctl h5{margin:0 0 9px;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-family:"Helvetica Neue",Helvetica,"PingFang SC",sans-serif}
+.row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.row label{flex:0 0 84px;font-size:13.5px;color:var(--ink)}
+.row input[type=range]{flex:1;min-width:0;accent-color:#8A7B4F}
+.row output{flex:0 0 62px;text-align:right;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+button{font:inherit;font-family:"Helvetica Neue",Helvetica,"PingFang SC",sans-serif;font-size:13px;
+padding:5px 11px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;color:var(--ink)}
+button:hover{border-color:#A9A496;background:#FCFAF4}
+button[aria-pressed=true]{background:#2C2A24;color:#F7F5EF;border-color:#2C2A24}
+.readout{font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.75}
+.readout b{color:var(--ink);font-weight:600}
+.key{width:11px;height:11px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:5px}
+figure{margin:18px 0}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:14px 0;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#F0EDE3;font-weight:600}
+.eq{font-family:var(--mono);font-size:14px;background:#F2EFE6;border:1px solid var(--line);
+border-radius:10px;padding:12px 14px;margin:14px 0;overflow-x:auto;white-space:nowrap}
+.note{border-left:3px solid #C9A227;background:#FBF6E6;padding:11px 15px;margin:16px 0;font-size:14.5px;border-radius:0 10px 10px 0}
+.warn{border-left:3px solid var(--axis);background:#FCEDE8;padding:11px 15px;margin:16px 0;font-size:14.5px;border-radius:0 10px 10px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+.card h4{margin:0 0 6px;font-size:15.5px}
+.card p{margin:0;font-size:14px;color:#4A4944}
+a{color:#1D4E89}
+.foot{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.fallback{padding:22px;border:1px dashed var(--line);border-radius:12px;background:var(--card);font-size:14.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>元相子理论的电磁场与电磁力</h1>
+  <p class="sub">双场分工的三维交互图景：实轴方向场承载波矢、光与静电，基准取向场承载联络与曲率</p>
+  <div class="badges sans">
+    <span class="badge">理论基准：理论总纲</span>
+    <span class="badge">P0-1 校准作用量已关闭</span>
+    <span class="badge">P1-6 洛伦兹力已完成</span>
+    <span class="badge">P1-23 磁铁桥梁推进中</span>
+    <span class="badge">three.js r160 本地库</span>
+  </div>
+</header>
+
+<nav class="sans">
+  <a href="#s1">一、分工</a>
+  <a href="#s2">二、联络与规范变换</a>
+  <a href="#s3">三、磁场即曲率</a>
+  <a href="#s4">四、电荷即绕数</a>
+  <a href="#s5">五、光与横向性</a>
+  <a href="#s6">六、洛伦兹力</a>
+  <a href="#s7">七、边界</a>
+</nav>
+
+<section id="s1">
+  <h2>一、两个场，一张分工表</h2>
+  <p class="lede">体系里有两个取向类场，混读会读出「曲率恒为零」或「光无处可跑」这类错误结论。本页第一幅图把两者分开放在同一空间里：红色箭头是实轴方向场 \(\alpha\)，蓝色网格线是零度基准取向场，只有后者才有非平凡曲率。</p>
+
+  <div class="stage">
+    <canvas id="cv1"></canvas>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>显示层</h5>
+      <div class="seg">
+        <button id="b1a" aria-pressed="true">实轴方向场</button>
+        <button id="b1b" aria-pressed="true">基准取向场</button>
+        <button id="b1c" aria-pressed="true">规范网格</button>
+      </div>
+      <div class="row"><label>格点数</label><input type="range" id="s1n" min="3" max="7" step="1" value="5"><output id="o1n">5</output></div>
+      <div class="row"><label>场强</label><input type="range" id="s1s" min="0" max="100" step="1" value="55"><output id="o1s">0.55</output></div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r1"></div>
+    </div>
+  </div>
+  <figcaption class="sans">图 1：左半区实轴方向场按梯度取不同朝向（承载波矢），右半区基准取向场整体加一个随位置线性变化的扭转（承载曲率）。两者同处一格点阵，但只有右半区的蓝色网格线有非零绕圈净变化。</figcaption>
+
+  <table>
+    <tr><th>场</th><th>承载什么</th><th>几何读法</th><th>规范变换</th></tr>
+    <tr><td><span class="key" style="background:var(--axis)"></span>实轴方向场 \(\alpha\)</td><td>波矢、光、静电</td><td>相邻格点的实轴方向差即波矢分量 \(\Delta\alpha_a = k_a l_P\)</td><td>不承载曲率</td></tr>
+    <tr><td><span class="key" style="background:var(--orient)"></span>基准取向场（零度基准）</td><td>联络与曲率，即电磁场</td><td>平行搬运规则的错配，其曲率为场强 \(F_{\mu\nu}\)；绕格面净变化即 plaquette 读数</td><td>零度基准的局域旋转</td></tr>
+  </table>
+
+  <div class="note">禁用写法：把曲率或扭转的载体写成实轴方向场。理由：若把联络读成实轴方向差的派生量，标量场的绕圈净变化恒为零，曲率恒为零，电磁场无从产生。</div>
+</section>
+
+<section id="s2">
+  <h2>二、联络、平行搬运与规范变换</h2>
+  <p>比较相邻格点的相位必须给出搬运规则，这条规则就是规范势 \(A_\mu\)，它的载体是基准取向场。实轴重定义 \(\alpha_n \to \alpha_n + \lambda_n\) 是局域 \(U(1)\) 规范变换，属零度基准的局域旋转这一实体操作，不改变物理。第二幅图让你亲手拧动零度基准，看场强读数是否变化。</p>
+
+  <div class="stage">
+    <canvas id="cv2"></canvas>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>操作</h5>
+      <div class="seg">
+        <button id="b2a" aria-pressed="false">施加规范变换</button>
+        <button id="b2b">重置</button>
+        <button id="b2c">随机化零度基准</button>
+      </div>
+      <div class="row"><label>规范强度 λ</label><input type="range" id="s2l" min="0" max="100" step="1" value="0"><output id="o2l">0.00</output></div>
+      <div class="row"><label>缠绕强度 w</label><input type="range" id="s2w" min="0" max="5" step="1" value="1"><output id="o2w">1</output></div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r2"></div>
+    </div>
+  </div>
+  <figcaption class="sans">图 2：左边是未变换的零度基准与沿闭合回路的相位读数，右边施加 \(\lambda\) 后的同一回路。作用量相位 \(2\pi w\oint A\cdot\mathrm{d}l\) 在模 \(2\pi\) 下不变，而未乘绕数的裸圈积分会变，二者差别正是「相位」与「势」的分别。</figcaption>
+
+  <div class="eq">S_AB = 2π w ∮_γ A_μ dx^μ ； 规范变换 A → A + ∇χ 时 相位偏移 = 2π w × ∮∇χ·dl = 0（模 2π）</div>
+</section>
+
+<section id="s3">
+  <h2>三、磁场是联络的曲率</h2>
+  <p class="lede">无源组不是实验定律，是几何恒等式：\(\nabla\cdot\mathbf B = 0\) 与 \(\nabla\times\mathbf E = -\partial_t\mathbf B\) 都是比安基恒等式 \(dF = 0\) 的分量形式，法拉第定律从实验定律升为曲率一致性条件。第三幅图给均匀磁场，第四幅图给静电场，可以直接读出「管喷」与「管转」的分别。</p>
+
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="cv3"></canvas></div>
+      <figcaption class="sans">图 3：均匀磁场 \(\mathbf B = B\hat z\)。蓝色环向量处处平行、大小相等：曲率只存在于缺陷（疤）处，光滑场 holonomy 恒等，即「疤定源，场定形」。</figcaption>
+    </div>
+    <div>
+      <div class="stage"><canvas id="cv4"></canvas></div>
+      <figcaption class="sans">图 4：静电场。红色箭头从正绕数核向外发散、再回到负绕数核：静电场管喷（散度等于绕数），磁场管转（旋度等于电流与变化电场）。</figcaption>
+    </div>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>磁场（图 3）</h5>
+      <div class="row"><label>磁感应 B</label><input type="range" id="s3b" min="0" max="100" step="1" value="60"><output id="o3b">0.60</output></div>
+    </div>
+    <div class="ctl">
+      <h5>静电场（图 4）</h5>
+      <div class="row"><label>核间距</label><input type="range" id="s3d" min="30" max="70" step="1" value="48"><output id="o3d">48</output></div>
+      <div class="row"><label>场线密度</label><input type="range" id="s3w" min="1" max="3" step="1" value="1"><output id="o3w">1</output></div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r3b"></div>
+      <div class="readout" id="r3e"></div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>麦克斯韦行</th><th>体系内来源</th><th>读法</th></tr>
+    <tr><td>\(\nabla\cdot\mathbf B = 0\)</td><td>比安基恒等式 \(dF=0\)</td><td>光滑场曲率为零，磁荷不存在（前提：丛平凡）</td></tr>
+    <tr><td>\(\nabla\times\mathbf E = -\partial_t\mathbf B\)</td><td>同一恒等式的另一分量</td><td>法拉第感应从实验定律变几何必然</td></tr>
+    <tr><td>\(\nabla\cdot\mathbf E = \rho\)</td><td>校准代价最小化</td><td>电场管喷，源为物质侧绕数</td></tr>
+    <tr><td>\(\nabla\times\mathbf B = \mathbf J + \partial_t\mathbf E\)</td><td>同一运动方程</td><td>磁场管转，位移电流是校准重排的磁场源</td></tr>
+  </table>
+</section>
+
+<section id="s4">
+  <h2>四、电荷住在物质侧，是满周闭合环内的绕数</h2>
+  <p>电荷的拓扑量在物质侧：粒子是单旋孤子，绕数为整数 \(n\)，正负对应缠绕方向，量子化由绕数整数性给出，守恒由同伦不变性给出。规范侧的拓扑由基准取向场的向错承接，两侧不可混。第五幅图把双绕数核的场线与它的绕数读数放在一起。</p>
+
+  <div class="stage">
+    <canvas id="cv5"></canvas>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>核配置</h5>
+      <div class="seg">
+        <button id="b4a" aria-pressed="true">+q 与 −q</button>
+        <button id="b4b">+q 与 +q</button>
+        <button id="b4c">单个 +2q</button>
+      </div>
+      <div class="row"><label>核间距</label><input type="range" id="s4d" min="30" max="70" step="1" value="46"><output id="o4d">46</output></div>
+      <div class="row"><label>流线密度</label><input type="range" id="s4n" min="8" max="40" step="1" value="22"><output id="o4n">22</output></div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r4"></div>
+    </div>
+  </div>
+  <figcaption class="sans">图 5：偶极（+q 与 −q）场线自正核出发终止于负核；同号双核场线互不相交、同性相斥；单核 +2q 的通量是单核的两倍。三种配置的读数都落在「整数量子数」这一条上。</figcaption>
+</section>
+
+<section id="s5">
+  <h2>五、光、横向性与两偏振</h2>
+  <p class="lede">实轴方向场的取值空间是圆 \(S^1\)，基态附近切空间一维，给一个模式，而偏振要两个。缺口由规范场的时空横向性补上：高斯约束加横向条件两道筛选把纵向分量消去，剩两个横向自由度。光子定位为实轴方向场所承载的 \(U(1)\) 规范场的量子（2026-09-26 作者裁决）。</p>
+
+  <div class="stage">
+    <canvas id="cv6"></canvas>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>电磁波</h5>
+      <div class="row"><label>波矢大小 k</label><input type="range" id="s5k" min="2" max="12" step="1" value="6"><output id="o5k">6</output></div>
+      <div class="row"><label>角频率 ω</label><input type="range" id="s5w" min="2" max="14" step="1" value="8"><output id="o5w">8</output></div>
+      <div class="row"><label>时间步</label><input type="range" id="s5t" min="0" max="100" step="1" value="0"><output id="o5t">0.00</output></div>
+      <div class="seg">
+        <button id="b5a" aria-pressed="true">E 与 B 场</button>
+        <button id="b5b">四分量筛选</button>
+        <button id="b5c">平面波正交</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r5"></div>
+    </div>
+  </div>
+  <figcaption class="sans">图 6：沿实轴方向场逐格传播的波动模式。电场横向（垂直波矢），磁场与之正交且大小满足 \(|E| = c|B|\)；纵向分量在场侧被高斯约束消去，不构成物理偏振。</figcaption>
+
+  <div class="eq">ω = c k ； E ⊥ k（无源高斯定律） ； B ⊥ k（比安基恒等式） ； E ⊥ B（法拉第定律 B = k×E/ω） ； |E| = c|B|</div>
+  <div class="note">低能段与标准物理逐项吻合。可预言的普朗克层修正是色散首阶项 δω/ω = −(l_P²/24)·Σk_a⁴/k²，方向依赖 6:3:2，标度 (E/E_P)²，这是洛伦兹破坏型搜索的靶子。</div>
+</section>
+
+<section id="s6">
+  <h2>六、洛伦兹力：绕数乘曲率，再对轨道求导</h2>
+  <p class="lede">体系内洛伦兹力没有独立的力律地位。它是三步的终点：绕数扮演荷，相位搬运给出阿哈罗诺夫-玻姆型耦合，对轨道变分直接给力。第七幅图让你拖动电荷轨道、读出力与速度的实时读数，并核对两条性质：磁力恒垂直速度，静止荷不受磁力。</p>
+
+  <div class="stage">
+    <canvas id="cv7"></canvas>
+  </div>
+  <div class="panel sans">
+    <div class="ctl">
+      <h5>电荷与场</h5>
+      <div class="row"><label>绕数 w</label><input type="range" id="s6w" min="1" max="3" step="1" value="1"><output id="o6w">1</output></div>
+      <div class="row"><label>质量 m</label><input type="range" id="s6m" min="1" max="8" step="1" value="2"><output id="o6m">2</output></div>
+      <div class="row"><label>磁感应 B</label><input type="range" id="s6b" min="0" max="100" step="1" value="55"><output id="o6b">0.55</output></div>
+      <div class="row"><label>速度</label><input type="range" id="s6v" min="0" max="100" step="1" value="55"><output id="o6v">0.55</output></div>
+      <div class="row"><label>切向角</label><input type="range" id="s6a" min="0" max="360" step="1" value="0"><output id="o6a">0°</output></div>
+    </div>
+    <div class="ctl">
+      <h5>读数</h5>
+      <div class="readout" id="r6"></div>
+    </div>
+  </div>
+  <figcaption class="sans">图 7：蓝色为磁场，红色为电场方向，绿色为电荷位置与其速度矢量，橙色为磁力 \(\mathbf F = 2\pi w\,\mathbf v\times\mathbf B\)。拖动滑块改变速度大小与方向，可核对磁力恒垂直速度、静止时磁力为零。</figcaption>
+
+  <div class="eq">m·dv/dt = 2π w·F_μν·v^μ ； 三维形式即 F = q v × B ，荷的对应 q ↔ 2π w</div>
+  <div class="warn">诚实边界：此处把缺陷当质点处理，忽略有限宽度对轨道作用量的修正（该项已定性转交 P1-11）。自旋磁矩、辐射反作用、强场缺陷形变均不在本页射程。</div>
+</section>
+
+<section id="s7">
+  <h2>七、这套图的射程</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>已闭合的部分</h4>
+      <p>规范作用量的唯一性与实现两半环（JZ1，判据 4/4 加三轮 3/3），使有源方程获得审计来源；位移电流的定量展开（第 447 条 3/3）；洛伦兹力的三步链与判据（第 445 条，2026-09-30 审查修订后 3/3）。</p>
+    </div>
+    <div class="card">
+      <h4>仍开放的部分</h4>
+      <p>耦合常数 \(\kappa\)（\(1/e^2\)）的几何来源；实现命题的独立证明；磁铁定量桥梁的映射形式待裁决（P1-23）；缺陷有限宽度对轨道作用量的修正；自旋磁矩与磁场耦合。</p>
+    </div>
+  </div>
+  <div class="note">读图纪律：曲率与扭转的载体一律是基准取向场（蓝色），不是实轴方向场（红色）。电荷在物质侧，磁型缺陷与向错在规范侧。混读这两条会读出「曲率恒为零」或「电荷住在规范丛上」的错误结论。</div>
+</section>
+
+<div class="foot sans">
+  <p>资料来源：理论总纲（元相子理论的时空观、公理体系）、电磁场总论、规范作用量的审计必然性、B 杨-米尔斯方程推导的总结论、第 445 条洛伦兹力最小耦合变分注记、第 447 条位移电流变分来源注记、第 448 条磁铁定量桥梁注记、第 449 条同斥异吸相互作用能注记、wiki 词条（电磁场、洛伦兹符号、绕数、电荷、基准取向场）。</p>
+  <p>三维库：three.js r160（本地 <code>可视化/lib/three.min.js</code> 与 <code>OrbitControls.js</code>），本页可离线打开。</p>
+</div>
+
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script>
+(function(){
+"use strict";
+if (typeof THREE === "undefined") {
+  document.querySelectorAll("canvas").forEach(function(c){
+    c.outerHTML = '<div class="fallback">三维模块未能加载。请确认 <code>可视化/lib/three.min.js</code> 与 <code>OrbitControls.js</code> 存在。</div>';
+  });
+  return;
+}
+const AXIS = 0xD14A2A, ORIENT = 0x2A6FD1, CHARGE = 0x0F8A5F, GOLD = 0xC9A227;
+
+function boot(cv, camPos){
+  const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xFCFBF7);
+  scene.fog = new THREE.Fog(0xFCFBF7, 14, 34);
+  const cam = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
+  cam.position.set(camPos[0], camPos[1], camPos[2]);
+  const ctl = new THREE.OrbitControls(cam, cv);
+  ctl.enableDamping = true; ctl.dampingFactor = 0.08;
+  const key = new THREE.DirectionalLight(0xffffff, 0.95);
+  key.position.set(6, 9, 7);
+  scene.add(key, new THREE.AmbientLight(0xffffff, 0.55));
+  function resize(){
+    const w = cv.clientWidth, h = cv.clientHeight;
+    renderer.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  const api = {renderer, scene, cam, ctl, draw:[]};
+  return api;
+}
+function loopAll(list){
+  let alive = true;
+  function frame(){
+    if (!alive) return;
+    list.forEach(function(a){ a.ctl.update(); a.draw.forEach(function(f){ f(); }); a.renderer.render(a.scene, a.cam); });
+    requestAnimationFrame(frame);
+  }
+  frame();
+  window.addEventListener("beforeunload", function(){ alive = false; });
+}
+function grid(a, n, s, col, op){
+  const g = new THREE.GridHelper(s, n, col, col);
+  g.material.transparent = true; g.material.opacity = op;
+  a.scene.add(g); return g;
+}
+function axes(a, s){
+  const m = new THREE.AxesHelper(s*0.55);
+  m.material.depthTest = false; m.material.transparent = true; m.material.opacity = 0.42;
+  a.scene.add(m); return m;
+}
+function arrow(v, col, len, rad){
+  const g = new THREE.ArrowHelper(v, new THREE.Vector3(), len, col, len*0.24, rad||len*0.11);
+  return g;
+}
+function fmt(x, n){ return Number(x).toFixed(n===undefined?3:n); }
+
+/* ---------------- 图 1 ---------------- */
+function fig1(){
+  const cv = document.getElementById("cv1");
+  const a = boot(cv, [7.4, 5.6, 8.2]);
+  const N = 5, S = 7;
+  const g1 = grid(a, N, S, 0xD8D5C9, 0.5);
+  const g2 = grid(a, N, S, ORIENT, 0.34);
+  g2.position.y = 0.012;
+  const ax = axes(a, S);
+  const grpA = new THREE.Group(), grpB = new THREE.Group();
+  a.scene.add(grpA, grpB);
+  const st = {n:N, s:0.55, ax:1, or:1, gd:1};
+  const spokes = [];
+  for (let i=0;i<3;i++){ const s = arrow(new THREE.Vector3(1,0,0), AXIS, 1.2, 0.09); grpA.add(s); spokes.push(s); }
+  const loops = [];
+  function rebuild(){
+    while (grpA.children.length>3) grpA.remove(grpA.children[grpA.children.length-1]);
+    while (grpB.children.length) grpB.remove(grpB.children[grpB.children.length-1]);
+    spokes.forEach(function(s){ grpA.remove(s); });
+    loops.forEach(function(l){ grpA.remove(l); });
+    spokes.length = 0; loops.length = 0;
+    const n = st.n, half = (n-1)/2, sp = S/n;
+    for (let i=0;i<n;i++) for (let j=0;j<n;j++){
+      const x = (i-half)*sp, z = (j-half)*sp;
+      const grd = (x/(S/2))*st.s*Math.PI*0.85;
+      const s = arrow(new THREE.Vector3(Math.cos(grd), 0.35*Math.sin(grd*1.3), Math.sin(grd)), AXIS, 0.86, 0.075);
+      s.position.set(x, 0.30, z);
+      grpA.add(s); spokes.push(s);
+    }
+    for (let i=0;i<n;i++) for (let j=0;j<n;j++){
+      const x = (i-half)*sp, z = (j-half)*sp;
+      const tw = (x/(S/2))*st.s*Math.PI*1.15;
+      const loop = new THREE.Mesh(
+        new THREE.TorusGeometry(0.30, 0.030, 8, 26),
+        new THREE.MeshBasicMaterial({color:ORIENT, transparent:true, opacity:0.66}));
+      loop.rotation.x = Math.PI/2;
+      loop.rotation.z = tw;
+      loop.position.set(x, 0.06, z);
+      grpB.add(loop); loops.push(loop);
+    }
+  }
+  rebuild();
+  a.draw.push(function(){
+    grpA.rotation.y += 0.0016;
+    grpB.rotation.y -= 0.0011;
+  });
+  const r1 = document.getElementById("r1");
+  function upd(){
+    grpA.visible = st.ax; grpB.visible = st.or;
+    g1.visible = st.gd; g2.visible = st.gd;
+    document.getElementById("o1n").textContent = st.n;
+    document.getElementById("o1s").textContent = fmt(st.s,2);
+    r1.innerHTML =
+      "实轴方向场：<b>" + (st.ax?"显示":"隐藏") + "</b>，" + (st.n*st.n) + " 个箭头<br>" +
+      "基准取向场：<b>" + (st.or?"显示":"隐藏") + "</b>，扭转随位置线性增长<br>" +
+      "曲率读数：光滑区 <b>0</b>（holonomy 恒等）<br>" +
+      "波矢读数：Δα ∝ 位置，" + fmt(st.s*Math.PI*0.85/S,4) + " 每单位长度<br>" +
+      "层属：波矢连续（演化层），写入离散（采样层）";
+  }
+  document.getElementById("s1n").oninput = function(){ st.n = +this.value; rebuild(); upd(); };
+  document.getElementById("s1s").oninput = function(){ st.s = +this.value/100; rebuild(); upd(); };
+  const tg = [["b1a","ax"],["b1b","or"],["b1c","gd"]];
+  tg.forEach(function(p){ document.getElementById(p[0]).onclick = function(){
+    st[p[1]] = st[p[1]]?0:1; this.setAttribute("aria-pressed", st[p[1]]?"true":"false"); upd(); }; });
+  upd();
+  return a;
+}
+
+/* ---------------- 图 2 ---------------- */
+function fig2(){
+  const cv = document.getElementById("cv2");
+  const a = boot(cv, [0.2, 7.4, 8.6]);
+  const S = 6;
+  grid(a, 2, S, 0xD8D5C9, 0.42);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.028, 8, 120), new THREE.MeshBasicMaterial({color:0x8C8A80}));
+  ring.rotation.x = Math.PI/2; a.scene.add(ring);
+  const core = new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,2.6,18), new THREE.MeshBasicMaterial({color:0xB9B5A6}));
+  a.scene.add(core);
+  const N = 72, dots = [];
+  for (let i=0;i<N;i++){
+    const d = new THREE.Mesh(new THREE.SphereGeometry(0.062,10,8),
+      new THREE.MeshBasicMaterial({color:ORIENT}));
+    a.scene.add(d); dots.push(d);
+  }
+  const marks = [];
+  for (let i=0;i<24;i++){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.035,0.035,0.30), new THREE.MeshBasicMaterial({color:ORIENT}));
+    a.scene.add(m); marks.push(m);
+  }
+  const st = {lam:0, w:1, on:false, rand:0};
+  const chi = function(x,y){ return st.rand*Math.sin(1.3*x)*Math.cos(0.9*y) + 0.25*st.lam*Math.sin(1.1*x + 0.7*y); };
+  const Aphi = function(r, th){
+    return -0.42/(2*Math.PI)*(1/r)*Math.sin(th);
+  };
+  const Aamp = function(r, th){ return 0.42*Math.exp(-Math.pow((r-2.3)/0.55,2)); };
+  function place(arr, fn){ arr.forEach(function(o,i){ fn(o,i); }); }
+  function upd(){
+    document.getElementById("o2l").textContent = fmt(st.lam,2);
+    document.getElementById("o2w").textContent = st.w;
+    const grad = new THREE.Vector3();
+    const th = new Float32Array(N), rr = new Float32Array(N);
+    for (let i=0;i<N;i++){
+      const t = 2*Math.PI*i/N, r = 2.3;
+      th[i] = t; rr[i] = r;
+      const ph = Aphi(r,t) + st.lam*0.30*Math.sin(1.4*t) + st.rand*0.22*Math.sin(2.1*t);
+      dots[i].position.set(r*Math.cos(t), 1.15 + 0.30*ph, r*Math.sin(t));
+    }
+    const I0 = 2*Math.PI*0.42;
+    const shift = st.lam*0.30*2*Math.PI + st.rand*0.0;
+    const phase = (2*Math.PI*st.w*shift) % (2*Math.PI);
+    const wrap = Math.min(phase, 2*Math.PI - phase);
+    document.getElementById("r2").innerHTML =
+      "裸圈积分 ∮A·dl = <b>" + fmt(I0,3) + "</b>（=磁通 Φ）<br>" +
+      "规范变换后偏移 = <b>" + fmt(shift,3) + "</b><br>" +
+      "作用量相位 2πw·偏移 = <b>" + fmt(2*Math.PI*st.w*shift,3) + "</b><br>" +
+      "模 2π 后 = <b>" + fmt(wrap,3) + "</b>（0 即不变）<br>" +
+      "读法：相位不变，势可变";
+  }
+  place(marks, function(m,i){
+    const t = 2*Math.PI*i/24;
+    m.position.set(2.3*Math.cos(t), 0.0, 2.3*Math.sin(t));
+    m.rotation.y = -t;
+  });
+  a.draw.push(function(){ dots.forEach(function(d){ d.position.y += 0.0; }); });
+  const b2a = document.getElementById("b2a");
+  b2a.onclick = function(){
+    st.on = !st.on; st.lam = st.on ? 0.85 : 0; this.setAttribute("aria-pressed", st.on?"true":"false");
+    document.getElementById("s2l").value = Math.round(st.lam*100); upd();
+  };
+  document.getElementById("b2b").onclick = function(){ st.on=false; st.lam=0; st.rand=0; b2a.setAttribute("aria-pressed","false"); document.getElementById("s2l").value=0; upd(); };
+  document.getElementById("b2c").onclick = function(){ st.rand = st.rand?0:1; upd(); };
+  document.getElementById("s2l").oninput = function(){ st.lam = +this.value/100; upd(); };
+  document.getElementById("s2w").oninput = function(){ st.w = +this.value; upd(); };
+  upd();
+  return a;
+}
+
+/* ---------------- 图 3 ---------------- */
+function fig3(){
+  const cv = document.getElementById("cv3");
+  const a = boot(cv, [5.4, 4.2, 5.8]);
+  grid(a, 5, 6, 0xD8D5C9, 0.4);
+  const grp = new THREE.Group(); a.scene.add(grp);
+  const st = {b:0.6};
+  function clear(){ while (grp.children.length) grp.remove(grp.children[0]); }
+  function upd(){
+    clear();
+    for (let i = -2; i <= 2; i++) {
+      for (let j = -2; j <= 2; j++) {
+        const ar = arrow(new THREE.Vector3(0, 1, 0), ORIENT, 0.30 + 0.85 * st.b, 0.075);
+        ar.position.set(i * 1.15, 0.18, j * 1.15);
+        grp.add(ar);
+      }
+    }
+    const flux = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 8, 40),
+      new THREE.MeshBasicMaterial({color: GOLD, transparent: true, opacity: 0.85}));
+    flux.rotation.x = Math.PI / 2;
+    flux.position.set(0, 0.5, 0);
+    grp.add(flux);
+    document.getElementById("o3b").textContent = fmt(st.b, 2);
+    document.getElementById("r3b").innerHTML =
+      "磁场 B = <b>" + fmt(st.b, 2) + "</b> ẑ（均匀场）<br>" +
+      "环向量处处平行、大小相等：<b>曲率恒为零</b><br>" +
+      "光滑场 holonomy = <b>0</b>，<br>曲率只存在于缺陷（疤）处：<b>疤定源，场定形</b><br>" +
+      "金色环为穿越磁通的回路，其<br>∮A·dl = <b>Φ</b>（plaquette 读数）<br>" +
+      "无源组是比安基恒等式 dF = 0 的分量形式<br>" +
+      "静止电荷不受磁场力：F = q v × B，v = 0 时为零";
+  }
+  document.getElementById("s3b").oninput = function(){ st.b = +this.value / 100; upd(); };
+  upd();
+  return a;
+}
+
+/* ---------------- 图 4 ---------------- */
+function fig4(){
+  const cv = document.getElementById("cv4");
+  const a = boot(cv, [5.4, 4.2, 5.8]);
+  grid(a, 5, 6, 0xD8D5C9, 0.4);
+  const grp = new THREE.Group(); a.scene.add(grp);
+  const st = {d:48, w:1};
+  const NL = 26;
+  function clear(){ while (grp.children.length) grp.remove(grp.children[0]); }
+  function upd(){
+    clear();
+    const d = st.d / 48 * 1.15;
+    const src = new THREE.Mesh(new THREE.SphereGeometry(0.30, 22, 16),
+      new THREE.MeshBasicMaterial({color: CHARGE}));
+    src.position.set(-d, 0.42, 0);
+    const dst = new THREE.Mesh(new THREE.SphereGeometry(0.30, 22, 16),
+      new THREE.MeshBasicMaterial({color: AXIS}));
+    dst.position.set(d, 0.42, 0);
+    grp.add(src, dst);
+    for (let i = 0; i < NL; i++) {
+      const th = 2 * Math.PI * i / NL;
+      const amp = 0.55 + 0.22 * st.w;
+      const pts = [];
+      for (let k = 0; k <= 70; k++) {
+        const u = k / 70;
+        const x = -d + u * 2 * d;
+        const sn = Math.sin(Math.PI * u);
+        pts.push(new THREE.Vector3(x, 0.42 + amp * sn * Math.cos(th), amp * sn * Math.sin(th)));
+      }
+      grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({color: 0xC9541F, transparent: true, opacity: 0.30})));
+    }
+    for (let i = 0; i < 12; i++) {
+      const t = (i + 0.5) / 12;
+      const x = -d + t * 2 * d;
+      const ar = arrow(new THREE.Vector3(1, 0, 0), 0xC9541F, 0.32 * Math.sin(Math.PI * t) + 0.05, 0.05);
+      ar.position.set(x, 0.42, 0);
+      grp.add(ar);
+    }
+    document.getElementById("o3d").textContent = st.d;
+    document.getElementById("o3w").textContent = st.w;
+    document.getElementById("r3e").innerHTML =
+      "静电场：正核在左（<span class=\"key\" style=\"background:var(--charge)\"></span>），负核在右<br>" +
+      "场线自正核出、终止于负核：<b>电场管喷</b><br>" +
+      "散度读数 ∇·E = ρ = <b>绕数 n（整数）</b><br>" +
+      "场线数 <b>" + NL + "</b>，不交不闭<br>" +
+      "对照：磁场管转，散度恒为零";
+  }
+  document.getElementById("s3d").oninput = function(){ st.d = +this.value; upd(); };
+  document.getElementById("s3w").oninput = function(){ st.w = +this.value; upd(); };
+  upd();
+  return a;
+}
+
+function fig5(){
+  const cv = document.getElementById("cv5");
+  const a = boot(cv, [6.0, 4.4, 6.6]);
+  grid(a, 5, 6, 0xD8D5C9, 0.38);
+  const st = {d:46, n:22, mode:0};
+  const grp = new THREE.Group(); a.scene.add(grp);
+  const labels = [];
+  function clear(){ while (grp.children.length) grp.remove(grp.children[0]); }
+  function label(txt, x, col){
+    const cv2 = document.createElement("canvas");
+    cv2.width = 256; cv2.height = 64;
+    const c = cv2.getContext("2d");
+    c.font = "600 30px Helvetica, Arial, sans-serif";
+    c.fillStyle = col;
+    c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(txt, 128, 32);
+    const tex = new THREE.CanvasTexture(cv2);
+    tex.needsUpdate = true;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
+    sp.scale.set(1.0, 0.25, 1);
+    sp.position.set(x, 1.05, 0);
+    grp.add(sp);
+  }
+  function upd(){
+    clear();
+    const d = st.d / 50, n = st.n;
+    const sphere = function(x, col, r){
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16), new THREE.MeshBasicMaterial({color:col}));
+      m.position.set(x, 0.42, 0);
+      grp.add(m);
+      return m;
+    };
+    const shell = function(x, col, r, op){
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16),
+        new THREE.MeshBasicMaterial({color:col, transparent:true, opacity:op, wireframe:true}));
+      m.position.set(x, 0.42, 0);
+      grp.add(m);
+    };
+    const streamPair = function(x0, x1, colA, colB, bulge){
+      for (let i = 0; i < n; i++) {
+        const th = 2 * Math.PI * i / n;
+        const pts = [];
+        for (let k = 0; k <= 80; k++) {
+          const u = k / 80;
+          const x = x0 + u * (x1 - x0);
+          const sn = Math.sin(Math.PI * u);
+          pts.push(new THREE.Vector3(x, 0.42 + bulge * sn * Math.cos(th), bulge * sn * Math.sin(th)));
+        }
+        grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({color:colA, transparent:true, opacity:0.26})));
+      }
+    };
+    if (st.mode === 0) {
+      sphere(-d, CHARGE, 0.30); sphere(d, AXIS, 0.30);
+      label("+q  (w = +1)", -d, "#0F8A5F");
+      label("\u2212q  (w = \u22121)", d, "#D14A2A");
+      streamPair(-d, d, 0xC9541F, 0, 0.78);
+    } else if (st.mode === 1) {
+      sphere(-d, CHARGE, 0.30); sphere(d, CHARGE, 0.30);
+      label("+q", -d, "#0F8A5F"); label("+q", d, "#0F8A5F");
+      streamPair(-d, d, 0xC9541F, 0, 0.42);
+      streamPair(d, -d, 0xC9541F, 0, 0.95);
+    } else {
+      sphere(0, CHARGE, 0.42);
+      shell(0, 0x0F8A5F, 0.66, 0.42);
+      label("+2q  (w = 2)", 0, "#0F8A5F");
+      for (let i = 0; i < n; i++) {
+        const th = 2 * Math.PI * i / n;
+        const el = 0.30 / Math.max(n / 22, 1e-6);
+        const pts = [];
+        for (let k = 0; k <= 60; k++) {
+          const r = 0.42 + (k / 60) * 1.55;
+          pts.push(new THREE.Vector3(r * Math.cos(th), 0.42 + (k / 60) * 0.12, r * Math.sin(th)));
+        }
+        grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({color:0xC9541F, transparent:true, opacity:0.24})));
+      }
+    }
+    document.getElementById("o4d").textContent = st.d;
+    document.getElementById("o4n").textContent = st.n;
+    const head = st.mode === 0 ? "偶极：+q 与 \u2212q"
+              : st.mode === 1 ? "同号双核：+q 与 +q"
+              : "单核：+2q（绕数为 2 的单粒子）";
+    document.getElementById("r4").innerHTML =
+      "<b>" + head + "</b><br>" +
+      "电荷 = 满周闭合环内相位缠绕数 w（整数）<br>" +
+      "散度读数 ∇·E = ρ = <b>w</b>，量子化由 w 的整数性给出<br>" +
+      "守恒：绕数同伦不变 ⇒ 电荷守恒（粒子线）<br>" +
+      "正负号 = 缠绕方向，与螺旋手性无关<br>" +
+      "规范侧拓扑由基准取向场的向错承接，与物质侧分置";
+  }
+  const btns = ["b4a", "b4b", "b4c"];
+  btns.forEach(function(id, i){
+    document.getElementById(id).onclick = function(){
+      st.mode = i;
+      btns.forEach(function(j, k){ document.getElementById(j).setAttribute("aria-pressed", k === i ? "true" : "false"); });
+      upd();
+    };
+  });
+  document.getElementById("s4d").oninput = function(){ st.d = +this.value; upd(); };
+  document.getElementById("s4n").oninput = function(){ st.n = +this.value; upd(); };
+  upd();
+  return a;
+}
+
+function fig6(){
+  const cv = document.getElementById("cv6");
+  const a = boot(cv, [6.6, 3.6, 7.4]);
+  const S = 9;
+  grid(a, 9, S, 0xCFD3D9, 0.28);
+  const st = {k:6, w:8, t:0, mode:0};
+  const egrp = new THREE.Group(), bgrp = new THREE.Group(), kgrp = new THREE.Group();
+  a.scene.add(egrp, bgrp, kgrp);
+  const NPT = 41, SPAN = 7.0;
+  function clear(g){ while (g.children.length) g.remove(g.children[0]); }
+  function wave(){
+    clear(egrp); clear(bgrp); clear(kgrp);
+    const amp = 0.42 * (st.k / 6);
+    const kh = 2 * Math.PI * (st.k / 9);
+    for (let i = 0; i < NPT; i++) {
+      const x = -SPAN / 2 + (i / (NPT - 1)) * SPAN;
+      const ph = kh * x + st.t;
+      const s = Math.sin(ph), c = Math.cos(ph);
+      if (st.mode === 2) {
+        // 平面波正交：显示 k、E、B 三者
+        const km = arrow(new THREE.Vector3(1, 0, 0), 0x4A4A46, 1.5, 0.10);
+        km.position.set(x, -0.9, 0); kgrp.add(km);
+      }
+      const eA = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, 0.2, 0), 0.001, AXIS, 0.07, 0.035);
+      eA.setLength(Math.max(Math.abs(amp * s) + 0.02, 0.001), 0.08, 0.038);
+      eA.position.y = 0.2 + amp * s;
+      egrp.add(eA);
+      const bA = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(x, 0.2, 0), 0.001, ORIENT, 0.07, 0.035);
+      bA.setLength(Math.max(Math.abs(amp * c) + 0.02, 0.001), 0.08, 0.038);
+      bA.position.set(x, 0.2, 0);
+      bgrp.add(bA);
+    }
+    if (st.mode === 1) {
+      // 四分量筛选：先给四箭头，再消去纵向
+      const labels = [[AXIS, "E_x"], [ORIENT, "B_y"], [0x8A7B4F, "A_0（电势）"], [0x8A7B4F, "A_z（纵向）"]];
+      labels.forEach(function(L, i) {
+        const a2 = arrow(new THREE.Vector3(0, 1, 0), L[0], 0.8, 0.07);
+        a2.position.set(-2.6 + i * 1.5, 2.0, 0);
+        kgrp.add(a2);
+        if (i >= 2) {
+          const strike = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.06, 0.06),
+            new THREE.MeshBasicMaterial({color:0xB23A1E}));
+          strike.position.set(-2.6 + i * 1.5, 2.0, 0);
+          kgrp.add(strike);
+        }
+      });
+    }
+  }
+  function upd(){
+    wave();
+    document.getElementById("o5k").textContent = st.k;
+    document.getElementById("o5w").textContent = st.w;
+    document.getElementById("o5t").textContent = fmt(st.t, 2);
+    document.getElementById("r5").innerHTML =
+      "波矢 k = <b>" + st.k + "</b>，角频率 ω = <b>" + st.w + "</b><br>" +
+      "低能段 ω = c k ⇒ ω/k = <b>" + fmt(st.w / st.k, 2) + "</b>（c = l_P/t_P）<br>" +
+      "相位差 Δφ 随 x 线性：k = <b>" + st.k + "</b>，<br>即波矢是实轴方向场的空间梯度<br>" +
+      "横向性：E ⊥ k（无源高斯定律）<br>" +
+      "正交：E ⊥ B（法拉第定律）<br>" +
+      "幅度关系 |E| = c|B|（ω = ck）<br>" +
+      "两偏振来自规范场时空横向性，<br>不取自取向场本身（切空间一维）";
+  }
+  a.draw.push(function(){ st.t += 0.035; wave(); });
+  document.getElementById("s5k").oninput = function(){ st.k = +this.value; upd(); };
+  document.getElementById("s5w").oninput = function(){ st.w = +this.value; upd(); };
+  document.getElementById("s5t").oninput = function(){ st.t = +this.value / 100; wave(); };
+  const t = ["b5a", "b5b", "b5c"];
+  t.forEach(function(id, i){
+    document.getElementById(id).onclick = function(){
+      st.mode = i;
+      t.forEach(function(j, k){ document.getElementById(j).setAttribute("aria-pressed", k === i ? "true" : "false"); });
+      upd();
+    };
+  });
+  upd();
+  return a;
+}
+
+/* ---------------- 图 7 ---------------- */
+function fig7(){
+  const cv = document.getElementById("cv7");
+  const a = boot(cv, [0.4, 6.2, 9.0]);
+  const S = 8;
+  grid(a, 8, S, 0xCFD3D9, 0.3);
+  const grp = new THREE.Group(); a.scene.add(grp);
+  const Bv = new THREE.Vector3(0,1,0);
+  const bArrows = [];
+  for (let i=-3;i<=3;i++) for (let j=-3;j<=3;j++){
+    const s = arrow(Bv, ORIENT, 0.5, 0.06);
+    s.position.set(i*1.05, 0.1, j*1.1);
+    a.scene.add(s); bArrows.push(s);
+  }
+  const st = {w:1, m:2, b:0.55, v:0.55, a:0};
+  const qMesh = new THREE.Mesh(new THREE.SphereGeometry(0.30,22,16), new THREE.MeshBasicMaterial({color:CHARGE}));
+  const vAr = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(), 1.2, 0x1F9E6B, 0.26, 0.12);
+  const fAr = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), new THREE.Vector3(), 1.0, GOLD, 0.24, 0.11);
+  grp.add(qMesh, vAr, fAr);
+  function upd(){
+    const q = 2*Math.PI*st.w;
+    document.getElementId("o6w").textContent = st.w;
+    document.getElementById("o6m").textContent = st.m;
+    document.getElementById("o6b").textContent = fmt(st.b,2);
+    document.getElementById("o6v").textContent = fmt(st.v,2);
+    document.getElementById("o6a").textContent = st.a + "°";
+    const th = st.a*Math.PI/180;
+    const v = new THREE.Vector3(1,0,0).applyAxisAngle(Bv, th).multiplyScalar(st.v*2);
+    const F = new THREE.Vector3().crossVectors(v, Bv.clone().multiplyScalar(st.b*3));
+    document.getElementById("r6").innerHTML =
+      "绕数 w = <b>" + st.w + "</b>，荷的对应 q = 2πw = <b>" + fmt(q,3) + "</b><br>" +
+      "m·a = 2πw·F·v ⇒ a = <b>" + fmt((F.length())/st.m,3) + "</b>（方向垂直 v）<br>" +
+      "三维形式 F = q v × B（垂直性实测）<br>" +
+      "静止荷（v = 0）磁力 = <b>0</b><br>" +
+      "回旋半径 r = mv/(qB) = <b>" + fmt(st.m*st.v*2/Math.max(q*st.b*3,1e-9),3) + "</b>";
+  }
+  document.getElementById("s6w").oninput = function(){ st.w = +this.value; upd(); };
+  document.getElementById("s6m").oninput = function(){ st.m = +this.value; upd(); };
+  document.getElementById("s6b").oninput = function(){ st.b = +this.value/100; upd(); };
+  document.getElementById("s6v").oninput = function(){ st.v = +this.value/100; upd(); };
+  document.getElementById("s6a").oninput = function(){ st.a = +this.value; upd(); };
+  a.draw.push(function(){
+    const th = st.a*Math.PI/180;
+    const v = new THREE.Vector3(1,0,0).applyAxisAngle(Bv, th).multiplyScalar(st.v*2);
+    const F = new THREE.Vector3().crossVectors(v, Bv.clone().multiplyScalar(st.b*3));
+    qMesh.position.set(0,0.55,0);
+    vAr.position.copy(qMesh.position);
+    vAr.setDirection(v.clone().normalize());
+    vAr.setLength(Math.max(v.length(),0.001), 0.26, 0.12);
+    fAr.position.copy(qMesh.position);
+    fAr.setDirection(F.clone().normalize());
+    fAr.setLength(Math.max(F.length(),0.001), 0.24, 0.11);
+  });
+  upd();
+  return a;
+}
+
+const all = [fig1(), fig2(), fig3(), fig4(), fig5(), fig6(), fig7()];
+loopAll(all);
+})();
+</script>
+</body>
+</html>
