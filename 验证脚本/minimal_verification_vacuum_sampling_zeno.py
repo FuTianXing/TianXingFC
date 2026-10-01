@@ -112,6 +112,9 @@ def run_unitary(A, H, sites, idx, k0x, T):
     e0 = np.linalg.norm(psi) ** 2
     max_dev = 0.0
     front_ok = True
+    hist = [e0]
+    sel = [i for i, st in enumerate(sites) if st[0] == X_SCREEN]
+    ys = np.array([sites[i][1] for i in sel])
     for t in range(1, T + 1):
         psi = spl.expm_multiply((-1j) * H, psi)
         fx = front_x(psi, sites, 1e-12)
@@ -119,35 +122,41 @@ def run_unitary(A, H, sites, idx, k0x, T):
             front_ok = False
         dev = abs(np.linalg.norm(psi) ** 2 - e0)
         max_dev = max(max_dev, dev)
+        hist.append(np.linalg.norm(psi) ** 2)
     arrived, V = screen_stats(psi, sites)
-    return max_dev, front_ok, arrived, V
+    screen_I = np.abs(psi[sel]) ** 2
+    return max_dev, front_ok, arrived, V, np.array(hist), ys, screen_I
 
 
 def run_copy(A, sites, idx, k0x, T):
     B = (sp.eye(A.shape[0]) + EPS_COPY * A).tocsr()
     psi = psi_initial(sites, idx, k0x)
     e0 = np.linalg.norm(psi) ** 2
+    hist = [e0]
     for _ in range(T):
         psi = B @ psi
+        hist.append(np.linalg.norm(psi) ** 2)
     eT = np.linalg.norm(psi) ** 2
-    return eT / e0
+    return eT / e0, np.array(hist)
 
 
 def run_projective(A, H, sites, idx, k0x, T, rng):
     psi = psi_initial(sites, idx, k0x)
     p = np.abs(psi) ** 2
     p = p / p.sum()
+    sel = [i for i, st in enumerate(sites) if st[0] == X_SCREEN]
+    screen_I = None
     for _ in range(T):
         psi = spl.expm_multiply((-1j) * H, psi)
         p = np.abs(psi) ** 2
         s = p.sum()
         if s <= 0:
-            return 0.0
+            return 0.0, None
         n_star = rng.choice(len(psi), p=p / s)
         psi = np.zeros_like(psi)
         psi[n_star] = 1.0
-    sel = [i for i, st in enumerate(sites) if st[0] == X_SCREEN]
-    return float((np.abs(psi[sel]) ** 2).sum())
+    screen_I = np.abs(psi[sel]) ** 2
+    return float(screen_I.sum()), screen_I
 
 
 def main():
@@ -164,10 +173,12 @@ def main():
 
     print("\n=== C1a/C1b/C1c：幺正搬运（三档波长） ===")
     c1a_pass, c1b_pass, c1c_pass = True, True, True
+    plot_data = {}
     for k0 in K0_LIST:
         vg = 2.0 * J * np.sin(k0)
         T = int(round((X_SCREEN - X0) / vg)) + 8
-        max_dev, front_ok, arrived, V = run_unitary(A, H, sites, idx, k0, T)
+        max_dev, front_ok, arrived, V, hist_u, ys, I_u = \
+            run_unitary(A, H, sites, idx, k0, T)
         ok_a = max_dev < 1e-10
         ok_b = (arrived > 1e-3) and (V > 0.25)
         ok_c = front_ok
@@ -178,6 +189,8 @@ def main():
               f"{'PASS' if ok_a else 'FAIL'}) | 到达份额 {arrived:.4f} | "
               f"V 实测 {V:.4f} (>0.25 {'PASS' if ok_b else 'FAIL'}) | "
               f"前沿 {'PASS' if ok_c else 'FAIL'}")
+        if abs(k0 - np.pi / 2) < 1e-9:
+            plot_data = dict(T=T, hist_u=hist_u, ys=ys, I_u=I_u)
     print(f"C1a（能量守恒）: {'PASS' if c1a_pass else 'FAIL'}")
     print(f"C1b（条纹存活）: {'PASS' if c1b_pass else 'FAIL'}")
     print(f"C1c（因果前沿不超 c_m）: {'PASS' if c1c_pass else 'FAIL'}")
@@ -186,7 +199,7 @@ def main():
     k0 = np.pi / 2
     vg = 2.0 * J * np.sin(k0)
     T = int(round((X_SCREEN - X0) / vg)) + 8
-    ratio = run_copy(A, sites, idx, k0, T)
+    ratio, hist_c = run_copy(A, sites, idx, k0, T)
     ok2 = ratio > 10.0
     print(f"T={T} 拍后能量/初值 实测 = {ratio:.3e} | 期望 > 10（份额分裂=能量爆炸）"
           f" | {'PASS（反例成立）' if ok2 else 'FAIL'}")
@@ -194,9 +207,15 @@ def main():
 
     print("\n=== C3：投影映射反例（FAIL 预期） ===")
     rng = np.random.default_rng(SEED)
-    arr_p = [run_projective(A, H, sites, idx, k0, T, rng)
-             for _ in range(N_TRIALS)]
+    arr_p = []
+    prof_sum = None
+    for _ in range(N_TRIALS):
+        arr, prof = run_projective(A, H, sites, idx, k0, T, rng)
+        arr_p.append(arr)
+        if prof is not None:
+            prof_sum = prof if prof_sum is None else prof_sum + prof
     arr_u = run_unitary(A, H, sites, idx, k0, T)[2]
+    prof_proj = prof_sum / max(1, sum(1 for a in arr_p if a is not None))
     arr_proj = float(np.mean(arr_p))
     ok3 = (arr_proj < 1e-4) and (arr_proj < 0.05 * arr_u) and (arr_u > 1e-3)
     print(f"投影映射到达份额（{N_TRIALS} 次平均）实测 = {arr_proj:.3e} | "
@@ -208,6 +227,39 @@ def main():
     print(f"\n判据 {n_pass}/5（C1a/C1b/C1c 加 C2/C3 两项 EP5 齿）")
     print("边界声明：本验证是模型层结构判决，不重构体系的完整真空动力学；")
     print("不读真实光速，不检验缺陷-真空接口的份额转移细节（属 P1-50 通道）。")
+
+    # 绘图（图存 images/，注记与论文嵌入）
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.8))
+    axes[0].plot(plot_data["ys"], plot_data["I_u"] / plot_data["I_u"].max(),
+                 "b-", label="unitary handover (fringes)")
+    if prof_proj is not None and prof_proj.max() > 0:
+        axes[0].plot(plot_data["ys"],
+                     prof_proj / prof_proj.max(), "r-",
+                     label=f"projective, {N_TRIALS}-run mean")
+    axes[0].set_xlabel("screen $y$ (lattice units)")
+    axes[0].set_ylabel("intensity (norm.)")
+    axes[0].legend(fontsize=8); axes[0].set_title(
+        "screen pattern: fringes vs decohered")
+    axes[1].semilogy(range(len(plot_data["hist_u"])), plot_data["hist_u"],
+                     "b-", label="unitary (conserved)")
+    axes[1].semilogy(range(len(hist_c)), hist_c, "r-",
+                     label=f"copy (blow-up {ratio:.1e})")
+    axes[1].set_xlabel("beat $n$"); axes[1].set_ylabel("$\\sum|\\psi|^2$")
+    axes[1].legend(fontsize=8); axes[1].set_title(
+        "share budget: conserved vs exploding")
+    axes[2].bar([0, 1], [arr_u, arr_proj], width=0.5,
+                color=["tab:blue", "tab:red"])
+    axes[2].set_xticks([0, 1],
+                       ["unitary", f"projective\n({N_TRIALS}-run mean)"])
+    axes[2].set_ylabel("screen arrival share")
+    axes[2].set_title(f"arrivals at $T={T}$ beats")
+    fig.tight_layout()
+    fig.savefig(r"D:\software\TianXingFC\images\vacuum_sampling_maps_523.png",
+                dpi=150)
+    print("图已存 images/vacuum_sampling_maps_523.png")
 
 
 if __name__ == "__main__":

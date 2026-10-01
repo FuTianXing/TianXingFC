@@ -80,6 +80,7 @@ def main():
     print("\n=== E1：黄金规则（三档带内频率） ===")
     e1_pass = True
     gammas = {}
+    curves = {}
     for w0 in (0.5, 1.0, 1.5):
         H = build_H(w0)
         gm, pd, ts = gamma_measured(w0, H)
@@ -88,6 +89,7 @@ def main():
         ok = 0.8 <= ratio <= 1.2
         e1_pass &= ok
         gammas[w0] = gm
+        curves[w0] = (ts, pd)
         print(f"omega0={w0:.1f}: Gamma 实测 {gm:.5f} | 理论 {gt:.5f} | "
               f"比值 {ratio:.4f}（[0.8,1.2] {'PASS' if ok else 'FAIL'}）")
     print(f"E1（黄金规则）: {'PASS' if e1_pass else 'FAIL'}")
@@ -95,8 +97,9 @@ def main():
     print("\n=== E3：态密度维数效应（1D 范霍夫奇点） ===")
     if np.isnan(gammas.get(1.9, np.nan)):
         H = build_H(1.9)
-        gm19, _, _ = gamma_measured(1.9, H)
+        gm19, pd19, ts19 = gamma_measured(1.9, H)
         gammas[1.9] = gm19
+        curves[1.9] = (ts19, pd19)
     r_meas = gammas[1.9] / gammas[1.0]
     r_theo = rho_plus(1.9) / rho_plus(1.0)
     ok3 = 0.75 * r_theo <= r_meas <= 1.25 * r_theo
@@ -109,9 +112,11 @@ def main():
     H = build_H(2.5)
     w, v = np.linalg.eigh(H)
     amp = v[N, :] ** 2
+    ts_full = np.arange(0.0, T_END + DT, DT)
+    pd_full = np.array([np.sum(amp * np.cos(w * t)) for t in ts_full]) ** 2 \
+        + np.array([np.sum(amp * np.sin(w * t)) for t in ts_full]) ** 2
     ts = np.arange(150.0, T_END + DT, DT)
-    pd_late = np.array([np.sum(amp * np.cos(w * t)) for t in ts]) ** 2 \
-        + np.array([np.sum(amp * np.sin(w * t)) for t in ts]) ** 2
+    pd_late = pd_full[ts_full >= 150.0]
     late_mean = pd_late.mean()
     # 带内对照（omega0=1.0 同窗）
     w1, v1 = np.linalg.eigh(build_H(1.0))
@@ -129,6 +134,42 @@ def main():
     print("边界声明：本验证锁定结构定律（发射率=2pi|g|^2x态密度）与 1D")
     print("范霍夫效应，不裁决体系耦合通道（cos 高阶项，见方案注记第九节），")
     print("不给出爱因斯坦 A 系数数值（需 3D 态密度与偶极矩阵元，属 P1-50 余项）。")
+
+    # 绘图（图存 images/，注记与论文嵌入）
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.8))
+    colors = {0.5: "tab:blue", 1.0: "tab:green", 1.5: "tab:orange",
+              1.9: "tab:purple"}
+    for w0, (tc, pc) in curves.items():
+        axes[0].semilogy(tc, np.clip(pc, 1e-12, None), color=colors[w0],
+                         lw=1.2, label=f"$\\omega_0={w0}$ (in band)")
+    axes[0].semilogy(ts_full, np.clip(pd_full, 1e-12, None), "r-",
+                     lw=1.2, label="$\\omega_0=2.5$ (bound, out of band)")
+    axes[0].set_xlabel("$t$"); axes[0].set_ylabel("$P_d(t)$")
+    axes[0].legend(fontsize=7); axes[0].set_title(
+        "defect excitation decay vs out-of-band survival")
+    ws = sorted(gammas)
+    gt_list = [2.0 * np.pi * G_COUPLING ** 2 * rho_plus(w0) for w0 in ws]
+    gm_list = [gammas[w0] for w0 in ws]
+    xpos = np.arange(len(ws))
+    axes[1].bar(xpos - 0.2, gm_list, width=0.4, label="measured $\\Gamma$")
+    axes[1].bar(xpos + 0.2, gt_list, width=0.4, label="golden rule $2\\pi g^2\\rho$")
+    axes[1].set_xticks(xpos, [f"$\\omega_0={w0}$" for w0 in ws])
+    axes[1].set_ylabel("$\\Gamma$"); axes[1].legend(fontsize=8)
+    axes[1].set_title("golden rule check (E1)")
+    wgrid = np.linspace(0.05, 1.99, 300)
+    axes[2].plot(wgrid, rho_plus(wgrid), "b-")
+    for w0 in ws:
+        axes[2].axvline(w0, color=colors[w0], lw=0.8, ls=":")
+    axes[2].set_xlabel("$\\omega$"); axes[2].set_ylabel(
+        "$\\rho_+(\\omega)$")
+    axes[2].set_title("1D van Hove density of states (E3)")
+    fig.tight_layout()
+    fig.savefig(r"D:\software\TianXingFC\images\emission_rate_scaling_524.png",
+                dpi=150)
+    print("图已存 images/emission_rate_scaling_524.png")
 
 
 if __name__ == "__main__":

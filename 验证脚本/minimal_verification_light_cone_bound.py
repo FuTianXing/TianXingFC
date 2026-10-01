@@ -55,12 +55,14 @@ def main():
     j1_pass = True
     j2_pass = True
     prev_max = 0.0
+    maxes = []
     for N in NS:
         axis = -np.pi + 2.0 * np.pi * np.arange(N) / N
         S, ssum = make_grids(axis)
         mask = S > 1e-300  # 排除 k = 0（梯度 0/0，极限方向依赖）
         g2 = grad2_cont(S[mask], ssum[mask])
         gmax = float(np.sqrt(g2.max()))
+        maxes.append((N, gmax))
         expect = float(np.cos(np.pi / N))
         ok1 = gmax < 1.0 - 1e-9
         ok2 = abs(gmax - expect) < TOL
@@ -98,6 +100,40 @@ def main():
     print("边界声明：本验证只检验色散函数的群速上限数学结构，")
     print("不检验耦合标度锁定（尺度锁定属条件性命题，待与色散论文配对清单核对），")
     print("不检验光传播的完整动力学，也不构成对真实光速测量的重新计算。")
+
+    # 绘图（图存 images/，注记与论文嵌入）
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.8))
+    kk = np.linspace(0.02, np.pi, 400)
+    axes[0].plot(kk, np.cos(kk / 2.0), "b-", label="adopted [100] axis")
+    qq = np.linspace(0.05, 1.2, 200)
+    axes[0].plot(qq, np.cos(qq / 2.0) / np.sqrt(np.maximum(
+        1.0 - 3.0 * np.sin(qq / 2.0) ** 2, 1e-9)), "r--",
+        label="rejected recursion [111]")
+    axes[0].axhline(1.0, color="k", lw=0.8, ls=":")
+    axes[0].set_xlabel("$q\\,l_P$"); axes[0].set_ylabel("$|\\nabla\\omega|/c$")
+    axes[0].set_ylim(0, 4.2); axes[0].legend(fontsize=8)
+    axes[0].set_title("group velocity: adopted vs rejected")
+    Ns = [m[0] for m in maxes]; gs = [m[1] for m in maxes]
+    axes[1].plot(Ns, gs, "bo", label="grid max (measured)")
+    axes[1].plot(Ns, [float(np.cos(np.pi / n)) for n in Ns], "g--",
+                 label="$\\cos(\\pi/N)$ (analytic)")
+    axes[1].set_xlabel("$N$"); axes[1].set_ylabel("$\\max|\\nabla\\omega|/c$")
+    axes[1].set_xscale("log"); axes[1].legend(fontsize=8)
+    axes[1].set_title("supremum structure: $c$ at $k\\to 0$")
+    axes[2].plot(Q_SCAN, g_con, "b-", label="adopted (subluminal)")
+    axes[2].plot(Q_SCAN, g_rec, "r--", label="rejected (divergent)")
+    axes[2].axhline(1.0, color="k", lw=0.8, ls=":")
+    axes[2].set_xlabel("$q\\,l_P$ along [111]")
+    axes[2].set_ylabel("$|\\nabla\\omega|/c$")
+    axes[2].legend(fontsize=8); axes[2].set_title(
+        "EP5 counterexample: recursion diverges")
+    fig.tight_layout()
+    fig.savefig(r"D:\software\TianXingFC\images\light_cone_bound_522.png",
+                dpi=150)
+    print("图已存 images/light_cone_bound_522.png")
 
 
 if __name__ == "__main__":
