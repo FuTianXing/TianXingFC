@@ -110,7 +110,7 @@ for rup, V_up in zip(t_up_list, V_at_up):
 # 替身：权重固定为 psis[0]，与 V 无关
 prs_imp = [participation_ratio(psis[0]) for _ in t_up_list]
 
-# 判别：真实模型的 PR 随 V 单调上升；替身 PR 恒定
+# 判别：真实模型的 PR 随 V 单调下降（随 t_up 单调上升）；替身 PR 恒定
 real_monotone = all(prs_real[i] <= prs_real[i+1] + 1e-12 for i in range(len(prs_real)-1))
 imp_constant = (max(prs_imp) - min(prs_imp)) < 1e-12
 report('Z3-EP5 替身FAIL预期', real_monotone and imp_constant,
@@ -134,7 +134,7 @@ ax.set_xlabel('t / tau'); ax.set_ylabel('V(t)')
 ax.set_title('(a) coherence at upgrade times (red: sampled)')
 ax.legend(fontsize=8)
 ax = axes[1]
-ax.plot(V_at_up, prs_real, 'o-', label='real: PR vs V (concentrated)')
+ax.plot(V_at_up, prs_real, 'o-', label='real: PR vs V (V low -> PR high)')
 ax.plot(V_at_up, prs_imp, 'r^-', label='imposter: PR constant')
 ax.set_xlabel('V(t_up)'); ax.set_ylabel('participation ratio')
 ax.set_title('(b) weight concentration vs coherence (EP5)')
