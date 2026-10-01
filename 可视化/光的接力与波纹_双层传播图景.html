@@ -61,7 +61,7 @@
           <button id="b1reset">重置</button>
         </div>
         <div class="stat" id="s1">拍数 <b>0</b> ｜ 在画面内点击投下扰动</div>
-        <div class="stat">波层最快速度 = <b class="acc">1.00 格/拍</b>（颜色拉普拉斯上限）</div>
+        <div class="stat">波层最快速度 = <b class="acc">1.00 格/拍</b>（数值波动方程前沿，由节律锁定）</div>
         <div class="stat">事件层节律 = <b class="acc">1 格/拍</b>（白圈步距）</div>
       </div>
     </div>
@@ -128,26 +128,29 @@
   const cv = document.getElementById("c1"), ctx = cv.getContext("2d");
   const GW = 66, GH = 44, SC = 10;                 // 网格与像素
   let u = new Float32Array(GW*GH), v = new Float32Array(GW*GH);
-  let beat = 0, playing = true, frame = 0;
-  const FRAMES_PER_BEAT = 24;
+  let beat = 0, frame = 0, playing = true;
+  const FRAMES_PER_BEAT = 6;                        // 一拍 = 6 帧
+  const ALPHA = 1/72;                               // 数值波前 ≈ 1/6 格/帧 = 1 格/拍（已标定）
+  let pulses = [{x:33, y:22, b0:0}];                // 每次投石记一个因果圈
 
-  function pulse(cx, cy){
-    for(let j=-1;j<=1;j++) for(let i=-1;i<=1;i++){
+  function addPulse(cx, cy){
+    for(let j=-4;j<=4;j++) for(let i=-4;i<=4;i++){
       const x=cx+i, y=cy+j;
-      if(x>1&&x<GW-2&&y>1&&y<GH-2) u[y*GW+x]=1.4;
+      if(x>1&&x<GW-2&&y>1&&y<GH-2)
+        u[y*GW+x]=1.4*Math.exp(-(i*i+j*j)/4.5);   // 高斯脉冲，无高频前导
     }
+    pulses.push({x:cx, y:cy, b0:beat});
   }
-  function reset(){ u.fill(0); v.fill(0); beat=0; frame=0; pulse(33,22); draw(); info(); }
+  function reset(){ u.fill(0); v.fill(0); beat=0; frame=0;
+    pulses=[]; addPulse(33,22); draw(); info(); }
   function step(){
-    for(let n=0;n<4;n++){
-      for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
-        const i=y*GW+x;
-        const lap = u[i-1]+u[i+1]+u[i-GW]+u[i+GW]-4*u[i];
-        v[i]+=0.25*lap; v[i]*=0.999;
-      }
-      for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
-        const i=y*GW+x; u[i]+=v[i];
-      }
+    for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
+      const i=y*GW+x;
+      const lap = u[i-1]+u[i+1]+u[i-GW]+u[i+GW]-4*u[i];
+      v[i]+=ALPHA*lap;
+    }
+    for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
+      const i=y*GW+x; u[i]+=v[i]; v[i]*=0.999;
     }
     frame++;
     if(frame%FRAMES_PER_BEAT===0) beat++;
@@ -161,26 +164,29 @@
                           : `rgba(63,185,80,${0.15+0.85*a})`;
       ctx.fillRect(x*SC,y*SC,SC-1,SC-1);
     }
-    for(let b=1;b<=beat;b++){
-      ctx.beginPath();
-      ctx.arc(33*SC+SC/2, 22*SC+SC/2, b*SC*FRAMES_PER_BEAT/ (FRAMES_PER_BEAT),
-              0, Math.PI*2);
-      ctx.strokeStyle=`rgba(230,237,243,${0.5-0.4*b/20})`;
-      ctx.stroke();
+    for(const p of pulses){
+      const age = beat - p.b0;
+      for(let b=1;b<=age;b++){
+        ctx.beginPath();
+        ctx.arc(p.x*SC+SC/2, p.y*SC+SC/2, b*SC, 0, Math.PI*2);
+        ctx.strokeStyle=`rgba(230,237,243,${Math.max(0.06, 0.5-0.06*b)})`;
+        ctx.stroke();
+      }
     }
   }
   function info(){ document.getElementById("s1").innerHTML =
-    `拍数 <b>${beat}</b> ｜ 波前圆圈每拍外扩一格`; }
+    `拍数 <b>${beat}</b> ｜ 白圈 = 因果前沿，每拍外扩一格（波纹最快速度与它相同）`; }
   cv.addEventListener("click", e=>{
     const r=cv.getBoundingClientRect();
     const x=Math.floor((e.clientX-r.left)/SC), y=Math.floor((e.clientY-r.top)/SC);
-    if(x>1&&x<GW-2&&y>1&&y<GH-2){ pulse(x,y); }
+    if(x>1&&x<GW-2&&y>1&&y<GH-2){ addPulse(x,y); draw(); }
   });
   document.getElementById("b1play").onclick=function(){
     playing=!playing; this.textContent=playing?"暂停":"播放";
     this.classList.toggle("on",playing);
   };
-  document.getElementById("b1step").onclick=()=>{ step(); draw(); info(); };
+  document.getElementById("b1step").onclick=()=>{
+    for(let k=0;k<FRAMES_PER_BEAT;k++) step(); draw(); info(); };
   document.getElementById("b1reset").onclick=reset;
   function loop(){
     if(playing){ step(); draw(); if(frame%FRAMES_PER_BEAT===0) info(); }
@@ -284,7 +290,7 @@
     if(mode===0) el.innerHTML="模式：<b class='ok'>整桶移交</b> —— 条纹清晰、份额守恒、前沿每拍一格，三件事全部成立";
     if(mode===1) el.innerHTML="模式：<b class='acc'>复印</b> —— 条纹仍在，但份额已分裂："+E.toExponential(1)+
       "（真实宇宙里这等于能量凭空爆炸，被份额守恒一票否决）";
-    if(mode===2) el.innerHTML="模式：<b class='warn'>掀开看</b> —— 份额被逐拍摊成随机游走，走不到屏幕，条纹归零（量子 Zeno）";
+    if(mode===2) el.innerHTML="模式：<b class='warn'>掀开看</b> —— 份额被逐拍摊成随机游走，几乎走不到屏幕，条纹归零（量子 Zeno）";
   }
   const names=["m0","m1","m2"];
   names.forEach((id,k)=>{ document.getElementById(id).onclick=function(){
