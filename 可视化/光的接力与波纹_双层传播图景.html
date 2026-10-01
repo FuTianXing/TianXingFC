@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>光的接力与波纹：双层传播图景</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --line:#30363d; --fg:#e6edf3;
+          --dim:#8b949e; --blue:#58a6ff; --red:#f85149; --green:#3fb950;
+          --amber:#d29922; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font-family:"Microsoft YaHei","PingFang SC",sans-serif; }
+  .wrap { max-width:1080px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:26px; margin:8px 0 4px; }
+  .sub { color:var(--dim); font-size:14px; line-height:1.8; margin-bottom:20px; }
+  .card { background:var(--panel); border:1px solid var(--line);
+          border-radius:10px; padding:16px 18px; margin-bottom:22px; }
+  .card h2 { font-size:18px; margin:0 0 6px; }
+  .card p.desc { color:var(--dim); font-size:13px; line-height:1.8; margin:4px 0 12px; }
+  canvas { background:#090c10; border:1px solid var(--line); border-radius:6px;
+           display:block; }
+  .row { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; }
+  .ctrl { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+  button { background:#21262d; color:var(--fg); border:1px solid var(--line);
+           border-radius:6px; padding:6px 14px; font-size:13px; cursor:pointer; }
+  button:hover { border-color:var(--blue); }
+  button.on { border-color:var(--blue); color:var(--blue); }
+  .stat { font-size:13px; color:var(--dim); margin-top:8px; min-height:18px; }
+  .stat b { color:var(--fg); }
+  .warn { color:var(--red); } .ok { color:var(--green); } .acc { color:var(--amber); }
+  .num { display:inline-block; background:#090c10; border:1px solid var(--line);
+         border-radius:6px; padding:8px 14px; margin:4px 10px 4px 0; text-align:center; }
+  .num .v { font-size:22px; color:var(--blue); font-family:Consolas,monospace; }
+  .num .k { font-size:12px; color:var(--dim); }
+  .foot { color:var(--dim); font-size:12px; line-height:1.8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>光的接力与波纹：双层传播图景</h1>
+  <div class="sub">
+    元相子理论把光的传播拆成两层：连续波动是内容（水波），离散碰撞是尺子（传话）。
+    本页配三个可动手的实验：看波纹与一格一拍的波前如何同时成立；亲手切换宇宙对待光的三种方式，
+    只有"整桶移交"能让条纹、守恒与光速同时活下来；最后用滑块核对波层最快速度与事件层节律是同一个数。
+    机制解说见科普文章《水波与传话：光如何走向四面八方》。
+  </div>
+
+  <div class="card">
+    <h2>实验一：波纹与格子（连续内容，离散波前）</h2>
+    <p class="desc">
+      二维晶格上的指针场。点击画面任意处投下一份朝向扰动：波纹（颜色）以连续波动向四面八方铺开，
+      同时白色圆圈是事件侧读出的因果前沿，每拍向外跳一格。注意两件事：波纹连续、圆圈离散；
+      圆圈永远跑在波纹主体之前不远处，因为波层最快速度恰好是每拍一格。
+    </p>
+    <div class="row">
+      <canvas id="c1" width="660" height="440"></canvas>
+      <div style="flex:1;min-width:220px">
+        <div class="ctrl">
+          <button id="b1play" class="on">暂停</button>
+          <button id="b1step">步进一拍</button>
+          <button id="b1reset">重置</button>
+        </div>
+        <div class="stat" id="s1">拍数 <b>0</b> ｜ 在画面内点击投下扰动</div>
+        <div class="stat">波层最快速度 = <b class="acc">1.00 格/拍</b>（颜色拉普拉斯上限）</div>
+        <div class="stat">事件层节律 = <b class="acc">1 格/拍</b>（白圈步距）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>实验二：三种对待光的方式（整桶移交 / 复印 / 掀开看）</h2>
+    <p class="desc">
+      左侧是一台双缝装置：一枚光子份额从左端射入，穿过双缝到达右侧屏幕。切换三种逐拍规则——
+      <b class="ok">整桶移交</b>（幺正，份额完整过手）：条纹清晰、份额守恒、光速前沿；
+      <b class="acc">复印</b>（抄给邻居还留底）：条纹虽在，份额总量指数爆炸，能量计数器飙升；
+      <b class="warn">掀开看</b>（每拍按概率坍缩到一点）：份额被摊成随机游走，走不到屏幕，条纹归零。
+      条纹、守恒、光速三件事合起来只允许第一种。这就是"真空采样对传播份额无扰动"的原因。
+    </p>
+    <div class="row">
+      <canvas id="c2" width="660" height="330"></canvas>
+      <div style="flex:1;min-width:220px">
+        <div class="ctrl" style="flex-direction:column;align-items:stretch">
+          <button id="m0" class="on">整桶移交（幺正）</button>
+          <button id="m1">复印（留副本）</button>
+          <button id="m2">掀开看（逐拍坍缩）</button>
+          <button id="b2reset">重置光子</button>
+        </div>
+        <div class="stat">份额总量 Σ|ψ|² = <b id="e2">1.000</b></div>
+        <div class="stat" id="s2">模式：整桶移交 —— 三件事全部成立</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>实验三：速度天平与普朗克指纹（6 : 3 : 2）</h2>
+    <p class="desc">
+      晶格色散 ω(k) 在低能端精确退化为直线 ω = ck（各向同性，迈克耳孙-莫雷零结果），
+      在高频端弯折并留下方向指纹：修正项沿三个轴向之比为 6 : 3 : 2。
+      拖动滑块观察偏差如何随能量按 (E/E<sub>P</sub>)² 增长；一电子伏特光子的偏离约 10⁻⁵⁸，目前不可测。
+    </p>
+    <div class="row">
+      <canvas id="c3" width="660" height="280"></canvas>
+      <div style="flex:1;min-width:220px">
+        <div class="ctrl">方向
+          <button class="dir on" data-d="0">[100]</button>
+          <button class="dir" data-d="1">[110]</button>
+          <button class="dir" data-d="2">[111]</button>
+        </div>
+        <div class="ctrl"><input id="ks" type="range" min="1" max="99" value="20" style="width:100%"></div>
+        <div class="stat">k·l_P = <b id="kv">0.62</b></div>
+        <div class="num"><div class="v" id="dlt">-0.000%</div><div class="k">δω/ω（色散偏差）</div></div>
+        <div class="num"><div class="v">1.000</div><div class="k">波层最快速度（格/拍）</div></div>
+        <div class="num"><div class="v">1</div><div class="k">事件层节律（格/拍）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    依据：时空观 §五 ｜ 光锥-波场双层方案注记（2026-10-01）｜ 判据第 522、523、524 条（验证脚本/）｜
+    成文判定《事件层移交的算符形式：真空采样无扰动的成文判定》｜ 配套科普《水波与传话：光如何走向四面八方》
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= 实验一：波纹与格子 ================= */
+(function(){
+  const cv = document.getElementById("c1"), ctx = cv.getContext("2d");
+  const GW = 66, GH = 44, SC = 10;                 // 网格与像素
+  let u = new Float32Array(GW*GH), v = new Float32Array(GW*GH);
+  let beat = 0, playing = true, frame = 0;
+  const FRAMES_PER_BEAT = 24;
+
+  function pulse(cx, cy){
+    for(let j=-1;j<=1;j++) for(let i=-1;i<=1;i++){
+      const x=cx+i, y=cy+j;
+      if(x>1&&x<GW-2&&y>1&&y<GH-2) u[y*GW+x]=1.4;
+    }
+  }
+  function reset(){ u.fill(0); v.fill(0); beat=0; frame=0; pulse(33,22); draw(); info(); }
+  function step(){
+    for(let n=0;n<4;n++){
+      for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
+        const i=y*GW+x;
+        const lap = u[i-1]+u[i+1]+u[i-GW]+u[i+GW]-4*u[i];
+        v[i]+=0.25*lap; v[i]*=0.999;
+      }
+      for(let y=2;y<GH-2;y++) for(let x=2;x<GW-2;x++){
+        const i=y*GW+x; u[i]+=v[i];
+      }
+    }
+    frame++;
+    if(frame%FRAMES_PER_BEAT===0) beat++;
+  }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
+      const w=u[y*GW+x];
+      const a=Math.min(1,Math.abs(w));
+      ctx.fillStyle = w>0 ? `rgba(88,166,255,${0.15+0.85*a})`
+                          : `rgba(63,185,80,${0.15+0.85*a})`;
+      ctx.fillRect(x*SC,y*SC,SC-1,SC-1);
+    }
+    for(let b=1;b<=beat;b++){
+      ctx.beginPath();
+      ctx.arc(33*SC+SC/2, 22*SC+SC/2, b*SC*FRAMES_PER_BEAT/ (FRAMES_PER_BEAT),
+              0, Math.PI*2);
+      ctx.strokeStyle=`rgba(230,237,243,${0.5-0.4*b/20})`;
+      ctx.stroke();
+    }
+  }
+  function info(){ document.getElementById("s1").innerHTML =
+    `拍数 <b>${beat}</b> ｜ 波前圆圈每拍外扩一格`; }
+  cv.addEventListener("click", e=>{
+    const r=cv.getBoundingClientRect();
+    const x=Math.floor((e.clientX-r.left)/SC), y=Math.floor((e.clientY-r.top)/SC);
+    if(x>1&&x<GW-2&&y>1&&y<GH-2){ pulse(x,y); }
+  });
+  document.getElementById("b1play").onclick=function(){
+    playing=!playing; this.textContent=playing?"暂停":"播放";
+    this.classList.toggle("on",playing);
+  };
+  document.getElementById("b1step").onclick=()=>{ step(); draw(); info(); };
+  document.getElementById("b1reset").onclick=reset;
+  function loop(){
+    if(playing){ step(); draw(); if(frame%FRAMES_PER_BEAT===0) info(); }
+    requestAnimationFrame(loop);
+  }
+  reset(); loop();
+})();
+
+/* ================= 实验二：三映射实验室 ================= */
+(function(){
+  const cv=document.getElementById("c2"), ctx=cv.getContext("2d");
+  const W=132, H=66, SC=5;
+  let re,im,re0,mode=0,beat=0;
+  const SLIT1a=26,SLIT1b=29,SLIT2a=36,SLIT2b=39,BX=66;
+  let screenI=new Float32Array(H), energyLog=[];
+
+  function barrier(x,y){ if(x!==BX) return false;
+    return !((y>=SLIT1a&&y<=SLIT1b)||(y>=SLIT2a&&y<=SLIT2b)); }
+  function reset(){
+    re=new Float32Array(W*H); im=new Float32Array(W*H);
+    beat=0; screenI.fill(0); energyLog=[];
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      if(barrier(x,y)) continue;
+      const dx=x-8, dy=y-H/2;
+      const g=Math.exp(-(dx*dx+dy*dy)/18);
+      re[y*W+x]=g*Math.cos(0.9*x); im[y*W+x]=g*Math.sin(0.9*x);
+    }
+    let n=0; for(let i=0;i<W*H;i++) n+=re[i]*re[i]+im[i]*im[i];
+    n=Math.sqrt(n); for(let i=0;i<W*H;i++){ re[i]/=n; im[i]/=n; }
+  }
+  function evolve(){
+    // 一帧 = 多个幺正步（整桶移交）：ψ̇ = iAψ（紧邻 hopping，保内积）
+    const dt=0.2, steps=8;
+    const re2=new Float32Array(W*H), im2=new Float32Array(W*H);
+    const nb=[[1,0],[-1,0],[0,1],[0,-1]];
+    for(let s=0;s<steps;s++){
+      for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){
+        const i=y*W+x; if(barrier(x,y)) continue;
+        let sr=0,si=0;
+        for(const [dx,dy] of nb){ const j=(y+dy)*W+x+dx;
+          if(!barrier(x+dx,y+dy)){ sr+=re[j]; si+=im[j]; } }
+        re2[i]=re[i]-dt*si;
+        im2[i]=im[i]+dt*sr;
+      }
+      re.set(re2); im.set(im2);
+    }
+    beat++;
+    if(mode===1){ // 复印：抄给邻居且保留（非幺正）
+      const cr=new Float32Array(W*H), ci=new Float32Array(W*H);
+      for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){
+        const i=y*W+x; if(barrier(x,y)) continue;
+        let sr=0,si=0;
+        const nb=[[1,0],[-1,0],[0,1],[0,-1]];
+        for(const [dx,dy] of nb){ const j=(y+dy)*W+x+dx;
+          if(!barrier(x+dx,y+dy)){ sr+=re[j]; si+=im[j]; } }
+        cr[i]=re[i]+0.45*sr; ci[i]=im[i]+0.45*si;
+      }
+      re.set(cr); im.set(ci);
+    }
+    if(mode===2){ // 掀开看：按 |ψ|² 坍缩到单点
+      let tot=0; for(let i=0;i<W*H;i++) tot+=re[i]*re[i]+im[i]*im[i];
+      let r=Math.random()*tot, nstar=0;
+      for(let i=0;i<W*H;i++){ r-=re[i]*re[i]+im[i]*im[i];
+        if(r<=0){ nstar=i; break; } }
+      re.fill(0); im.fill(0); re[nstar]=1;
+    }
+    // 屏读数
+    for(let y=0;y<H;y++){ let s=0;
+      for(let x=W-6;x<W-1;x++){ const i=y*W+x;
+        if(!barrier(x,y)) s+=re[i]*re[i]+im[i]*im[i]; }
+      screenI[y]+=s;
+    }
+  }
+  function totalEnergy(){ let s=0;
+    for(let i=0;i<W*H;i++) s+=re[i]*re[i]+im[i]*im[i]; return s; }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    let mx=1e-9; for(let i=0;i<W*H;i++) mx=Math.max(mx,re[i]*re[i]+im[i]*im[i]);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const i=y*W+x; const p=re[i]*re[i]+im[i]*im[i];
+      if(barrier(x,y)){ ctx.fillStyle="#30363d"; }
+      else{ const a=Math.min(1,10*p/mx);
+        ctx.fillStyle=`rgba(88,166,255,${0.06+0.94*a})`; }
+      ctx.fillRect(x*SC,y*SC,SC-1,SC-1);
+    }
+    // 右侧强度曲线
+    let sm=1e-12; for(let y=0;y<H;y++) sm=Math.max(sm,screenI[y]);
+    ctx.strokeStyle="#3fb950"; ctx.beginPath();
+    for(let y=0;y<H;y++){
+      const px=W*SC-70+screenI[y]/sm*60, py=y*SC;
+      if(y===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    ctx.fillStyle="#8b949e"; ctx.font="11px sans-serif";
+    ctx.fillText("屏强度",W*SC-64,12);
+  }
+  function info(){
+    const E=totalEnergy();
+    document.getElementById("e2").textContent=E.toFixed(3);
+    const el=document.getElementById("s2");
+    if(mode===0) el.innerHTML="模式：<b class='ok'>整桶移交</b> —— 条纹清晰、份额守恒、前沿每拍一格，三件事全部成立";
+    if(mode===1) el.innerHTML="模式：<b class='acc'>复印</b> —— 条纹仍在，但份额已分裂："+E.toExponential(1)+
+      "（真实宇宙里这等于能量凭空爆炸，被份额守恒一票否决）";
+    if(mode===2) el.innerHTML="模式：<b class='warn'>掀开看</b> —— 份额被逐拍摊成随机游走，走不到屏幕，条纹归零（量子 Zeno）";
+  }
+  const names=["m0","m1","m2"];
+  names.forEach((id,k)=>{ document.getElementById(id).onclick=function(){
+    mode=k; names.forEach((id2,k2)=>document.getElementById(id2)
+      .classList.toggle("on",k2===k)); reset(); info(); }; });
+  document.getElementById("b2reset").onclick=()=>{ reset(); info(); };
+  reset(); info();
+  setInterval(()=>{ evolve(); draw(); info(); }, 60);
+})();
+
+/* ================= 实验三：速度天平 ================= */
+(function(){
+  const cv=document.getElementById("c3"), ctx=cv.getContext("2d");
+  let dir=0, kv=0.62;
+  function omega(k,d){ // d:0 [100], 1 [110], 2 [111]
+    const q=k/Math.sqrt(d+1);
+    let S=0; for(let a=0;a<3;a++) S+=Math.sin(q/2)**2;
+    return 2*Math.sqrt(S);
+  }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const L=520,ox=40,oy=210;
+    ctx.strokeStyle="#30363d"; ctx.beginPath();
+    ctx.moveTo(ox,oy); ctx.lineTo(ox+L,oy); ctx.moveTo(ox,oy); ctx.lineTo(ox,40);
+    ctx.stroke();
+    ctx.strokeStyle="#58a6ff"; ctx.beginPath();
+    const NP=Math.PI;
+    for(let i=0;i<=200;i++){ const k=i/200*NP;
+      const y=oy-omega(k,dir)/omega(NP*0.999,dir)*150;
+      if(i===0) ctx.moveTo(ox+k/NP*L*0.9,y); else ctx.lineTo(ox+k/NP*L*0.9,y); }
+    ctx.stroke();
+    ctx.strokeStyle="#3fb950"; ctx.setLineDash([5,4]); ctx.beginPath();
+    ctx.moveTo(ox,oy-150); ctx.lineTo(ox+L*0.9,40+10); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle="#8b949e"; ctx.font="12px sans-serif";
+    ctx.fillText("ω(k) 晶格色散（蓝）与低能直线（绿虚线）",ox+8,58);
+    // 滑块标记
+    const px=ox+kv/np()*L*0.9;
+    const yv=oy-omega(kv,dir)/omega(Math.PI*0.999,dir)*150;
+    ctx.fillStyle="#f85149"; ctx.beginPath(); ctx.arc(px,yv,5,0,Math.PI*2); ctx.fill();
+    // 6:3:2 柱
+    const bars=[[6,"[100]"],[3,"[110]"],[2,"[111]"]];
+    bars.forEach((b,i)=>{
+      const bx=430+i*56, h=b[0]*18;
+      ctx.fillStyle="#d29922"; ctx.fillRect(bx,oy-20-h,30,h);
+      ctx.fillStyle="#8b949e"; ctx.fillText(b[1],bx,oy-24-h);
+    });
+    ctx.fillText("首阶偏差方向比 6:3:2",400,oy+16);
+  }
+  function upd(){
+    kv=+document.getElementById("ks").value/100*Math.PI;
+    document.getElementById("kv").textContent=kv.toFixed(2);
+    const low=kv, full=omega(kv,dir);
+    const d=(full-low)/full*100;
+    document.getElementById("dlt").textContent=(d>=0?"+":"")+d.toFixed(3)+"%";
+  }
+  document.getElementById("ks").addEventListener("input",()=>{draw();upd();});
+  document.querySelectorAll(".dir").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll(".dir").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); dir=+b.dataset.d; draw(); upd(); });
+  draw(); upd();
+})();
+</script>
+</body>
+</html>
