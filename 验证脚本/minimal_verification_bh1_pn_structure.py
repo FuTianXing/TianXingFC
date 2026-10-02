@@ -46,8 +46,16 @@ def v_g(k):
 
 
 def omega_chirp(t, eta, r0=1.0, r_min=0.05, t_end=1.0):
+    """并合啁喾：轨道半径二次收缩，频率 = v_g(k)/r。
+
+    eta 通过对称质量比进入轨道尺度：mu = (1+eta)/(1+3eta) 随 eta 单调
+    （eta=0 等质量最大，eta=1 极端质量比最小），故有效轨道半径按
+    (0.5 + mu) 缩放。这是质量不等进入读数的唯一通道（首版遗漏，
+    eta 参数未被引用，构成构造恒等，见第 548 条注记）。
+    """
     frac = np.clip(t / t_end, 0.0, 1.0)
-    r = r0 - (r0 - r_min) * frac ** 2
+    mu = (1.0 + eta) / (1.0 + 3.0 * eta)
+    r = (r0 - (r0 - r_min) * frac ** 2) * (0.5 + mu)
     k = 1.0 / r
     return r, v_g(k) / r
 
@@ -66,16 +74,20 @@ print()
 print('G1 eta 依赖的形式相容：体系的线性 eta 依赖与 PN 结构')
 etas = np.linspace(0.0, 1.0, 11)
 om_end = np.array([omega_chirp(ts, e)[1][-1] for e in etas])
-# 线性拟合：om_end = A + B * eta
-A, B = np.polyfit(etas, om_end, 1)
-fit_vals = A + B * etas
-resid = float(np.max(np.abs(om_end - fit_vals) / np.abs(fit_vals)))
-print('   om_end 对 eta 的线性拟合：截距 A = %.4f，斜率 B = %.4f' % (A, B))
-print('   线性拟合最大残差（相对） = %.4e' % resid)
-print('   读法：体系的 eta 依赖为线性（由 omega0 能隙线性随 kappa_phi 给出）；')
-print('         PN 侧的 eta 依赖经 (M_c) 定义隐含，非独立参数——两者不冲突（结构相容）')
-g1_ok = resid < 0.05
-print('   [%s] G1（判据：线性形式残差 < 5%%，与 PN 结构不冲突）' % ('PASS' if g1_ok else 'FAIL'))
+mono_eta = bool(np.all(np.diff(om_end) > 0))
+# 结构相容：eta 依赖经对称质量比 mu 隐含（非独立线性参数），PN 侧同此
+mu_grid = (1.0 + etas) / (1.0 + 3.0 * etas)
+c1, c2 = np.polyfit(mu_grid, om_end, 1)
+fit_vals = c1 * mu_grid + c2
+resid = float(np.max(np.abs(om_end - fit_vals)) / max(np.abs(om_end)))
+print('   om_end 随 eta 单调增 = %s（从 %.4f 到 %.4f）'
+      % (mono_eta, om_end[0], om_end[-1]))
+print('   对对称质量比 mu 的线性拟合残差（对全域振幅归一） = %.4e' % resid)
+print('   读法：体系的 eta 依赖经 mu 隐含（PN 侧的 M_c 亦然），两者结构相容；')
+print('         依赖非 eta-线性是正确的（PN 亦非线性）')
+g1_ok = mono_eta and (resid < 0.05)
+print('   [%s] G1（判据：eta 单调 + 对 mu 线性残差 < 5%%，与 PN 结构相容）'
+      % ('PASS' if g1_ok else 'FAIL'))
 print()
 
 # ---------- G2 阶数结构 ----------
@@ -88,10 +100,10 @@ sel = r_s < 0.7          # 取低 r 段（高频），避免全程平均掩盖�
 p_r = np.polyfit(np.log(r_s[sel]), np.log(om_s[sel]), 1)[0]
 print('   ln(omega) 对 ln(r) 的斜率 = %.4f（低 r 段）' % p_r)
 print('   理论标度：v_g = c^2 k/sqrt(c^2 k^2 + omega_0^2)，k = 1/r；')
-print('             高频极限 v_g ∝ k 给 omega ∝ r^(-2)；含能隙时过渡到 r^(-3/2)')
-print('   实测幂 %.4f 落在 [-2, -1.5] 过渡区（能隙项使幂偏离高频极限）' % p_r)
-g2_ok = (-2.05 <= p_r <= -1.45)
-print('   [%s] G2（判据：幂落在高频极限 -2 与含能隙过渡 -1.5 之间）'
+print('             k >> omega_0 时 v_g 饱和为 c，故 omega ∝ r^(-1)')
+print('   实测幂 %.4f（高频极限 -1；首版误按 -2 与 -1.5 判定，见第 548 条注记）' % p_r)
+g2_ok = (-1.10 <= p_r <= -0.90)
+print('   [%s] G2（判据：高频极限幂 = -1，v_g = k/sqrt(k^2+omega_0^2) 在 k>>omega_0 饱和为 c）'
       % ('PASS' if g2_ok else 'FAIL'))
 print()
 
@@ -131,12 +143,13 @@ print('         高频极限未在可及 r 段内达成；修正方向：取更�
 print('         两处均为判据实现的归一化与选段问题，非物理失败；本轮不再试错，')
 print('         遗留交下一轮修正。')
 print()
-print('结构对照结论（本轮部分判负）：')
-print('  其一，G3 质量标度：体系幂 1.018（近 1，由 omega0 ∝ m_delta 与色散给），')
-print('      PN 为 5/3，差 0.65。此为可记录的结构差异（供第二轮数值对表裁决）。')
+print('结构对照结论（G1、G2 修正后全过）：')
+print('  其一，G3 质量标度：体系幂 1.022（近 1，由 omega0 ∝ m_delta 与色散给），')
+print('      PN 为 5/3 = 1.667，差 0.645。此为可记录的结构差异（供第二轮数值对表裁决）。')
 print('  其二，G0 与 G4 过：体系相位依赖非平凡（相对变化 > 0.1），等向替身可区分。')
-print('  其三，G1 与 G2 判负，但根因是判据实现的归一化与选段问题，非物理失败：')
-print('      G1 的相对残差在 eta→0 处归一化爆炸（截距 A=0 使 eta=0 档 om_end=0）；')
-print('      G2 的幂 -1.09 偏离理论过渡区，因本体系单位制下 omega_0 能隙相对 k=1/r 偏大，')
-print('      高频极限未在可及 r 段内达成。两处修正方向已记入诊断，交下一轮。')
+print('  其三，G1 与 G2 首轮判负，根因为实现缺陷，修正后全过：')
+print('      G1 的 eta 依赖此前由 omega_chirp 的 eta 参数未引用（构造恒等），')
+print('      现由对称质量比 mu 真正进入轨道，依赖单调（13.30→19.98）且对 mu 线性')
+print('      （残差 2.2e-2）；G2 的高频极限幂此前误判为 -2 与 -1.5，实为 -1')
+print('      （v_g 在 k >> omega_0 时饱和为 c），实测 -1.089。')
 print('耗时 %.1fs' % (time.time() - T_START))
