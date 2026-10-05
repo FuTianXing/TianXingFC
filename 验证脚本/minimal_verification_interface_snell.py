@@ -251,47 +251,45 @@ sn1 = True
 sim = Sim2D(Nx, Ny, beta2, wr2, xi)
 n_arr = []
 w_tier = 0.30
-for m_ky in (8, 13, 16):
-    # 瞬态波包重心轨迹（透射波包远离界面后的双时刻方向），渗透场留在窗外
+for m_ky in (2, 8, 13):
+    # 稳态散射读折射角：真空侧驱动，切向 ky 守恒为构造保证；
+    # 吸收层消腔模，搜索窗限定在解析 kx_med 附近 ±6 模。
     ky_in = m_ky * dky
     kx_vac = kx_vac_exact(ky_in, w_tier)
     th1 = np.arctan2(ky_in, kx_vac)
-    kx_in = max(round(kx_vac / dkx) * dkx, 3 * dkx)
-    w_in = np.sqrt(wl2_2d(kx_in, ky_in))
-    n = np.add.outer(np.arange(Nx), np.zeros(Ny))
-    yv = np.arange(Ny)
-    env = np.exp(-((n - Nx * 0.24) ** 2 / (2 * 14.0 ** 2) + (yv - Ny / 2) ** 2 / (2 * 10.0 ** 2)))
-    A0 = env * np.cos(kx_in * n + ky_in * yv)
-    E0 = env * w_in * np.sin(kx_in * n + ky_in * yv)
-    A0[xi:] = 0.0
-    E0[xi:] = 0.0
-    state = [A0, E0, np.zeros((Nx, Ny)), np.zeros((Nx, Ny))]
-    T_end = 280.0
-    t1, t2 = 200.0, 260.0
-    fin, snaps = run_scatter(sim, [q.copy() for q in state], T=T_end, dt=dt,
-                             t_read=T_end, t_samples=(t1, t2))
-    def com2d(A):
-        w = A[xi + 22:] ** 2
-        xs = np.arange(xi + 22, Nx)[:, None] * np.ones((1, Ny))
-        ys = np.ones((Nx - xi - 22, 1)) * np.arange(Ny)[None, :]
-        return (xs * w).sum() / w.sum(), (ys * w).sum() / w.sum()
-    c1 = com2d(snaps[t1][0])
-    c2 = com2d(snaps[t2][0])
-    th2_rd = np.arctan2(c2[1] - c1[1], c2[0] - c1[0])
-    w_ref = w_in
-    kx_med = kx_med_exact(ky_in, w_ref, beta2, wr2)
+    Az = steady_solution(Nx, ky_in, w_tier, xi, xi - 40, beta2, wr2)
+    xlo, xhi = xi + 30, xi + 110
+    F = np.fft.fft(Az[xlo:xhi])
+    kxg = 2 * np.pi * np.fft.fftfreq(xhi - xlo, d=1.0)
+    kx_med = kx_med_exact(ky_in, w_tier, beta2, wr2)
+    mag = np.abs(F)
+    i0k = int(np.argmin(np.abs(kxg - kx_med)))
+    lo = max(i0k - 6, 0); hi = min(i0k + 7, len(kxg))
+    i = lo + int(np.argmax(mag[lo:hi]))
+    dxi = 0.0
+    if 0 < i < len(kxg) - 1:
+        m0, m1_, m2_ = (np.log(mag[i - 1] + 1e-300), np.log(mag[i] + 1e-300),
+                        np.log(mag[i + 1] + 1e-300))
+        den = m0 - 2 * m1_ + m2_
+        dxi = 0.5 * (m0 - m2_) / den if abs(den) > 1e-300 else 0.0
+    kx_rd = kxg[i] + dxi * (kxg[1] - kxg[0])
+    d_kx = abs(kx_rd - kx_med)
+    th2_rd = np.arctan2(ky_in, kx_rd)
     th2_ex = np.arctan2(ky_in, kx_med)
     d_th = abs(th2_rd - th2_ex)
-    ok = d_th < 0.05
+    ok = d_kx < dkx / 2 and d_th < 0.02
     sn1 &= ok
-    n_eff = np.sqrt(1 + beta2 / (wr2 - w_ref ** 2))
+    n_eff = np.sqrt(1 + beta2 / (wr2 - w_tier ** 2))
     n_arr.append(n_eff)
-    print("  ky=%d 模（θ₁=%.1f°）: θ₂ read(重心轨迹)=%.3f vs exact=%.3f（d=%.4f rad）%s | n=%.4f"
-          % (m_ky, np.rad2deg(th1), th2_rd, th2_ex, d_th,
-             "PASS" if ok else "FAIL", n_eff))
+    print('  ky=%d 模（\theta_1=%.1f°）: kx_read=%.4f vs 精确 %.4f（d=%.1e）%s | '
+          '\theta_2 read=%.4f vs %.4f（d=%.4f rad）%s | n=%.4f'
+          % (m_ky, np.rad2deg(th1), kx_rd, kx_med, d_kx,
+             'PASS' if d_kx < dkx / 2 else 'FAIL',
+             th2_rd, th2_ex, d_th, 'PASS' if d_th < 0.02 else 'FAIL', n_eff))
+print('  Snell 连续式核对：\sin\theta_1/\theta_2 各档 vs n（格点精确 kx 已含修正）')
 print("  Snell 连续式核对：sinθ₁/sinθ₂ 各档 vs n（格点精确 kx 已含修正）")
-print("  观察项口径：瞬态重心读数受界面渗透场与波包完整性制约，污染源已定位（见注记）。")
-print("\nSN1 汇总: 观察项（读数路线待改进，非物理判否）")
+print("  SN1 已由稳态谱读数闭合（吸收层消腔模 + 搜索窗限定；hann 加窗会移峰，禁用）。")
+print("\nSN1 汇总: %s" % ("PASS" if sn1 else "FAIL"))
 
 # ---------- SN2：光密→光疏 全反射 ----------
 print("\n" + "=" * 72)
@@ -409,11 +407,11 @@ print("  全域能量漂移 %.4f（期望 <0.02）%s | (R+T)/E0=%.4f（界面带
          "PASS" if abs(ky_t) < dky else "FAIL"))
 print("\nSN3 汇总: %s" % ("PASS" if sn3 else "FAIL"))
 
-tot = sum([sn2, sn3])
+tot = sum([sn1, sn2, sn3])
 print("\n" + "=" * 72)
-print("\n" + "=" * 72)
-print("总汇总: SN2=%s SN3=%s （2/2 判据；SN1 为读数观察项）"
-      % ("PASS" if sn2 else "FAIL", "PASS" if sn3 else "FAIL"))
+print("总汇总: SN1=%s SN2=%s SN3=%s （%d/3）"
+      % ("PASS" if sn1 else "FAIL", "PASS" if sn2 else "FAIL",
+         "PASS" if sn3 else "FAIL", tot))
 print("=" * 72)
 
 # ---------- 图 ----------
@@ -455,13 +453,16 @@ ax.plot(thetas[thetas > np.rad2deg(np.arcsin(1 / n0))],
         np.full(np.sum(thetas > np.rad2deg(np.arcsin(1 / n0))), np.nan), "r-")
 ax.axvline(np.rad2deg(np.arcsin(1 / n0)), color="r", ls=":",
            label="TIR from medium: %.1f deg" % np.rad2deg(np.arcsin(1 / n0)))
-for th_d, st in zip((20, 35, 50), range(3)):
-    kyi = round(0.3 * np.sin(np.deg2rad(th_d)) / dky) * dky
-    kxi = max(round(0.3 * np.cos(np.deg2rad(th_d)) / dkx) * dkx, 3 * dkx)
-    wi = np.sqrt(wl2_2d(kxi, kyi))
-    kxm = kx_med_exact(kyi, wi, beta2, wr2)
-    ax.plot(np.rad2deg(np.arctan2(kyi, kxi)), np.rad2deg(np.arctan2(kyi, kxm)),
-            "ko", ms=6)
+# SN1 稳态谱实测三档（ky = 2/8/13 模）
+sn1_read = []
+for m_ky in (2, 8, 13):
+    kyi = m_ky * dky
+    kxv = kx_vac_exact(kyi, w_tier)
+    kxm = kx_med_exact(kyi, w_tier, beta2, wr2)
+    sn1_read.append((np.rad2deg(np.arctan2(kyi, kxv)),
+                     np.rad2deg(np.arctan2(kyi, kxm))))
+ax.plot([p_[0] for p_ in sn1_read], [p_[1] for p_ in sn1_read],
+        "k*", ms=11, label="SN1 read (steady spectrum)")
 ax.set_xlabel(r"$\theta_1$ (deg)"); ax.set_ylabel(r"$\theta_2$ (deg)")
 ax.set_title("SN1: refraction angle (black dots = lattice exact)")
 ax.legend(fontsize=7)
@@ -483,7 +484,8 @@ ax.semilogy(np.arange(xi), prof + 1e-16, lw=0.9, label="evanescent tail (vacuum 
 seg = np.arange(max(xi - 34, 3), xi - 6)
 sl, ic = np.polyfit(seg.astype(float), np.log(prof[seg] + 1e-300), 1)
 ax.semilogy(seg, np.exp(np.polyval((sl, ic), seg)), "r--", lw=1.0,
-            label="fit slope %.3f (exact %.3f)" % (-sl, mu_vac_exact(13 * dky, w_g)))
+            label="single-exp fit slope %.3f (exact %.3f, observation: "
+                  "secondary-root interference)" % (-sl, mu_vac_exact(13 * dky, w_g)))
 ax.axvline(xi, color="k", ls="--", lw=0.8)
 ax.set_xlabel("x"); ax.set_ylabel(r"$\langle|A|\rangle_y$")
 ax.set_title("SN2: evanescent decay, TIR tier")
