@@ -103,6 +103,7 @@
 - 提交粒度按主题：一篇文档完成一次提交（注记、论文、验证材料、独立修正各算一个单元），同一文档的多次编辑合并为一次提交，不在编辑中途提交；提交信息写实际内容与理由，不写「更新文件」一类无信息描述。若有未提交项，一轮工作结束可一句话报告数量。
 - commit message 在 Git Bash 用单引号。
 - **暂存只走显式路径**：`git add <自身文件>` 逐路径列出，禁用 `git add -A`、`git commit -a` 与目录级 `git add .`（2026-09-24 立，因并行会话共享暂存区）。提交前用 `git diff --cached --ignore-cr-at-eol --numstat` 核对暂存清单只含自身路径，出现他人文件先 `git restore --staged <文件>` 移出再提交；若他人的提交卷走自身改动，不改写历史，回复中报告归属。提交前同时用 `git status --short` 与 `git diff --ignore-cr-at-eol --numstat` 核对无行尾符假差异、无误纳无关文件。
+- **换行符规范**（2026-10-10 立，因 46 个文件出现纯 stat 假差异）：工作区文本文件统一 LF，与 `.gitattributes` 的 `*.md text eol=lf` 保持一致；`.gitattributes` 与仓库级 `core.autocrlf=false` 须同时保持，缺一即会复发。**编辑器与写入工具的默认换行符须设为 LF**（VS Code：`"files.eol": "\n"`），写入端是唯一的外部风险源：一旦塞入 CRLF，`.md` 在工作区呈 CRLF 而 index 存 LF，`git status` 报已修改、`git diff` 报无差异，`git update-index --refresh` 与 `git read-tree` 均无法自愈，只有 `git add` 能刷新 stat。**识别信号**：`git status --short` 的 M 计数大于 `git diff --numstat` 的行数。**处置**：`git diff --numstat` 与 `git status --porcelain` 两份清单取差集（`comm -23`，前者为真实差异、后者为 status 报的修改），对差集执行 `git add --pathspec-from-file=<差集清单>`（内容不变，仅刷新 stat），随后删临时清单。**边界**：`.py`/`.html` 等未声明 eol 的扩展名不做换行符转换，它们的 CRLF→LF 属于真实变更，不构成假差异，转换会给并行会话凭空增加待提交项（2026-10-10 教训）。
 
 ## 修改纪律与执行效率（常驻，默认执行无需提示）
 
