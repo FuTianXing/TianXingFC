@@ -13,7 +13,7 @@ minimal_verification_action_transcription.py
       与 delta_theta = m/m_P 之比恒为 1（转录增益 1，无新参数）。
   TA2（gamma 增强）：动缺陷速度扫描（beta = 0, 0.5, 0.8, 0.9），作用量速率
       E = gamma m c^2，写入幅值 = gamma * delta_theta（gamma 缩放）。实质产出：
-      判据 Z 的四维流时间分量应写 J^0 = gamma m / m_P（低俗形式无 gamma）。
+      判据 Z 的四维流时间分量应写 J^0 = gamma m / m_P（低速形式无 gamma）。
   TA3（只读守恒）：写入事件前后缺陷作用量速率守恒（机器精度）——P3
       "写入不影响摆程方向"的作用量表述。
   TA4（标量 vs 多普勒）：运动缺陷前方与后方观察点的转录读数相同（作用量
@@ -77,10 +77,10 @@ for b, g in zip(betas, gammas):
 results.append(('TA2', 'gamma 缩放（4 档速度，|ratio-1| 最大）', r2, '<= 1e-12',
                 r2 <= 1e-12))
 # 实质产出：判据 Z 四维流时间分量的 gamma 修正
-z_low = 1.0          # 判据 Z 低俗形式 J^0 = m/m_P
+z_low = 1.0          # 判据 Z 低速形式 J^0 = m/m_P
 z_corr = gammas[-1]  # beta = 0.9 的 gamma
 results.append(('TA2b', 'beta=0.9 的 J^0 修正因子', z_corr,
-                '打印（J^0 = gamma m/m_P，修判据 Z 低俗形式）', True))
+                '打印（J^0 = gamma m/m_P，修判据 Z 低速形式）', True))
 
 # ---------- TA3：只读守恒 ----------
 E0 = 1.0 * mP * c**2
