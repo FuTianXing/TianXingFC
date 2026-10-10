@@ -284,7 +284,7 @@ footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
 
 <h3><span class="h">4.2</span>一次摆程的三件产物</h3>
 <p>一个摆程同时给出三样东西：空间前进一格 <code>l_P</code>，时间前进一拍 <code>t_P</code>，以及它们之比：光速 <code>c = l_P / t_P</code>。</p>
-<p>光速在体系内有三条独立来源，互为印证：元相方程 (II) 的宏观解给出 <code>Z = cT</code>；接力几何给出每棒一格一拍的传播速度；色散的低能极限给出 <code>ω = ck</code>。三条都不依赖介质弹性参数，光速因此是相位 <code>2π</code> 与空间 <code>l_P</code> 之间的换算常数。</p>
+<p>光速在体系内由同一几何事实的三个侧面给出：元相方程 (II) 的宏观解给出 <code>Z = cT</code>；接力几何给出每棒一格一拍的传播速度；色散的低能极限给出 <code>ω = ck</code>。三个侧面都不依赖介质弹性参数，光速因此是相位 <code>2π</code> 与空间 <code>l_P</code> 之间的换算常数。</p>
 
 <figure class="fig">
   <svg id="f11" viewBox="0 0 880 300" role="img" aria-label="三张卡片：一次摆程给出空间一格、时间一拍与光速"></svg>
@@ -322,7 +322,7 @@ footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
   <tr><td>距离归粒</td><td>距离由格点计数承载</td><td>定案</td></tr>
   <tr><td>方向归波</td><td>波矢由相邻元相子的实轴方向差定义</td><td>定案</td></tr>
   <tr><td>晶格刚性</td><td>格距与摆程是绝对常数，弯曲写在记录层</td><td>定案（2026-09-11 作者确认）</td></tr>
-  <tr><td>光速三条来源</td><td>宏观解、接力几何、色散极限互为印证</td><td>定案（几何恒等式级）</td></tr>
+  <tr><td>光速三个侧面</td><td>宏观解、接力几何、色散极限为同一几何事实的不同呈现</td><td>定案（几何恒等式级）</td></tr>
   <tr><td>束缚振荡</td><td>往返给出摆程计数与时间颗粒性</td><td>模型假设级</td></tr>
   <tr><td>三维性严格证明</td><td>三个正交方向的几何必然性</td><td>待证（P10）</td></tr>
   <tr><td>存在依赖波性侧</td><td>晶格的存在方式与波性侧的关联</td><td>纲领级</td></tr>
@@ -730,7 +730,7 @@ footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
     var lines = [
       ["满周闭合触发法线跃迁", "每一次跃迁生成一个像素"],
       ["指针扫过 2π 历时 t_P", "固有时必为 t_P 的整数倍"],
-      ["三条来源互为印证", "与介质弹性参数无关"]
+      ["三个侧面为同一几何事实的不同呈现", "与介质弹性参数无关"]
     ];
     for (var i = 0; i < 3; i++){
       var x = cards[i][0], col = cards[i][1];
@@ -749,7 +749,7 @@ footer.end{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);
   (function(){
     var g = svg("f12"); if (!g) return;
     var cols = [
-      [16, "#0f766e", "定案", ["半径固定，作用量子即圆周长", "一圈一格（元相方程 II）", "距离归粒；方向归波", "晶格刚性（2026-09-11 确认）", "光速三条来源互为印证"]],
+      [16, "#0f766e", "定案", ["半径固定，作用量子即圆周长", "一圈一格（元相方程 II）", "距离归粒；方向归波", "晶格刚性（2026-09-11 确认）", "光速三个侧面为同一几何事实的不同呈现"]],
       [304, "#b45309", "模型假设级", ["束缚振荡与折返机制", "摆程计数的动力学细节", "采样接力作为光速的机制图像"]],
       [592, "#be123c", "纲领与待证", ["三维性的严格证明（P10）", "存在依赖波性侧的关联", "心侧形式化（体系自定边界）"]]
     ];
