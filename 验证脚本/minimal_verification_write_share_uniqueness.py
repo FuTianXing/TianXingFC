@@ -257,6 +257,8 @@ judge("J3c 替身全FAIL", ok_c2, "三替身非退化档偏差均份额级（>5%
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+plt.rcParams["axes.unicode_minus"] = False
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
 ax = axes[0]

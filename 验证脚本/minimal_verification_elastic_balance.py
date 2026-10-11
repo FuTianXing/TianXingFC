@@ -203,6 +203,8 @@ try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
     rb = np.round(r * 2) / 2.0
     sel = mask_int & (rb >= 3.0) & (rb <= 30.0)

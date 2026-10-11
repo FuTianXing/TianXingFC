@@ -211,6 +211,8 @@ try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
 

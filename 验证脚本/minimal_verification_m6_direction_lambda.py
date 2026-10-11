@@ -30,6 +30,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+plt.rcParams["axes.unicode_minus"] = False
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 CHECKS = []

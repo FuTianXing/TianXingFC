@@ -150,6 +150,8 @@ try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
     ax[0].plot(n - c, theta1, ".", ms=3, label="线性求解稳态")
     ax[0].plot(n - c, exact1, "-", lw=1, label="1D 牛顿势（分段线性精确解）")

@@ -152,6 +152,8 @@ try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]
+    plt.rcParams["axes.unicode_minus"] = False
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
     ms = np.logspace(-32, 32, 200)
     dth = ms / m_P
