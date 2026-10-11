@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三副面孔 · 人工神经元 · 信息图</title>
+<style>
+  html,body { margin:0; padding:0; background:#060912; color:#e5e7eb;
+        font-family:'Noto Sans SC','Microsoft YaHei',sans-serif; }
+  .wrap { max-width:1720px; margin:0 auto; padding:26px 18px 56px; }
+  .nav { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:0 0 18px; }
+  .nav a { font-size:13px; padding:7px 16px; border-radius:999px; text-decoration:none;
+        color:#cbd5e1; border:1px solid rgba(148,163,184,0.28); background:rgba(148,163,184,0.06); letter-spacing:1px; }
+  .nav a.on { color:#0a0e1a; background:#38bdf8; border-color:#38bdf8; font-weight:700; }
+  .top { text-align:center; margin-bottom:22px; }
+  .top h1 { font-size:30px; margin:0 0 8px; font-weight:800; color:#f8fafc; letter-spacing:2px; }
+  .top p  { margin:0; font-size:14px; color:#94a3b8; letter-spacing:1px; }
+  .svgbox svg { display:block; width:100%; height:auto; }
+  .foot { text-align:center; font-size:12px; color:#64748b; margin-top:20px; letter-spacing:1px; line-height:1.8; }
+  .pulse { animation:plz 2.6s ease-in-out infinite; }
+  @keyframes plz { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="三网络同构_信息图.html">总图 · 三网络同构</a>
+    <a href="三副面孔_元相子_信息图.html">元相子</a>
+    <a href="三副面孔_生物神经元_信息图.html">生物神经元</a>
+    <a class="on" href="三副面孔_人工神经元_信息图.html">人工神经元</a>
+  </div>
+  <div class="top">
+    <h1>三副面孔 · 人工神经元</h1>
+    <p>硅基生命体的计算单元　公式解剖 · 激活函数 · 学习规则</p>
+  </div>
+
+  <div class="svgbox">
+  <svg xmlns="http://www.w3.org/2000/svg" width="1680" height="2240" viewBox="0 0 1680 2240" font-family="'Noto Sans SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+        <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(148,163,184,0.05)" stroke-width="1"/>
+      </pattern>
+      <filter id="bg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="60"/></filter>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+      </marker>
+      <marker id="aro" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+      </marker>
+    </defs>
+
+    <rect width="1680" height="2240" fill="#0a0e1a"/>
+    <circle cx="320" cy="260" r="520" fill="#10233a" opacity="0.5" filter="url(#bg)"/>
+    <circle cx="1400" cy="1450" r="520" fill="#2a1f0a" opacity="0.4" filter="url(#bg)"/>
+    <rect width="1680" height="2240" fill="url(#grid)"/>
+
+    <text x="840" y="88" font-size="50" fill="#f8fafc" font-weight="800" text-anchor="middle" letter-spacing="8">三副面孔 · 人工神经元</text>
+    <text x="840" y="136" font-size="21" fill="#94a3b8" text-anchor="middle" letter-spacing="3">硅基生命体的计算单元　公式解剖 · 激活函数 · 学习规则</text>
+    <line x1="520" y1="168" x2="1160" y2="168" stroke="rgba(56,189,248,0.35)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- 1 公式解剖 -->
+    <circle cx="150" cy="248" r="22" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="150" y="256" font-size="22" fill="#38bdf8" font-weight="700" text-anchor="middle">1</text>
+    <text x="196" y="238" font-size="25" fill="#e5e7eb" font-weight="700">公式解剖：一行式子里的三件事</text>
+    <text x="196" y="264" font-size="14" fill="#94a3b8">一个单层神经元只做三步：加权、平移、激活</text>
+
+    <rect x="150" y="306" width="1380" height="110" rx="14" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.32)" stroke-width="1.5"/>
+    <text x="840" y="376" font-size="36" fill="#e5e7eb" font-weight="700" text-anchor="middle">y = σ(Wx ＋ b)</text>
+
+    <rect x="150" y="440" width="440" height="206" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="180" y="482" font-size="20" fill="#38bdf8" font-weight="700">权重 W</text>
+    <g fill="rgba(56,189,248,0.16)" stroke="rgba(56,189,248,0.5)" stroke-width="1">
+      <rect x="200" y="504" width="34" height="34" rx="6"/><rect x="244" y="504" width="34" height="34" rx="6"/><rect x="288" y="504" width="34" height="34" rx="6"/>
+      <rect x="200" y="548" width="34" height="34" rx="6"/><rect x="244" y="548" width="34" height="34" rx="6"/><rect x="288" y="548" width="34" height="34" rx="6"/>
+    </g>
+    <text x="360" y="530" font-size="13.5" fill="#cbd5e1">把输入按权重</text>
+    <text x="360" y="556" font-size="13.5" fill="#cbd5e1">线性组合</text>
+    <text x="180" y="618" font-size="13" fill="#94a3b8">权重是训练出来的参数</text>
+
+    <rect x="590" y="440" width="440" height="206" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="620" y="482" font-size="20" fill="#f5c542" font-weight="700">偏置 b</text>
+    <line x1="640" y1="548" x2="860" y2="548" stroke="rgba(148,163,184,0.3)" stroke-width="1.2" stroke-dasharray="5 5"/>
+    <polyline points="660,600 800,600 940,548" fill="none" stroke="#f5c542" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="800" y1="600" x2="800" y2="548" stroke="#f5c542" stroke-width="1.6" stroke-dasharray="4 3"/>
+    <text x="806" y="540" font-size="13" fill="#f5c542" font-weight="700">b</text>
+    <text x="620" y="618" font-size="13" fill="#94a3b8">给加权和加一个平移量，决定起跳点</text>
+
+    <rect x="1030" y="440" width="440" height="206" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="1060" y="482" font-size="20" fill="#34d399" font-weight="700">激活 σ</text>
+    <rect x="1080" y="500" width="150" height="100" rx="8" fill="none" stroke="rgba(52,211,153,0.45)" stroke-width="1.2"/>
+    <polyline points="1080,592 1140,592 1140,512 1230,512" fill="none" stroke="#34d399" stroke-width="3" stroke-linejoin="round"/>
+    <text x="1250" y="540" font-size="13.5" fill="#cbd5e1">非线性压缩</text>
+    <text x="1250" y="566" font-size="13.5" fill="#cbd5e1">或截断</text>
+    <text x="1060" y="618" font-size="13" fill="#94a3b8">没有它，多层网络会退化为一层</text>
+
+    <text x="840" y="700" font-size="16" fill="#f8fafc" font-weight="600" text-anchor="middle">Wx ＋ b 是仿射变换，σ 把它折弯；元相子一侧，同一副骨架写作 R(ωτ)·p ＋ cτ·n</text>
+    <line x1="300" y1="736" x2="1380" y2="736" stroke="rgba(56,189,248,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 2 积分与发放 + 激活函数 -->
+    <circle cx="150" cy="798" r="22" fill="none" stroke="#34d399" stroke-width="2.5"/>
+    <text x="150" y="806" font-size="22" fill="#34d399" font-weight="700" text-anchor="middle">2</text>
+    <text x="196" y="788" font-size="25" fill="#e5e7eb" font-weight="700">积分与发放：加权求和的一生</text>
+    <text x="196" y="814" font-size="14" fill="#94a3b8">离散的一次输出，来自连续输入的累积与一次折弯</text>
+
+    <rect x="150" y="854" width="1380" height="400" rx="14" fill="rgba(17,24,39,0.55)" stroke="rgba(148,163,184,0.20)" stroke-width="1.5"/>
+    <!-- 左：累积曲线 -->
+    <text x="180" y="900" font-size="18" fill="#38bdf8" font-weight="700">加权输入累积 → 一次输出</text>
+    <line x1="200" y1="1180" x2="860" y2="1180" stroke="rgba(148,163,184,0.35)" stroke-width="1.4"/>
+    <text x="700" y="1204" font-size="12" fill="#94a3b8">输入强度</text>
+    <line x1="200" y1="1120" x2="860" y2="1120" stroke="rgba(52,211,153,0.55)" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="866" y="1124" font-size="12" fill="#94a3b8">阈值</text>
+    <polyline points="200,1180 680,1120 712,1064 750,1150 850,1172" fill="none" stroke="#38bdf8" stroke-width="3.2" stroke-linejoin="round"/>
+    <circle cx="712" cy="1064" r="6" fill="#34d399" class="pulse"/>
+    <text x="250" y="1160" font-size="13.5" fill="#cbd5e1">Σᵢ wᵢxᵢ ＋ b 连续累积</text>
+    <text x="736" y="1050" font-size="13.5" fill="#34d399" font-weight="700">激活输出 σ</text>
+    <!-- 右：激活函数四例 -->
+    <text x="930" y="900" font-size="18" fill="#38bdf8" font-weight="700">四种常见折弯方式</text>
+    <rect x="930" y="920" width="270" height="150" rx="10" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>
+    <polyline points="960,1030 1058,1030 1062,958 1170,958" fill="none" stroke="#38bdf8" stroke-width="2.6"/>
+    <text x="1065" y="944" font-size="12.5" fill="#94a3b8" text-anchor="middle">阶跃（早期模型）</text>
+
+    <rect x="1230" y="920" width="270" height="150" rx="10" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>
+    <polyline points="1260,1030 1370,1030 1470,958" fill="none" stroke="#38bdf8" stroke-width="2.6"/>
+    <text x="1365" y="944" font-size="12.5" fill="#94a3b8" text-anchor="middle">ReLU 线性整流</text>
+
+    <rect x="930" y="1090" width="270" height="150" rx="10" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>
+    <polyline points="960,1208 1030,1202 1065,1188 1105,1160 1170,1138" fill="none" stroke="#38bdf8" stroke-width="2.6"/>
+    <text x="1065" y="1114" font-size="12.5" fill="#94a3b8" text-anchor="middle">S 形（sigmoid）</text>
+
+    <rect x="1230" y="1090" width="270" height="150" rx="10" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>
+    <polyline points="1260,1224 1310,1218 1365,1195 1420,1170 1470,1160" fill="none" stroke="#38bdf8" stroke-width="2.6"/>
+    <text x="1365" y="1114" font-size="12.5" fill="#94a3b8" text-anchor="middle">双曲正切（tanh）</text>
+
+    <line x1="300" y1="1290" x2="1380" y2="1290" stroke="rgba(56,189,248,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 3 学习 -->
+    <circle cx="150" cy="1352" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="1360" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">3</text>
+    <text x="196" y="1342" font-size="25" fill="#e5e7eb" font-weight="700">学习：从损失往回传</text>
+    <text x="196" y="1368" font-size="14" fill="#94a3b8">权重不是给定的，是训练出来的</text>
+
+    <rect x="150" y="1408" width="660" height="280" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="180" y="1450" font-size="21" fill="#38bdf8" font-weight="700">前向传播与反向传播</text>
+    <line x1="200" y1="1520" x2="660" y2="1520" stroke="#38bdf8" stroke-width="2.4" marker-end="url(#ar)"/>
+    <text x="210" y="1506" font-size="13" fill="#cbd5e1">前向：输入经权重逐层映射到输出</text>
+    <line x1="660" y1="1564" x2="200" y2="1564" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aro)"/>
+    <text x="210" y="1592" font-size="13" fill="#cbd5e1">反向：误差梯度沿原路回传，更新权重</text>
+    <text x="180" y="1640" font-size="14" fill="#cbd5e1">学习即最小化损失函数；权重是优化过程的产物</text>
+    <text x="180" y="1666" font-size="13" fill="#94a3b8">同一套前向与反向，是所有人工网络共用的骨架</text>
+
+    <rect x="870" y="1408" width="660" height="280" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="900" y="1450" font-size="21" fill="#f5c542" font-weight="700">与天行力的一处结构对照</text>
+    <text x="930" y="1500" font-size="13.5" fill="#cbd5e1">人工网络：损失函数给出误差，优化器按梯度更新权重，</text>
+    <text x="930" y="1526" font-size="13.5" fill="#cbd5e1">优化器由设计者选定（梯度下降及其变体）</text>
+    <text x="930" y="1576" font-size="13.5" fill="#cbd5e1">元相子框架：天行方程审计整段历史，天行力调整实轴方向</text>
+    <text x="930" y="1602" font-size="13.5" fill="#cbd5e1">天行力被明确列为不可几何化的边界条件</text>
+    <text x="900" y="1650" font-size="13" fill="#94a3b8">结构对照，不构成推导；对应关系的严格程度低于数学同构</text>
+
+    <line x1="300" y1="1726" x2="1380" y2="1726" stroke="rgba(56,189,248,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 4 三副面孔对照 -->
+    <circle cx="150" cy="1788" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="1796" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">4</text>
+    <text x="196" y="1778" font-size="25" fill="#e5e7eb" font-weight="700">三副面孔，各自一句话</text>
+    <text x="196" y="1804" font-size="14" fill="#94a3b8">同一行说的是同一个功能，材料不同，骨架相同</text>
+
+    <rect x="150" y="1844" width="440" height="190" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="1886" font-size="20" fill="#f5c542" font-weight="700">元相子</text>
+    <text x="180" y="1926" font-size="14" fill="#cbd5e1">权重：实轴方向差 Δα</text>
+    <text x="180" y="1956" font-size="14" fill="#cbd5e1">事件：法线跃迁 l_P</text>
+    <text x="180" y="1986" font-size="13" fill="#94a3b8">触发：θ = 2πn</text>
+
+    <rect x="590" y="1844" width="440" height="190" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="620" y="1886" font-size="20" fill="#34d399" font-weight="700">生物神经元</text>
+    <text x="620" y="1926" font-size="14" fill="#cbd5e1">权重：突触连接强度</text>
+    <text x="620" y="1956" font-size="14" fill="#cbd5e1">事件：动作电位</text>
+    <text x="620" y="1986" font-size="13" fill="#94a3b8">触发：越过阈值</text>
+
+    <rect x="1030" y="1844" width="440" height="190" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="1060" y="1886" font-size="20" fill="#38bdf8" font-weight="700">人工神经元</text>
+    <text x="1060" y="1926" font-size="14" fill="#cbd5e1">权重：参数 wᵢ</text>
+    <text x="1060" y="1956" font-size="14" fill="#cbd5e1">事件：激活输出 σ</text>
+    <text x="1060" y="1986" font-size="13" fill="#94a3b8">触发：加权和加偏置</text>
+
+    <text x="840" y="2100" font-size="16" fill="#f8fafc" font-weight="700" text-anchor="middle" letter-spacing="1">人工神经元的主语是参数 wᵢ 与 b，它们由训练给定</text>
+    <text x="840" y="2128" font-size="13" fill="#94a3b8" text-anchor="middle">元相子一侧，权重有本体论来源：实轴取向差写在晶格上，物理意义无需事后解释</text>
+
+  </svg>
+  </div>
+
+  <div class="foot">
+    系列：总图《三网络同构》· 分图《三副面孔 · 人工神经元》<br>
+    对照框架：《时空作为自校准量子神经网络：元相子理论中引力、规范力、粒子与意识的结构对应》· 傅天行 · 天行新学研究院
+  </div>
+</div>
+</body>
+</html>

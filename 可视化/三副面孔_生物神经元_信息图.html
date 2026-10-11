@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三副面孔 · 生物神经元 · 信息图</title>
+<style>
+  html,body { margin:0; padding:0; background:#060912; color:#e5e7eb;
+        font-family:'Noto Sans SC','Microsoft YaHei',sans-serif; }
+  .wrap { max-width:1720px; margin:0 auto; padding:26px 18px 56px; }
+  .nav { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:0 0 18px; }
+  .nav a { font-size:13px; padding:7px 16px; border-radius:999px; text-decoration:none;
+        color:#cbd5e1; border:1px solid rgba(148,163,184,0.28); background:rgba(148,163,184,0.06); letter-spacing:1px; }
+  .nav a.on { color:#0a0e1a; background:#34d399; border-color:#34d399; font-weight:700; }
+  .top { text-align:center; margin-bottom:22px; }
+  .top h1 { font-size:30px; margin:0 0 8px; font-weight:800; color:#f8fafc; letter-spacing:2px; }
+  .top p  { margin:0; font-size:14px; color:#94a3b8; letter-spacing:1px; }
+  .svgbox svg { display:block; width:100%; height:auto; }
+  .foot { text-align:center; font-size:12px; color:#64748b; margin-top:20px; letter-spacing:1px; line-height:1.8; }
+  .pulse { animation:plz 2.6s ease-in-out infinite; }
+  @keyframes plz { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="三网络同构_信息图.html">总图 · 三网络同构</a>
+    <a href="三副面孔_元相子_信息图.html">元相子</a>
+    <a class="on" href="三副面孔_生物神经元_信息图.html">生物神经元</a>
+    <a href="三副面孔_人工神经元_信息图.html">人工神经元</a>
+  </div>
+  <div class="top">
+    <h1>三副面孔 · 生物神经元</h1>
+    <p>碳基生命体的计算单元　结构解剖 · 积分发放 · 突触与学习</p>
+  </div>
+
+  <div class="svgbox">
+  <svg xmlns="http://www.w3.org/2000/svg" width="1680" height="2180" viewBox="0 0 1680 2180" font-family="'Noto Sans SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+        <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(148,163,184,0.05)" stroke-width="1"/>
+      </pattern>
+      <filter id="bg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="60"/></filter>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+      </marker>
+    </defs>
+
+    <rect width="1680" height="2180" fill="#0a0e1a"/>
+    <circle cx="320" cy="260" r="520" fill="#0f2a24" opacity="0.45" filter="url(#bg)"/>
+    <circle cx="1400" cy="1400" r="520" fill="#10233a" opacity="0.4" filter="url(#bg)"/>
+    <rect width="1680" height="2180" fill="url(#grid)"/>
+
+    <text x="840" y="88" font-size="50" fill="#f8fafc" font-weight="800" text-anchor="middle" letter-spacing="8">三副面孔 · 生物神经元</text>
+    <text x="840" y="136" font-size="21" fill="#94a3b8" text-anchor="middle" letter-spacing="3">碳基生命体的计算单元　结构解剖 · 积分发放 · 突触与学习</text>
+    <line x1="520" y1="168" x2="1160" y2="168" stroke="rgba(52,211,153,0.35)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- 1 结构解剖 -->
+    <circle cx="150" cy="248" r="22" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="150" y="256" font-size="22" fill="#38bdf8" font-weight="700" text-anchor="middle">1</text>
+    <text x="196" y="238" font-size="25" fill="#e5e7eb" font-weight="700">结构解剖：一条单行道</text>
+    <text x="196" y="264" font-size="14" fill="#94a3b8">树突收、胞体积、轴突传、突触接</text>
+
+    <rect x="150" y="306" width="1380" height="340" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <g stroke="#34d399" stroke-width="2.6" stroke-linecap="round">
+      <line x1="510" y1="470" x2="420" y2="384"/><line x1="510" y1="470" x2="392" y2="470"/>
+      <line x1="510" y1="470" x2="424" y2="556"/><line x1="510" y1="470" x2="470" y2="356"/>
+      <line x1="510" y1="470" x2="452" y2="584"/>
+      <line x1="616" y1="470" x2="1140" y2="470"/>
+      <line x1="1140" y1="470" x2="1200" y2="430"/><line x1="1140" y1="470" x2="1200" y2="510"/>
+    </g>
+    <g fill="rgba(52,211,153,0.18)" stroke="rgba(52,211,153,0.55)" stroke-width="1.2">
+      <rect x="690" y="459" width="80" height="22" rx="11"/>
+      <rect x="820" y="459" width="80" height="22" rx="11"/>
+      <rect x="950" y="459" width="80" height="22" rx="11"/>
+    </g>
+    <circle cx="560" cy="470" r="56" fill="rgba(52,211,153,0.14)" stroke="#34d399" stroke-width="2.6"/>
+    <text x="560" y="476" font-size="14" fill="#e5e7eb" text-anchor="middle">胞体</text>
+    <circle cx="1200" cy="430" r="6" fill="#34d399"/><circle cx="1200" cy="510" r="6" fill="#34d399"/>
+    <rect x="1258" y="392" width="16" height="156" rx="8" fill="rgba(56,189,248,0.16)" stroke="rgba(56,189,248,0.5)" stroke-width="1.2"/>
+    <g font-size="13.5" fill="#cbd5e1">
+      <text x="300" y="374">树突：收集输入</text>
+      <text x="560" y="556" text-anchor="middle">胞体：积分</text>
+      <text x="850" y="430" text-anchor="middle">轴突：传导</text>
+      <text x="850" y="524" text-anchor="middle" fill="#94a3b8">髓鞘：加速</text>
+      <text x="1206" y="380" text-anchor="middle" fill="#94a3b8">突触末梢</text>
+      <text x="1336" y="462" text-anchor="middle" fill="#94a3b8">下一个神经元</text>
+    </g>
+    <text x="180" y="600" font-size="14.5" fill="#cbd5e1">信号沿一个方向流动：树突收、胞体积、轴突传、突触接；突触把信号交给下一个神经元</text>
+    <text x="180" y="626" font-size="13.5" fill="#94a3b8">每个神经元与成千上万个其他神经元相连，连接强度就是权重</text>
+    <line x1="300" y1="690" x2="1380" y2="690" stroke="rgba(52,211,153,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 2 积分与发放 -->
+    <circle cx="150" cy="752" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="760" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">2</text>
+    <text x="196" y="742" font-size="25" fill="#e5e7eb" font-weight="700">积分与发放：膜电位的一生</text>
+    <text x="196" y="768" font-size="14" fill="#94a3b8">累积是连续的，发放是全或无的离散事件</text>
+
+    <rect x="150" y="808" width="1380" height="376" rx="14" fill="rgba(17,24,39,0.55)" stroke="rgba(148,163,184,0.20)" stroke-width="1.5"/>
+    <line x1="240" y1="1090" x2="1440" y2="1090" stroke="rgba(148,163,184,0.35)" stroke-width="1.4"/>
+    <text x="1444" y="1094" font-size="12" fill="#94a3b8">时间</text>
+    <line x1="240" y1="1060" x2="1440" y2="1060" stroke="rgba(148,163,184,0.35)" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <text x="1444" y="1064" font-size="12" fill="#94a3b8">静息 ≈ -70 mV</text>
+    <line x1="240" y1="1006" x2="1440" y2="1006" stroke="rgba(245,197,66,0.55)" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="1444" y="1010" font-size="12" fill="#94a3b8">阈值 ≈ -55 mV</text>
+    <line x1="240" y1="958" x2="1440" y2="958" stroke="rgba(52,211,153,0.45)" stroke-width="1.2" stroke-dasharray="2 6"/>
+    <text x="1444" y="962" font-size="12" fill="#94a3b8">峰值 ≈ +30 mV</text>
+    <polyline points="240,1060 880,1006 912,958 948,1036 1000,1052 1250,1060" fill="none" stroke="#34d399" stroke-width="3.2" stroke-linejoin="round"/>
+    <circle cx="912" cy="958" r="6" fill="#34d399" class="pulse"/>
+    <text x="470" y="1040" font-size="14" fill="#cbd5e1">膜电位累积</text>
+    <text x="936" y="930" font-size="14" fill="#34d399" font-weight="700">动作电位</text>
+    <text x="1014" y="1078" font-size="13" fill="#94a3b8">不应期（短暂超极化）</text>
+    <text x="240" y="1136" font-size="14.5" fill="#cbd5e1">阈值由离子通道的开关动力学决定；越过阈值即发放，发放后进入短暂复位</text>
+    <text x="240" y="1162" font-size="13.5" fill="#94a3b8">发放是全或无的离散脉冲，幅度不随输入强弱改变（信息写在发放的疏密里）</text>
+    <line x1="300" y1="1218" x2="1380" y2="1218" stroke="rgba(52,211,153,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 3 突触与学习 -->
+    <circle cx="150" cy="1280" r="22" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="150" y="1288" font-size="22" fill="#38bdf8" font-weight="700" text-anchor="middle">3</text>
+    <text x="196" y="1270" font-size="25" fill="#e5e7eb" font-weight="700">突触与学习：连接强度会变</text>
+    <text x="196" y="1296" font-size="14" fill="#94a3b8">权重随使用历史改变，这是碳基网络的学习方式</text>
+
+    <rect x="150" y="1336" width="660" height="290" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="180" y="1378" font-size="21" fill="#34d399" font-weight="700">突触传递</text>
+    <rect x="240" y="1420" width="18" height="150" rx="9" fill="rgba(52,211,153,0.20)" stroke="rgba(52,211,153,0.55)" stroke-width="1.2"/>
+    <rect x="340" y="1420" width="18" height="150" rx="9" fill="rgba(56,189,248,0.18)" stroke="rgba(56,189,248,0.5)" stroke-width="1.2"/>
+    <g fill="#34d399"><circle cx="272" cy="1462" r="4"/><circle cx="299" cy="1494" r="4"/><circle cx="326" cy="1526" r="4"/></g>
+    <line x1="264" y1="1560" x2="334" y2="1560" stroke="#34d399" stroke-width="2" marker-end="url(#ar)"/>
+    <text x="299" y="1404" font-size="12.5" fill="#94a3b8" text-anchor="middle">间隙 ≈ 20 至 40 nm</text>
+    <text x="380" y="1462" font-size="13" fill="#cbd5e1">突触前</text>
+    <text x="380" y="1520" font-size="13" fill="#cbd5e1">突触后</text>
+    <text x="180" y="1600" font-size="14" fill="#cbd5e1">递质由突触前释放，跨过间隙作用于突触后膜</text>
+    <text x="180" y="1626" font-size="13.5" fill="#94a3b8">突触后电位相互叠加，累积到阈值再发放</text>
+
+    <rect x="870" y="1336" width="660" height="290" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="900" y="1378" font-size="21" fill="#38bdf8" font-weight="700">学习：赫布规则</text>
+    <circle cx="980" cy="1450" r="28" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+    <circle cx="1130" cy="1450" r="28" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+    <line x1="1008" y1="1450" x2="1102" y2="1450" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5 5"/>
+    <text x="1055" y="1436" font-size="12.5" fill="#94a3b8" text-anchor="middle">连接弱</text>
+    <line x1="1008" y1="1516" x2="1102" y2="1516" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+    <text x="1055" y="1548" font-size="12.5" fill="#94a3b8" text-anchor="middle">一起激活后：连接变强</text>
+    <text x="1200" y="1446" font-size="13" fill="#cbd5e1">一起激活的神经元，</text>
+    <text x="1200" y="1472" font-size="13" fill="#cbd5e1">连接被加强</text>
+    <text x="900" y="1600" font-size="14" fill="#cbd5e1">权重不是固定参数，它随使用历史改变</text>
+    <text x="900" y="1626" font-size="13.5" fill="#94a3b8">与元相子一侧对照：权重都可调，调节依据都是历史</text>
+    <line x1="300" y1="1690" x2="1380" y2="1690" stroke="rgba(52,211,153,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- 4 三副面孔对照 -->
+    <circle cx="150" cy="1752" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="1760" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">4</text>
+    <text x="196" y="1742" font-size="25" fill="#e5e7eb" font-weight="700">三副面孔，各自一句话</text>
+    <text x="196" y="1768" font-size="14" fill="#94a3b8">同一行说的是同一个功能，材料不同，骨架相同</text>
+
+    <rect x="150" y="1808" width="440" height="190" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="1850" font-size="20" fill="#f5c542" font-weight="700">元相子</text>
+    <text x="180" y="1890" font-size="14" fill="#cbd5e1">权重：实轴方向差 Δα</text>
+    <text x="180" y="1920" font-size="14" fill="#cbd5e1">事件：法线跃迁 l_P</text>
+    <text x="180" y="1950" font-size="13" fill="#94a3b8">触发：θ = 2πn</text>
+
+    <rect x="590" y="1808" width="440" height="190" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="620" y="1850" font-size="20" fill="#34d399" font-weight="700">生物神经元</text>
+    <text x="620" y="1890" font-size="14" fill="#cbd5e1">权重：突触连接强度</text>
+    <text x="620" y="1920" font-size="14" fill="#cbd5e1">事件：动作电位</text>
+    <text x="620" y="1950" font-size="13" fill="#94a3b8">触发：越过阈值</text>
+
+    <rect x="1030" y="1808" width="440" height="190" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="1060" y="1850" font-size="20" fill="#38bdf8" font-weight="700">人工神经元</text>
+    <text x="1060" y="1890" font-size="14" fill="#cbd5e1">权重：参数 wᵢ</text>
+    <text x="1060" y="1920" font-size="14" fill="#cbd5e1">事件：激活输出 σ</text>
+    <text x="1060" y="1950" font-size="13" fill="#94a3b8">触发：加权和加偏置</text>
+
+    <text x="840" y="2060" font-size="16" fill="#f8fafc" font-weight="700" text-anchor="middle" letter-spacing="1">本文只取功能骨架：累积、阈值、发放、可调权重</text>
+    <text x="840" y="2088" font-size="13" fill="#94a3b8" text-anchor="middle">离子通道、递质种类与代谢供能等细节更复杂，未在对照中展开</text>
+
+  </svg>
+  </div>
+
+  <div class="foot">
+    系列：总图《三网络同构》· 分图《三副面孔 · 生物神经元》<br>
+    对照框架：《时空作为自校准量子神经网络：元相子理论中引力、规范力、粒子与意识的结构对应》· 傅天行 · 天行新学研究院
+  </div>
+</div>
+</body>
+</html>
