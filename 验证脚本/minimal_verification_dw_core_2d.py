@@ -83,7 +83,23 @@ def gradients(sigma, s, kappa, periodic, Qv=Q):
     g2 = TWO_PI * J * (np.sin(TWO_PI * (v[2] - v[0]))
                        + np.sin(TWO_PI * (v[2] - v[1])))
     g = np.stack([g0, g1, g2])
-    ds = -k_el * lap(s) + g
+    if periodic:
+        dsx = np.roll(s, -1, 2) - s
+        dsy = np.roll(s, -1, 1) - s
+        ds = k_el * (np.roll(dsx, 1, 2) - dsx) \
+            + k_el * (np.roll(dsy, 1, 1) - dsy) + g
+    else:
+        dsx = np.zeros_like(s)
+        dsy = np.zeros_like(s)
+        dsx[:, :, :-1] = s[:, :, 1:] - s[:, :, :-1]
+        dsy[:, :-1, :] = s[:, 1:, :] - s[:, :-1, :]
+        gx = np.zeros_like(s)
+        gx[:, :, :-1] += -k_el * dsx[:, :, :-1]
+        gx[:, :, 1:] += k_el * dsx[:, :, :-1]
+        gy = np.zeros_like(s)
+        gy[:, :-1, :] += -k_el * dsy[:, :-1, :]
+        gy[:, 1:, :] += k_el * dsy[:, :-1, :]
+        ds = gx + gy + g
     dsigma = -kappa * lap(sigma) + 4.0 * lam * sigma * (sigma ** 2 - 1.0) \
         - 0.5 * (Qv[:, None, None] * g).sum(0)
     return dsigma, ds
