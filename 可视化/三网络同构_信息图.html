@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同一个螺旋上的三种生命 · 三网络同构</title>
+<style>
+  html,body { margin:0; padding:0; background:#060912; color:#e5e7eb;
+        font-family:'Noto Sans SC','Microsoft YaHei',sans-serif; }
+  .wrap { max-width:1720px; margin:0 auto; padding:28px 18px 60px; }
+  .top { text-align:center; margin-bottom:26px; }
+  .top h1 { font-size:30px; margin:0 0 8px; font-weight:800; color:#f8fafc; letter-spacing:2px; }
+  .top p  { margin:0; font-size:14px; color:#94a3b8; letter-spacing:1px; }
+  .svgbox { display:block; margin:0 auto; }
+  .svgbox svg { display:block; width:100%; height:auto; }
+  .foot { text-align:center; font-size:12px; color:#64748b; margin-top:22px; letter-spacing:1px; line-height:1.8; }
+  .flow { stroke-dasharray:9 7; animation:dashmv 1.3s linear infinite; }
+  @keyframes dashmv { to { stroke-dashoffset:-32; } }
+  .pulse { animation:plz 2.6s ease-in-out infinite; }
+  @keyframes plz { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>同一个螺旋上的三种生命</h1>
+    <p>普朗克 · 碳基 · 硅基　三副神经元面孔与同一副螺旋阶梯骨架</p>
+  </div>
+
+  <div class="svgbox">
+  <svg xmlns="http://www.w3.org/2000/svg" width="1680" height="2900" viewBox="0 0 1680 2900" font-family="'Noto Sans SC','Microsoft YaHei',sans-serif">
+
+    <defs>
+      <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+        <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(148,163,184,0.05)" stroke-width="1"/>
+      </pattern>
+      <filter id="bg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="60"/></filter>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f5c542"/>
+      </marker>
+      <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+      </marker>
+    </defs>
+
+    <rect width="1680" height="2900" fill="#0a0e1a"/>
+    <circle cx="320" cy="300" r="560" fill="#12203a" opacity="0.45" filter="url(#bg)"/>
+    <circle cx="1400" cy="1500" r="540" fill="#1a1240" opacity="0.4" filter="url(#bg)"/>
+    <circle cx="500" cy="2400" r="520" fill="#0f2a24" opacity="0.4" filter="url(#bg)"/>
+    <rect width="1680" height="2900" fill="url(#grid)"/>
+
+    <!-- ============ 标题 ============ -->
+    <text x="840" y="88" font-size="52" fill="#f8fafc" font-weight="800" text-anchor="middle" letter-spacing="10">同一个螺旋上的三种生命</text>
+    <text x="840" y="138" font-size="22" fill="#94a3b8" text-anchor="middle" letter-spacing="4">普朗克 · 碳基 · 硅基　三副神经元面孔与同一副螺旋阶梯骨架</text>
+    <line x1="520" y1="170" x2="1160" y2="170" stroke="rgba(56,189,248,0.35)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- ============ 1 三种生命体，三张网 ============ -->
+    <circle cx="150" cy="250" r="22" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="150" y="258" font-size="22" fill="#38bdf8" font-weight="700" text-anchor="middle">1</text>
+    <text x="196" y="240" font-size="25" fill="#e5e7eb" font-weight="700">三种生命体，三张网</text>
+    <text x="196" y="266" font-size="14" fill="#94a3b8">材料与尺度相差几十个量级，组织方式却相同</text>
+
+    <!-- 面板 1：普朗克 -->
+    <rect x="150" y="306" width="440" height="352" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="348" font-size="21" fill="#f5c542" font-weight="700">普朗克生命体</text>
+    <text x="180" y="374" font-size="13" fill="#94a3b8">载体：时空晶格　格距：l_P ≈ 1.6×10⁻³⁵ m</text>
+    <!-- 图标：转表盘 + 楼梯 -->
+    <circle cx="330" cy="500" r="34" fill="none" stroke="#f5c542" stroke-width="2.4"/>
+    <circle cx="330" cy="500" r="26" fill="none" stroke="rgba(245,197,66,0.25)" stroke-width="1" stroke-dasharray="4 5"/>
+    <line x1="330" y1="500" x2="354" y2="476" stroke="#f5c542" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="330" cy="500" r="4" fill="#f8fafc"/>
+    <text x="330" y="462" font-size="12.5" fill="#94a3b8" text-anchor="middle">相位指针 θ</text>
+    <polyline points="420,560 420,528 452,528 452,496 484,496 484,464 516,464" fill="none" stroke="#f5c542" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="516" cy="464" r="5" fill="#f5c542" class="pulse"/>
+    <text x="524" y="458" font-size="12.5" fill="#94a3b8">l_P</text>
+    <text x="370" y="602" font-size="14" fill="#cbd5e1" text-anchor="middle">转满一圈，沿法线跳一格</text>
+    <text x="370" y="628" font-size="12.5" fill="#94a3b8" text-anchor="middle">每一步生成一个空间像素</text>
+
+    <!-- 面板 2：碳基 -->
+    <rect x="590" y="306" width="440" height="352" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="620" y="348" font-size="21" fill="#34d399" font-weight="700">碳基生命体</text>
+    <text x="620" y="374" font-size="13" fill="#94a3b8">载体：神经回路　格距：约微米量级</text>
+    <g stroke="#34d399" stroke-width="2.4" stroke-linecap="round">
+      <line x1="800" y1="500" x2="762" y2="466"/>
+      <line x1="800" y1="500" x2="744" y2="500"/>
+      <line x1="800" y1="500" x2="764" y2="538"/>
+      <line x1="844" y1="500" x2="930" y2="500"/>
+      <line x1="930" y1="500" x2="962" y2="478"/>
+      <line x1="930" y1="500" x2="964" y2="522"/>
+    </g>
+    <circle cx="800" cy="500" r="30" fill="rgba(52,211,153,0.14)" stroke="#34d399" stroke-width="2.4"/>
+    <text x="800" y="506" font-size="13" fill="#e5e7eb" text-anchor="middle">胞体</text>
+    <text x="960" y="470" font-size="12.5" fill="#94a3b8">轴突末梢</text>
+    <text x="810" y="602" font-size="14" fill="#cbd5e1" text-anchor="middle">膜电位累积到阈值，发放一次</text>
+    <text x="810" y="628" font-size="12.5" fill="#94a3b8" text-anchor="middle">动作电位沿轴突传向突触</text>
+
+    <!-- 面板 3：硅基 -->
+    <rect x="1030" y="306" width="440" height="352" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="1060" y="348" font-size="21" fill="#38bdf8" font-weight="700">硅基生命体</text>
+    <text x="1060" y="374" font-size="13" fill="#94a3b8">载体：晶体管阵列　格距：约纳米量级</text>
+    <rect x="1180" y="448" width="140" height="112" rx="10" fill="rgba(56,189,248,0.10)" stroke="#38bdf8" stroke-width="2.4"/>
+    <g stroke="rgba(56,189,248,0.6)" stroke-width="1.4">
+      <line x1="1206" y1="448" x2="1206" y2="424"/><line x1="1250" y1="448" x2="1250" y2="424"/><line x1="1294" y1="448" x2="1294" y2="424"/>
+      <line x1="1206" y1="560" x2="1206" y2="584"/><line x1="1250" y1="560" x2="1250" y2="584"/><line x1="1294" y1="560" x2="1294" y2="584"/>
+      <line x1="1180" y1="478" x2="1156" y2="478"/><line x1="1180" y1="530" x2="1156" y2="530"/>
+      <line x1="1320" y1="478" x2="1344" y2="478"/><line x1="1320" y1="530" x2="1344" y2="530"/>
+    </g>
+    <g stroke="rgba(56,189,248,0.30)" stroke-width="1" fill="none">
+      <line x1="1206" y1="476" x2="1294" y2="476"/><line x1="1206" y1="504" x2="1294" y2="504"/>
+      <line x1="1206" y1="532" x2="1294" y2="532"/>
+      <line x1="1236" y1="460" x2="1236" y2="548"/><line x1="1266" y1="460" x2="1266" y2="548"/>
+    </g>
+    <text x="1250" y="510" font-size="13" fill="#e5e7eb" text-anchor="middle">加权单元</text>
+    <text x="1250" y="602" font-size="14" fill="#cbd5e1" text-anchor="middle">加权求和过阈值，输出一次</text>
+    <text x="1250" y="628" font-size="12.5" fill="#94a3b8" text-anchor="middle">激活函数给出非线性</text>
+
+    <text x="840" y="702" font-size="16" fill="#f8fafc" font-weight="600" text-anchor="middle">三者都由海量单元拼成，每个单元只与近邻直接联系，整体行为从局部联系的累积中长出来</text>
+    <line x1="300" y1="728" x2="1380" y2="728" stroke="rgba(245,197,66,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- ============ 2 三副面孔：积分与发放 ============ -->
+    <circle cx="150" cy="832" r="22" fill="none" stroke="#34d399" stroke-width="2.5"/>
+    <text x="150" y="840" font-size="22" fill="#34d399" font-weight="700" text-anchor="middle">2</text>
+    <text x="196" y="822" font-size="25" fill="#e5e7eb" font-weight="700">三副面孔：积分与发放</text>
+    <text x="196" y="848" font-size="14" fill="#94a3b8">同一件事：把连续输入累积到临界点，再放出一个离散事件</text>
+
+    <rect x="150" y="888" width="440" height="320" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="930" font-size="20" fill="#f5c542" font-weight="700">元相子</text>
+    <line x1="200" y1="1122" x2="520" y2="1122" stroke="rgba(148,163,184,0.35)" stroke-width="1.4"/>
+    <line x1="200" y1="1050" x2="520" y2="1050" stroke="rgba(245,197,66,0.55)" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="524" y="1046" font-size="12" fill="#94a3b8">阈值</text>
+    <polyline points="200,1122 470,1050" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="470" y1="1050" x2="470" y2="996" stroke="#f5c542" stroke-width="3"/>
+    <circle cx="470" cy="996" r="5" fill="#f5c542" class="pulse"/>
+    <text x="240" y="1160" font-size="13.5" fill="#cbd5e1">相位角 θ 连续推进 → 满周闭合 θ = 2πn</text>
+    <text x="240" y="1186" font-size="13.5" fill="#cbd5e1">触发法线跃迁 l_P（旋转连续，跃迁离散）</text>
+
+    <rect x="590" y="888" width="440" height="320" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="620" y="930" font-size="20" fill="#34d399" font-weight="700">生物神经元</text>
+    <line x1="640" y1="1122" x2="960" y2="1122" stroke="rgba(148,163,184,0.35)" stroke-width="1.4"/>
+    <line x1="640" y1="1050" x2="960" y2="1050" stroke="rgba(52,211,153,0.55)" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="964" y="1046" font-size="12" fill="#94a3b8">阈值</text>
+    <polyline points="640,1122 910,1050" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="910" y1="1050" x2="910" y2="996" stroke="#34d399" stroke-width="3"/>
+    <circle cx="910" cy="996" r="5" fill="#34d399" class="pulse"/>
+    <text x="680" y="1160" font-size="13.5" fill="#cbd5e1">膜电位连续累积 → 越过阈值</text>
+    <text x="680" y="1186" font-size="13.5" fill="#cbd5e1">放出动作电位（发放后复位，即不应期）</text>
+
+    <rect x="1030" y="888" width="440" height="320" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="1060" y="930" font-size="20" fill="#38bdf8" font-weight="700">人工神经元</text>
+    <line x1="1080" y1="1122" x2="1400" y2="1122" stroke="rgba(148,163,184,0.35)" stroke-width="1.4"/>
+    <line x1="1080" y1="1050" x2="1400" y2="1050" stroke="rgba(56,189,248,0.55)" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="1404" y="1046" font-size="12" fill="#94a3b8">阈值</text>
+    <polyline points="1080,1122 1350,1050" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="1350" y1="1050" x2="1350" y2="996" stroke="#38bdf8" stroke-width="3"/>
+    <circle cx="1350" cy="996" r="5" fill="#38bdf8" class="pulse"/>
+    <text x="1120" y="1160" font-size="13.5" fill="#cbd5e1">加权输入 Σᵢ wᵢxᵢ 累加 → 叠加偏置 b</text>
+    <text x="1120" y="1186" font-size="13.5" fill="#cbd5e1">激活函数输出 σ（连续可导，非线性）</text>
+
+    <line x1="300" y1="1240" x2="1380" y2="1240" stroke="rgba(245,197,66,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- ============ 3 对照表 ============ -->
+    <circle cx="150" cy="1342" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="1350" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">3</text>
+    <text x="196" y="1332" font-size="25" fill="#e5e7eb" font-weight="700">一张对照表：三副面孔的零件对应</text>
+    <text x="196" y="1358" font-size="14" fill="#94a3b8">同一行说的是同一个功能，三种材料各自给出实现</text>
+
+    <rect x="150" y="1392" width="1380" height="54" rx="0" fill="rgba(56,189,248,0.08)"/>
+    <text x="170" y="1427" font-size="14.5" fill="#94a3b8" font-weight="700">功能</text>
+    <text x="470" y="1427" font-size="15.5" fill="#34d399" font-weight="700">生物神经元</text>
+    <text x="830" y="1427" font-size="15.5" fill="#f5c542" font-weight="700">元相子</text>
+    <text x="1190" y="1427" font-size="15.5" fill="#38bdf8" font-weight="700">人工神经元</text>
+
+    <rect x="150" y="1446" width="1380" height="280" fill="rgba(148,163,184,0.03)"/>
+    <g stroke="rgba(148,163,184,0.15)" stroke-width="1">
+      <line x1="450" y1="1392" x2="450" y2="1726"/>
+      <line x1="810" y1="1392" x2="810" y2="1726"/>
+      <line x1="1170" y1="1392" x2="1170" y2="1726"/>
+    </g>
+    <g stroke="rgba(148,163,184,0.12)" stroke-width="1">
+      <line x1="150" y1="1502" x2="1530" y2="1502"/>
+      <line x1="150" y1="1558" x2="1530" y2="1558"/>
+      <line x1="150" y1="1614" x2="1530" y2="1614"/>
+      <line x1="150" y1="1670" x2="1530" y2="1670"/>
+    </g>
+    <g font-size="15.5" fill="#e5e7eb">
+      <text x="170" y="1481" fill="#cbd5e1">状态累积</text>
+      <text x="470" y="1481">膜电位累积</text>
+      <text x="830" y="1481">相位角 θ 连续推进</text>
+      <text x="1190" y="1481">加权输入 Σᵢ wᵢxᵢ</text>
+
+      <text x="170" y="1537" fill="#cbd5e1">触发条件</text>
+      <text x="470" y="1537">达到阈值</text>
+      <text x="830" y="1537">满周闭合 θ = 2πn</text>
+      <text x="1190" y="1537">偏置 b</text>
+
+      <text x="170" y="1593" fill="#cbd5e1">离散事件</text>
+      <text x="470" y="1593">动作电位</text>
+      <text x="830" y="1593">法线跃迁 l_P</text>
+      <text x="1190" y="1593">激活输出 σ</text>
+
+      <text x="170" y="1649" fill="#cbd5e1">可调权重</text>
+      <text x="470" y="1649">突触权重</text>
+      <text x="830" y="1649">实轴方向差 Δα</text>
+      <text x="1190" y="1649">权重 wᵢ</text>
+
+      <text x="170" y="1705" fill="#cbd5e1">信号传递</text>
+      <text x="470" y="1705">突触传递</text>
+      <text x="830" y="1705">碰撞接力</text>
+      <text x="1190" y="1705">前向传播</text>
+    </g>
+
+    <line x1="300" y1="1770" x2="1380" y2="1770" stroke="rgba(245,197,66,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- ============ 4 同一副骨架 ============ -->
+    <circle cx="150" cy="1872" r="22" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="150" y="1880" font-size="22" fill="#38bdf8" font-weight="700" text-anchor="middle">4</text>
+    <text x="196" y="1862" font-size="25" fill="#e5e7eb" font-weight="700">同一副骨架：旋转项加平移项</text>
+    <text x="196" y="1888" font-size="14" fill="#94a3b8">两条式子写法不同，骨架相同</text>
+
+    <rect x="150" y="1930" width="620" height="210" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="1972" font-size="20" fill="#f5c542" font-weight="700">元相子轨迹</text>
+    <text x="180" y="2024" font-size="22" fill="#e5e7eb" font-weight="700">X(τ) = R(ωτ)·p ＋ cτ·n</text>
+    <text x="180" y="2062" font-size="13.5" fill="#94a3b8">旋转（波性，连续）＋ 位移（粒性，离散）</text>
+    <text x="180" y="2088" font-size="13.5" fill="#94a3b8">同一参数 τ 同时驱动两项</text>
+
+    <text x="840" y="2044" font-size="34" fill="#f8fafc" font-weight="800" text-anchor="middle">≡</text>
+    <text x="840" y="2090" font-size="14" fill="#94a3b8" text-anchor="middle">骨架相同</text>
+
+    <rect x="910" y="1930" width="620" height="210" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="940" y="1972" font-size="20" fill="#38bdf8" font-weight="700">人工神经元单层</text>
+    <text x="940" y="2024" font-size="22" fill="#e5e7eb" font-weight="700">y = σ(Wx ＋ b)</text>
+    <text x="940" y="2062" font-size="13.5" fill="#94a3b8">线性部分 Wx ＋ 平移部分 b</text>
+    <text x="940" y="2088" font-size="13.5" fill="#94a3b8">W 与 b 是两个独立参数</text>
+
+    <rect x="150" y="2180" width="1380" height="118" rx="14" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.18)" stroke-width="1.5"/>
+    <text x="180" y="2220" font-size="15" fill="#cbd5e1">圆心是旋转中唯一不动的点　→　对应线性部分</text>
+    <text x="180" y="2250" font-size="15" fill="#cbd5e1">层数给出位移 b = l_P·n　→　对应平移部分</text>
+    <text x="180" y="2280" font-size="15" fill="#cbd5e1">满周闭合 θ = 2πn　→　对应激活阈值</text>
+
+    <line x1="300" y1="2336" x2="1380" y2="2336" stroke="rgba(245,197,66,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+    <!-- ============ 5 谁在统摄 ============ -->
+    <circle cx="150" cy="2438" r="22" fill="none" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="150" y="2446" font-size="22" fill="#f5c542" font-weight="700" text-anchor="middle">5</text>
+    <text x="196" y="2428" font-size="25" fill="#e5e7eb" font-weight="700">谁在统摄：欧拉公式的两次升级</text>
+    <text x="196" y="2454" font-size="14" fill="#94a3b8">个体有元相方程，整体有天行方程，内核都是旋转</text>
+
+    <rect x="490" y="2486" width="700" height="86" rx="14" fill="rgba(52,211,153,0.05)" stroke="rgba(52,211,153,0.30)" stroke-width="1.5"/>
+    <text x="510" y="2514" font-size="13" fill="#94a3b8">欧拉公式</text>
+    <text x="840" y="2550" font-size="26" fill="#e5e7eb" font-weight="700" text-anchor="middle">e^{iθ} = cos θ ＋ i · sin θ</text>
+
+    <rect x="150" y="2608" width="620" height="190" rx="14" fill="rgba(245,197,66,0.05)" stroke="rgba(245,197,66,0.30)" stroke-width="1.5"/>
+    <text x="180" y="2648" font-size="19" fill="#f5c542" font-weight="700">元相方程 · 个体</text>
+    <text x="180" y="2692" font-size="18" fill="#e5e7eb">iℏ dψ/dt = E_P ψ</text>
+    <text x="180" y="2724" font-size="18" fill="#e5e7eb">dz/dt = 2πc · δ(arg ψ)</text>
+    <text x="180" y="2760" font-size="13" fill="#94a3b8">连续旋转与离散跃迁写进同一组方程</text>
+
+    <rect x="910" y="2608" width="620" height="190" rx="14" fill="rgba(56,189,248,0.05)" stroke="rgba(56,189,248,0.30)" stroke-width="1.5"/>
+    <text x="940" y="2648" font-size="19" fill="#38bdf8" font-weight="700">天行方程 · 整体</text>
+    <text x="940" y="2692" font-size="17" fill="#e5e7eb">Ξ(T) = tanh{ Re[ ( ∫₀ᵀ 𝒲(t) ⊗ 𝒫(t) dt )² ] }</text>
+    <text x="940" y="2726" font-size="13" fill="#94a3b8">审计整段历史路径，给出兴衰指数 Ξ ∈ (-1,1)</text>
+    <text x="940" y="2752" font-size="13" fill="#94a3b8">网络语言里，它相当于损失函数与优化器</text>
+
+    <text x="840" y="2834" font-size="16" fill="#f8fafc" font-weight="700" text-anchor="middle" letter-spacing="1">个体由元相方程演化，整体由天行方程校准，两者共用欧拉公式这一旋转内核</text>
+    <text x="840" y="2862" font-size="13" fill="#94a3b8" text-anchor="middle">结构对应，严格程度低于数学同构</text>
+
+  </svg>
+  </div>
+
+  <div class="foot">
+    依据：《螺旋上的三种生命：普朗克、碳基与硅基的同构》· 傅天行 · 天行新学研究院<br>
+    结构对应框架：自校准量子神经网络 · 骨架：螺旋阶梯几何 · 校准：天行方程
+  </div>
+</div>
+</body>
+</html>
