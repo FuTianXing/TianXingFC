@@ -26,6 +26,7 @@
 | `quantum_bridge_a_s1.py` | `总结报告-引力机制整改与张量桥分段ab攻坚：2026-09-10.md`；`注记-张量桥分段a S1探测结果：纯规范陷阱重现与判据修正.md`；`注记-张量桥分段a攻坚计划：SO(3)标架3+1定量装配与史瓦西判据.md` |
 | `review_preflight.py` | `评审报告/温度的波粒互补定义-评审报告-2026-09-08.md` |
 | `gen_spiral_ladder_explain.py` | 生成 `可视化/螺旋阶梯几何_信息图.html`，改动该信息图时需复用 |
+| `gen_kepu_illustrations.py` | 生成 `images/kepu_spiral_staircase.png` 与 `images/kepu_three_doors.png`，供 `科普文章/一条螺旋线等了几十年：最简单的骨架为什么最晚被发现.md` 使用；改动插图时需复用（含中文字体断言） |
 | `_backup_微观根基_pre_revise3.md` | `评审报告/修改报告-爱因斯坦场方程的微观根基-2026-09-10-第三轮.md`。该快照与当前文件及 git 全部历史提交均不等价，是第三轮修订前状态的唯一副本 |
 
 **2026-09-16 已清理**（提交 `20436aa`）：`scar_probe_single.py`、`scar_probe_lift.py`、`merge_t4_u1.py`、`merge_t4_u1_q.py`、`z2_l3_check.py`、`t5_quantum_width.py`、`composite_kink_width.py` 七只按引用溯源清除（均曾入库，可从历史提交找回）；相关注记已改指常驻脚本：状态图与宽度扫描升为 `验证脚本/minimal_verification_state_graph.py` 与 `minimal_verification_composite_width.py`，T4、T5 由 `sector_dynamics` 接续，量子层 $Z_N$ 部分由 `zn_sectors` 接续。
