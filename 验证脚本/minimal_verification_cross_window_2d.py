@@ -357,6 +357,70 @@ def scan(kappa=16.0, Jv=J_WEAK, Nx=64, Ny=32, T=15000, tag="k16",
     return out
 
 
+def kink_density_of(r, Qv=None):
+    if Qv is None:
+        Qv = np.array([1.0, 0.0, 0.0])
+    s = r["s_b"]
+    dsx = dx(s)
+    dsy = dy(s, Qv)
+    n = s[0].size
+    return float(((np.abs(dsx) > 0.5).sum() + (np.abs(dsy) > 0.5).sum())
+                 / (3.0 * n))
+
+
+def run_kscan(kappa=16.0, Jv=J_WEAK, T=15000,
+              grids=None):
+    """E4：阈值 k 标度扫描。若阈值满足 xi_c ∝ k（比值锁定），则"供货需要
+    xi/k = O(1)"与"权重为负区刚度翻负在 xi/k = O(1)"同量级，判否与绝对
+    档位无关，属结构性。"""
+    global K_EL
+    if grids is None:
+        grids = {0.5: (0.0, 0.2, 0.3, 0.4, 0.6),
+                 1.0: (0.0, 0.4, 0.6, 0.7, 0.75, 0.8, 1.2),
+                 2.0: (0.0, 0.8, 1.2, 1.4, 1.5, 1.6, 2.4)}
+    print("=" * 78)
+    print("E4 阈值 k 标度扫描（g3 支，kappa=%g, J=%g, T=%d）" % (kappa, Jv, T))
+    print("%6s %6s %12s %10s %10s %8s" % ("k", "xi", "D_assign", "max应变",
+                                          "kink密度", "判定"))
+    k0 = K_EL
+    bands = {}
+    for k, xis in grids.items():
+        K_EL = k
+        prev = None
+        for xi in xis:
+            r = run_point(64, 32, kappa, Jv, xi, "g3", T)
+            kd = kink_density_of(r)
+            verdict = "新相" if kd > 0.05 else ("翻转?" if r["D"] < 0 else "无翻转")
+            print("%6.1f %6.2f %12.1f %10.3f %10.4f %8s" %
+                  (k, xi, r["D"], r["strain"], kd, verdict))
+            if kd > 0.05 and prev is not None and k not in bands:
+                bands[k] = (prev, xi)
+            if kd <= 0.05:
+                prev = xi
+        K_EL = k0
+    print("阈值带（无 kink 的最大 xi 到出现 kink 的最小 xi）：")
+    ratios = []
+    for k, (a, b) in sorted(bands.items()):
+        ratios.append((a / k, b / k))
+        print("  k=%.1f: xi_c in [%.2f, %.2f]  比值 xi_c/k in [%.2f, %.2f]" %
+              (k, a, b, a / k, b / k))
+    if len(ratios) >= 2:
+        lo = max(r[0] for r in ratios)
+        hi = min(r[1] for r in ratios)
+        # 结构性判据：阈值与 k 成比例，等价于比值带落在同一 O(1) 区间。
+        # 判据取"各档比值带的并集落在 [0.5, 1.5]"（比例关系成立），
+        # 并报告交集（加密档的严格锁定）。
+        all_lo = min(r[0] for r in ratios)
+        all_hi = max(r[1] for r in ratios)
+        prop = 0.5 <= all_lo and all_hi <= 1.5
+        print("  比值带并集 [%.2f, %.2f]  %s" %
+              (all_lo, all_hi,
+               "O(1)=阈值与 k 成比例（结构性判否）" if prop else "越出 O(1) 带"))
+        print("  比值带交集 [%.2f, %.2f]（%s）" %
+              (lo, hi, "非空=加密档严格锁定" if lo <= hi else "空=加密精度差"))
+    return bands
+
+
 def main_full():
     print("第 621 号：二维弱 J 档交叉项供货窗口审计轮")
     print()
@@ -401,6 +465,7 @@ def main_full():
     np.save(r"D:\software\TianXingFC\_tools\scan621_g3.npy",
             np.array([(xi, r["D"], r["Dvac"], r["X"], r["nonint"], r["slip"],
                        1.0 if r["div"] else 0.0) for xi, r in res["g3"]]))
+    run_kscan()
     plot(res, kink_rows)
 
 
