@@ -10,7 +10,7 @@ minimal_verification_aggregate_self_consistency.py
   T2（全自洽双源圆轨道）：源按实时总场运动、场按源位置重建，守恒量须无趋势性
       漂移：角动量相对漂移（中心力下精确守恒）、能量相对振荡（辛积分有界）、
       双源间距相对漂移。
-  T3（全自洽三源等边三角形）：Lagrange 等边三角形解（对 1/r 势等质量线性稳定），
+  T3（全自洽三源等边三角形）：Lagrange 等边三角形解（线性稳定性由第 647 号判明：等质量下不稳定），
       三项守恒量同样无趋势性漂移。
   T4（冻结场档与全自洽档的一阶差可读）：加速度冻结在初值的档与全自洽档的轨迹
       差落在可读区间（大于数值噪声、小于轨道尺度）。
@@ -83,11 +83,11 @@ def Lz(xs, vs, ms):
 
 def energy(xs, vs, ms):
     T = 0.5 * sum(m * float(np.dot(v, v)) for v, m in zip(vs, ms))
-    V = 0.0
+    U = 0.0
     for i in range(len(xs)):
         for j in range(i + 1, len(xs)):
-            V += G * ms[i] * ms[j] / np.linalg.norm(xs[i] - xs[j])
-    return T + V
+            U -= G * ms[i] * ms[j] / np.linalg.norm(xs[i] - xs[j])
+    return T + U
 
 
 def leapfrog(xs0, vs0, ms, dt, steps, mode='self', acc0=None, rec=None):
