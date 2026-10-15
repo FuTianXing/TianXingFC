@@ -224,21 +224,25 @@ def trilinear(field, p):
 
 
 def acc(p):
-    return -np.array([trilinear(gx, p), trilinear(gy, p), trilinear(gz, p)])
+    return np.array([trilinear(gx, p), trilinear(gy, p), trilinear(gz, p)])
 
 
 SRC_FAR = [((C - D_FAR // 2, C, C), 1.0), ((C + D_FAR // 2, C, C), 0.6)]
 
 
 def acc_analytic(p):
-    """解析叠加场（三维格林函数之和，取最小镜像）的负梯度，用于轨迹积分读数。"""
+    """解析叠加场的梯度（三维格林函数之和，取最小镜像），用于轨迹积分读数。
+
+    符号口径：h_00 = 2 theta，牛顿势 Phi = -c^2 theta，故 a = -grad Phi = c^2 grad theta
+    （取 c = 1 即 +grad theta），为吸引。
+    """
     g = np.zeros(3)
     for pos, m in SRC_FAR:
         d = np.array(p, dtype=float) - np.array(pos, dtype=float)
         d = d - N * np.round(d / N)
         r = float(np.linalg.norm(d))
         g += -m * d / (4.0 * np.pi * r ** 3)
-    return -g
+    return g
 
 
 def integrate(dt, steps, p0, v0):
