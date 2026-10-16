@@ -38,8 +38,8 @@ def report(tag, measured, expected, ok):
 
 def shift_theta(antiperiodic=True, gauge=0.0):
     """θ 方向前向移位算符（含反周期接缝负号与绕数规范相位）。"""
-    ph = np.exp(-1j * gauge) if gauge else 1.0
-    S = np.zeros((N_TH, N_TH))
+    ph = np.exp(-1j * gauge)
+    S = np.zeros((N_TH, N_TH), dtype=complex)
     for i in range(N_TH):
         j = (i + 1) % N_TH
         S[i, j] = ph * (-1.0 if (antiperiodic and i == N_TH - 1) else 1.0)
@@ -54,7 +54,7 @@ def shift_h():
 def build_H(m_field=None, winding=0.0):
     """H = kron(σx, c_θ D_θ) + kron(σz, c_h D_h) + kron(m σy, I)。"""
     Sth = shift_theta(gauge=2 * np.pi * winding / N_TH)
-    D_th = (Sth - Sth.T) / 2.0
+    D_th = (Sth - Sth.conj().T) / 2.0
     Sh = shift_h()
     D_h = (Sh - Sh.T) / 2.0
     m = np.full(N_H, M0) if m_field is None else m_field

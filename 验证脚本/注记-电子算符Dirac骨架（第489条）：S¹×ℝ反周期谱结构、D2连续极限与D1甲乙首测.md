@@ -75,3 +75,4 @@ $$H = \sigma_x \otimes \bigl(-i\,c_\theta D_\theta\bigr) + \sigma_z \otimes \big
     - D2 连续极限残差与 $\sin$ 展开预算逐位对齐；D4 镜像式（$\pm n$ 谱恒等）获得
     - D1 甲乙首测：形变致质量增大属反势阱方向，无束缚态产生
     - 过程记录四条教训（r-string 字面换行、动量算符 $-i$、Kronecker 维数、判据对齐）
+    - **2026-10-16 勘误（第 660 号复核发现）**：规范耦合相位 $e^{-\mathrm{i}\,gauge}$ 原赋给实数数组，虚部被静默丢弃（ComplexWarning），差分算符随之取 $S^{\mathsf T}$ 而非 $S^\dagger$；改为复数数组与 $S^\dagger$ 后 $-\mathrm{i}D_\theta$ 严格厄米。重跑判据 SK1 至 SK5 仍 7/7 通过，SK4 的 $\pm w$ 谱差由 $0$ 变为 $2.71\times10^{-14}$（数值精度级），结论不变
