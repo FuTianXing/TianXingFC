@@ -459,10 +459,10 @@ def main_full():
                        / (3.0 * n))
             kink_rows.append((xi, form, kd))
             print("kink诊断 %s xi=%+.2f: kink密度=%.4f" % (form, xi, kd))
-    np.save(r"D:\software\TianXingFC\_tools\scan621_g1.npy",
+    np.save(OUT + r"\scan621_g1.npy",
             np.array([(xi, r["D"], r["Dvac"], r["X"], r["nonint"], r["slip"],
                        1.0 if r["div"] else 0.0) for xi, r in res["g1"]]))
-    np.save(r"D:\software\TianXingFC\_tools\scan621_g3.npy",
+    np.save(OUT + r"\scan621_g3.npy",
             np.array([(xi, r["D"], r["Dvac"], r["X"], r["nonint"], r["slip"],
                        1.0 if r["div"] else 0.0) for xi, r in res["g3"]]))
     run_kscan()
