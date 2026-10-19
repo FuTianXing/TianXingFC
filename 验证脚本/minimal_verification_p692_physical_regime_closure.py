@@ -202,7 +202,11 @@ print("[BC5] 物理档外推与解析预算碰撞")
 XI_PHYS = 2.389e22
 x_phys = 1.0 / XI_PHYS ** 2
 dev_phys = slope * x_phys + intercept
-MR2 = (1.0 / 1836.15) ** 2
+# 2026-10-19 勘误（第 694 号）：原写 MR2 = (1.0/1836.15)**2，即误用电子与质子质量比
+# m_e/m_p = 1/1836.15；体系预算要的是 m_e/m_P = 4.1855e-23（普朗克质量）。
+# 两者相差 21 个数量级，(m_e/m_P)^2/12 = 1.460e-46 而非 2.472e-8。
+ME_OVER_MP = 4.185462872524506e-23
+MR2 = ME_OVER_MP ** 2
 B_phys = MR2 / 12.0
 print("     外推 dev_phys = %.3e（v = 0.30）" % dev_phys)
 print("     解析预算 B_phys = (m_e/m_P)^2/12 = %.3e" % B_phys)
