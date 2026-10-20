@@ -16,7 +16,7 @@ minimal_verification_write_backreaction_source.py
 射程划定（见判据设计注记 §二）：
   零接触约束（写入不反作用于摆程，记录层与几何层之间不发生能量交换）在弱场射程内封死
   "经几何层产生负压"的路径。耦合重开方案评估记载的通道区分：零接触封锁"锁定与摆程之间"，
-  对"记录场与构型时钟之间"保持沉默。本轮只判物侧（被采样对象）范围内写入反作用的能量账后果，
+  对"记录场与构型时钟之间"保持沉默。本轮只判物侧（被采样对象）范围内写入反作用的能量分栏后果，
   强场（倾斜 O(1)）与几何层参与不判。
 
 判据（先立期望，再实现）：
@@ -24,7 +24,7 @@ minimal_verification_write_backreaction_source.py
        时刻不变（散布 < 5%）；激发数守恒（偏差 < 1e-8）。
   DB-2 反作用落点：站点剩余激发 < 5%（转移进寄存器），指针（时钟）相位宽度变化 < 1%。
   DB-3 恒真检验（对照档）：关断耦合的无写入对照档，指针宽度与有写入档逐位一致。
-  DB-4 物侧能量账：有写入与无写入两档，总激发数守恒（写入是转移不是产生）。
+  DB-4 物侧能量分栏：有写入与无写入两档，总激发数守恒（写入是转移不是产生）。
   DB-5 负贡献存在性：站点模一侧在写入后的能量相对无写入基线的增量，符号与幅度。
   DB-6 负贡献量级：增量随写入强度、占据数的依赖。
   DB-7 恒真检验一（正势替身）：站点模换正定势阱，负贡献须判否。
@@ -34,10 +34,10 @@ minimal_verification_write_backreaction_source.py
   DB-11 负贡献局域性：负贡献的空间分布是否集中于芯区。
 
 预期二（主判，分岔形式）：
-  写入是转移不是产生，总激发数守恒。故负贡献的存在性取决于能账归属：
-  分支甲（守恒且不分账）负贡献不存在，来源丁物侧判否；
-  分支乙（守恒但位错能账只记站点模侧）负贡献存在，幅度 = 写入转移走的能量，符号为负。
-  DB-4 给总账、DB-5 给分账，两者组合才判分支。只测站点侧会把"转移"误读成"产生"。
+  写入是转移不是产生，总激发数守恒。故负贡献的存在性取决于能量分栏归属：
+  分支甲（守恒且不分栏）负贡献不存在，来源丁物侧判否；
+  分支乙（守恒但位错能量分栏只记站点模侧）负贡献存在，幅度 = 写入转移走的能量，符号为负。
+  DB-4 给总量、DB-5 给分栏，两者组合才判分支。只测站点侧会把"转移"误读成"产生"。
 
 可逆性等级：DB-1 至 DB-3、DB-4 为判据稳健（复现既有读数与守恒恒等式）；DB-5 至 DB-9 的
 符号判定为判据稳健（阈值取对照档自身涨落，不另设数）；DB-6 的依赖律为判据敏感（强度与
@@ -252,16 +252,16 @@ record("DB-3", "恒真检验：关断耦合档指针宽度与有写入档一致�
        db3_ok)
 
 # =====================================================================
-# DB-4 物侧能量账（总账守恒）
+# DB-4 物侧能量分栏（总量守恒）
 # =====================================================================
 print("=" * 78)
-print("DB-4 物侧能量账：总账守恒，分账转移")
+print("DB-4 物侧能量分栏：总量守恒，分栏转移")
 print("=" * 78)
 
-# 有写入档的末态分账
+# 有写入档的末态分栏
 site_w = site_pop(psi_c)
 reg_w = reg_pop(psi_c)
-# 无写入档的末态分账
+# 无写入档的末态分栏
 psi_now, _ = run(make_packet(theta, PACKET_W[0]), 0.0)
 site_n = site_pop(psi_now)
 reg_n = reg_pop(psi_now)
@@ -269,19 +269,19 @@ reg_n = reg_pop(psi_now)
 total_w = site_w + reg_w
 total_n = site_n + reg_n
 db4_consistency = abs(total_w - total_n) < 1e-8
-record("DB-4", "总账守恒：有写入与无写入两档总激发数一致",
+record("DB-4", "总量守恒：有写入与无写入两档总激发数一致",
        "两档总激发数相对差 < 1e-8",
        "有写入 总 %.8f（站点 %.8f + 寄存器 %.8f）；无写入 总 %.8f（站点 %.8f + 寄存器 %.8f）"
        % (total_w, site_w, reg_w, total_n, site_n, reg_n),
        db4_consistency, "写入是转移不是产生")
 
-# 分账转移量
+# 分栏转移量
 transfer = site_n - site_w
-print("  分账转移量（无写入站点侧 - 有写入站点侧）= %.8f" % transfer)
+print("  分栏转移量（无写入站点侧 - 有写入站点侧）= %.8f" % transfer)
 print()
 
 # =====================================================================
-# DB-5 负贡献存在性（分账读数）
+# DB-5 负贡献存在性（分栏读数）
 # =====================================================================
 print("=" * 78)
 print("DB-5 负贡献存在性：站点模一侧的能量增量")
@@ -304,8 +304,8 @@ record("DB-5", "负贡献存在性：站点模一侧增量是否为负（超过�
        has_negative, "分支乙命中" if has_negative else "分支甲命中")
 
 BRANCH = "乙" if has_negative else "甲"
-print("  分支判定：%s" % ("乙（守恒但分账为负，来源丁物侧供货）"
-                        if BRANCH == "乙" else "甲（守恒且分账非负，来源丁物侧判否）"))
+print("  分支判定：%s" % ("乙（守恒但分栏为负，来源丁物侧供货）"
+                        if BRANCH == "乙" else "甲（守恒且分栏非负，来源丁物侧判否）"))
 print()
 
 # =====================================================================
@@ -444,16 +444,16 @@ ax.set_ylabel("布居")
 ax.set_title("(a) 写入把激发从站点搬进寄存器", fontsize=10)
 ax.legend(fontsize=8)
 
-# (b) 能账分岔：分账与总账
+# (b) 能量分栏分岔：分栏与总量
 ax = axes[0, 1]
-labels = ["站点侧\n增量", "寄存器侧\n增量", "总账\n增量"]
+labels = ["站点侧\n增量", "寄存器侧\n增量", "总量\n增量"]
 vals = [delta_site, reg_pop(psi_c) - reg_n, total_w - total_n]
 colors = ["tab:blue" if v < -THRESH else ("tab:green" if abs(v) <= THRESH else "tab:red") for v in vals]
 bars = ax.bar(labels, vals, color=colors, width=0.55)
 ax.axhline(-THRESH, color="k", ls="--", lw=0.9, label=r"门槛 $-\,$%.2e" % THRESH)
 ax.axhline(THRESH, color="k", ls="--", lw=0.9)
-ax.set_ylabel("能量账增量")
-ax.set_title("(b) 能账分岔：站点侧 %s，总账守恒" % ("为负" if has_negative else "非负"), fontsize=10)
+ax.set_ylabel("能量分栏增量")
+ax.set_title("(b) 能量分栏分岔：站点侧 %s，总量守恒" % ("为负" if has_negative else "非负"), fontsize=10)
 for b, v in zip(bars, vals):
     ax.text(b.get_x() + b.get_width() / 2, v, "%.2e" % v, ha="center",
             va="bottom" if v >= 0 else "top", fontsize=8)
@@ -477,7 +477,7 @@ ax.set_ylabel("负贡献")
 ax.set_title("(d) 芯区事件密度高于背景，负贡献局域于芯区", fontsize=10)
 ax.legend(fontsize=8)
 
-fig.suptitle("第 722 号：来源丁首轮判据（写入反作用的存在性、能账分岔与恒真检验）", fontsize=12)
+fig.suptitle("第 722 号：来源丁首轮判据（写入反作用的存在性、能量分栏分岔与恒真检验）", fontsize=12)
 fig.tight_layout(rect=[0, 0, 1, 0.94])
 fig.savefig(OUT, dpi=150)
 print("  图已存: %s" % OUT)
@@ -498,7 +498,10 @@ print()
 print("合计 %d/%d 全过" % (npass, len(RESULTS)))
 print("分支判定：%s" % BRANCH)
 if BRANCH == "乙":
-    print("结论：写入反作用在物侧给出负贡献（总账守恒，位错能账只记站点模侧），来源丁物侧供货。")
+    print("结论：写入反作用在物侧给出负贡献（总量守恒，位错能量分栏只记站点模侧），来源丁物侧供货。")
+    print("R-3 裁定（2026-10-20，取读法甲并引入第二分栏）：该负贡献读作可消去对，")
+    print("位错的能量分栏显式含记录侧，其消去后的净贡献待判。")
 else:
     print("结论：写入反作用在物侧不给出负贡献（写入是转移，站点侧能量不低于基线），来源丁物侧判否。")
+    print("R-3 裁定（2026-10-20，取读法甲并引入第二分栏）：该读法下无负贡献可消去。")
 print("耗时 %.1f 秒" % (time.time() - T_START))
