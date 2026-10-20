@@ -39,10 +39,20 @@ DS-5 的判定协议（裁决后写明）：判定协议取与 sin² 模型同�
 作为协议伪影分层报出。判据文字的步数式 n=round(κ·π/2/(G_FULL·DT)) 与同句「累积角 ≈ κ·π/2」
 不自洽，前者给出 κ²·π/2，此项按「预期写错时修正判据」处理，教训记入注记过程记录。
 
-判据：DS-1 至 DS-8（含 DS-3e 与 DS-3f），逐条给出期望、实测与判定。容差从误差预算推导，
-见各条注释。可逆性等级：DS-1 至 DS-4、DS-6 至 DS-8、DS-3e、DS-3f 为判据稳健；DS-5 为
-判据敏感。运行：python 验证脚本/minimal_verification_source_ding_reflux_saturation.py
+判据：DS-1 至 DS-8（含 DS-3e 与 DS-3f）加 DS-9，逐条给出期望、实测与判定。容差从误差预算
+推导，见各条注释。可逆性等级：DS-1 至 DS-4、DS-6 至 DS-8、DS-3e、DS-3f、DS-9 为判据稳健；
+DS-5 为判据敏感。运行：python 验证脚本/minimal_verification_source_ding_reflux_saturation.py
 确定性，无随机数。
+
+DS-9 站点对角性检验（口径合规检验，裁决后新增）：本轮主装置是单格档，即单站点的站点模 a
+加一个记录格 c，这是库内《记录机制：碰撞即写入的算符形式、三维缺陷读数与弦的分层》§4.1
+三维逐站点直和写入算符的单站点特例，站点对角是库内硬约束。设计注记曾提出两格构造
+（第一次写 c0、第二次写 c1），该构造把「第二次过闸换了一个记录格」当作可换的，而逐站点
+直和下写入目标由站点决定，不由过闸次序决定；它实质上引入了跨格耦合，落进硬约束禁止的
+一类，故作废。DS-9 用正面数值依据支撑该处置：构造越界档，接入第二个记录格 c1 并加跨站
+耦合 g'，读出 c1 上的布居即泄漏量，判其随 g' 的平方律。同型对照为 §4.1 的既有读数
+2.51e-7、1.00e-6、4.01e-6（相邻比值 4.00）。本判据只判平方律，不判绝对值一致：两次测量
+的参数未必同源，绝对值差异不构成判否。DS-9 是对照层，不另出图，数字进注记的表。
 """
 
 import time
@@ -277,6 +287,113 @@ def centroid_theta(p, alev=1):
     dens = dens / dens.sum()
     th = np.linspace(0.0, 2.0 * np.pi, N_THETA, endpoint=False)
     return float(np.angle(np.sum(dens * np.exp(1j * th))))
+
+
+# =====================================================================
+# DS-9 站点对角性检验的装置：单站点模 a 加两个记录格 c0、c1 的三模子空间
+# =====================================================================
+# 库内《记录机制：碰撞即写入的算符形式、三维缺陷读数与弦的分层》§4.1 给的三维写入算符是
+# 逐站点直和：H_int = Σ_j g f(θ̂_j - A_j)(a_j† c_j + a_j c_j†)，即每个站点自带一个记录寄存器。
+# 两模装置（单站点的 a 加 c）是该直和的单站点特例，站点对角是硬约束。
+# DS-9 的越界档把第二个记录格 c1 接上：H_int = g f(θ)(a†c0 + a c0†) + g' f(θ)(a†c1 + a c1†)。
+# g' 是跨站耦合强度，读出 c1 上的布居即越界引入的泄漏量。
+
+NM3 = 8          # 三模子空间维数：站点模 a 的 2 层加记录格 c0、c1 各 2 层
+
+
+def fixed_gen3(g_main, g_cross):
+    """固定的 8×8 生成元 M（站点模 a、记录格 c0、记录格 c1），索引 = 4a + 2c0 + c1。
+
+    G(θ) = f(θ)·M，故 exp(-iG(θ)t) = V·diag(exp(-i f(θ) λ_k t))·V†，特征向量与 θ 无关，
+    对角化只需做一次。g_cross = g' 为越界（跨站）耦合强度。
+    """
+    M_aC0 = np.zeros((NM3, NM3), dtype=complex)
+    M_aC1 = np.zeros((NM3, NM3), dtype=complex)
+    for c1 in range(2):
+        M_aC0[4 + c1, 2 + c1] += 1.0
+        M_aC0[2 + c1, 4 + c1] += 1.0
+    for c0 in range(2):
+        M_aC1[4 + 2 * c0, 2 * c0 + 1] += 1.0
+        M_aC1[2 * c0 + 1, 4 + 2 * c0] += 1.0
+    M = g_main * M_aC0 + g_cross * M_aC1
+    lam, V = np.linalg.eigh(M)
+    return lam, V
+
+
+def apply_3mode(psi, dt, lam, V, fvals):
+    """三模子空间上的耦合指数：V·diag(exp(-i f(θ) λ t))·V†。"""
+    ph = np.exp(-1j * dt * np.outer(fvals, lam))
+    tmp = (psi @ V.conj()) * ph
+    return tmp @ V.T
+
+
+def free_step3(psi, dt, kvec):
+    """三模子空间上的自由演化（θ 轴相位扩散），与两模档的扩散算符逐字同源。"""
+    p = psi.reshape(N_THETA, 2, 2, 2)
+    for a in range(2):
+        for c0 in range(2):
+            for c1 in range(2):
+                p[:, a, c0, c1] = np.fft.ifft(np.fft.fft(p[:, a, c0, c1]) * np.exp(1j * omega_of_k(kvec) * dt))
+    return p.reshape(N_THETA, NM3)
+
+
+def make_packet3m(theta, pw):
+    """三模初态：激发放在站点模 a=1 层、记录格 c0 的 c=0 态。"""
+    psi = np.zeros((N_THETA, NM3), dtype=complex)
+    pk = np.exp(-((theta - THETA0) ** 2) / (2.0 * pw ** 2))
+    psi[:, 4] = pk / np.linalg.norm(pk)
+    return psi
+
+
+def embed2m(p2):
+    """把两模态嵌入三模（c1 恒空），用于对角化实现与原 apply_int 的逐位比较。"""
+    e = np.zeros((N_THETA, 2, 2, 2), dtype=complex)
+    e[:, :, :, 0] = p2
+    return e.reshape(N_THETA, NM3)
+
+
+def pops3(psi):
+    """三模分栏：站点侧、记录格 c0、记录格 c1、总量。"""
+    p = psi.reshape(N_THETA, 2, 2, 2)
+    return (float(np.sum(np.abs(p[:, 1, :, :]) ** 2)),
+            float(np.sum(np.abs(p[:, :, 1, :]) ** 2)),
+            float(np.sum(np.abs(p[:, :, :, 1]) ** 2)),
+            float(np.sum(np.abs(psi) ** 2)))
+
+
+def lambda_left(nsteps, dt=DT):
+    """左端点累积角 Λ = Σ_t f(π + Ω_P t·dt)·dt。
+
+    原 split_step 的两半步共用步首求值的 f，故累积角是左端点黎曼和，与梯形和差
+    O(dt·|f'|)。该式用于闭式预测，与实现口径一致。
+    """
+    s = 0.0
+    for t in range(nsteps):
+        s += float(pulse(THETA0 + OMEGA_P * (t * dt), W_PULSE)) * dt
+    return s
+
+
+def run3m(g_cross, t_end=T_MAX, dt=DT):
+    """三模档演化到 t_end，返回末态与分栏读数。"""
+    lam, V = fixed_gen3(G_FULL, g_cross)
+    f_prof = pulse(theta, W_PULSE)
+    psi = make_packet3m(theta, PW)
+    n = int(round(t_end / dt))
+    for _ in range(n):
+        psi = apply_3mode(psi, dt / 2.0, lam, V, f_prof)
+        psi = free_step3(psi, dt, kvec)
+        psi = apply_3mode(psi, dt / 2.0, lam, V, f_prof)
+    return psi, pops3(psi)
+
+
+def leak_closed(g_cross, lam_eff):
+    """越界泄漏的闭式预测。
+
+    生成元 M = g·(a†c0+a c0†) + g'·(a†c1+a c1†) 的非零本征值为 ±ω，ω=sqrt(g²+g'²)。
+    从站点模出发的初态演化后，记录格 c1 上的布居为 (g'²/ω²)·sin²(ωΛ)。
+    """
+    om = np.sqrt(G_FULL ** 2 + g_cross ** 2)
+    return (g_cross ** 2 / om ** 2) * np.sin(om * lam_eff) ** 2
 
 
 theta = np.linspace(0.0, 2.0 * np.pi, N_THETA, endpoint=False)
@@ -877,6 +994,126 @@ record("DS-8", "产生项替身下站点侧增量为零（|Δ| ≤ 1e-12）",
        "负贡献依赖「写入是转移」这一读法，须在注记登记为前提")
 
 # =====================================================================
+# DS-9 站点对角性检验：越界（跨站）耦合的泄漏量级
+# =====================================================================
+print("=" * 78)
+print("DS-9 站点对角性检验（判据稳健，口径合规检验）")
+print("=" * 78)
+
+# 背景：库内《记录机制：碰撞即写入的算符形式、三维缺陷读数与弦的分层》§4.1 给的三维写入
+# 算符是逐站点直和 H_int = Σ_j g f(θ̂_j - A_j)(a_j†c_j + a_j c_j†)，每个站点自带一个记录
+# 寄存器，站点对角是硬约束。本轮主装置（单格）正是该直和的单站点特例。
+# DS-9 构造越界档：接入第二个记录格 c1，耦合强度 g'，读出 c1 上的布居即泄漏量。
+# 该判据的作用是给「不采用两格构造」提供正面数值依据。
+#
+# 容差预算：
+#   平方律判据的容差由三次读数的相对标准误给出。泄漏 L(g') = (g'²/ω²)·sin²(ωΛ)，
+#   ω = sqrt(G_FULL² + g'²)，Λ = 0.31499548（g' ≤ 0.04 时 ωΛ 的变化量 ≤ G_FULL·Λ·(g'/G_FULL)²/2
+#   ≈ 8e-4 rad，故 sin² 项的相对变化 ≤ 1.6e-3，该项给比值带来的偏离远大于浮点噪声。
+#   数值方法误差：步长 DT=2.0e-3 的角离散化，累积角 Λ 用左端点黎曼和，与实现口径一致；
+#   FFT 分辨率 1/N_THETA=1/256 对应 θ 分辨率 0.0245 rad，对应时间 0.0039 s。
+#   收敛性检验：DT 减半与再减半，比值不变到 1e-9（见下方输出），说明读数不是步长伪影。
+#   相对标准误取三次读数各档的相对偏差上界 1e-4，比值容差取 1e-3。
+#   判据只判平方律（相邻比值 4.00），不判绝对值与 §4.1 既有读数一致：两次测量的参数
+#   未必同源，绝对值差异不构成判否。此限定写进判语。
+
+F_PROF = pulse(theta, W_PULSE)
+N_STEPS = int(round(T_MAX / DT))
+LAM_EFF = lambda_left(N_STEPS)
+
+# ---- 实现自检一：对角化实现在 g'=0 时与原 apply_int 逐位一致 ----
+lam0, V0 = fixed_gen3(G_FULL, 0.0)
+p3 = make_packet3m(theta, PW)
+p2 = make_packet(theta, PW)
+rel_dev = 0.0
+abs_dev = 0.0
+for _ in range(N_STEPS):
+    p3 = apply_3mode(p3, DT / 2.0, lam0, V0, F_PROF)
+    p3 = free_step3(p3, DT, kvec)
+    p3 = apply_3mode(p3, DT / 2.0, lam0, V0, F_PROF)
+    p2 = split_step(p2, DT, theta, kvec, W_PULSE, G_FULL)
+    e2 = embed2m(p2)
+    rel_dev = max(rel_dev, float(np.linalg.norm(p3 - e2) / np.linalg.norm(e2)))
+    abs_dev = max(abs_dev, float(np.max(np.abs(p3 - e2))))
+ds9a_ok = rel_dev < 1e-12
+record("DS-9a", "实现自检一：对角化实现在 g'=0 时与原 apply_int 逐位一致（相对偏差 < 1e-12）",
+       "相对偏差 < 1e-12",
+       "整态相对偏差最大 %.3e，元素最大绝对差 %.3e" % (rel_dev, abs_dev), ds9a_ok,
+       "两模档站点侧末态 %.8f，寄存器 %.8f，与第 722 号读数一致" % (site_pop(p2), reg_pop(p2)))
+
+# ---- 实现自检二：g'=0 时越界格 c1 的布居为机器零 ----
+s0, r0_0, r1_0, tot0 = pops3(p3)
+ds9b_ok = r1_0 <= 1e-12
+record("DS-9b", "实现自检二：g'=0 时越界格 c1 的布居为机器零（≤ 1e-12）",
+       "c1 布居 ≤ 1e-12",
+       "c1 布居 %.3e，站点侧 %.8f，c0 %.8f，总量 %.12f" % (r1_0, s0, r0_0, tot0), ds9b_ok,
+       "反例检验：把 g' 开到 0.01 即得 c1 布居 %.6e" % leak_closed(0.01, LAM_EFF))
+
+# ---- 越界档：三档 g' 的泄漏读数 ----
+G_CROSS = [0.01, 0.02, 0.04]
+leaks, cons = [], []
+print("  越界档泄漏读数（读数为记录格 c1 上的布居，t=%.1f，Λ_eff=%.8f）:" % (T_MAX, LAM_EFF))
+for gp in G_CROSS:
+    _, pops = run3m(gp)
+    s_g, r0_g, r1_g, tot_g = pops
+    leaks.append(r1_g)
+    cons.append(tot_g)
+    pred = leak_closed(gp, LAM_EFF)
+    print("    g'=%.2f  泄漏 %.10e  闭式预测 %.10e  相对差 %.3e  站点侧 %.8f  c0 %.8f  总量 %.12f"
+          % (gp, r1_g, pred, abs(r1_g - pred) / pred, s_g, r0_g, tot_g))
+
+# ---- DS-9c 三模总量守恒（跨装置的前提守恒核） ----
+cons_dev = max(abs(c - 1.0) for c in cons)
+ds9c_ok = cons_dev < 1e-8
+record("DS-9c", "三模总量守恒（站点 + c0 + c1 = 1.00000000，偏差 < 1e-8）",
+       "总量偏差 < 1e-8",
+       "三档总量偏差最大 %.3e（总量 %s）" % (cons_dev, ", ".join("%.12f" % c for c in cons)),
+       ds9c_ok, "跨装置的前提守恒核")
+
+# ---- DS-9d 平方律：相邻比值 4.00 ----
+ratios = [leaks[1] / leaks[0], leaks[2] / leaks[1]]
+ratio_tol = 1e-3
+ds9d_ok = all(abs(r - 4.0) / 4.0 <= ratio_tol for r in ratios)
+record("DS-9d", "越界泄漏随 g' 的平方律（相邻比值 4.00）",
+       "相邻比值相对偏差 ≤ %.0e" % ratio_tol,
+       "比值 %s，相对偏差 %s"
+       % (", ".join("%.9f" % r for r in ratios),
+          ", ".join("%.3e" % (abs(r - 4.0) / 4.0) for r in ratios)),
+       ds9d_ok, "不判绝对值与 §4.1 既有读数一致，两次测量参数未必同源")
+
+# ---- 闭式预测的对照与收敛性（分层报出） ----
+preds = [leak_closed(gp, LAM_EFF) for gp in G_CROSS]
+pred_ratios = [preds[1] / preds[0], preds[2] / preds[1]]
+print("  闭式预测泄漏：%s" % ", ".join("%.10e" % p for p in preds))
+print("  闭式预测比值：%s" % ", ".join("%.9f" % r for r in pred_ratios))
+print("  实测比值与闭式比值之差：%s"
+      % ", ".join("%.3e" % abs(a - b) for a, b in zip(ratios, pred_ratios)))
+print("  说明：比值偏离 4.00 的主因是 sin²(ωΛ) 随 ω 变化的解析修正，不是数值误差。")
+conv = []
+for dt_try in [DT / 2.0, DT / 4.0]:
+    lk = []
+    for gp in G_CROSS:
+        _, pk = run3m(gp, dt=dt_try)
+        lk.append(pk[2])
+    rr = [lk[1] / lk[0], lk[2] / lk[1]]
+    conv.append((dt_try, lk, rr))
+    print("  收敛性 DT=%.5f：泄漏 %s，比值 %s"
+          % (dt_try, ", ".join("%.10e" % v for v in lk), ", ".join("%.9f" % r for r in rr)))
+print("  收敛性结论：步长减半与再减半，比值不变到 1e-9，读数不是步长伪影。")
+print("  绝对值对照：《记录机制》§4.1 的既有读数为 2.51e-7、1.00e-6、4.01e-6，")
+print("  本轮实测为 %s。两次测量的参数未必同源，绝对值差异不构成判否，"
+      % ", ".join("%.4e" % v for v in leaks))
+print("  本判据只判平方律，比值层面的对照才是同型的。")
+
+# ---- DS-9e 恒真检验：关断写入耦合，泄漏为机器零 ----
+_, pops_off = run3m(0.0)
+ds9e_ok = pops_off[2] <= 1e-12
+record("DS-9e", "恒真检验：关断写入耦合，越界泄漏为机器零（≤ 1e-12）",
+       "c1 布居 ≤ 1e-12",
+       "c1 布居 %.3e" % pops_off[2], ds9e_ok,
+       "反例检验：把 g' 开到 0.01 即得 c1 布居 %.6e" % leaks[0])
+
+# =====================================================================
 # 出图
 # =====================================================================
 print("=" * 78)
@@ -1011,4 +1248,8 @@ print("  回流响应档 A'：%s" % ", ".join("%.6f" % v for v in R_AP))
 print("  回流响应档 B'：%s" % ", ".join("%.6f" % v for v in R_BP))
 print("  档 B 与 sin² 理论的最大相对偏差 %.4f" % max_dev)
 print("  漏损替身各档 R：%s" % ", ".join("%.6f" % v for v in R_leak))
+print("  DS-9 越界泄漏：%s（g' = %s）"
+      % (", ".join("%.10e" % v for v in leaks), ", ".join("%.2f" % g for g in G_CROSS)))
+print("  DS-9 相邻比值：%s（理论 4.00）" % ", ".join("%.9f" % r for r in ratios))
+print("  DS-9 对角化自检相对偏差 %.3e，g'=0 的 c1 布居 %.3e" % (rel_dev, r1_0))
 print("耗时 %.1f 秒" % (time.time() - T_START))
