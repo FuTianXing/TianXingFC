@@ -138,7 +138,7 @@ def check3(N=64, m=3, eps_list=(0.5, 0.25, 0.12, 0.06, 0.03)):
     return ok3, rows
 
 def check4(N=256, T=2000.0, dt_sample=0.05, ms=(1, 2, 4, 8, 16, 32)):
-    """判据四（惯性项变分）：洛伦兹作用量 L = I/2*sum(dalpha^2) - I/(2 t_P^2)*sum(1-cos(dAlpha))
+    """判据四（惯性项变分）：洛伦兹作用量 L = I/2*sum(dalpha^2) - I/(t_P^2)*sum(1-cos(dAlpha))
     变分给出 dalpha_n = alpha_{n+1}+alpha_{n-1}-2 alpha_n（I=t_P=1 无量纲），
     驻波频率应等于离散色散 omega = 2|sin(pi m/N)|，长波极限 omega -> k（c=1）。"""
     print('=' * 72)

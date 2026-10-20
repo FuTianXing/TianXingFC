@@ -16,7 +16,7 @@
 
 规范侧作用量取
 
-$$L = \frac{I_0}{2}\sum_n\sum_i\dot\varphi_i^2 - \frac{I_0}{2t_P^2}\sum_p\left[1-\cos(F_p l_P^2)\right], \qquad \varphi_i = A_i l_P,$$
+$$L = \frac{I_0}{2}\sum_n\sum_i\dot\varphi_i^2 - \frac{I_0}{t_P^2}\sum_p\left[1-\cos(F_p l_P^2)\right], \qquad \varphi_i = A_i l_P,$$
 
 $\varphi_i$ 为无量纲相位型联络分量，$I_0$ 为取向惯性能系数（基准方向场取向自由度的惯性，与实轴方向场的 $I$ 同源：$I_0 = I$，同一公理资源的两侧投影），时间分量 $A_0$ 作约束（时间规范）。低幅展开并写连续极限：
 
