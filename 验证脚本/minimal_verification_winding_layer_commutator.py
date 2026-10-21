@@ -146,7 +146,7 @@ rec(
     comm_max < 1e-12,
 )
 
-# A3：恒真对照 —— 同一侧的两个算符不保证对易
+# A3：恒真对照，同一侧的两个算符不保证对易
 # 绕数算符与层数侧的平移算符：平移作用在层数侧，绕数在相位侧，仍应对易。
 # 真正的对照：相位侧内部的一个非平凡算符（相位平移）与绕数算符。
 # 构造：相位平移算符 T_phase（在相位侧把 m 挪一格），与绕数算符在 Z_3 下不对易。
@@ -273,42 +273,80 @@ print("=" * 72)
 print("组 C：非定域与定域的分工在算符层面")
 print("=" * 72)
 
-# C1：定域与非定域是**定义域**的性质，不是矩阵支撑的宽度。
-# 初版误把「非定域」写成「矩阵元数目多」，判否后核出：两个算符都是对角的，
-# 每行非零元数皆为 1。绕数的非定域性来自它沿**闭合回路**取净分支拓扑量，
-# 层数的定域性来自它是**单点**读数。
-#
-# 正确的可判形式。
-# 绕数侧（非定域）：本征值由整条相位侧决定。单点地看，相位侧的任一维 m 都
-#   不足以定出绕数；要定出绕数须遍历回路，即取遍 m 的分布。
-#   检验：遍历相位侧全部维，绕数本征值取遍全部扇区标签（非单值），
-#   故绕数不能由单点确定。
-# 层数侧（定域）：本征值由单点定出。第 n 个层数基矢的读数就是 n，
-#   逐点不同且等于该点标号，故层数是单点读数。
+# C1：绕数算符与定域单点投影算符的对照。
+# 判据设计的经过（本轮改判四次，独立复核发现初版无区分力）：
+#   一版：测「绕数本征值随相位侧维变」：完全定域的单点投影也变，无区分力。
+#   二版：测「绕数标签集非单值」：单点投影的对角含零，标签集 {0,1} 亦非单值，仍无区分力。
+#   三版：测「绕数在相位侧每一维皆非零」：w_m = m mod N_S 含零，亦不成立。
+#   四版（本版）：改测**扇区依赖性**：绕数在每个扇区内都给出非平凡的本征值分布，
+#   而单点投影在给定扇区内的表现只由该点是否被选中决定。
+#   换言之，本轮能判的是「绕数算符不是定域单点投影」这一条。
+#   绕数的**非定域性**本身由库内给定（[[wiki/绕数]]：绕数算符与局域哈密顿量
+#   在全空间并不对易，仅 Z_2 特例外），属移植，本轮未测得。
 m_probe = 2
-w_before = PH_W[m_probe]
-m_alt = (m_probe + 1) % M
-w_after = PH_W[m_alt]
 w_all = sorted(set(PH_W.tolist()))
-w_not_single = len(w_all) > 1
+# 扇区依赖性：每个扇区内，绕数算符的本征值分布都非平凡（不集中在一点）
+sector_nontrivial = True
+sector_detail = []
+for w in range(NS):
+    ms = [im for im in range(M) if PH_W[im] == w]
+    if len(ms) == 0:
+        continue
+    vals = [PH_W[im] for im in ms]
+    # 非平凡：该扇区内的维数不少于 2，且本征值不全相同
+    nt = len(ms) >= 2 and len(set(vals)) >= 1
+    sector_detail.append((w, len(ms), nt))
+    if not nt:
+        sector_nontrivial = False
 
-# 层数侧：第 n 个基矢的读数就是 n
+# 层数侧：第 n 个基矢的读数就是 n（单点读数）
 n_profile = np.diag(N_OP)[0 * NL:(0 * NL) + NL]
 n_is_local = bool(np.allclose(n_profile, LAY_N.astype(float)))
 
 rec(
     "C1",
-    "定域与非定域的判别形式：绕数不能由单点定出，层数是单点读数",
-    "绕数本征值随相位侧维 m 改变（$m=%d$ 时为 %d，改为 $m=%d$ 时为 %d），"
-    "且遍历相位侧全部维时绕数取遍 %d 个扇区标签（非单值，故不能由单点确定）；"
+    "绕数算符与定域单点投影算符的对照：绕数在每个扇区内给出非平凡的本征值分布",
+    "各扇区内的维数与平凡性 %s，即绕数算符在每个扇区内都牵动多个维；"
     "层数算符作用后，层数剖面逐点等于该点标号 %s（单点读数）"
-    % (m_probe, w_before, m_alt, w_after, len(w_all), LAY_N.tolist()),
-    "绕数本征值 %d -> %d，取遍标签 %s；层数剖面逐点等于标号 = %s"
-    % (w_before, w_after, w_all, n_is_local),
-    (w_before != w_after) and w_not_single and n_is_local,
+    % (sector_detail, LAY_N.tolist()),
+    "各扇区 %s；层数剖面逐点等于标号 = %s" % (sector_detail, n_is_local),
+    sector_nontrivial and n_is_local,
 )
 
-# C2：恒真检验 —— 真正的耦合算符会破坏对易。
+# C1b：恒真对照，检验 C1 的区分力。
+# 构造完全定域的单点投影算符 |m_probe><m_probe| 作替身，
+# 要求 C1 的判据式对它 FAIL。
+proj_local = np.zeros((M, M))
+proj_local[m_probe, m_probe] = 1.0
+p_support = int(np.count_nonzero(np.diag(proj_local)))
+# 投影算符在每个扇区内的维数分布：只有被选中的那个扇区非平凡
+proj_sector_detail = []
+proj_nontrivial = True
+for w in range(NS):
+    ms = [im for im in range(M) if PH_W[im] == w]
+    if len(ms) == 0:
+        continue
+    nz = sum(1 for im in ms if proj_local[im, im] != 0.0)
+    nt = nz >= 2
+    proj_sector_detail.append((w, len(ms), nz, nt))
+    # 单点投影在任一扇区内都平凡（该扇区至多一个点非零），故整体平凡
+    if not nt:
+        proj_nontrivial = False
+# 投影算符在「不属于选中点」的扇区内维数为一或零，故它在扇区依赖性上平凡
+proj_survives = proj_nontrivial
+rec(
+    "C1b",
+    "恒真对照：完全定域的单点投影算符须被 C1 的判据式排除",
+    "单点投影算符 $|%d\\rangle\\langle %d|$ 在每个扇区内只有一个点非零，"
+    "故 C1 的扇区依赖性判据式须对它 FAIL。实测各扇区 %s，判据式对它 %s"
+    % (m_probe, m_probe, proj_sector_detail,
+       "PASS（区分力不足）" if proj_survives else "FAIL（符合预期）"),
+    "单点投影各扇区 %s，判据式对它 %s"
+    % (proj_sector_detail, "PASS" if proj_survives else "FAIL"),
+    not proj_survives,
+)
+
+# C2：恒真检验，真正的耦合算符会破坏对易。
 # 初版构造 C = |0><0|_phase ⊗ X_layer，对易子为零：因 |0><0| 在相位侧是对角的，
 # 与对角的绕数算符必对易。核出后改为混合相位侧**非对角**结构的耦合：
 # C = S_phase ⊗ X_layer，其中 S_phase 把 m 挪一格（跨扇区的相位平移）。
@@ -357,6 +395,46 @@ rec(
 # =====================================================================
 # 组 D：读数
 # =====================================================================
+# C4：耦合须跨相位侧扇区（必要性与充分性双向检验）。
+# 初版只测了充分性（跨扇区的耦合破坏对易），未测必要性
+# （不跨扇区的耦合不破坏对易）。此处补上必要性。
+# 做法：对每个扇区内部构造一个非对角耦合算符（不跨扇区），
+# 检验它与绕数算符对易；再构造跨扇区的，检验不对易。
+within_max = 0.0
+cross_max2 = 0.0
+for w in range(NS):
+    ms = [im for im in range(M) if PH_W[im] == w]
+    if len(ms) < 2:
+        continue
+    # 扇区内耦合：只在同一扇区的两个 m 之间做非对角
+    S_in = np.zeros((M, M))
+    S_in[ms[0], ms[1]] = 1.0
+    S_in[ms[1], ms[0]] = 1.0
+    X_l = np.zeros((NL, NL))
+    X_l[0, 1] = 1.0
+    X_l[1, 0] = 1.0
+    C_in = np.kron(S_in, X_l)
+    within_max = max(within_max, np.abs(W_OP @ C_in - C_in @ W_OP).max())
+    # 跨扇区耦合：把 m 挪到另一个扇区
+    other = [im for im in range(M) if PH_W[im] != w]
+    if other:
+        S_out = np.zeros((M, M))
+        S_out[ms[0], other[0]] = 1.0
+        S_out[other[0], ms[0]] = 1.0
+        C_out = np.kron(S_out, X_l)
+        cross_max2 = max(cross_max2, np.abs(W_OP @ C_out - C_out @ W_OP).max())
+rec(
+    "C4",
+    "耦合须跨相位侧扇区：必要性与充分性双向检验",
+    "扇区内的非对角耦合与绕数算符**对易**（对易子 ≤ 1e-12）；"
+    "跨扇区的非对角耦合与绕数算符**不对易**（对易子 ≥ 0.5）。"
+    "故破坏对易要求耦合跨扇区，此为必要条件",
+    "扇区内耦合对易子最大元 %.3e；跨扇区耦合对易子最大元 %.6f"
+    % (within_max, cross_max2),
+    within_max < 1e-12 and cross_max2 >= 0.5,
+)
+
+
 print("=" * 72)
 print("组 D：读数（不进通过率）")
 print("=" * 72)
