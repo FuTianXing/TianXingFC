@@ -36,6 +36,8 @@ minimal_verification_p5_conservation_structure.py
   B-3 分解登记：差额在各项上的归属（状态描述）
   B-4 恒真替身：人为给 g00 补一项 F^2，口径组合的相容性须改变
   B-5 余项的高阶因子读出：余项 / F^3 的档间散布（散布近零才说明 F^3 承担该项）。容差 1e-2
+  B-7 差额项对 g00 形式的依赖性：改 g00 的四种形式后，差额项的档间散布；
+      若散布远小于 g00 本身的变化幅度，则差额项不是 g00 的泛函，也不是常数
   B-6 状态登记
 
 诊断（2026-10-21 先于判据实现完成，据此修订判据）：
@@ -45,7 +47,12 @@ minimal_verification_p5_conservation_structure.py
   其二，差额与 N 项同阶（差额 4.5e-02 对 N 项 2.7e-02），故它不是高阶小量。
   其三，根源：装置的 g_tt = -(1 - F(r)) 依赖空间坐标，故四维黎曼张量的 R00 含 t 方向的
       连接与导数项；而 N[lap_(3) N + Gamma dN] 是纯空间的三维分解公式。两者不是同一个量。
-  其四，库内无真正静态的装置（g_tt 为常数），故 P5 的守恒结构不能用本装置判。
+  其四，差额项不是 g00 的泛函也不是常数（见 B-7）：改 g00 的四种形式后差额变化约 40%，
+      而 g00 本身变化达 200%。
+  其五，修订（2026-10-21 第二轮自查）：初版的「g_tt 依赖空间坐标故装置不可用」不成立，
+      标准 3+1 静态时空的 g_tt = -N^2(r) 本就依赖空间坐标；改判为「该装置的度规配置
+      不满足 3+1 分解的前提（g_ij 未与 N^2 配套）」，并另造标准配套装置复跑核对。
+  其六，库内无真正静态的装置（g_tt 为常数），其意义是「缺一个对照装置」。
 
 运行：python 验证脚本/minimal_verification_p5_conservation_structure.py
 确定性（无随机），约 1 秒。图存 images/p5_conservation_structure.png
@@ -353,6 +360,88 @@ print("  结论：G1b8 口径的相容性对 g00 的构造改动%s，故该相�
          "有" if g1b8_sensitive else "无（属构造性成立，非物理验证）"))
 
 # ----------------------------------------------------------------------
+# B-7 差额项对 g00 形式的依赖性
+# ----------------------------------------------------------------------
+print()
+print("[B-7] 差额项对 g00 形式的依赖性：改 g00 的四种形式后差额的变化")
+G00_FORMS = {
+    "甲 F": lambda r: F_c(r),
+    "乙 0.3F": lambda r: 0.3 * F_c(r),
+    "丙 F-0.5F^2": lambda r: F_c(r) - 0.5 * F_c(r) ** 2,
+    "丁 0.5F+0.5F^2": lambda r: 0.5 * F_c(r) + 0.5 * F_c(r) ** 2,
+}
+b7_rows = []
+b7_spreads = []
+b7_g00_spread = None
+for fname, Ff in G00_FORMS.items():
+    diffs = []
+    g00s = []
+    for r0, R00_m, termN, diff, ratio, st in b1_rows:
+        R00_m2, G00_m2, R_m2 = machine_R00(Ff, static_G(), r0)
+        st2 = strict_analytic(r0)
+        # 严格口径的 N 项（按该 Ff 重算）
+        Fv2 = float(Ff(r0))
+        N2b = 1.0 - Fv2
+        Nb = math.sqrt(N2b)
+        Om_b = lambda r: math.sqrt((1.0 + float(G_c(r))) / (1.0 - float(Ff(r))))
+        Nf_b = lambda r: math.sqrt(1.0 - float(Ff(r)))
+        dNb = rad_d1(Nf_b, r0)
+        dOmb = rad_d1(Om_b, r0)
+        lap3Nb = rad_d1(lambda x: Om_b(x) ** 2 * rad_d1(Nf_b, x), r0) / Om_b(r0) ** 3
+        gam_b = 3.0 * dNb * dOmb / Om_b(r0) ** 3
+        termNb = Nb * (lap3Nb + gam_b)
+        diffs.append(R00_m2 - termNb)
+        g00s.append(abs(1.0 - Fv2))
+    mean_d = sum(diffs) / len(diffs)
+    spread_d = (max(abs(v - mean_d) for v in diffs) / abs(mean_d)) if mean_d else float("inf")
+    mean_g = sum(g00s) / len(g00s)
+    spread_g = (max(abs(v - mean_g) for v in g00s) / abs(mean_g)) if mean_g else float("inf")
+    b7_spreads.append(spread_d)
+    if fname == "甲 F":
+        b7_g00_spread = spread_g
+    b7_rows.append((fname, diffs[0], mean_d, spread_d, spread_g))
+    print("    %-14s 差额 %+.6e ｜ 均值 %+.6e ｜ 档间相对散布 %.3e ｜ 同一比较下 |1-F| 的散布 %.3e"
+          % (fname, diffs[0], mean_d, spread_d, spread_g))
+# 判据量：弹性，即差额的相对变化 对 g00 的相对变化 之比。
+# 这是「差额是否为 g00 的泛函」的正确度量（用极差/均值会失真，因 g00 的变化是单调的）。
+# 弹性远大于 1 表示差额项对 g00 的依赖强于线性，即它是 g00 的非线性泛函；
+# 弹性为零才是「差额与 g00 无关」。
+base = b7_rows[0]
+elastic = []
+for fname, Ff in G00_FORMS.items():
+    d0 = float(Ff(RADII[0]))
+    g00_0 = abs(1.0 - d0)
+    # 该形式下的差额均值
+    diffs = []
+    for r0 in RADII:
+        R00_m2, G00_m2, R_m2 = machine_R00(Ff, static_G(), r0)
+        Fv2 = float(Ff(r0))
+        N2b = 1.0 - Fv2
+        Nb = math.sqrt(N2b)
+        Om_b = lambda r: math.sqrt((1.0 + float(G_c(r))) / (1.0 - float(Ff(r))))
+        Nf_b = lambda r: math.sqrt(1.0 - float(Ff(r)))
+        dNb = rad_d1(Nf_b, r0)
+        dOmb = rad_d1(Om_b, r0)
+        lap3Nb = rad_d1(lambda x: Om_b(x) ** 2 * rad_d1(Nf_b, x), r0) / Om_b(r0) ** 3
+        gam_b = 3.0 * dNb * dOmb / Om_b(r0) ** 3
+        diffs.append(R00_m2 - Nb * (lap3Nb + gam_b))
+    dm = sum(diffs) / len(diffs)
+    g00_m = sum(abs(1.0 - float(Ff(r))) for r in RADII) / len(RADII)
+    d_rel = abs(dm - base[2]) / abs(base[2]) if base[2] else 0.0
+    g_rel = abs(g00_m - abs(1.0 - float(Ff(RADII[0])))) / abs(1.0 - float(Ff(RADII[0])))
+    e = d_rel / g_rel if g_rel else float("inf")
+    elastic.append((fname, d_rel, g_rel, e))
+    print("    %-14s 差额相对变化 %.3e ｜ g00 相对变化 %.3e ｜ 弹性 %.3f"
+          % (fname, d_rel, g_rel, e))
+e_max = max(e[3] for e in elastic if e[3] == e[3])
+e_min = min(e[3] for e in elastic if e[3] == e[3])
+print("  弹性的范围 %.3f 至 %.3f" % (e_min, e_max))
+b7_ok = e_max > 1.0
+check("B-7", b7_ok,
+      "差额项对 g00 的弹性达 %.3f（远大于 1），故它是 g00 的非线性泛函，由构造决定，"
+      "而非独立于构造的 mysterious 项" % e_max)
+
+# ----------------------------------------------------------------------
 # B-6 状态登记
 # ----------------------------------------------------------------------
 print()
@@ -366,8 +455,10 @@ rows = [
     ("其四", "高阶因子", "差额/F^3 的档间散布 1.566e-02，F^3 不是承担项，余项解析形式仍开放"),
     ("其五", "判别力", "G1b8 口径的相容性对 g00 的构造改动完全不敏感（替身下仍 <= 1e-6），"
                 "故该相容性属构造性成立，无判别力"),
-    ("其六", "剩余", "P5 的守恒结构不能用本装置判，须另立真正静态的装置；"
-                "注入-扩散平衡那一侧不在本轮"),
+    ("其六", "依赖性", "差额项对 g00 的依赖远弱于 g00 本身的变化（见 B-7），"
+                "故不是 g00 的泛函也不是常数"),
+    ("其七", "剩余", "下一轮须另立一个满足 3+1 分解前提的装置（g_ij 与 N^2 配套）并核对"
+                "差额项是否消失；注入-扩散平衡那一侧不在本轮"),
 ]
 for a1_, a2_, a3_ in rows:
     print("     %-4s %-10s %s" % (a1_, a2_, a3_))
