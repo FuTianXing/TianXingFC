@@ -7,9 +7,12 @@ minimal_verification_meff_chainlength.py
 
 判据（先立期望，再实现）：
   E1 链长收敛：同一 K 下 r(N)=M_rel/m_eff,low 随 N 增大应收敛到 1。
-     期望：r(N) 对 1/N 线性外推的 r_inf 满足 |r_inf - 1| < 0.05（伪影假设）。
-     判否含义：r_inf 偏离 1 超过预算，或趋势平坦（斜率不显著），则 0.85-0.94 的偏差属实质差异。
-  E2 跨 K 一致：K=0.005 与 K=0.01 的 r_inf 之差 < 0.05。
+     读法：先取饱和值 r_sat（链长读数进入平台后的读数，平台由 E0 判据给出），
+     再判 |r_sat - 1| < 0.05（伪影假设）。
+     判否含义：r_sat 偏离 1 超过预算，则 0.85-0.94 的偏差属实质差异。
+  E0 饱和性（先于 E1 执行）：相邻链长档读数的相对差 < 1e-3 则该档已饱和，
+     饱和后不得再做 1/N 外推（两点逐位相同时斜率由单点决定，外推无根据）。
+  E2 跨 K 一致：K=0.005 与 K=0.01 的 r_sat 之差 < 0.05。
   E3 窗口稳健：中心定位窗口 W=30 与 W=15 给出的 m_eff,low 相对差 < 0.02（读数不依赖窗口）。
 
 容差预算（从误差预算推导）：
@@ -192,22 +195,34 @@ def main():
             print(f"  {Nv:6d} {Kv:6.3f} {res['m_low']:10.4f} {res['M_rel']:8.4f} "
                   f"{res['r']:8.4f} {res['res_rel']:9.2e} {err:9.1e}")
 
-    # 判据 E1：1/N 外推
-    print("\n[E1] 链长收敛：r(N) 对 1/N 线性外推")
-    r_inf = {}
+    # 判据 E0：饱和性（先于 E1，决定后续读法）
+    print("\n[E0] 饱和性：相邻链长档读数的相对差")
+    sat = {}
     for Kv in Ks:
-        x = np.array([1.0 / n for n in Ns])
-        y = np.array([data[(n, Kv)]["r"] for n in Ns])
-        a, b = np.polyfit(x, y, 1)
-        r_inf[Kv] = b
-        print(f"  K={Kv:.3f}: r(1/N) = {a:.4f}/N + {b:.4f}，r_inf = {b:.4f}，|r_inf-1| = {abs(b-1):.4f}")
-    e1 = all(abs(r_inf[Kv] - 1.0) < 0.05 for Kv in Ks)
+        diffs = []
+        for i in range(len(Ns) - 1):
+            a_, b_ = data[(Ns[i], Kv)]["r"], data[(Ns[i + 1], Kv)]["r"]
+            diffs.append(abs(b_ - a_) / abs(a_) if abs(a_) > 1e-12 else np.inf)
+        saturated = diffs[-1] < 1e-3
+        sat[Kv] = Ns[-1] if saturated else Ns[-2]
+        print(f"  K={Kv:.3f}: 相邻档相对差 " + ", ".join(f"{d:.2e}" for d in diffs)
+              + f"，{'已饱和（取 N=' + str(sat[Kv]) + '）' if saturated else '未饱和（取 N=' + str(sat[Kv]) + '）'}")
+    e0 = all(abs(data[(sat[Kv], Kv)]["r"] - data[(Ns[-1], Kv)]["r"]) < 1e-9 for Kv in Ks)
+    print(f"  E0: {'PASS' if e0 else 'FAIL'}（饱和后末两档逐位相同，阈值 1e-9）")
+
+    # 判据 E1：饱和值直读（饱和情形下 1/N 外推无根据，见 §六 过程记录）
+    print("\n[E1] 链长收敛：饱和值 r_sat 与 1 的偏离")
+    r_sat = {}
+    for Kv in Ks:
+        r_sat[Kv] = data[(sat[Kv], Kv)]["r"]
+        print(f"  K={Kv:.3f}: r_sat = {r_sat[Kv]:.4f}（N={sat[Kv]}），|r_sat-1| = {abs(r_sat[Kv]-1):.4f}")
+    e1 = all(abs(r_sat[Kv] - 1.0) < 0.05 for Kv in Ks)
     print(f"  E1: {'PASS' if e1 else 'FAIL'}（阈值 0.05）")
 
-    # 判据 E2：跨 K 一致
-    e2 = abs(r_inf[Ks[0]] - r_inf[Ks[1]]) < 0.05
-    print(f"\n[E2] 跨 K 一致：|r_inf(K=0.005) - r_inf(K=0.01)| = "
-          f"{abs(r_inf[Ks[0]] - r_inf[Ks[1]]):.4f}，E2: {'PASS' if e2 else 'FAIL'}（阈值 0.05）")
+    # 判据 E2：跨 K 一致（用饱和值）
+    e2 = abs(r_sat[Ks[0]] - r_sat[Ks[1]]) < 0.05
+    print(f"\n[E2] 跨 K 一致：|r_sat(K=0.005) - r_sat(K=0.01)| = "
+          f"{abs(r_sat[Ks[0]] - r_sat[Ks[1]]):.4f}，E2: {'PASS' if e2 else 'FAIL'}（阈值 0.05）")
 
     # 判据 E3：窗口稳健（单档）
     print("\n[E3] 窗口稳健性（N=1400，K=0.005，W=30 对 W=15）")
@@ -220,10 +235,10 @@ def main():
 
     # 汇总
     print("\n[判据汇总]")
-    verdicts = [("E1 链长收敛", e1), ("E2 跨 K 一致", e2), ("E3 窗口稳健", e3)]
+    verdicts = [("E0 饱和性", e0), ("E1 链长收敛", e1), ("E2 跨 K 一致", e2), ("E3 窗口稳健", e3)]
     for name, ok in verdicts:
         print(f"  {name}: {'PASS' if ok else 'FAIL'}")
-    print(f"  总判据: {sum(1 for _, ok in verdicts if ok)}/3")
+    print(f"  总判据: {sum(1 for _, ok in verdicts if ok)}/{len(verdicts)}")
 
     # 出图
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
@@ -239,16 +254,13 @@ def main():
 
     ax = axes[1]
     for Kv, mk in zip(Ks, ("o", "s")):
-        x = np.array([1.0 / n for n in Ns])
         y = np.array([data[(n, Kv)]["r"] for n in Ns])
-        ax.plot(x, y, mk, label=f"K = {Kv}")
-        a, b = np.polyfit(x, y, 1)
-        xx = np.linspace(0, x.max(), 20)
-        ax.plot(xx, a * xx + b, "-", lw=1)
-    ax.axhline(1.0, color="gray", lw=1, ls=":")
-    ax.set_xlabel(r"$1/N$")
+        ax.plot(np.array(Ns), y, mk + "-", label=f"K = {Kv}")
+        ax.axhline(r_sat[Kv], color="gray", lw=1, ls=":")
+    ax.axhline(1.0, color="k", lw=1, ls="--")
+    ax.set_xlabel("链长 N")
     ax.set_ylabel(r"$M_{rel}/m_{eff,low}$")
-    ax.set_title("(b) 对 1/N 外推")
+    ax.set_title("(b) 饱和值直读（虚线为 1）")
     ax.legend()
 
     ax = axes[2]
