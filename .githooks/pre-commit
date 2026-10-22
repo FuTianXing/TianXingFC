@@ -1,0 +1,5 @@
+#!/bin/sh
+# 元相子理论工作区 pre-commit 钩子
+# 启用：git config core.hooksPath .githooks
+python "$(git rev-parse --show-toplevel)/.githooks/check_md_control.py" || exit 1
+exit 0
