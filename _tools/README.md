@@ -11,7 +11,7 @@
 | `check_latex_tears.py` | 扫描 LaTeX 撕裂。向 md 写入含 LaTeX 的内容时若用普通字符串而非 raw string，`\ne`、`\nabla`、`\langle` 的 `\n` 与 `\rangle` 的 `\r` 会被当作转义符执行，命令被吃掉前两字符，断口处留下余部。判据为双条件交叉：行首为已知命令余部，且该行 `$` 计数为奇数。 | `python _tools/check_latex_tears.py [--all]`。默认跳过 `_tools/`（其中 `.bak` 是修复前快照，理应保留损坏）。0 无残留，1 有残留。 |
 | `check_cross_refs.py` | 开放问题总览引用图谱：条目数与唯一键、前向引用、单向引用对、零入引条目、裸引用「第 N 条」。 | `python _tools/check_cross_refs.py [路径] [--full]`。0 无异常，1 检出编号重复或裸引用。 |
 
-两者建议纳入每次批量改稿后的自检，与 `AGENTS.md`「修改后必查 em-dash、禁句式」并列。
+两者建议纳入每次批量改稿后的自检。
 
 ## 被文档引用的溯源脚本
 
