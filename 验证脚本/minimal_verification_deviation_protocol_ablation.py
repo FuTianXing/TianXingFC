@@ -20,6 +20,10 @@
   造成的幂次偏移显著大于其余元素；本轮不预设是哪一个元素，读数给出答案。
   判否不等于判负：若不存在唯一主导元素，则结论是「幂次差不由单一协议元素
   支配」，这本身是有效结论。
+  须先分清两类协议差异。偏离度是窗口内的均方根量，窗口半径进入观测量的
+  定义，故窗口口径切换带来的幂次偏移是设计内的，不必然意味着读数失效；
+  但它意味着不同协议下的幂次不是同一个数，不可混用。静置阻尼与静置步数
+  只改「同样的数据怎么处理」，不进入观测量定义，其偏移若显著则须查明来源。
 
 消融矩阵（两个 k 档，K 档随 k 取）
   基线（第 810 号协议）：自相似窗口 W = NW*ell、静置阻尼 gamma = 0.05、
@@ -29,17 +33,28 @@
   B 切回无阻尼静置。
   C 切回固定静置步数 12000（第 767 号的步数，不翻倍）。
   D 全第 767 号协议（固定窗口 + 无阻尼 + 固定步数 + 绝对速度档）。
-  E 只切速度档口径：绝对速度档 v0 = b（相对档为 v0 = b*c_s）。
+  E 只切速度档口径：绝对速度档 v0 = b（相对档为 v0 = b*c_s）。此档与
+    A、B、C 三者性质不同，见下文「速度档口径为何不参与归因」。
   替身协议：只微调拟合区间，物理协议不动，用作恒真检验。
 
   两个 k 档各有用途。k = 1 时链信号速度 c_s = 1，绝对速度档与相对速度档
-  逐位相同，「速度档口径」这一协议元素在此时恒等失效，故 k = 1 只用于
-  与第 767 号读数同条件复现（其原读数即在 k = 1 上取得）。k = 4 时
-  c_s = 2，绝对档 0.20 对应 beta = 0.10，与相对档明显不同，四个协议元素
-  全部有效，主消融与主导元素定位在此进行。K 档按 k 取：k = 1 用
-  0.00125、0.0025、0.005、0.01（与第 767 号的可用四档相同）；k = 4 用
-  0.005、0.01、0.02、0.04（对应 x = 0.00125 至 0.01，与第 810 号 k = 4
-  档的可用四档相同）。
+  逐位相同，「速度档口径」这一元素在此时恒等失效，故 k = 1 用于与第 767 号
+  读数同条件复现（其原读数即在 k = 1 上取得），并作跨 k 档一致性检验。
+  K 档按 k 取：k = 1 用 0.00125、0.0025、0.005、0.01（与第 767 号的可用
+  四档相同）；k = 4 用 0.005、0.01、0.02、0.04（对应 x = 0.00125 至 0.01，
+  与第 810 号 k = 4 档的可用四档相同）。主消融与主导元素定位在 k = 4 档进行。
+
+  速度档口径为何不参与归因
+    A、B、C 只改「同样的数据怎么处理」：窗口半径、静置阻尼、静置步数都不
+    改变被采样的速度点集合，也不改变推进的物理过程。E 改的是「采哪些速度
+    点」：k = 4 时 c_s = 2，相对档 v0 = b*c_s 取 beta = 0.20 至 0.80，绝对
+    档 v0 = b 取 beta = 0.10 至 0.40，被采样的速度区间窄了一半。这不是处理
+    方式的差异，而是实验条件的差异，幂次偏移里混进了区间变化。
+    更根本地说，一旦 v0 的物理值给定，绝对档与相对档的采样点集与处理流程
+    逐位相同，二者只在「把哪个量记作 beta」这一点上不同；故速度档口径在
+    测量层面无独立效应，不能作为归因元素。若把它计入，得到的结论会把「采
+    样区间变窄」读成「速度档口径支配幂次」，两者不是一回事。E 档与 D 档的
+    偏移列为描述读数报出。
 
 判据
   P1 基线复现：k = 4 档基线幂次与第 810 号 k = 4 分档读数 +0.4813 之差
@@ -48,12 +63,16 @@
      后的等效值 +0.853 之差是否在容差内。注意比较目标须先换算：第 767 号
      报的是对 1/ell 的幂 +1.705，其对 x 的等效幂为 +1.705/2 = +0.853。
      此条单列，不计入总分。
-  P2 主导元素定位：在 k = 4 档上，A、B、C、E 四个单元素切换的幂次偏移中，
-     最大者超过偏移下限，且与其余三者中位者之比达到区分力门槛。PASS 只
-     表示「存在唯一主导元素」，不表示是哪一个。四个单元素档各自只改动一
-     个元素，与基线相比的偏移量即可归因到该元素；D 档同时改动四个元素，
-     其偏移只作描述读数，并与四个单元素偏移之和作可加性对照。
+  P2 主导元素定位：在 k = 4 档上，A、B、C 三个单元素切换的幂次偏移中，
+     最大者超过偏移下限，且与其余两者中位者之比达到区分力门槛。PASS 只
+     表示「存在唯一主导元素」，不表示是哪一个。三个单元素档各自只改动一
+     个处理方式，与基线相比的偏移量即可归因到该元素；D 档同时改动多个
+     元素，其偏移只作描述读数，并与单元素偏移之和作可加性对照。
   P3 恒真替身：k = 4 档替身协议的幂次偏移远小于真实元素偏移。
+  P4 跨 k 档一致性：在 k = 1 与 k = 4 两个档上分别做同样的三元素归因，
+     两档各自选出的主导元素必须是同一个。这是多档扫描纪律的落实：若主导
+     元素随 k 档改变，则它不是协议元素的固有属性，而是与具体参数区间的
+     偶然相关。
 
   dev 的跨协议散布作为描述读数报出，不作硬判否依据：固定窗口在 K 变化
   下覆盖的物理内容随之改变，dev 的协议差异是设计内的，把 dev 散布设为
@@ -66,7 +85,8 @@
   复现容差由该轮自身的跨协议散布换算到 x 幂后取定：其对 1/ell 的幂散布
   21.9%（+1.509 至 +1.881）换算到 x 幂为 +0.7545 至 +0.9405，相对中心
   +0.853 的半宽约 0.093，故取 0.10。两项容差均宽于实测散布，用于容纳
-  协议切换本身的偏移。
+  协议切换本身的偏移。P4 不设数值门槛，其判据形式是「两档选出同一元素」，
+  属一致性检验。
 
 模型与跨轮声明
   链参数为位点势深 K、键刚度 k、格距 a；以 a 为长度单位时无量纲组只剩
@@ -466,24 +486,39 @@ def main():
         print(f"  {pname:16s} 幂次 {results[kmain][pname]['slope']:+.4f}"
               f"  偏移 {offsets[pname]:+.4f}")
 
-    single = ["A_固定窗口", "B_无阻尼", "C_固定静置步数", "E_绝对速度档"]
-    single_off = {p: abs(offsets[p]) for p in single if p in offsets}
-    dom_pname, dom_val, dom_ratio = None, 0.0, 0.0
-    if len(single_off) == len(single):
-        dom_pname = max(single_off, key=single_off.get)
-        dom_val = single_off[dom_pname]
-        others = sorted(v for kk, v in single_off.items() if kk != dom_pname)
-        med_other = others[len(others) // 2]
-        dom_ratio = dom_val / med_other if med_other > 0 else float("inf")
+    single = ["A_固定窗口", "B_无阻尼", "C_固定静置步数"]
+
+    def pick_dom(res_k, base_sl, names):
+        """在给定 k 档上按单元素偏移选出主导元素。"""
+        offs = {p: abs(res_k[p]["slope"] - base_sl)
+                for p in names if p in res_k}
+        if len(offs) < len(names):
+            return None, 0.0, 0.0, offs
+        dom = max(offs, key=offs.get)
+        others = sorted(v for kk, v in offs.items() if kk != dom)
+        med = others[len(others) // 2]
+        ratio = offs[dom] / med if med > 0 else float("inf")
+        return dom, offs[dom], ratio, offs
+
+    dom_pname, dom_val, dom_ratio, single_off = pick_dom(
+        results[kmain], base_slope, single)
     print(f"\n[单元素切换的幂次偏移] {single_off}")
     print(f"  最大者 {dom_pname} = {dom_val:.4f}，与其余中位之比 {dom_ratio:.2f}")
+    print("  （E 档不列入归因：它改变被采样的速度区间，不是处理方式）")
 
-    # ---- 描述读数：D 档四元素合成的偏移与四个单元素偏移之和作可加性对照 ----
+    # ---- 描述读数：D 档合成偏移与单元素偏移之和作可加性对照 ----
     if "D_767全协议" in offsets and len(single_off) == len(single):
-        s_sum = sum(offsets[p] for p in single)
-        print(f"\n[可加性对照] D 档四元素合成偏移 {offsets['D_767全协议']:+.4f}，"
-              f"四个单元素偏移之和 {s_sum:+.4f}，"
-              f"差 {offsets['D_767全协议'] - s_sum:+.4f}")
+        s_core = sum(offsets[p] for p in single)
+        s_all = s_core + offsets.get("E_绝对速度档", 0.0)
+        print(f"\n[可加性对照] D 档合成偏移 {offsets['D_767全协议']:+.4f}，"
+              f"三个处理方式单元素偏移之和 {s_core:+.4f}，"
+              f"差 {offsets['D_767全协议'] - s_core:+.4f}")
+        print(f"  含 E 档（采样区间变化）后之和 {s_all:+.4f}，"
+              f"差 {offsets['D_767全协议'] - s_all:+.4f}")
+    if "E_绝对速度档" in offsets:
+        print(f"  [描述读数] E 档（速度采样区间由 beta 0.20-0.80 缩到 "
+              f"0.10-0.40）偏移 {offsets['E_绝对速度档']:+.4f}，"
+              f"其性质是采样区间改变，不参与归因")
 
     # ---- 描述读数：dev 的跨协议散布 ----
     print("\n[描述读数] 同档跨协议 dev 相对极差")
@@ -516,8 +551,9 @@ def main():
               f"（门槛 {P767_REPRO_TOL}）：{'PASS' if p1_767 else 'FAIL'}")
 
     p2 = (dom_val >= OFFS_MIN and dom_ratio >= DOMINANCE_RATIO)
-    print(f"  P2 主导元素定位：最大偏移 {dom_val:.4f}（门槛 {OFFS_MIN}），"
-          f"区分力比 {dom_ratio:.2f}（门槛 {DOMINANCE_RATIO}）："
+    print(f"  P2 主导元素定位（k={kmain}，三元素）：最大偏移 {dom_val:.4f}"
+          f"（门槛 {OFFS_MIN}），区分力比 {dom_ratio:.2f}"
+          f"（门槛 {DOMINANCE_RATIO}）："
           f"{'PASS' if p2 else 'FAIL'}（PASS 只表示存在唯一主导元素，"
           f"本轮读数指向 {dom_pname}）")
 
@@ -526,8 +562,24 @@ def main():
           f"{dom_val:.4f} 的三分之一为 {dom_val / DOMINANCE_RATIO:.4f}："
           f"{'PASS' if p3 else 'FAIL'}")
 
-    npass = sum([p1_base, p2, p3])
-    print(f"\n总判据 {npass}/3（P1-b 单列，不计入总分）")
+    res1 = results.get(1.0, {})
+    base1 = res1.get(base_name, {}).get("slope")
+    if base1 is None:
+        p4 = False
+        dom1, off1 = None, {}
+        print("  P4 跨 k 档一致性：k=1 档基线读数缺失")
+    else:
+        dom1, dom1_val, dom1_ratio, off1 = pick_dom(res1, base1, single)
+        p4 = (dom1 is not None and dom_pname is not None
+              and dom1 == dom_pname)
+        print(f"  P4 跨 k 档一致性：k=1 档主导元素 {dom1}，"
+              f"k={kmain} 档主导元素 {dom_pname}，"
+              f"{'PASS' if p4 else 'FAIL'}")
+        print(f"    k=1 档三元素偏移 {off1}")
+        print(f"    k={kmain} 档三元素偏移 {single_off}")
+
+    npass = sum([p1_base, p2, p3, p4])
+    print(f"\n总判据 {npass}/4（P1-b 单列，不计入总分）")
 
     # ---- 出图 ----
     fig, ax = plt.subplots(1, 3, figsize=(15, 4.2))
@@ -558,12 +610,16 @@ def main():
 
     off_names = list(offsets.keys())
     off_vals = [offsets[n] for n in off_names]
-    ax[2].barh(range(len(off_names)), off_vals, color="indianred")
+    core_idx = [i for i, n in enumerate(off_names)
+                 if n in single or n == base_name]
+    ext_idx = [i for i, n in enumerate(off_names) if i not in core_idx]
+    ax[2].barh(core_idx, [off_vals[i] for i in core_idx], color="indianred")
+    ax[2].barh(ext_idx, [off_vals[i] for i in ext_idx], color="lightgray")
     ax[2].set_yticks(range(len(off_names)))
     ax[2].set_yticklabels(off_names, fontsize=8)
     ax[2].axvline(0, color="black", lw=0.8)
     ax[2].set_xlabel("幂次偏移（相对基线）")
-    ax[2].set_title("(c) 协议元素各自的偏移")
+    ax[2].set_title("(c) 协议元素各自的偏移（灰者为描述读数）")
     fig.tight_layout()
     fig.savefig(IMG_811, dpi=150)
     print(f"\n图已存 {IMG_811}")
