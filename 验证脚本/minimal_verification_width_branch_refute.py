@@ -12,8 +12,16 @@ minimal_verification_width_branch_refute.py
 
 对象类型：标度指数与拟合系数（可问指数、散布、条件数，不可问对易）。
 
+口径订正声明（2026-10-22）：本脚本原把连续 SG 宽度记作 c/omega_0 = k/(2*pi*sqrt(K))，
+其中混用了格距单位长度与链信号速度下的 c/omega_0，多出一个 sqrt(k) 因子。
+订正后连续宽度为 1/omega_SG = sqrt(k)/(2*pi*sqrt(K))，与格点 kink 半宽同阶，
+二者之差只是 O((a/ell)^2/24) 的小量，不存在 |1-sqrt(k)|*ell 的宽度差。
+因此本脚本的 H1 至 H3（宽度差的因子结构、强预言否证、比例性否证）前提失效，
+其原读数须读作作废；H4 至 H7 不依赖该宽度式，读数保留。
+为保读数可追溯，本脚本的计算逻辑保留原样不改。
+
 否证链（四段）：
-  (1) 宽度差的结构：FK 链连续化给出 omega_0 = 2*pi*sqrt(K/k)，
+  (1) 宽度差的结构（原口径，已作废，见上声明）：FK 链连续化给出 omega_0 = 2*pi*sqrt(K/k)，
       故连续 SG 宽度 c/omega_0 = k/(2*pi*sqrt(K))；
       格点 kink 半宽为 ell = sqrt(k)/(2*pi*sqrt(K))（由静 kink 剖面测得，
       与过渡区格数的幂次 -0.4947 对 -0.5000 相符）。
@@ -29,7 +37,7 @@ minimal_verification_width_branch_refute.py
       在其内分离 M、b2、b4 属污染读数。
 
 判据（否证型：判据的期望值是否证成立）：
-  H1 宽度差的因子结构：|ell - c/omega_0| 与 |1 - sqrt(k)|·ell 的相对差小于 1e-12。
+  H1 宽度差的因子结构（原口径，已作废）：|ell - c/omega_0| 与 |1 - sqrt(k)|·ell 的相对差小于 1e-12。
   H2 强预言否证：k=1 档（宽度差为零）的偏离度显著非零（大于 1e-4），
       全部四档皆然。此条成立即否证宽度差支。
   H3 比例性否证：k=4 档 dev/宽度差 的跨档相对散布大于 50%。
@@ -179,8 +187,12 @@ def rel_profile(vn):
 def widths(Kv, kval):
     """格点 kink 半宽 ell、连续 SG 宽度 c/omega_0 与两者之差。
 
-    ell 由静 kink 剖面测得，其幂次 -0.4947 与 sqrt(k)/(2*pi*sqrt(K)) 的 -0.5 相符；
-    c/omega_0 由 FK 链连续化给出 omega_0 = 2*pi*sqrt(K/k) 推得。
+    ell 由静 kink 剖面测得，其幂次 -0.4947 与 sqrt(k)/(2*pi*sqrt(K)) 的 -0.5 相符。
+    本函数按原口径取 xi = sqrt(k)/omega0（omega0 = 2*pi*sqrt(K/k)），
+    即 xi = k/(2*pi*sqrt(K))。2026-10-22 二订正核出该式多一个 sqrt(k) 因子，
+    订正后的连续 SG 宽度应为 1/omega_SG = sqrt(k)/(2*pi*sqrt(K))，与 ell 同阶。
+    此处保留原式，是为了让本脚本复现出与 772 号注记一致的原始读数；
+    据此读出的 H1 至 H3 前提失效，其读数须读作作废（见 772 号注记二订正）。
     """
     ell = np.sqrt(kval) / (2 * np.pi * np.sqrt(Kv))
     omega0 = 2 * np.pi * np.sqrt(Kv / kval)
@@ -222,7 +234,7 @@ def main():
         d, M, vm, inv = measure(0.005, 1.0, V0SETS["基准五档"])
         ell, xi, dw = widths(0.005, 1.0)
         print(f"  dev={d:.6f} M={M:.6f} v_max={vm:.3f}")
-        print(f"  ell={ell:.10f}  c/omega_0={xi:.10f}  宽度差={dw:.2e}")
+        print(f"  ell={ell:.10f}  c/omega_0[原口径]={xi:.10f}  宽度差={dw:.2e}")
         v_rel = np.array([0.2, 0.35, 0.5, 0.65, 0.8])
         g1 = rel_profile(v_rel)
         dE_rel = 0.0935 * g1
@@ -238,7 +250,7 @@ def main():
     print("=" * 78)
 
     # ---------- H1 宽度差的因子结构 ----------
-    print("\n[H1] 宽度差的因子结构：|ell - c/omega_0| = |1 - sqrt(k)|·ell")
+    print("\n[H1] 宽度差的因子结构：|ell - c/omega_0[原口径]| = |1 - sqrt(k)|·ell")
     rel_diffs = []
     for kval in KK:
         for Kv in KS:
@@ -246,7 +258,7 @@ def main():
             pred = abs(1 - np.sqrt(kval)) * ell
             rd = abs(abs(dw) - pred) / pred if pred != 0 else abs(dw) / ell
             rel_diffs.append(rd)
-            print(f"  k={kval} K={Kv}: ell={ell:.8f}  c/omega_0={xi:.8f}  宽度差={dw:+.8f}  "
+            print(f"  k={kval} K={Kv}: ell={ell:.8f}  c/omega_0[原口径]={xi:.8f}  宽度差={dw:+.8f}  "
                   f"预测 |1-√k|·ell={pred:.8f}  相对差 {rd:.2e}")
     h1 = max(rel_diffs) < 1e-12
     print(f"  最大相对差 {max(rel_diffs):.2e}")
@@ -367,6 +379,8 @@ def main():
         print(f"  {name}: {'PASS' if ok else 'FAIL'}")
     print(f"  总判据: {sum(1 for _, ok in verdicts if ok)}/{len(verdicts)}")
     print("\n[裁决] 第 771 号的机制归属（宽度差支）否证成立，作废。")
+    print("  （2026-10-22 二订正：H1 至 H3 的宽度差前提失效，原读数须读作作废；")
+    print("   否证理由改由阶数不同承担，结论不变。）")
     print("  771 号的数值结论（K 幂 +0.8527 与 +0.9449）作为「偏离度标度有确定值」保留，")
     print("  但其机制归属（格点宽度与连续宽度之差）不成立。")
 

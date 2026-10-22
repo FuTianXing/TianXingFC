@@ -36,7 +36,9 @@ $$E[u] = \sum_n \frac{k}{2}\left(u_{n+1}-u_n-1\right)^2 + \sum_n K\left(1-\cos 2
 
 kink 剖面在体系内取扭结形式
 
-$$p_x(n) = n + \frac{2}{\pi}\arctan\, e^{(n-x)/\ell},\qquad \ell = \left(2\pi\sqrt{K/k}\right)^{-1},$$
+$$p_x(n) = n + \frac{2}{\pi}\arctan\, e^{(n-x)/\ell},\qquad \ell = \frac{\sqrt{k}}{2\pi\sqrt{K}} = \frac{1}{\omega_{\rm SG}},\qquad \omega_{\rm SG} = 2\pi\sqrt{K/k},$$
+
+其中 $\omega_{\rm SG}=2\pi\sqrt{K/k}$ 是连续化特征频率，与格点能隙 $2\pi\sqrt K$ 是两回事；$k=1$ 时半宽简化为 $1/(2\pi\sqrt K)$。
 
 其中 $\ell$ 为核宽。该剖面带缠绕 $W = 1$，是单粒子的定域本相。
 
