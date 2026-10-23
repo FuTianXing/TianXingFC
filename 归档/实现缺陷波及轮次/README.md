@@ -25,7 +25,6 @@
 | 793 | `minimal_verification_r3_compatibility.py` | R3 的数值相容性的闭合 | 核心结论已由第 794 号撤回，随本目录归档 |
 | 794 | `minimal_verification_gamma_forms.py` | 三种 gamma 形式的 R3 对照 | 读数作废 |
 | 801 | `minimal_verification_gij_source_localization.py` | G_ij 侧差额的来源定位 | 定量读数整轮撤回 |
-| 802 | `minimal_verification_k_window_ratio_scan.py` | 驻留窗口档上的比值重测 | 与本线同源，随同轮次归档 |
 | 803 | `minimal_verification_gij_gconst_localization.py` | N 常数构型上残余差额的来源 | 定量读数整轮撤回 |
 | 804 | `minimal_verification_gij_proportionality.py` | 差额与 gamma 径向曲率严格正比 | 定量读数整轮撤回，比例约 2.4 是缺陷指纹 |
 
@@ -36,6 +35,8 @@
 第 773、776 号（动源构型差额随 v 线性增长、差额不属任何单项）读数同样受缺陷波及，但其注记内的部分方法论结论（判据量须相对被解释的量来度量、细分十项的排除思路）仍成立，且第 776 号抓到的「重建式 d_0 项写错」指向与第 808 号缺陷 3 同源，故留作诊断线索，未移入本目录。
 
 第 762、765、767、770 号读数取自另一套装置（一维径向算子），不含上述三处指纹，其结论（差额归零、不依赖球对称）仍成立，未归档。
+
+**第 802 号已撤出本目录**（2026-10-24 作者裁定）。该轮脚本不含三处缺陷的任何指纹：既无 `def ricci_3d` 与 `def gam_christoffel`，也无 `D[(i,j,k)] = d1_keep` 与 `R = Ric00 + ...` 与 `a1 - a2`，其函数表为壁张力闭式（`_wall_energy`、`sigma_1d`、`sigma_continuous`、`sigma_two_cell_harmonic`、`sigma_two_cell_fourth`）、环的锚核弛豫（`ring_phase`、`anchor`、`solve_R`、`curve`）与写入布居（`split_step`、`delta_bar_read`），与 3+1 分解、Ricci 张量无交集。第 808 号注记的波及面原始清单（11 个含 `def ricci_3d` 或 `def gam_christoffel` 的脚本加 7 个含 4D 标量收缩式的脚本）**本不含 802**。原归因「与本线同源」失于笼统，现撤回。脚本与正式注记归位 `验证脚本/`，通俗版注记归位 `内部草稿/`。
 
 ## 权威结论
 
