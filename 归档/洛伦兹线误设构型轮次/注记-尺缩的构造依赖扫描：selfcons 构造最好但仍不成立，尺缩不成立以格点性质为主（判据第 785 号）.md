@@ -76,7 +76,7 @@
 
 ## 4 图 1
 
-![图 1：左为三构造的随动连续宽随 v，selfcons 曲线明显平于 rigid 与 contr，灰色虚线为 selfcons 的 1/gamma 预言；中为三构造干净档的最大相对偏差柱状图，selfcons 最低但仍远高于 0.10 的预算线；右为逐档相对偏差，selfcons 斜率最缓](../images/p785_contraction_construction.png)
+![图 1：左为三构造的随动连续宽随 v，selfcons 曲线明显平于 rigid 与 contr，灰色虚线为 selfcons 的 1/gamma 预言；中为三构造干净档的最大相对偏差柱状图，selfcons 最低但仍远高于 0.10 的预算线；右为逐档相对偏差，selfcons 斜率最缓](../../images/p785_contraction_construction.png)
 
 ## 5 过程记录
 
