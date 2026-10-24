@@ -50,7 +50,7 @@ $\sigma_z$、$\Gamma_5$、$\alpha_i$、$\beta$、$\gamma^0\gamma^3$ 等元件的
 
 | 文件 | 改动 | 依据 |
 | --- | --- | --- |
-| `验证脚本/minimal_verification_extraction_protocol.py` | 增简并检测步骤；输出最大簇重数与簇结构 | 2.1 |
+| `验证脚本/检验器/extraction_protocol.py` | 增简并检测步骤；输出最大簇重数与簇结构 | 2.1 |
 | `验证脚本/README.md` | 状态栏增设判否档；第 504 行状态改为判否待重设 | 2.2 |
 | 新建 `验证脚本/算符约定表.md` | 列出各元件两两对易与反对易关系 | 2.3 |
 | 第 504、505 条注记 | 按更正清单八条改写表述与判据实现 | 验证注记 §三 |
@@ -73,5 +73,5 @@ $\sigma_z$、$\Gamma_5$、$\alpha_i$、$\beta$、$\gamma^0\gamma^3$ 等元件的
     - 给出四条落点清单
 - **2026-09-30 落点 1 执行**（触发：作者同意「EP 检验强制化若采纳需要改 AGENTS.md 规范第 5 条」）
     - AGENTS.md《数值验证脚本规范》第 5 条改为模板必调并增设简并检测（EP0），指向第 506 条子空间谱分类，禁止单矢期望
-    - `验证脚本/minimal_verification_extraction_protocol.py` 增 `degeneracy_scan` 函数与 EP0 段，运行 SUMMARY EP1、EP5 全过，EP0 判 PASS
+    - `验证脚本/检验器/extraction_protocol.py`（2026-10-24 迁入）增 `degeneracy_scan` 函数与 EP0 段，运行 SUMMARY EP1、EP5 全过，EP0 判 PASS
     - 落点 2（README 判否档）与落点 3（算符约定表）待作者裁决；落点 4（第 504、505 条更正）按验证注记的更正清单执行
