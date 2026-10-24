@@ -242,7 +242,7 @@ def main():
     out.append("SUMMARY EP1, EP5 = %s" % ("ALL PASS" if allok else "HAS FAILURE"))
     text = "\n".join(out)
     print(text)
-    with io.open("D:/software/TianXingFC/验证脚本/extraction_protocol_result.txt", "w",
+    with io.open("D:/software/TianXingFC/验证脚本/检验器/extraction_protocol_result.txt", "w",
                  encoding="utf-8", newline="\n") as f:
         f.write(text + "\n")
     return 0 if allok else 1
