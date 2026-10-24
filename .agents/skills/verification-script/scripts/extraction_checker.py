@@ -8,7 +8,7 @@ EP 四段检验器：测量合法性前置检查（提取自第 498 条，可跨
     # 任一段判否则 verdict["ok"] 为 False，须停止读数并按判否含义登记。
 
 本脚本不判定物理，只回答「提取程序是否良定义」。出处：
-验证脚本/extraction_protocol.py（第 498 条）
+验证脚本/检验器/extraction_protocol.py（第 498 条）
 """
 import numpy as np
 
