@@ -1,6 +1,6 @@
 # AGENTS.md
 
-傅天行（天行新学研究院）《天行新学》学术工作区：原创哲学/物理学论文与科普文档，无工程代码（理论验证脚本除外）。论文正稿在根目录（100+ 篇），按子理论索引（`理论总纲/子理论索引.md`）维护；知识库基准在 `理论总纲/`。十项工作区专用技能（`tianxing-academia`、`tianxing-kepu`、`tianxing-wiki`、`tianxing-solidify`、`tianxing-archive`、`tianxing-writing`、`verification-script`、`paper-review`、`paper-revise`、`wikilink-batch`）位于项目级 `.agents/skills/`、随 git 版本化（2026-10-24 自用户级迁入，`mineru` 留用户级），其知识库路径已绝对化指向本工作区，自带 `knowledge/` 为空目录勿用。
+傅天行（天行新学研究院）《天行新学》学术工作区：原创哲学/物理学论文与科普文档，无工程代码（理论验证脚本除外）。论文正稿在根目录（100+ 篇），按子理论索引（`理论总纲/子理论索引.md`）维护；知识库基准在 `理论总纲/`。八项工作区专用技能（`tianxing-academia`、`tianxing-kepu`、`tianxing-wiki`、`tianxing-archive`、`tianxing-writing`、`verification-script`、`paper-review`、`wikilink-batch`；2026-10-24 paper-revise 并入 paper-review、tianxing-solidify 并入 tianxing-academia）位于项目级 `.agents/skills/`、随 git 版本化（当日自用户级迁入，`mineru` 留用户级），其知识库路径已绝对化指向本工作区，自带 `knowledge/` 为空目录勿用。
 
 ## 目录规范
 
@@ -76,7 +76,7 @@
 - 搜索：优先 anysearch 技能；抓全文用 `https://r.jina.ai/<URL>`。
 - 数值验证：根目录执行 `python 验证脚本/<脚本名>.py`。
 - 内链化：`/wikilink-batch`（书名号转 wikilink、清单条目补链与链接审计）。
-- 固化：`/tianxing-solidify`（把内部草稿、验证判据与作者裁决固化进 `理论总纲/`）。
+- 固化：`/tianxing-academia` 第 4 节（把内部草稿、验证判据与作者裁决固化进 `理论总纲/`，含落点分工与计数涟漪）。
 - 科普：`/tianxing-kepu`（骨架先行、量级核算、术语即释、边界声明、内链防死链；铁律与目录规范以本文件为准）。
 
 ## 数值验证脚本规范

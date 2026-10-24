@@ -72,7 +72,7 @@ python .agents/skills/tianxing-wiki/scripts/wiki_check.py wiki/<名词>.md
 
 1. 词条数为 README 表格的行数；若其他文档引用该数字，一并同步。
 2. 三层分工：`wiki/` 通俗解释（可独立阅读、带类比）；`理论总纲/术语表.md` 一句话定义（服务于快速查阅）；`理论总纲/天行新学核心洞见速览.md` 洞见条目（只追加从句）。同一名词三层并存，口径必须一致。
-3. 固化新读数进基准时走 `tianxing-solidify`，词条只在其后同步口径。
+3. 固化新读数进基准时走 `tianxing-academia` 第 4 节，词条只在其后同步口径。
 
 ## 6. 报告
 
