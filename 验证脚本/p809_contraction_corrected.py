@@ -35,6 +35,18 @@ narrow：boost 不乘 gamma，p_lab = p + v omega。恒真对照档，
   预期读出宽度比 1 而不是 1 / gamma。
 rest：静止档。
 
+四个构型的全部公式只在 build_mode 一处实现（声明与实现单源），本文档
+只述各构型的物理含义，不写公式副本。第 691 号的教训是同一构型公式在
+docstring 与代码各写一份且各写各的，文档与代码的差距跨过了七轮读数。
+
+构造自检（实现层前置，不计判据）
+--------------------------------
+construction_selfcheck 在判据循环之前断言三项：onshell 档壳不变量
+omega^2 - p^2 逐点守恒；contboost 档须实测离壳（离壳残差须显著大于
+onshell 档的浮点残差，防检查器恒真）；narrow 档的 boost 形态须逐点等于
+不带 gamma 的 p + v omega（恒真对照档不得被改成在壳 boost）。另核对
+静止档载波 p = 0 支的 k = 0、omega = 1。
+
 读法
 ----
 1. 解析解调。单频场有 E^2 = phi^2 + (phi_dot / omega_c)^2，逐点精确，
@@ -113,6 +125,7 @@ PA0_TRAJ_STD = 0.003    # PA0 宽度轨迹末段相对标准差上限
 PA0_RATE_TOL = 0.003    # PA0 静止档载波频率读数相对差上限
 BUD_WIDTH = 1.0e-4      # 长度收缩判据的读数预算下限
 BUD_RATE = 1.0e-4       # 钟慢判据的读数预算下限
+SELF_SHELL_TOL = 1.0e-12        # 构造自检：在壳残差与形态偏差的容差
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(_HERE)
@@ -315,6 +328,45 @@ def cross_check(kind, v, T=T_CROSS, dt=DT):
                 xc_step=rd_step["xc"], xc_spec=rd_spec["xc"])
 
 
+# ============== 构造自检（实现层前置，不计判据） ==============
+def construction_selfcheck():
+    """boost 构型的自检断言（验证规范第四节第五条的示范实现）。
+
+    三项断言，任一拦截即不得进入判据循环：
+    1. onshell 档壳不变量 omega^2 - p^2 = 1 逐点守恒（p 变量 boost 的
+       构造性质，残差应只在浮点精度）；
+    2. contboost 档须实测离壳——离壳残差须显著大于 onshell 档的浮点
+       残差，否则检查器只在「正确实现」上通过，属恒真形态；
+    3. narrow 档的 boost 形态须逐点等于不带 gamma 的 p + v omega，
+       防止恒真对照档被改成在壳 boost 而失效。
+    另核对静止档载波 p = 0 支的 k = 0、omega = 1。
+    """
+    p, a, k0, om0 = rest_spectrum()
+    assert abs(float(p[M_P // 2])) < SELF_SHELL_TOL
+    assert abs(float(k0[M_P // 2])) < SELF_SHELL_TOL
+    assert abs(float(om0[M_P // 2]) - 1.0) < SELF_SHELL_TOL
+    for v in VS:
+        _, k_on, om_on = build_mode("onshell", v)
+        r_on = float(np.max(np.abs(om_on ** 2 - mom(k_on) ** 2 - 1.0)))
+        assert r_on < SELF_SHELL_TOL, (
+            "构造自检 FAIL：onshell v=%.2f 壳残差 %.3e 超容差 %.1e"
+            % (v, r_on, SELF_SHELL_TOL))
+        _, k_cb, om_cb = build_mode("contboost", v)
+        r_cb = float(np.max(np.abs(om_cb ** 2 - mom(k_cb) ** 2 - 1.0)))
+        assert r_cb > 1.0e3 * max(r_on, 1.0e-15), (
+            "构造自检 FAIL：contboost v=%.2f 壳残差 %.3e 与 onshell 残差 "
+            "%.3e 不可分辨，检查器恒真" % (v, r_cb, r_on))
+        _, k_nr, _ = build_mode("narrow", v)
+        pl_nr = mom(k_nr)
+        pl_expect = p + v * om0
+        d_nr = float(np.max(np.abs(pl_nr - pl_expect)))
+        assert d_nr < SELF_SHELL_TOL, (
+            "构造自检 FAIL：narrow v=%.2f boost 形态偏差 %.3e，"
+            "对照档已偏离 p + v omega" % (v, d_nr))
+    print("[构造自检] onshell 壳守恒、contboost 实测离壳、narrow 形态"
+          "与静止档载波四项断言通过")
+
+
 # ============================== 代数报告 ==============================
 def algebra(v):
     """p 空间 boost 闭包、k 变量失配、以及各项解析修正量。"""
@@ -345,6 +397,8 @@ def main():
     print("装置：自由波包，p 空间谱构造  w=%.0f  动量采样 %d 点  速度档 %s"
           % (W_PACK, M_P, VS))
     print("读数窗 %.0f  空间半宽 %d 格  时间采样 %d 点" % (T_CROSS, X_HALF, N_T))
+    print("")
+    construction_selfcheck()
     print("")
 
     p, a, k, om = rest_spectrum()

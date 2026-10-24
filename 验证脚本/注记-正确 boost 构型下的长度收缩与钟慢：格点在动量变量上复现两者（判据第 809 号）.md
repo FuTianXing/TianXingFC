@@ -155,6 +155,8 @@ $$p' = \gamma(p + v\omega), \qquad \omega' = \gamma(\omega + vp), \qquad \omega'
 
 **第 807 号的处置**。第 807 号两个脚本（`p807_lobe_tail_split.py` 与 `p807_subgrid_readout.py`）在库中保留作反例，注记已写明读数作废与作废原因。
 
+**2026-10-24 补构造自检示范**。按验证规范第四节第五条（构型自检断言，2026-10-24 增）给本脚本补 `construction_selfcheck`，作为该条的示范实现：onshell 档壳不变量 $\omega^2-p^2=1$ 逐点断言；contboost 档须实测离壳（残差须大于 onshell 档浮点残差 $10^3$ 倍，防检查器恒真）；narrow 档 boost 形态逐点等于不带 $\gamma$ 的 $p+v\omega$；静止档载波 $p=0$ 支核对 $k=0$、$\omega=1$。同时把 docstring 的构型公式副本撤下，改为「公式只在 build_mode 一处实现」的单源声明。断言属实现层前置检查，不计入判据数，判据表不变。复跑一遍：自检四项通过，全部判据读数与本轮原读数逐位一致（PA3 四档相对差 $6.185\times10^{-6}$、$2.783\times10^{-6}$、$5.005\times10^{-5}$、$2.621\times10^{-4}$，交叉验证 $4.170\times10^{-6}$ 不变），读数不受影响。
+
 ## 12 教训
 
 **docstring 与代码不一致时，docstring 常常是当初的设计意图，代码是后来改坏的。** 第 691 号的 docstring 写的是正确的 boost 构型，代码把两处都取了倒数。读一个旧脚本先读 docstring，再逐行核对实现。
