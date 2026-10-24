@@ -23,7 +23,7 @@
 | F3b | 光子生成标度锚定（$k_{AF} = 2\delta/a$，$a = l_P$） | $M_\star = 2E_P = 2.44\times10^{19}$ GeV，$\delta \le 4.10\times10^{-64}$；费米子通道的窗口比它宽 $6.0\times10^{11}$ 至 $7.2\times10^{33}$ 倍 |
 | F4 | 结项口径 | 三通道对照表第三格按"窗口被光子通道覆盖"填报，源为构造性内部相位 |
 
-脚本：`验证脚本/minimal_verification_fermion_channel_window.py`，复现命令 `python 验证脚本/minimal_verification_fermion_channel_window.py`；确定性、无图，运行约 1 秒。
+脚本：`验证脚本/fermion_channel_window.py`，复现命令 `python 验证脚本/fermion_channel_window.py`；确定性、无图，运行约 1 秒。
 
 ## 三、读数的意义
 

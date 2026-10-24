@@ -2,7 +2,7 @@
 类型: 判据级验证注记
 日期: 2026-10-23 02:50:00
 判据编号: 812
-脚本: minimal_verification_p812_adm_selfconsistency_and_shift_terms.py
+脚本: p812_adm_selfconsistency_and_shift_terms.py
 状态: 判据 16/16 通过
 层级: 方法论层（不动摇任何理论前提）
 上游: [[验证脚本/注记-三处装置级缺陷的定位：差额是实现伪影，801至804号结论撤回（判据第808号）|第 808 号]]、[[内部草稿/判据设计-动源档的口径自洽性与ADM构造档的shift项闭合（第812号）|第 812 号判据设计]]

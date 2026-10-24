@@ -77,4 +77,4 @@
 
 ## 九、登记衔接
 
-本材料为 `验证脚本/README.md` 第 404 条，脚本 `minimal_verification_integration_target.py`，图 `images/integration_target.png`。与第 403 条共用模型与穷举结构，与第 402 条同属对齐判据线。开放问题总览的登记见该文档 P4-6 条目。
+本材料为 `验证脚本/README.md` 第 404 条，脚本 `integration_target.py`，图 `images/integration_target.png`。与第 403 条共用模型与穷举结构，与第 402 条同属对齐判据线。开放问题总览的登记见该文档 P4-6 条目。

@@ -22,7 +22,7 @@
 | A2-3 恒等式 | 自洽恒等式的点态偏差 | 最大 $3.55\times10^{-15}$（P1 截断区口径给 $3.1\times10^{-11}$、S1 三维给 $0.0$），同级 |
 | A2-4 权重表 | A1 的显式权重是否与 P、S 冲突 | 无冲突（P、S 未给显式权重值，A1 属新增读数） |
 
-脚本：`验证脚本/minimal_verification_a2_consistency.py`，复现命令 `python 验证脚本/minimal_verification_a2_consistency.py`；确定性、无图，运行约 3 秒。
+脚本：`验证脚本/a2_consistency.py`，复现命令 `python 验证脚本/a2_consistency.py`；确定性、无图，运行约 3 秒。
 
 ## 三、读数的意义
 

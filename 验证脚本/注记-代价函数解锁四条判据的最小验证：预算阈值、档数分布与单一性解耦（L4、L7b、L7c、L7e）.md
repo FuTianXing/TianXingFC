@@ -73,4 +73,4 @@
 
 ## 九、登记衔接
 
-本材料为 `验证脚本/README.md` 第 407 条，脚本 `minimal_verification_cost_function_unlock.py`，图 `images/cost_function_unlock.png`。执行后 L 组除 L5（已由采样三联覆盖）外全部有读数。开放问题总览的登记见该文档 P4-6 条目。
+本材料为 `验证脚本/README.md` 第 407 条，脚本 `cost_function_unlock.py`，图 `images/cost_function_unlock.png`。执行后 L 组除 L5（已由采样三联覆盖）外全部有读数。开放问题总览的登记见该文档 P4-6 条目。

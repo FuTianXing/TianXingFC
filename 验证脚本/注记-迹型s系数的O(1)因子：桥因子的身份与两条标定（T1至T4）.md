@@ -24,7 +24,7 @@
 | T3 桥因子 | 场能匹配的 $k$ 与 $s_{\text{TT}}$；满量程的 $k$ 与 $s_{\text{TT}}$ | $k = E_P/(12\pi l_P^{2})$，$s_{\text{TT}} = 0.026526$；$k = 2E_P/l_P^{2}$，$s_{\text{TT}} = 2.000000$ |
 | T4 并列口径 | 与 $\bar s_{TT} \lesssim 10^{-5}$ 的量级差 | 路线一 $3.42$ 个量级；路线二 $5.30$ 个量级 |
 
-脚本：`验证脚本/minimal_verification_trace_s_channel.py`，复现命令 `python 验证脚本/minimal_verification_trace_s_channel.py`；确定性、无图，运行约 1 秒。
+脚本：`验证脚本/trace_s_channel.py`，复现命令 `python 验证脚本/trace_s_channel.py`；确定性、无图，运行约 1 秒。
 
 ## 三、读数的意义
 

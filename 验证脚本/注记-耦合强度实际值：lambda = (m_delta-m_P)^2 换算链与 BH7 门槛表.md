@@ -2,7 +2,7 @@
 
 - **日期**：2026-09-20 07:19:43
 - **层级**：验证脚本/（理论验证材料，未确认）
-- **脚本**：验证脚本/minimal_verification_lambda_value.py（系统 Python 3.13 + numpy + matplotlib，确定性，运行约 1 秒）
+- **脚本**：验证脚本/lambda_value.py（系统 Python 3.13 + numpy + matplotlib，确定性，运行约 1 秒）
 - **定位**：接 BH7 首轮小结开放项其四：把耦合重开系数 $\lambda$ 的实际值落到登记换算链上，并将 BH7 的全部门槛翻译成 $m_\delta/m_P$ 刻度。
 - **关联**：[[验证脚本/注记-M6-S2-1b（路线一）：本构常数比 K-J 的色散路线换算与格点核对]]（换算恒等式与登记值）；[[验证脚本/注记-M6-字典对账：归一化口径对齐、J 惯性反推与识别项的可推导边界]] 与裁决十七（$K/J = (m_\delta/m_P)^2$）；[[内部草稿/裁定材料-耦合符号与强度：登记符号（回拉）与强度惯例]]；[[验证脚本/注记-U2（最小臂）：耦合重开区的有效应力判决]]（$\lambda^*$）；[[验证脚本/注记-BH7-W3：越界构型的探索读数（存在性与结构；稳定性口径未立）]]（$\lambda_0$）
 - **状态**：执行完成，判据 4/4 通过。读数：$\lambda/J = (m_\delta/m_P)^2 = 6\pi\kappa_\phi t_P$；门槛表 $\lambda^* = 6.5\times10^{-4} \leftrightarrow m_\delta = 0.0255\,m_P$，$\lambda_0 = 0.01 \leftrightarrow 0.1\,m_P$，惯例 $\leftrightarrow m_\delta = m_P$；剩余单点 = $m_\delta$
