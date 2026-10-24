@@ -71,7 +71,7 @@
 
 ## 工作流
 
-- 评审：`/paper-review`（七维评审，A/B/C 分级）→ `/paper-revise`（逐条修复）。
+- 评审与修改：`/paper-review`（七维评审、A/B/C 分级报告，并按报告逐条修改、写后机器验证）。
 - OCR：`python3 C:\Users\Administrator\.agents\skills\mineru\scripts\mineru.py "<绝对路径>" --ocr --stdout`。
 - 搜索：优先 anysearch 技能；抓全文用 `https://r.jina.ai/<URL>`。
 - 数值验证：根目录执行 `python 验证脚本/<脚本名>.py`。
