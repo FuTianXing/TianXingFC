@@ -67,7 +67,7 @@ footer{margin-top:26px;color:var(--muted);font-size:13px;}
 <section>
   <h2><span class="no">一</span>格点上没有人奔跑：方向只能住在相位差里</h2>
   <p class="lead">每个格点只在原地振荡（亮度 = 振荡相位），像体育场人浪：没有人跑，只有每个人比前一个人晚一点点。金色圈是波峰线——它扫过阵列，但每个格点都没动。方向信息全部住在「相邻格点错开多少相位」里。</p>
-  <svg id="s1" viewBox="0 0 720 340" role="img" aria-label="格点阵列按相位差振荡的动画"></svg>
+  <svg id="s1" viewBox="0 0 720 292" role="img" aria-label="格点阵列按相位差振荡的动画"></svg>
   <div class="controls">
     <div class="ctrl">
       <label>相邻格点相位差 Δφ（每格）<output id="o1dp">24°</output></label>
@@ -206,7 +206,6 @@ for(var r1=0;r1<S1ROWS;r1++){
       r:10, fill:'#1a5fb4','fill-opacity':0, stroke:'none','stroke-width':2},s1gGrid));
   }
 }
-var s1dirArrow = null, s1dirLab = null;
 var s1x1 = $('s1dp'), s1x2 = $('s1th');
 function s1frame(t){
   var dpv = +s1x1.value, dp = dpv*Math.PI/180;
@@ -250,7 +249,7 @@ function s1frame(t){
     if(px>=80 && px<=L2){
       var mx=x0+px;
       s1lamlab.setAttribute('x1',mx); s1lamlab.setAttribute('x2',mx);
-      s1lamtx.setAttribute('x',Math.min(mx+6,690)); s1lamtx.setAttribute('anchor','end');
+      s1lamtx.setAttribute('x',Math.min(mx+6,690));
       s1lamtx.setAttribute('text-anchor','end');
     } else {
       s1lamlab.setAttribute('display','none');
@@ -348,7 +347,7 @@ function s2frame(t){
     el('circle',{cx:p1x,cy:p1y,r:13.5,fill:'none',stroke:'#b8860b','stroke-width':2.2},s2diffG);
     el('circle',{cx:p2x,cy:p2y,r:13.5,fill:'none',stroke:'#b8860b','stroke-width':2.2},s2diffG);
     s2labD.textContent = '相邻棱差 Δφ = 45°（每格）';
-    s2labD.setAttribute('x', Math.min(Math.max((p1x+p2x)/2+16, 20), 560));
+    s2labD.setAttribute('x', Math.min(Math.max((p1x+p2x)/2+16, 20), 520));
     s2labD.setAttribute('y', Math.min(p1y,p2y)-20);
   }
 }
@@ -428,8 +427,8 @@ for(var i4=0;i4<18;i4++){
 }
 el('line',{x1:0,y1:S4Y0,x2:S4W,y2:S4Y0,stroke:'#8a919c','stroke-width':1.5},s4);
 el('line',{x1:S4CX,y1:26,x2:S4CX,y2:S4H-26,stroke:'#8a919c','stroke-width':1,'stroke-dasharray':'5 5'},s4);
-var s4labTop = txt(s4gLab,14,24,'',{size:12.5,fill:'#6b7280'});
-var s4labBot = txt(s4gLab,14,S4H-12,'',{size:12.5,fill:'#6b7280'});
+var s4labTop = txt(s4gLab,14,24,'',{size:12.5,fill:'#6b7280',halo:true});
+var s4labBot = txt(s4gLab,14,S4H-12,'',{size:12.5,fill:'#6b7280',halo:true});
 var s4xTh=$('s4th'), s4xSide=$('s4side');
 function s4stripes(arr, rect, nx, ny, lam, off, count){
   var corners=[[rect.x,rect.y],[rect.x+rect.w,rect.y],[rect.x+rect.w,rect.y+rect.h],[rect.x,rect.y+rect.h]];
@@ -483,20 +482,27 @@ function s4frame(t){
     arrow(s4gRay, S4CX, S4Y0, S4CX+nix*L, S4Y0-niy*L, '#c0392b', 2.6, 8);
     txt(s4gRay, S4CX+nix*L+8, S4Y0-niy*L+4, '全反射', {size:12.5, fill:'#c0392b', weight:500, halo:true});
   }
-  // 切向分量：两侧等长的青色水平箭头（守恒）
+  // 切向分量：两侧等长的青色水平箭头（守恒），指向与 k 的切向分量一致
   var tanLen=(kx/K1)*70+18;
-  arrow(s4gTan, S4CX, S4Y0-34, S4CX+tanLen, S4Y0-34, '#0f766e', 2.2, 6);
-  arrow(s4gTan, S4CX, S4Y0+34, S4CX+tanLen, S4Y0+34, '#0f766e', 2.2, 6);
-  txt(s4gTan, S4CX+tanLen+8, S4Y0-30, '切向 kx（两侧严格相等）', {size:11.5, fill:'#0f766e', halo:true});
+  var tdir = fromTop?1:-1;
+  var tanX = S4CX+tdir*tanLen;
+  arrow(s4gTan, S4CX, S4Y0-34, tanX, S4Y0-34, '#0f766e', 2.2, 6);
+  arrow(s4gTan, S4CX, S4Y0+34, tanX, S4Y0+34, '#0f766e', 2.2, 6);
+  txt(s4gTan, S4CX+tdir*(tanLen+8), S4Y0-30, '切向 kx（两侧严格相等）',
+    {size:11.5, fill:'#0f766e', halo:true, anchor: fromTop?'start':'end'});
   // 读数
   var deg=function(x){return (x*180/Math.PI).toFixed(1)+'°';};
   $('o4th').textContent = (th1*180/Math.PI).toFixed(0)+'°';
   var e2=$('r4t2'), e3=$('r4sn'), e4=$('r4judge');
   if(!tir){
     var th2=Math.asin(kx/K2);
-    var ratio=Math.sin(th1)/Math.sin(th2);
     e2.textContent=deg(th2); e2.className='';
-    e3.textContent=ratio.toFixed(3)+' = n₂/n₁'; e3.className='';
+    if(Math.sin(th1)>1e-6){
+      e3.textContent=(Math.sin(th1)/Math.sin(th2)).toFixed(3)+' = n₂/n₁';
+    }else{
+      e3.textContent='n₂/n₁（正入射极限）';
+    }
+    e3.className='';
     e4.textContent='配得上实根 → 折射'; e4.className='';
   }else{
     e2.textContent='——'; e2.className='warn';
@@ -515,7 +521,23 @@ function loop(ts){
   if(!REDUCED) requestAnimationFrame(loop);
 }
 s1frame(0); s2frame(0); s4frame(0);
-if(!REDUCED) requestAnimationFrame(loop);
+if(REDUCED){
+  // 无动画循环时，交互也必须能重绘
+  var redraw1=function(){ s1frame(0); };
+  var redraw2=function(){ s2frame(0); };
+  var redraw4=function(){ s4frame(0); };
+  $('s1dp').addEventListener('input',redraw1);
+  $('s1th').addEventListener('input',redraw1);
+  $('s2th').addEventListener('input',redraw2);
+  $('c2grid').addEventListener('change',redraw2);
+  $('c2stripe').addEventListener('change',redraw2);
+  $('c2norm').addEventListener('change',redraw2);
+  $('c2diff').addEventListener('change',redraw2);
+  $('s4th').addEventListener('input',redraw4);
+  $('s4side').addEventListener('change',redraw4);
+}else{
+  requestAnimationFrame(loop);
+}
 })();
 </script>
 </body>
