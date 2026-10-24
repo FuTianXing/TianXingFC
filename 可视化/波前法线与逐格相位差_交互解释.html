@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>波前法线与逐格相位差：光的方向住在哪里</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --line:#e3e6ea; --text:#1f2328; --muted:#6b7280;
+  --wave:#1a5fb4; --accent:#c2570f; --ok:#0f766e; --soft:#eef1f5;
+  --stripe:#1a5fb4; --normal:#c0392b; --tan:#0f766e;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.75;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px;}
+header h1{font-size:24px;font-weight:600;margin:0 0 10px;letter-spacing:.01em;}
+header p{margin:0 0 4px;color:var(--muted);font-size:14.5px;}
+.punch{background:var(--soft);border-left:3px solid var(--wave);border-radius:0 8px 8px 0;
+  padding:10px 16px;margin:16px 0 0;font-size:14.5px;}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px;margin-top:22px;}
+h2{font-size:17px;font-weight:600;margin:0 0 6px;}
+h2 .no{color:var(--muted);font-weight:400;margin-right:6px;}
+.lead{margin:0 0 12px;color:var(--muted);font-size:14px;}
+p{margin:8px 0;}
+svg{display:block;width:100%;height:auto;border-radius:8px;background:#fbfcfd;}
+.controls{display:flex;flex-wrap:wrap;gap:22px;margin:14px 0 4px;align-items:flex-end;}
+.ctrl{flex:1 1 260px;}
+.ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.ctrl output{font-variant-numeric:tabular-nums;color:var(--text);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--wave);}
+.checks{display:flex;flex-wrap:wrap;gap:4px 18px;margin:10px 0 0;font-size:13.5px;}
+.checks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+.checks input{accent-color:var(--wave);}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px;}
+.ro{background:var(--soft);border-radius:8px;padding:9px 12px;}
+.ro b{display:block;font-size:12px;font-weight:400;color:var(--muted);}
+.ro span{font-size:15px;font-variant-numeric:tabular-nums;font-weight:600;}
+.ro span.warn{color:var(--accent);}
+.note{font-size:13.5px;color:var(--muted);margin-top:12px;}
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:8px;}
+.tri figure{margin:0;background:var(--soft);border-radius:10px;padding:12px 12px 10px;}
+.tri svg{background:#ffffff;border-radius:6px;}
+.tri figcaption{font-size:13px;margin-top:8px;}
+.tri figcaption b{display:block;font-size:13.5px;margin-bottom:2px;}
+.tag{display:inline-block;font-size:11.5px;border-radius:99px;padding:1px 9px;margin-left:4px;vertical-align:1px;}
+.tag.w{background:#e3edf8;color:#1a5fb4;}
+.tag.g{background:#e8e2f4;color:#6b3fa0;}
+footer{margin-top:26px;color:var(--muted);font-size:13px;}
+footer code{background:var(--soft);border-radius:5px;padding:1px 6px;font-size:12.5px;}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>波前法线与逐格相位差：光的方向住在哪里</h1>
+  <p>元相子理论把光的方向定在相邻格点的实轴朝向差（棱差）上；标准物理学把它定在等相位面（波前）的法线上。这个页面演示两者为什么是同一句话，以及「法线」一词为何要拆成三重身份。</p>
+  <div class="punch">波前法线是相位差在连续极限里的影子——影子不与本体冲突，但本体只有一份。</div>
+</header>
+
+<!-- ============ 场景一 ============ -->
+<section>
+  <h2><span class="no">一</span>格点上没有人奔跑：方向只能住在相位差里</h2>
+  <p class="lead">每个格点只在原地振荡（亮度 = 振荡相位）。没有任何东西横向移动，唯一在空间上变化的量是「相邻格点错开多少相位」。单点的振幅和相位都不带方向，方向在原理上只能编码在<b>差</b>里。</p>
+  <svg id="s1" viewBox="0 0 720 330" role="img" aria-label="格点阵列按相位差振荡的动画"></svg>
+  <div class="controls">
+    <div class="ctrl">
+      <label>相邻格点相位差 Δφ（每格）<output id="o1dp">24°</output></label>
+      <input type="range" id="s1dp" min="0" max="90" step="1" value="24" aria-label="相邻格点相位差">
+    </div>
+    <div class="ctrl">
+      <label>传播方向 θ<output id="o1th">15°</output></label>
+      <input type="range" id="s1th" min="0" max="359" step="1" value="15" aria-label="传播方向角">
+    </div>
+  </div>
+  <svg id="s1p" viewBox="0 0 720 120" role="img" aria-label="沿传播方向的相位剖面锯齿"></svg>
+  <div class="readouts">
+    <div class="ro"><b>波长（格）</b><span id="r1lam">15.0</span></div>
+    <div class="ro"><b>状态</b><span id="r1state">行波：锯齿斜坡整体平移</span></div>
+  </div>
+  <p class="note">把 Δφ 拉到 0：全场同步振荡、坡度消失——没有波前，也没有方向。这正是「相位差处处为零，站着不动，没有波」的格子版。锯齿的坡度就是波矢 k，坡度指向哪，波就传向哪。</p>
+</section>
+
+<!-- ============ 场景二 ============ -->
+<section>
+  <h2><span class="no">二</span>等相位面与法线：同一句话的两种画法</h2>
+  <p class="lead">同一格点阵列，三种读法层层堆叠：相位着色（微观实在）→ 亮线连成等相位面（波前）→ 面的法线（方向）。勾选切换可见层，拖动方向角——条纹转动，法线跟着转，因为「梯度垂直于等值面」是数学恒等式，不是两条物理原理。</p>
+  <svg id="s2" viewBox="0 0 720 380" role="img" aria-label="等相位面条纹与法线箭头随方向角转动"></svg>
+  <div class="controls">
+    <div class="ctrl">
+      <label>方向角 θ<output id="o2th">45°</output></label>
+      <input type="range" id="s2th" min="0" max="359" step="1" value="45" aria-label="波前方向角">
+    </div>
+  </div>
+  <div class="checks">
+    <label><input type="checkbox" id="c2grid" checked> 相位着色（逐格棱差）</label>
+    <label><input type="checkbox" id="c2stripe" checked> 等相位面条纹（波前）</label>
+    <label><input type="checkbox" id="c2norm" checked> 法线箭头（波矢 k）</label>
+  </div>
+  <p class="note">亮条纹是 φ(x) = 常数的点集，法线即 ∇φ 的方向：k·x = 常数。标准光学选了「波前 + 法线」这面来讲，元相子理论选了「逐格棱差」这面来讲——底层出处只有一份。</p>
+</section>
+
+<!-- ============ 场景三 ============ -->
+<section>
+  <h2><span class="no">三</span>「法线」的三重身份：混谈即错</h2>
+  <p class="lead">体系里「法线」一词身兼三职。波前法线住在实轴方向场的相位通道上（波性侧）；法线轴/法线场承载层数与距离、引力一侧（粒性侧），与相位差无关；行波螺旋的法线推进则是传播本体——它的推进方向正是第一类波前法线。</p>
+  <div class="tri">
+    <figure>
+      <svg id="s3a" viewBox="0 0 260 190" role="img" aria-label="波前法线：条纹与其垂直的箭头"></svg>
+      <figcaption><b>① 波前法线<span class="tag w">波性侧</span></b>等相位面的垂线，= 波矢方向。载体：实轴方向场的相位通道。微观出处：逐格棱差。</figcaption>
+    </figure>
+    <figure>
+      <svg id="s3b" viewBox="0 0 260 190" role="img" aria-label="法线轴螺旋阶梯示意"></svg>
+      <figcaption><b>② 法线轴 / 法线场<span class="tag g">粒性侧</span></b>螺旋阶梯的推进轴，层数 = 距离，承载引力与倾斜一侧。法线正交 90° 是实空间角，相位差是相位空间角——如三相电的相位差与电线排布无关。</figcaption>
+    </figure>
+    <figure>
+      <svg id="s3c" viewBox="0 0 260 190" role="img" aria-label="行波螺旋动画：底部旋转加法线推进"></svg>
+      <figcaption><b>③ 行波 = 螺旋<span class="tag w">波性侧</span></b>底部旋转给频率，法线推进给传播，螺距给波长。推进方向即①的波前法线。</figcaption>
+    </figure>
+  </div>
+  <p class="note">高危误写：把①读成②，等于把波矢搬进引力侧载体，违反「方向场管取向，法线场管倾斜」的场角色分工。</p>
+</section>
+
+<!-- ============ 场景四 ============ -->
+<section>
+  <h2><span class="no">四</span>折射：波前在界面处倾斜的微观出处</h2>
+  <p class="lead">界面沿切向均匀，平移对称性使<b>切向波矢严格守恒</b>（两侧青色分量等长）；法向波数由两侧各自的色散方程决定（两侧红字法向分量不同）。棱差图案在界面两侧被重新分配——这就是「波前倾斜、方向折变」的微观机制。Snell 律直接掉出；配不上实根就是修逝场与全反射。</p>
+  <svg id="s4" viewBox="0 0 720 400" role="img" aria-label="界面两侧波前条纹与波矢分解动画"></svg>
+  <div class="controls">
+    <div class="ctrl">
+      <label>入射角 θ₁（从法线量起）<output id="o4th">30°</output></label>
+      <input type="range" id="s4th" min="0" max="85" step="1" value="30" aria-label="入射角">
+    </div>
+    <div class="ctrl" style="flex:0 1 220px;">
+      <label for="s4side">入射侧</label>
+      <select id="s4side" class="sel" aria-label="入射介质">
+        <option value="top" selected>真空 → 介质（n₁=1 → n₂=1.5）</option>
+        <option value="bottom">介质 → 真空（n₁=1.5 → n₂=1）</option>
+      </select>
+    </div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><b>折射角 θ₂</b><span id="r4t2">19.5°</span></div>
+    <div class="ro"><b>sinθ₁ / sinθ₂</b><span id="r4sn">1.500 = n₂/n₁</span></div>
+    <div class="ro"><b>判语</b><span id="r4judge">配得上实根 → 折射</span></div>
+  </div>
+  <p class="note">选「介质 → 真空」并把 θ₁ 拉过 41.8°（sinθc = 1/n）：透射方程无实根，界面外只剩指数衰减的修逝场，能量全部折回——全反射是「方程无实根」的代数必然，不是一条新定律（判据第 583 条数值确认）。</p>
+</section>
+
+<footer>
+  来源：内部草稿《注记-波前法线与逐格相位差：标准光学方向表述与元相子棱差图景的相容性（2026-10-24）》；成文落点见《光的传播总论》《元相子几何动力学——束缚振荡修订整合版》补充注释（斜波前机制）、《介质中光的传播：慢化、折射与全反射的晶格机制》（切向守恒与判据 583）、wiki 词条「实轴方向场」「棱差」「动量」。页面为概念演示，几何比例未按普朗克尺度。
+</footer>
+
+</div>
+<script>
+(function(){
+"use strict";
+var TAU = Math.PI*2;
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var NS = 'http://www.w3.org/2000/svg';
+function el(name, attrs, parent){
+  var e = document.createElementNS(NS, name);
+  for(var k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, s, opt){
+  opt = opt || {};
+  var t = el('text', {x:x, y:y,
+    'text-anchor': opt.anchor||'start',
+    'font-size': opt.size||12,
+    fill: opt.fill||'#6b7280',
+    'font-weight': opt.weight||400}, parent);
+  t.textContent = s;
+  return t;
+}
+function arrow(parent, x1,y1,x2,y2, color, w, head){
+  var dx=x2-x1, dy=y2-y1, L=Math.sqrt(dx*dx+dy*dy)||1;
+  var ux=dx/L, uy=dy/L, s=head||7;
+  var g = el('g',{},parent);
+  el('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:color,'stroke-width':w||2},g);
+  el('path',{d:'M'+x2+' '+y2+' L'+(x2-ux*s-uy*s*0.5)+' '+(y2-uy*s+ux*s*0.5)+
+    ' L'+(x2-ux*s+uy*s*0.5)+' '+(y2-uy*s-ux*s*0.5)+' Z',fill:color},g);
+  return g;
+}
+
+/* ---------- 场景一：格点人浪 ---------- */
+var s1 = document.getElementById('s1');
+var S1COLS=24, S1ROWS=9, S1CELL=30, S1X0=6, S1Y0=6;
+var s1dots=[], s1ptr=null;
+(function(){
+  var g = el('g',{},s1);
+  for(var r=0;r<S1ROWS;r++){
+    s1dots.push([]);
+    for(var c=0;c<S1COLS;c++){
+      var d = el('circle',{cx:S1X0+c*S1CELL+13, cy:S1Y0+r*S1CELL+13, r:9.5,
+        fill:'#1a5fb4','fill-opacity':0},g);
+      s1dots[r].push(d);
+    }
+  }
+  s1ptr = el('circle',{cx:0,cy:0,r:0,fill:'none',stroke:'#c0392b','stroke-width':2},s1);
+  txt(s1, 728/2-330, 300, '每个圆点的亮度 = 该格点的振荡相位 cos φ；没有东西在平移，平移的是相位差图案', {size:12.5, anchor:'middle', fill:'#6b7280'});
+})();
+var s1p = document.getElementById('s1p');
+var s1path = el('path',{fill:'none',stroke:'#1a5fb4','stroke-width':2},s1p);
+var s1axis = el('line',{x1:40,y1:95,x2:700,y2:95,stroke:'#e3e6ea','stroke-width':1},s1p);
+txt(s1p, 8, 16, '沿传播方向的相位剖面：', {size:12.5});
+var s1plab = txt(s1p, 700, 16, '', {size:12.5, anchor:'end'});
+function s1frame(t){
+  var dp = +document.getElementById('s1dp').value * Math.PI/180;
+  var th = +document.getElementById('s1th').value * Math.PI/180;
+  var ux=Math.cos(th), uy=Math.sin(th);
+  var om = TAU/2.4;
+  for(var r=0;r<S1ROWS;r++){
+    for(var c=0;c<S1COLS;c++){
+      var gx=c, gy=r*0.62;
+      var ph = dp*(gx*ux+gy*uy) - om*t;
+      var v = (Math.cos(ph)+1)/2;
+      s1dots[r][c].setAttribute('fill-opacity', (0.06+0.9*v).toFixed(3));
+    }
+  }
+  // 剖面锯齿（沿 u 方向的距离 s，φ = dp*s − ωt，取 mod TAU）
+  var d='';
+  var L=660, x0=40;
+  for(var i=0;i<=330;i++){
+    var s=i/330*L;
+    var ph=(dp*s/ (TAU/360) * Math.PI/180) - om*t;   // dp 已是 rad/格，s 以格计
+    ph = ((ph%TAU)+TAU)%TAU;
+    var x=x0+s, y=88-(ph/TAU)*72;
+    d += (i? ' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+  }
+  s1path.setAttribute('d',d);
+  var lam = dp>1e-6 ? (TAU/dp) : Infinity;
+  s1plab.textContent = dp>1e-6 ? '坡度 '+document.getElementById('s1dp').value+'°/格，λ = '+(TAU/dp).toFixed(1)+' 格' : '坡度为零';
+}
+
+/* ---------- 场景二：等相位面与法线 ---------- */
+var s2 = document.getElementById('s2');
+var S2COLS=24, S2ROWS=12, S2CELL=29, S2X0=8, S2Y0=8;
+var s2dots=[], s2stripes=[], s2arrowG, s2stG, s2grG, s2labN, s2labS;
+(function(){
+  s2grG = el('g',{},s2);
+  for(var r=0;r<S2ROWS;r++){
+    s2dots.push([]);
+    for(var c=0;c<S2COLS;c++){
+      s2dots[r].push(el('circle',{cx:S2X0+c*S2CELL+12, cy:S2Y0+r*S2CELL+12, r:10,
+        fill:'#1a5fb4','fill-opacity':0},s2grG));
+    }
+  }
+  s2stG = el('g',{},s2);
+  for(var i=0;i<10;i++){
+    s2stripes.push(el('line',{stroke:'#c2570f','stroke-width':3,'stroke-opacity':0.85,'stroke-linecap':'round'},s2stG));
+  }
+  s2labS = txt(s2stG,0,0,'等相位面（波前）',{size:12,fill:'#c2570f',weight:500});
+  s2arrowG = el('g',{},s2);
+  s2labN = txt(s2arrowG,0,0,'法线 = ∇φ = k',{size:12.5,fill:'#c0392b',weight:500});
+})();
+var s2frame = function(t){
+  var th = +document.getElementById('s2th').value * Math.PI/180;
+  var dp = 26*Math.PI/180, om=TAU/2.4;
+  var ux=Math.cos(th), uy=Math.sin(th);
+  var showG = document.getElementById('c2grid').checked;
+  var showS = document.getElementById('c2stripe').checked;
+  var showN = document.getElementById('c2norm').checked;
+  s2grG.setAttribute('display', showG?'':'none');
+  s2stG.setAttribute('display', showS?'':'none');
+  s2arrowG.setAttribute('display', showN?'':'none');
+  var W=S2COLS*S2CELL, H=S2ROWS*S2CELL, cx=S2X0+W/2, cy=S2Y0+H/2;
+  for(var r=0;r<S2ROWS;r++)for(var c=0;c<S2COLS;c++){
+    var gx=c+0.5, gy=(r+0.5)*0.62;
+    var ph=dp*(gx*ux+gy*uy)-om*t;
+    s2dots[r][c].setAttribute('fill-opacity', showG?((0.06+0.9*(Math.cos(ph)+1)/2)).toFixed(3):0);
+  }
+  if(showS){
+    var lam=TAU/dp*S2CELL;                       // 条纹间距（px）
+    var off=((om*t/TAU)%1)*lam;
+    var nx=ux, ny=uy*0.62;                        // y 方向格距压缩校正
+    var nl=Math.sqrt(nx*nx+ny*ny); nx/=nl; ny/=nl;
+    var dx=-ny, dy=nx;
+    var corners=[[S2X0,S2Y0],[S2X0+W,S2Y0],[S2X0+W,S2Y0+H],[S2X0,S2Y0+H]];
+    var cmin=1e18,cmax=-1e18;
+    corners.forEach(function(p){var v=p[0]*nx+p[1]*ny; cmin=Math.min(cmin,v); cmax=Math.max(cmax,v);});
+    var m0=Math.ceil((cmin-off)/lam), m1=Math.floor((cmax-off)/lam);
+    var count=0;
+    for(var m=m0;m<=m1 && count<s2stripes.length;m++,count++){
+      var cc=m*lam+off;
+      var px0=cc*nx, py0=cc*ny;
+      var half=900;
+      var x1=px0+dx*half, y1=py0+dy*half, x2=px0-dx*half, y2=py0-dy*half;
+      var ln=s2stripes[count];
+      ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);
+      ln.setAttribute('clip-path','url(#s2clip)');
+    }
+    for(;count<s2stripes.length;count++) s2stripes[count].setAttribute('x1',-99);
+    s2labS.setAttribute('x', cx-dx*170-14); s2labS.setAttribute('y', cy-dy*170-8);
+    s2labS.setAttribute('text-anchor','end');
+  }
+  if(showN){
+    var L=95;
+    arrow(s2arrowG, cx, cy, cx+ux*L, cy+uy*0.62*L, '#c0392b', 3, 9);
+    s2labN.setAttribute('x', cx+ux*L+8); s2labN.setAttribute('y', cy+uy*0.62*L+4);
+    s2labN.setAttribute('text-anchor', ux<-0.3?'end':'start');
+  }
+};
+(function(){
+  var cp=el('clipPath',{id:'s2clip'},s2);
+  el('rect',{x:S2X0,y:S2Y0,width:S2COLS*S2CELL,height:S2ROWS*S2CELL},cp);
+})();
+
+/* ---------- 场景三：三重法线 ---------- */
+// ① 波前法线（静态）
+(function(){
+  var s=document.getElementById('s3a');
+  var g=el('g',{},s);
+  for(var i=0;i<5;i++){
+    el('line',{x1:-20,y1:30+i*36,x2:280,y2:-10+i*36,stroke:'#c2570f','stroke-width':3,'stroke-opacity':0.75,'stroke-linecap':'round'},g);
+  }
+  txt(s,20,178,'等相位面（波前）',{size:11.5,fill:'#c2570f'});
+  arrow(s,130,95,182,38,'#c0392b',3,9);
+  txt(s,186,34,'法线 = k',{size:12,fill:'#c0392b',weight:500});
+  el('circle',{cx:130,cy:95,r:3.5,fill:'#c0392b'},s);
+})();
+// ② 法线轴螺旋阶梯（静态）
+(function(){
+  var s=document.getElementById('s3b');
+  el('line',{x1:60,y1:20,x2:60,y2:172,stroke:'#6b3fa0','stroke-width':2.5},s);
+  arrow(s,60,20,60,8,'#6b3fa0',2.5,7);
+  var d='';
+  for(var i=0;i<=120;i++){
+    var a=i/120*Math.PI*6;
+    var x=60+34*Math.sin(a), y=160-(i/120)*130;
+    d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+  }
+  el('path',{d:d,fill:'none',stroke:'#1a5fb4','stroke-width':2,'stroke-opacity':0.85},s);
+  for(var j=0;j<7;j++){
+    var a=j*Math.PI*6/6.5, t=j/6.5;
+    var x=60+34*Math.sin(a), y=160-t*130;
+    el('line',{x1:60,y1:y,x2:x,y2:y,stroke:'#6b3fa0','stroke-width':1.5,'stroke-opacity':0.6},s);
+    el('circle',{cx:x,cy:y,r:3.2,fill:'#1a5fb4'},s);
+  }
+  txt(s,104,30,'法线轴（层数 = 距离）',{size:11.5,fill:'#6b3fa0',weight:500});
+  txt(s,72,180,'螺旋阶梯：每满周闭合升一层 lP，引力与倾斜一侧',{size:10.5,fill:'#6b7280'});
+})();
+// ③ 行波螺旋（动画）
+(function(){
+  var s=document.getElementById('s3c');
+  var path=el('path',{fill:'none',stroke:'#1a5fb4','stroke-width':2.2},s);
+  el('line',{x1:30,y1:95,x2:235,y2:95,stroke:'#e3e6ea','stroke-width':1},s);
+  txt(s,120,182,'行波 = 螺旋：底部旋转 + 法线推进',{size:10.5,fill:'#6b7280'});
+  var s3cframe=function(t){
+    var d='', d2='';
+    for(var i=0;i<=160;i++){
+      var x=30+i;
+      var ph=(i/160)*Math.PI*6 - t*TAU/2.4;
+      var y=95-38*Math.sin(ph);
+      d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+      if(i%8===0){
+        d2+=' M'+x.toFixed(1)+' 95 L'+x.toFixed(1)+' '+y.toFixed(1);
+      }
+    }
+    path.setAttribute('d',d);
+    el('path',{d:d2,stroke:'#1a5fb4','stroke-width':1,'stroke-opacity':0.35,fill:'none'},s);
+  };
+  s3c._frame = s3cframe;
+})();
+
+/* ---------- 场景四：折射 ---------- */
+var s4 = document.getElementById('s4');
+var S4W=720, S4H=400, S4Y0=200, S4CX=360;
+var s4gTop=el('g',{},s4), s4gBot=el('g',{},s4), s4gEv=el('g',{},s4),
+    s4gRay=el('g',{},s4), s4gLab=el('g',{},s4), s4gTan=el('g',{},s4);
+var s4stripesTop=[], s4stripesBot=[];
+(function(){
+  var cp=el('clipPath',{id:'s4ct'},s4);
+  el('rect',{x:0,y:0,width:S4W,height:S4Y0},cp);
+  var cp2=el('clipPath',{id:'s4cb'},s4);
+  el('rect',{x:0,y:S4Y0,width:S4W,height:S4H-S4Y0},cp2);
+  for(var i=0;i<14;i++){
+    s4stripesTop.push(el('line',{stroke:'#1a5fb4','stroke-width':2.4,'stroke-opacity':0.75,'stroke-linecap':'round','clip-path':'url(#s4ct)'},s4gTop));
+    s4stripesBot.push(el('line',{stroke:'#1a5fb4','stroke-width':2.4,'stroke-opacity':0.75,'stroke-linecap':'round','clip-path':'url(#s4cb)'},s4gBot));
+  }
+  // 介质着色
+  s4.insertBefore(el('rect',{x:0,y:S4Y0,width:S4W,height:S4H-S4Y0,fill:'#1a5fb4','fill-opacity':0.05}),s4gTop);
+  el('line',{x1:0,y1:S4Y0,x2:S4W,y2:S4Y0,stroke:'#8a919c','stroke-width':1.5},s4);
+  // 法线虚线
+  el('line',{x1:S4CX,y1:26,x2:S4CX,y2:S4H-26,stroke:'#8a919c','stroke-width':1,'stroke-dasharray':'5 5'},s4);
+  txt(s4gLab,14,24,'真空 n₁ = 1',{size:12.5,fill:'#6b7280'});
+  txt(s4gLab,14,S4H-12,'介质 n₂ = 1.5',{size:12.5,fill:'#6b7280'});
+})();
+function s4stripes(g, arr, rect, nx, ny, lam, off, clipId, count){
+  var corners=[[rect.x,rect.y],[rect.x+rect.w,rect.y],[rect.x+rect.w,rect.y+rect.h],[rect.x,rect.y+rect.h]];
+  var cmin=1e18,cmax=-1e18;
+  corners.forEach(function(p){var v=p[0]*nx+p[1]*ny;cmin=Math.min(cmin,v);cmax=Math.max(cmax,v);});
+  var dx=-ny, dy=nx, half=1000, i=0;
+  var m0=Math.ceil((cmin-off)/lam), m1=Math.floor((cmax-off)/lam);
+  for(var m=m0;m<=m1 && i<count;m++,i++){
+    var cc=m*lam+off, px0=cc*nx, py0=cc*ny;
+    arr[i].setAttribute('x1',px0+dx*half); arr[i].setAttribute('y1',py0+dy*half);
+    arr[i].setAttribute('x2',px0-dx*half); arr[i].setAttribute('y2',py0-dy*half);
+  }
+  for(;i<count;i++){ arr[i].setAttribute('x1',-99); }
+}
+function s4frame(t){
+  while(s4gRay.firstChild) s4gRay.removeChild(s4gRay.firstChild);
+  while(s4gTan.firstChild) s4gTan.removeChild(s4gTan.firstChild);
+  while(s4gEv.firstChild) s4gEv.removeChild(s4gEv.firstChild);
+  var th1=+document.getElementById('s4th').value*Math.PI/180;
+  var fromTop = document.getElementById('s4side').value==='top';
+  var nIn = fromTop?1:1.5, nOut = fromTop?1.5:1;
+  var om=TAU/2.6;
+  var lam1=46, lam2=46*nIn/nOut;           // 同频，波长按折射率缩
+  var K1=TAU/lam1, K2=TAU/lam2;
+  var s = fromTop?1:-1;                     // 传播竖向分量符号（SVG y 向下）
+  var nix=Math.sin(th1)*s, niy=Math.cos(th1)*s;   // 入射 n̂（单位）
+  var kx=K1*Math.sin(th1);                  // 切向分量（守恒）
+  var ky2sq=K2*K2-kx*kx;
+  var tir = ky2sq<0;
+  var off=((om*t/TAU)%1);
+  // 入射侧条纹
+  if(fromTop){
+    s4stripes(s4gTop,s4stripesTop,{x:-20,y:-20,w:S4W+40,h:S4Y0+20},nix,niy,lam1,off*lam1);
+    if(!tir) s4stripes(s4gBot,s4stripesBot,{x:-20,y:S4Y0,w:S4W+40,h:S4H-S4Y0+20},kx/K2,Math.sqrt(ky2sq)/K2,lam2,off*lam2);
+  }else{
+    s4stripes(s4gBot,s4stripesBot,{x:-20,y:S4Y0,w:S4W+40,h:S4H-S4Y0+20},nix,niy,lam1,off*lam1);
+    if(!tir) s4stripes(s4gTop,s4stripesTop,{x:-20,y:-20,w:S4W+40,h:S4Y0+20},kx/K2,-Math.sqrt(ky2sq)/K2,lam2,off*lam2);
+  }
+  // 修逝场晕带（TIR）
+  if(tir){
+    var band=el('rect',{x:0,y:fromTop?S4Y0:0,width:S4W,height:34,
+      fill:'#c0392b','fill-opacity':0.10},s4gEv);
+    txt(s4gEv, S4CX+120, fromTop?S4Y0+22:22, '修逝场（指数衰减）', {size:11.5, fill:'#c0392b'});
+  }
+  // 波矢箭头
+  var L=120;
+  var th2 = tir?null:Math.atan2(Math.sqrt(ky2sq), kx)* (fromTop?1:1);
+  // 透射 n̂
+  var nox=kx/K2, noy=(tir?0:Math.sqrt(ky2sq)/K2)*(fromTop?1:-1);
+  // 入射箭头（指向界面上一点）
+  arrow(s4gRay, S4CX-nix*L, S4Y0-niy*L, S4CX, S4Y0, '#1a5fb4', 2.6, 8);
+  txt(s4gRay, S4CX-nix*L-34, S4Y0-niy*L-6, 'k₁', {size:13, fill:'#1a5fb4', weight:500});
+  // 透射箭头
+  if(!tir){
+    arrow(s4gRay, S4CX, S4Y0, S4CX+nox*L*1.15, S4Y0+noy*L*1.15, '#1a5fb4', 2.6, 8);
+    txt(s4gRay, S4CX+nox*L*1.15+8, S4Y0+noy*L*1.15+4, 'k₂', {size:13, fill:'#1a5fb4', weight:500});
+  }else{
+    // 全反射：反射箭头
+    arrow(s4gRay, S4CX, S4Y0, S4CX+nix*L, S4Y0-niy*L, '#c0392b', 2.6, 8);
+    txt(s4gRay, S4CX+nix*L+8, S4Y0-niy*L+4, '全反射', {size:12.5, fill:'#c0392b', weight:500});
+  }
+  // 切向分量（守恒）：入射侧与透射侧各画一个等长水平箭头
+  var tanLen = (kx/K1)*70+18;
+  arrow(s4gTan, S4CX, S4Y0-(fromTop?34:34)*1, S4CX+tanLen, S4Y0-34, '#0f766e', 2.2, 6);
+  arrow(s4gTan, S4CX, S4Y0+34, S4CX+tanLen, S4Y0+34, '#0f766e', 2.2, 6);
+  txt(s4gTan, S4CX+tanLen+8, S4Y0-30, '切向 kx（守恒）', {size:11.5, fill:'#0f766e'});
+  // 读数
+  var deg=function(x){return (x*180/Math.PI).toFixed(1)+'°';};
+  document.getElementById('o4th').textContent = (th1*180/Math.PI).toFixed(0)+'°';
+  var e2=document.getElementById('r4t2'), e3=document.getElementById('r4sn'), e4=document.getElementById('r4judge');
+  if(!tir){
+    var ratio=Math.sin(th1)/Math.sin(th2);
+    e2.textContent=deg(th2); e2.className='';
+    e3.textContent=ratio.toFixed(3)+' = n₂/n₁'; e3.className='';
+    e4.textContent='配得上实根 → 折射'; e4.className='';
+  }else{
+    e2.textContent='——'; e2.className='warn';
+    e3.textContent='无实根'; e3.className='warn';
+    e4.textContent='修逝场 + 全反射'; e4.className='warn';
+  }
+}
+
+/* ---------- 主循环 ---------- */
+var t0=null;
+function loop(ts){
+  if(t0===null) t0=ts;
+  var t=(ts-t0)/1000;
+  s1frame(t); s2frame(t);
+  if(s3c._frame) s3c._frame(t);
+  s4frame(t);
+  if(!REDUCED) requestAnimationFrame(loop);
+}
+s1frame(0); s2frame(0); if(s3c._frame) s3c._frame(0); s4frame(0);
+if(!REDUCED) requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
