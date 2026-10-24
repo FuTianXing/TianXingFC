@@ -39,7 +39,7 @@ description: 批量把天行新学工作区文档的书名号引用与清单条�
 ## 4. 审计（每轮落盘后必跑）
 
 ```
-python "C:\Users\Administrator\.agents\skills\wikilink-batch\scripts\link_audit.py" <文件.md>... [--suggest] [--root D:\software\TianXingFC]
+python .agents/skills/wikilink-batch/scripts/link_audit.py <文件.md>... [--suggest] [--root D:\software\TianXingFC]
 ```
 
 检查项：wikilink 目标解析（裸名全库唯一 / 路径形式存在）、剩余书名号清单（`--suggest` 附候选文件与重名告警）、wikilink 外 em-dash、禁句式与"账"字、编号条目缺链清单、CRLF 残留。退出码 0 通过 / 1 有硬伤（未解析目标、em-dash、禁词）；剩余《》与缺链条目为 INFO 级，是否处理由任务决定（历史文档的《》引用按规范不强制迁移）。
@@ -61,7 +61,7 @@ python "C:\Users\Administrator\.agents\skills\wikilink-batch\scripts\link_audit.
 大范围内链化（整目录逐篇处理）优先用固化脚本，不要每轮现写一次性脚本：
 
 ```
-python "C:\Users\Administrator\.agents\skills\wikilink-batch\scripts\batch_link.py" \
+python .agents/skills/wikilink-batch/scripts/batch_link.py \
   --dir 内部草稿 --prefix "注记-,研究方向-,总结报告-" \
   --skip "在途文件1.md,在途文件2.md" --root D:\software\TianXingFC
 ```

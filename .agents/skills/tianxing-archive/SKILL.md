@@ -81,7 +81,7 @@ README 七节，照 `归档/洛伦兹线误设构型轮次/README.md`：
 脚本直接用：
 
 ```
-python "C:\Users\Administrator\.agents\skills\tianxing-archive\scripts\archive_audit.py" --archive 归档/<主题>轮次 --old 验证脚本 --old 内部草稿
+python .agents/skills/tianxing-archive/scripts/archive_audit.py --archive 归档/<主题>轮次 --old 验证脚本 --old 内部草稿
 ```
 
 A 段的 `moved` 名单默认取归档目录内**除 README 外**的 md。归档目录的 README 是归档时新建的说明文件，从未在 `验证脚本/` 下存在过，把它算进名单会把全库所有 `[[验证脚本/README]]` 误报成残留（首次实测误报 99 条）。必要时用 `--moved <名字>` 给显式名单。

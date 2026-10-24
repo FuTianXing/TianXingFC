@@ -49,7 +49,7 @@ description: 系统修改论文与注记（按评审报告的 A/B/C 级逐级处
 #### C级问题处理
 
 C级问题在完成A/B级后统一处理：
-- 可批量处理的（如全文字符替换）：使用 `_tools/replace_punct.py`
+- 可批量处理的（如全文字符替换）：现写幂等批量替换脚本落 `_tools/` 执行（一次性，任务完即删；含中文禁止 bash 内联）
 - 需要逐处改的：用 `edit_file`
 
 ### 第3.5步（可选）：去除AI味道
@@ -225,11 +225,7 @@ Get-Content 下篇.md | Add-Content 目标.md
 Remove-Item 上篇.md, 下篇.md
 ```
 
-**方案二**：使用 `_tools/write_large_file.py`（如果已存在）：
-
-```powershell
-Get-Content 源内容.txt -Raw | python _tools/write_large_file.py 目标文件.md
-```
+**方案二**：用 Write 工具直接写整文件（超长内容分多次追加式写入时，每次以末尾锚点定位续写），避免 shell 管道转义问题。
 
 ### 分段修改优于重写
 

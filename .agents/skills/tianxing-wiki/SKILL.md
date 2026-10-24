@@ -61,7 +61,7 @@ description: 为天行新学工作区新建或维护 wiki 词条（定义首句 
 3. 检查：
 
 ```
-python "C:\Users\Administrator\.agents\skills\tianxing-wiki\scripts\wiki_check.py" wiki/<名词>.md
+python .agents/skills/tianxing-wiki/scripts/wiki_check.py wiki/<名词>.md
 ```
 
 硬伤（退出码 1）：缺一级标题、定义首句未加粗、元数据表缺字段、缺必需小节、控制字符。提示：超长段落、ASCII 双引号、缺可选小节、残余书名号。元数据字段与定义首句的判据容忍对齐填充与括注（**名词**（原文）是…）。2026-09-19 全量实跑：39 条词条 37 条通过，余 2 处历史违规已修，现语料全绿。

@@ -55,7 +55,7 @@ description: 把内部草稿、验证脚本判据与作者裁决固化进天行�
 3. 落盘后跑统一检查：
 
 ```
-python "C:\Users\Administrator\.agents\skills\tianxing-solidify\scripts\solidify_check.py" <文件>... [--root D:\software\TianXingFC]
+python .agents/skills/tianxing-solidify/scripts/solidify_check.py <文件>... [--root D:\software\TianXingFC]
 ```
 
 硬伤（退出码 1）：控制字符、wikilink 未解析。提示（不影响退出码）：超长段落、序列词套话、残余书名号。

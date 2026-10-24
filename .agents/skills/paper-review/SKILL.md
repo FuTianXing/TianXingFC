@@ -18,7 +18,7 @@ description: 结构化评审学术论文，涵盖结构/内容/LaTeX格式/语�
 先跑脚本，把机器可判的问题一次性收齐，避免它们混在人工评审的输出里稀释了真正的 A/B 级问题。
 
 ```bash
-python scripts/check_discipline.py <论文绝对路径> --root <工作区根目录>
+python .agents/skills/paper-review/scripts/check_discipline.py <论文绝对路径> --root <工作区根目录>
 ```
 
 退出码 0 表示通过，1 表示有命中（按 A/B/C/D 四组分类，附行号与原文片段），2 表示用法错误或文件不存在。加 `--root` 才启用死链检查；`--limit N` 可改段落字符上限（默认 300）。
