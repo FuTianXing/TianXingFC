@@ -1,11 +1,13 @@
 #!/bin/sh
 # 元相子理论工作区 pre-commit 钩子
 # 启用：git config core.hooksPath .githooks
-# 现有三道检查，任一不过即拒绝提交：
+# 现有四道检查，任一不过即拒绝提交：
 #   一、.md 控制字符
 #   二、README 编号新增撞号
 #   三、开放问题看板形态（条目体量、巨行、卡片内历史段落；新增条目缺状态行给警告）
+#   四、README 条目行格式（五要素索引行、行长上限、状态词白名单；只查本次改动的行）
 python "$(git rev-parse --show-toplevel)/.githooks/check_md_control.py" || exit 1
 python "$(git rev-parse --show-toplevel)/.githooks/check_readme_numbers.py" || exit 1
 python "$(git rev-parse --show-toplevel)/.githooks/check_overview_cards.py" || exit 1
+python "$(git rev-parse --show-toplevel)/.githooks/check_readme_entry_format.py" || exit 1
 exit 0
