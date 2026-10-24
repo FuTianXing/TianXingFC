@@ -1,6 +1,6 @@
 # AGENTS.md
 
-傅天行（天行新学研究院）《天行新学》学术工作区：原创哲学/物理学论文与科普文档，无工程代码（理论验证脚本除外）。论文正稿在根目录（100+ 篇），按子理论索引（`理论总纲/子理论索引.md`）维护；知识库基准在 `理论总纲/`；技能 `.agents/skills/tianxing-academia/`、`paper-review`、`paper-revise` 的知识库路径已绝对化指向本工作区，自带 `knowledge/` 为空目录勿用。
+傅天行（天行新学研究院）《天行新学》学术工作区：原创哲学/物理学论文与科普文档，无工程代码（理论验证脚本除外）。论文正稿在根目录（100+ 篇），按子理论索引（`理论总纲/子理论索引.md`）维护；知识库基准在 `理论总纲/`。十项工作区专用技能（`tianxing-academia`、`tianxing-kepu`、`tianxing-wiki`、`tianxing-solidify`、`tianxing-archive`、`tianxing-writing`、`verification-script`、`paper-review`、`paper-revise`、`wikilink-batch`）位于项目级 `.agents/skills/`、随 git 版本化（2026-10-24 自用户级迁入，`mineru` 留用户级），其知识库路径已绝对化指向本工作区，自带 `knowledge/` 为空目录勿用。
 
 ## 目录规范
 
